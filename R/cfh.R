@@ -3,9 +3,9 @@
 ## author: Jannik Pallisgaard 
 ## created: Jul  31 2016 (22:48) 
 ## Version: 
-## last-updated: Aug  4 2016 (20:01) 
+## last-updated: Aug  4 2016 (21:53) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 6
+##     Update #: 9
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -19,9 +19,8 @@
 ##'
 ##' Ignores pattype 
 ##' @title Jannik's first R-version of the sas code from hell 
-##' @param dt data frame or data table which provides variables: pnr, recno, inddto, uddto, pattype
-##' @return 
-##' @seealso 
+##' @param dt data.frame or data.table which provides variables: pnr, recno, inddto, uddto, pattype
+##' @return data.frame where all intermediate admission records are removed 
 ##' @examples
 ##' data(samplepop)
 ##' cfh(samplepop)

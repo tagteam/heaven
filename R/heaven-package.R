@@ -19,7 +19,7 @@
 #'
 #' @docType package
 #' @name heaven
-#' @useDynLib heaven
+##  @useDynLib heaven
 #' @importFrom Rcpp sourceCpp evalCpp
 #' @importFrom data.table data.table ":=" setnames setorder setcolorder setkey rbindlist
 #' @importFrom foreach "%dopar%" foreach
