@@ -1,0 +1,9 @@
+Package: heaven
+Type: Package
+Title: Data Preparation Routines For Medical Registry Data
+Version: 0.0.1
+Date: 2016-08-03
+Author: Thomas A. Gerds
+Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
+Description: Fast and Furious R Implementation of the GGs SAS macro: Code from Hell
+License: GPL (>= 3)
