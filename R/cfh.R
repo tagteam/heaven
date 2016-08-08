@@ -50,10 +50,10 @@ setkey(pop)
 
 a<-Sys.time()
 for(i in 1:100000000){
-  old<-nrow(pop)
+  old.pop.num<-nrow(pop)
   pop<-cfh(pop)
-  neww<-nrow(pop)
-  if (old==neww){
+  new.pop.num<-nrow(pop)
+  if (old.pop.num==new.pop.num){
     break
   }
 }
