@@ -1,11 +1,11 @@
-### cfh.R Version 2--- 
+### cfh.R --- 
 #----------------------------------------------------------------------
 ## author: Jannik Pallisgaard 
 ## created: Jul  31 2016 (22:48) 
 ## Version: 
-## last-updated: Aug  4 2016 (21:53) 
-##           By: Thomas Alexander Gerds
-##     Update #: 9
+## last-updated: Aug  8 2016 (10:38) 
+##           By: Jannik Pallisgaard
+##     Update #: 10
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
