@@ -26,23 +26,38 @@
 ##' cfh(samplepop)
 ##' @export 
 ##' @author Jannik Pallisgaard 
-cfh <- function(dt){
-    dt$uddto<-as.numeric(dt$uddto)
-    dt$inddto<-as.numeric(dt$inddto)
-    dt$prev.uddto <- with(dt, ave(uddto, pnr, FUN=function(pnr) head(c(0,pnr),-1)))
-    dt$prev.inddto <- with(dt, ave(inddto, pnr, FUN=function(pnr) head(c(0,pnr),-1)))
-    dt$first.inddto<-ifelse(dt$prev.uddto>=dt$inddto,dt$prev.inddto,dt$inddto)
-    dt$last.uddto<-pmax(dt$uddto,dt$prev.uddto)
-    dt$out<-as.character(paste(dt$pnr, dt$first.inddto, sep=""))
-    dt<-dt[order(dt$pnr,-dt$last.uddto),]
-    dt<-subset(dt,!duplicated(out))
-    dt<-dt[order(dt$pnr,dt$first.inddto),]
-    dt$inddto<-dt$first.inddto
-    dt$uddto<-dt$last.uddto
-    dt$uddto<-as.Date(dt$uddto,origin="1970-01-01")
-    dt$inddto<-as.Date(dt$inddto,origin="1970-01-01")
-    dt[,c('prev.uddto','prev.inddto','first.inddto','last.inddto','last.uddto','out')]<-list(NULL,NULL,NULL,NULL,NULL,NULL)
-    as.data.frame(dt)
+
+#code from hell----
+cfh<-function(diag){
+  diag$end<-as.numeric(diag$end)
+  diag$start<-as.numeric(diag$start)
+  diag<-diag[order(diag$pid,diag$start),]
+  diag$prev.end <- with(diag, ave(end, pid, FUN=function(pid) head(c(0,pid),-1)))
+  diag$prev.start <- with(diag, ave(start, pid, FUN=function(pid) head(c(0,pid),-1)))
+  diag$first.start<-ifelse(diag$prev.end>=diag$start,diag$prev.start,diag$start)
+  diag$last.end<-pmax(diag$end,diag$prev.end)
+  diag$out<-as.character(paste(diag$pid, diag$first.start, sep=""))
+  diag<-diag[order(diag$pid,-diag$last.end),]
+  diag<-subset(diag,!duplicated(out))
+  diag<-diag[order(diag$pid,diag$first.start),]
+  diag$start<-diag$first.start
+  diag$end<-diag$last.end
+  diag[,c('prev.end','prev.start','first.start','last.end','out')]<-list(NULL,NULL,NULL,NULL,NULL)
+  diag<-data.table(diag)
 }
+
+setkey(pop)
+
+a<-Sys.time()
+for(i in 1:100000000){
+  old<-nrow(pop)
+  pop<-cfh(pop)
+  neww<-nrow(pop)
+  if (old==neww){
+    break
+  }
+}
+b<-Sys.time()
+round(b-a,1)
 #----------------------------------------------------------------------
 ### cfh.R ends here
