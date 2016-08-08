@@ -1,4 +1,4 @@
-### cfh.R Veraion 2--- 
+### cfh.R Version 2--- 
 #----------------------------------------------------------------------
 ## author: Jannik Pallisgaard 
 ## created: Jul  31 2016 (22:48) 
