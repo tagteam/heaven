@@ -27,55 +27,58 @@
 ##' @export 
 ##' @author Jannik Pallisgaard 
 
+
 #code from hell----
 cfh<-function(diag){
-  diag$end<-as.numeric(diag$end)
+  diag$uddto<-as.numeric(diag$uddto)
   #date changed to numberic
-  diag$start<-as.numeric(diag$start)
+  diag$inddto<-as.numeric(diag$inddto)
   #date changed to numberic
-  diag<-diag[order(diag$pid,diag$start),]
+  diag<-diag[order(diag$pnr,diag$inddto),]
   #orders by first inddate for each id
-  diag$prev.end <- with(diag, ave(end, pid, FUN=function(pid) head(c(0,pid),-1))) 
-  #copies end date from line above to line below by id and creates new variable prev.end
-  diag$prev.start <- with(diag, ave(start, pid, FUN=function(pid) head(c(0,pid),-1)))
-  #copies start date from line above to line below by id and creates new variable prev.start
-  diag$first.start<-ifelse(diag$prev.end>=diag$start,diag$prev.start,diag$start)
-  #If prev.end date is larger og equal to start date then change first.start date to prev start date
-  diag$last.end<-pmax(diag$end,diag$prev.end)
-  # creates last end date by last date of end date or prev end date 
-  diag$out<-as.character(paste(diag$pid, diag$first.start, sep=""))
+  diag$prev.uddto <- with(diag, ave(uddto, pnr, FUN=function(pnr) head(c(0,pnr),-1))) 
+  #copies uddto date from line above to line below by id and creates new variable prev.uddto
+  diag$prev.inddto <- with(diag, ave(inddto, pnr, FUN=function(pnr) head(c(0,pnr),-1)))
+  #copies inddto date from line above to line below by id and creates new variable prev.inddto
+  diag$first.inddto<-ifelse(diag$prev.uddto>=diag$inddto,diag$prev.inddto,diag$inddto)
+  #If prev.uddto date is larger og equal to inddto date then change first.inddto date to prev inddto date
+  diag$last.uddto<-pmax(diag$uddto,diag$prev.uddto)
+  # creates last uddto date by last date of uddto date or prev uddto date 
+  diag$out<-as.character(paste(diag$pnr, diag$first.inddto, sep=""))
   #creates an identifier to removed if to rows are overlapping
-  diag<-diag[order(diag$pid,-diag$last.end),]
-  # orders the last end date by id
+  diag<-diag[order(diag$pnr,-diag$last.uddto),]
+  # orders the last uddto date by id
   diag<-subset(diag,!duplicated(out))
   # removes the first identifier 
-  diag<-diag[order(diag$pid,diag$first.start),]
-  # orders the first start date by id
-  diag$start<-diag$first.start
-  # first start is the new start date
-  diag$end<-diag$last.end
-  # last end date is end date
-  diag[,c('prev.end','prev.start','first.start','last.end','out')]<-list(NULL,NULL,NULL,NULL,NULL)
+  diag<-diag[order(diag$pnr,diag$first.inddto),]
+  # orders the first inddto date by id
+  diag$inddto<-diag$first.inddto
+  # first inddto is the new inddto date
+  diag$uddto<-diag$last.uddto
+  # last uddto date is uddto date
+  diag[,c('prev.uddto','prev.inddto','first.inddto','last.uddto','out')]<-list(NULL,NULL,NULL,NULL,NULL)
   # removes needless variables
   diag<-data.table(diag)
   # changes diag to diag.table
 }
 
+library(data.table)
+diag<-data.table(samplepop)
 setkey(pop)
 
 a<-Sys.time()
 for(i in 1:100000000){
   #runs the function between one and infinity
-  old.pop.num<-nrow(pop)
+  old.pop.num<-nrow(diag)
   #counts the number of rows in the data.table before running function
-  pop<-cfh(pop)
+  diag<-cfh(diag)
   #running function
-  new.pop.num<-nrow(pop)
+  new.pop.num<-nrow(diag)
   #counts the number of rows in date.table after running the function
   if (old.pop.num==new.pop.num){
     break
   }
-  #stops function when there is nu difference between the rows before and after running the function
+  #stops function when there is no difference between the number of rows before and after running the function
 }
 b<-Sys.time()
 round(b-a,1)
