@@ -34,7 +34,7 @@ cfh<-function(diag){
   #date changed to numberic
   diag$inddto<-as.numeric(diag$inddto)
   #date changed to numberic
-  diag<-diag[order(diag$pnr,diag$inddto),]
+  diag<-diag[order(pnr,inddto),]
   #orders by first inddate for each id
   diag$prev.uddto <- with(diag, ave(uddto, pnr, FUN=function(pnr) head(c(0,pnr),-1))) 
   #copies uddto date from line above to line below by id and creates new variable prev.uddto
@@ -46,11 +46,11 @@ cfh<-function(diag){
   # creates last uddto date by last date of uddto date or prev uddto date 
   diag$out<-as.character(paste(diag$pnr, diag$first.inddto, sep=""))
   #creates an identifier to removed if to rows are overlapping
-  diag<-diag[order(diag$pnr,-diag$last.uddto),]
+  diag<-diag[order(pnr,-last.uddto),]
   # orders the last uddto date by id
   diag<-subset(diag,!duplicated(out))
   # removes the first identifier 
-  diag<-diag[order(diag$pnr,diag$first.inddto),]
+  diag<-diag[order(pnr,first.inddto),]
   # orders the first inddto date by id
   diag$inddto<-diag$first.inddto
   # first inddto is the new inddto date
@@ -63,8 +63,7 @@ cfh<-function(diag){
 }
 
 library(data.table)
-diag<-data.table(samplepop)
-setkey(pop)
+diag<-data.table(sample.diag)
 
 a<-Sys.time()
 for(i in 1:100000000){
