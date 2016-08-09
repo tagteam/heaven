@@ -13,7 +13,7 @@ cfh(dt)
 data.frame where all intermediate admission records are removed
 }
 \description{
-R-version of the sas code from hell.
+my own R-version of code from hell.
 }
 \details{
 Ignores pattype
