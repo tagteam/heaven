@@ -62,6 +62,7 @@ cfh<-function(diag){
   # changes diag to diag.table
 }
 
+
 library(data.table)
 diag<-data.table(sample.diag)
 
