@@ -1,3 +1,7 @@
+############################
+### Testing getAdmLimits ###
+############################
+
 library(data.table)
 diag<-data.table(sample.diag)
 diag<-getAdmLimits(diag)
@@ -13,6 +17,9 @@ View(diag)
 
 
 
+#############################
+### Testing getAdmLimits2 ###
+#############################
 
 #note: Does not collapse, but adds to all observations.
 library(data.table)
