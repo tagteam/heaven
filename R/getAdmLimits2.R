@@ -49,6 +49,7 @@ getAdmLimits2 <- function(dt2){
     wdt2[,startadm :=min(inddto)   ,by=c("pnr","startadm")] 
     ##Change names to what the two variables now contain
     setnames(wdt2,c("startadm","max.uddto"),c("first.inddto","last.uddto"))
+    wdt2
 }
 
 #----------------------------------------------------------------------
