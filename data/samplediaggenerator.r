@@ -63,6 +63,7 @@ recnum diag pnr inddto uddto pattype diagtype
 102   I21.3  PNR1 15     20     0    A 
                         ",header=T)
 
+
 sample.diag$pnr<-as.character(sample.diag$pnr)
 sample.diag$diag<-as.character(sample.diag$diag)
 sample.diag$diagtype<-as.character(sample.diag$diagtype)
@@ -73,8 +74,6 @@ sample.diag$recnum<-as.numeric(sample.diag$recnum)
 sample.diag$inddto<-as.Date(sample.diag$inddto,origin="1970-01-01")
 sample.diag$uddto<-as.Date(sample.diag$uddto,origin="1970-01-01")
 
-sample.diag <- as.data.table(sample.diag)
-
-sample.diag2 <- rbind(sample.diag, sample.diag, sample.diag)
+sample.diag <- rbind(sample.diag, sample.diag, sample.diag)
 
 sapply(sample.diag,class)
