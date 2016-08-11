@@ -1,8 +1,9 @@
 library(data.table)
 diag<-data.table(sample.diag)
 diag<-getAdmLimits(diag)
-diag<-diag[order(pnr,inddto),]
+diag<-diag[order(pnr,inddto),] #does nothing since it is sorted in the funtion
 View(diag)
+
 
 
 ##Problems not solved ##
@@ -10,13 +11,17 @@ View(diag)
 #regnum 35 is a hospital stay for 20000 days
 #regnum 37 is a hospital stay with a negative duration
 
+
+
+
+#note: Does not collapse, but adds to all observations.
 library(data.table)
-diag<-data.table(sample.diag)
+#run data/samplediaggenerator.r
+diag<-as.data.table(sample.diag)
+#run R/getAdmLimits2.R
 diag<-getAdmLimits2(diag)
-diag<-diag[order(pnr,inddto),]
 View(diag)
 
 ##Problems not solved ##
-#does not remove duplicates
-#regnum 35 is a hospital stay for 20000 days
-#regnum 37 is a hospital stay with a negative duration
+#regnum 35 is a hospital stay for 20000 days 
+    #is this a problem? it is like this in the sample. Should it detect dates that are in the future?
