@@ -52,8 +52,7 @@ getAdmLimits2 <- function(dt2){
     ## overlapping admissions
     wdt2[,startadm:=cumsum(startadm),by=pnr]
     ##start and end date for the hospitalization the admission is part of.
-    wdt2[,max.uddto:=max(max.uddto),by=c("pnr","startadm")]
-    wdt2[,startadm :=min(inddto)   ,by=c("pnr","startadm")] 
+    wdt2[,':='( startadm=inddto[1] , max.uddto=max.uddto[.N] ) ,by=.(pnr,startadm)] 
     ##Change names to what the two variables now contain
     setnames(wdt2,c("startadm","max.uddto"),c("first.inddto","last.uddto"))
     ## Convert if input were format Date
