@@ -34,8 +34,15 @@
 getAdmLimits2 <- function(dt2){
     stopifnot(is.data.table(dt2))
     wdt2=copy(dt2)
-    ## sort by pnr and admission dates 
-    ## sort by pnr and admission dates 
+    ##Converts Date to integer
+    if (is.integer(wdt2$inddto)){
+      datechecker=FALSE
+    }else{
+      wdt2$inddto <- as.integer(wdt2$inddto)
+      wdt2$uddto <- as.integer(wdt2$uddto)
+      datechecker=TRUE
+    }  
+      ## sort by pnr and admission dates 
     setkey(wdt2,pnr,inddto)
     ## latest admission date by pnr
     wdt2[,max.uddto:=cummax(uddto),by=pnr]
@@ -49,6 +56,13 @@ getAdmLimits2 <- function(dt2){
     wdt2[,startadm :=min(inddto)   ,by=c("pnr","startadm")] 
     ##Change names to what the two variables now contain
     setnames(wdt2,c("startadm","max.uddto"),c("first.inddto","last.uddto"))
+    ## Convert if input were format Date
+    if(datechecker==TRUE){
+      wdt2$uddto <- as.Date(wdt2$uddto,origin="1970-01-01")
+      wdt2$inddto <- as.Date(wdt2$inddto,origin="1970-01-01")
+      wdt2$last.uddto <- as.Date(wdt2$last.uddto,origin="1970-01-01")
+      wdt2$first.inddto <- as.Date(wdt2$first.inddto,origin="1970-01-01")
+    }
     wdt2
 }
 
