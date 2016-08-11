@@ -115,4 +115,4 @@ sample.diag$recnum<-as.numeric(sample.diag$recnum)
 sample.diag$inddto<-as.Date(sample.diag$inddto,origin="1970-01-01")
 sample.diag$uddto<-as.Date(sample.diag$uddto,origin="1970-01-01")
 
-sapply(sample.diag,class)
+str(sample.diag)
