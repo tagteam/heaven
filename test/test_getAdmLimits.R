@@ -29,6 +29,8 @@ diag<-as.data.table(sample.diag)
 diag<-getAdmLimits2(diag)
 View(diag)
 
+str(diag)
+
 ##Problems not solved ##
 #regnum 35 is a hospital stay for 20000 days 
     #is this a problem? it is like this in the sample. Should it detect dates that are in the future?
