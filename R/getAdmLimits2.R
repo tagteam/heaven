@@ -54,7 +54,7 @@ getAdmLimits2 <- function(dt2){
     ##start and end date for the hospitalization the admission is part of.
     wdt2[,':='( startadm=inddto[1] , max.uddto=max.uddto[.N] ) ,by=.(pnr,startadm)] 
     ##Change names to what the two variables now contain
-    wdt2[,odd:=ifelse(uddto<inddto | uddto-inddto>356.26,1,0)]
+    wdt2[,odd:=ifelse(uddto<inddto | uddto-inddto>356.26 | uddto>as.integer(Sys.Date())|inddto>as.integer(Sys.Date()),1,0)]
     setnames(wdt2,c("startadm","max.uddto"),c("first.inddto","last.uddto"))
     ## Convert if input were format Date
     if(datechecker==TRUE){
