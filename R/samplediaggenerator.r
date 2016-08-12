@@ -60,7 +60,8 @@ recnum diag pnr inddto uddto pattype diagtype
 60 I21.3 PNR1 11 15 0 A 
 50 I21.3 PNR1 13 13 0 A 
 65 I21.3 PNR1 10 23 0 A 
-102 I21.3 PNR1 15 20 0 A 
+102 I21.3 PNR1 15 20 0 A
+103 25009 PNR26 20000 20010 0 A
 ",header=T)
 
 
