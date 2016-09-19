@@ -23,6 +23,7 @@ LinkingTo: Rcpp, RcppArmadillo
 License: GPL (>= 3)
 RoxygenNote: 5.0.1
 Collate:
+    'RcppExports.R'
     'samplediaggenerator.R'
     'cfh.R'
     'getAdmLimits.R'

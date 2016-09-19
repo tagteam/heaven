@@ -1,11 +1,11 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 using namespace Rcpp;
 
-// Below is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp 
-// function (or via the Source button on the editor toolbar)
-
-// For more on using Rcpp click the Help button on the editor toolbar
+//' @title Helene's first cpp function
+//' @param dt data.frame or data.table which provides variables: pnr, recno, inddto, uddto, pattype
+//' @return data.frame where all intermediate admission records are removed 
+//' @export 
+//' @author Helene Charlotte Rytgaard
 
 // [[Rcpp::export]]
 int timesTwo(int x) {
