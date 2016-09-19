@@ -8,7 +8,7 @@
 #diagtype is character +,A,B,C,G,H
 #pattype is character 0,1,2,3
 #recnum is numeric
-
+  
 sample.diag<-read.table(text="
 recnum diag pnr inddto uddto pattype diagtype
 1 I21.9 PNR1 10 25 0 A
