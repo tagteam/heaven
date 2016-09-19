@@ -18,7 +18,7 @@ Imports:
     parallel,
     doParallel,
     foreach, 
-    Rcpp
+    RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo
 License: GPL (>= 3)
 RoxygenNote: 5.0.1

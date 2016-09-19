@@ -1,5 +1,5 @@
 // [[Rcpp::depends(RcppArmadillo)]]
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 using namespace Rcpp; 
 
 // test-hcr.cpp --- 
