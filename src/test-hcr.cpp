@@ -17,8 +17,6 @@ using namespace Rcpp;
 // Change Log:
 //----------------------------------------------------------------------
 // 
-// Code:
-//code from hell----
 //' R-version of the sas code from hell.
 //'
 //' @title Helene test cpp 
