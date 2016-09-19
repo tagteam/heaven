@@ -8,6 +8,7 @@
 #diagtype is character +,A,B,C,G,H
 #pattype is character 0,1,2,3
 #recnum is numeric
+##' @export 
 
 sample.diag<-read.table(text="
 recnum diag pnr inddto uddto pattype diagtype
