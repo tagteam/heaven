@@ -26,6 +26,7 @@
 ##' cfh(samplepop)
 ##' @export 
 ##' @author Jannik Pallisgaard 
+##' @include samplediaggenerator.R
 
 
 #code from hell----
