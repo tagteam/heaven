@@ -22,7 +22,7 @@ using namespace Rcpp;
 //' @title Helene test cpp 
 //' @param 
 //' @return 
-//' @examples
+//' @examples 
 //' @export 
 //' @author Helene Charlotte Rytgaard
 
