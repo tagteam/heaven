@@ -2,6 +2,7 @@
 
 export(cfh)
 export(getAdmLimits)
+export(getAdmLimits2)
 importFrom(Rcpp,evalCpp)
 importFrom(Rcpp,sourceCpp)
 importFrom(data.table,":=")
