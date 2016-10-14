@@ -1,4 +1,4 @@
-### getAdmLimits.R ---
+### dpp.R ---
 #----------------------------------------------------------------------
 ## author: Helene Charlotte Rytgaard
 ## created: October 14 2016
