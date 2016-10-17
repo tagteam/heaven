@@ -37,7 +37,7 @@ print.dpp <- function(dpp) {
     drugs = lapply(dpp$drugs, function(x) x$atc)
     cat("Calculations for treatment(s):", "\n", 
         paste(paste0(names(drugs), ":"),
-              sapply(drugs, function(x) paste(x, collapse=", ")), "\n"))
+              sapply(drugs, function(x) paste(x, collapse = ", ")), "\n"))
     cat("\n")
     doses = lapply(dpp$drugs, function(x) x$doses)
     cat("with corresponding dosis values:", "\n")
@@ -47,8 +47,10 @@ print.dpp <- function(dpp) {
   if (length(dpp$N) > 0)
     cat("Using N =", dpp$N, "prescriptions back in time", "\n")
   if (length(dpp$period) > 1)
-    cat("Only interested in prescriptions between", dpp$periode[1], "and", dpp$periode[2], "\n")
+    cat("Only interested in prescriptions between", 
+        paste(sapply(d$period, function(x) paste(gsub("-", "/", x), collapse = "-")), collapse = " and "))  
   cat("\n")
 } 
+
 
 
