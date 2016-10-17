@@ -17,10 +17,6 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drug` <-
-  function(x, ...) UseMethod("drug")
-
-##' @export
 `drug<-` <-
   function(x, ..., value) UseMethod("drug<-")
 
