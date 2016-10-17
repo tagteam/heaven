@@ -20,6 +20,7 @@
 `updatedb` <-
   function(x, ...) UseMethod("updatedb")
 
+##' @export
 `updatedb<-` <- function(dpp, var, add = FALSE, value) {
   
   varname <- deparse(substitute(var))

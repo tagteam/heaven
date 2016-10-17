@@ -28,12 +28,13 @@ dpp <- function(...) {
   out
 }
 
+##' @export
 print.dpp <- function(dpp) {
   cat("preprocessing object", "\n")
   cat("-----------------", "\n")
   cat("\n")
   if (length(dpp$drugs) > 0) {
-    drugs = lapply(dpp$drugs, function(x) x$drugs)
+    drugs = lapply(dpp$drugs, function(x) x$atc)
     cat("Calculations for treatment(s):", "\n", 
         paste(paste0(names(drugs), ":"),
               sapply(drugs, function(x) paste(x, collapse=", ")), "\n"))
