@@ -4,28 +4,34 @@
 \alias{getAdmLimits}
 \title{Thomas's first R-version of the sas code from hell}
 \usage{
-getAdmLimits(dt)
+getAdmLimits(dt, admtype = 0, pnr = "pnr", inddto = "inddto",
+  uddto = "uddto", pattype = "pattype")
 }
 \arguments{
-\item{dt}{data.table which provides variables: pnr, recno, inddto, uddto, pattype}
+\item{dt}{data.table which provides variables: pnr, recno, inddto, uddto, pattype. The function assumes these variable names that can be changed
+with the function call when appropriate}
 }
 \value{
-nothing. but input data.table is modified such that all intermediate admission records are removed. This means that overlapping admission
-intervals in the input data are combined into one admission.
+The same data.table as for input but with 3 new variables first.inddto, last.uddto and admnum (admission number)
 }
 \description{
-R-version of the sas code from hell.
+Adds first admission date and last discharge date to a sequence of admissions with diagnoses. The expected input data.table is the current standard
+by which diagnoses and admissions are available in Statistics Denmark - a merge between diagnoses and the administrative data. The function is general
+for all diagnoses and the examples show how e.g. the first infarction and the associated "true" admission and discharge ar obtained.
 }
 \details{
 For now pattype is ignored.
 }
 \examples{
-data(samplepop)
-## take a copy to preserve the object samplepop 
-pop=copy(samplepop)
+data(samplediag)
+## take a copy to preserve the object samplepop
+pop=copy(samplediag)
 setDT(pop)
-newpop=getAdmLimits(pop)
+newpop=getAdmLimits(pop,admtype=c(0,1)) # Keep overnight admissions and emergency room admissions
 print(print(newpop))
+#As an example - get first AMI admission with limits
+setkey(newpop,pnr,admnum)
+newpop[grepl('I21',diag)|substr(diag,1,3)=='410',.(AMIdto=min(inddto),first.ind=min(first.inddto),last.ud=min(last.uddto)),by=list(pnr,admnum)][]
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

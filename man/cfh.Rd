@@ -4,7 +4,7 @@
 \alias{cfh}
 \title{Jannik's first R-version of the sas code from hell}
 \usage{
-cfh(dt)
+cfh(diag)
 }
 \arguments{
 \item{dt}{data.frame or data.table which provides variables: pnr, recno, inddto, uddto, pattype}
