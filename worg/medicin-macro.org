@@ -26,25 +26,21 @@ One package of each drug product is defined by the drug strength
 \(\str\) of the smallest unit (e.g., one pill or half a pill) and the
 amount of such units that it contains. For each drug we distinguish
 \(J\ge 1\) different package types according to the different
-strengths: \(\str_1,\dots,\str_J\). For each drug strength \(\str_j\)
+strengths: \(\str_1 <\dots< \str_J\). For each drug strength \(\str_j\)
 the values \(\smin_j\), \(\smax_j\), \(\styp_j\) define the minimal,
 maximal and typical dose per day, respectively. Note that the original
 SAS macro allowed at most 4 different package types. We combine all
 packages purchased on the same date that have the same strength. The
 number of smallest units, \(\smin_j\), of type \(j\) purchased on date
-\(T_k\) is denoted by \(\tilde{n}_{jk}\). Thus, the total amount
+\(T_k\) is denoted by \(n_{jk}\). Thus, the average amount
 \(D_k\) of the drug purchased on date \(T_k\) is given by the formula
 \begin{align*}
-D_k=\frac{1}{c_k} \sum_{j=1}^J\tilde{n}_{jk}\smin_{j} = \sum_{j=1}^J n_{jk} \smin_j,
+D_k=\frac{1}{c_k} \sum_{j=1}^J n_{jk}\smin_{j},
 \end{align*}
 where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
-number of different drug strengths purchased on date \(T_k\). Note
-that \(n_{jk} = \tilde{n}_{jk} \mathbin{/} (c_k)\). \\
+number of different drug strengths purchased on date \(T_k\).  \\
 
-FIXME: does it actually make sense to divide with number of different
-drugs (as done in macro)?\\
-FIXME: this way of defining the dosis does not fit with the
-calculation of dosis sequences...  Figure ref:fig:1 illustrates the
+ Figure ref:fig:1 illustrates the
 data
 
 #+BEGIN_SRC R :results output raw drawer  :exports none :session *R* :cache yes 
@@ -101,10 +97,9 @@ FIXME:
 The aim is to calculate the ends of the exposure periods \(E_k\) and
 for each exposure period the exposure strength per day \(X_k\). The
 calculations of exposure are based on the drug prescription data and
-the hospitalization dates and depend further on the following
-parameters. An integer \(\lag\) defines the number of
-prescription dates back in time to use in the calculations of exposure
-in a given period \periodK.
+the hospitalization dates and depend further on an integer \(\lag\)
+that defines the number of prescription dates back in time to use in
+the calculations of exposure in a given period \periodK.
 
 To express the exposure in period \(\periodK\) we first note that
 based on the total drug purchase on date \(T_k\) the individual can be
@@ -123,63 +118,61 @@ period $k$. For example,
 \begin{align*}
 \bar{D}_{k} = \left( D_{k} ,D_{k-1}, \ldots, D_1\right)
 \end{align*}
-is the history of total drug purchase until and including date \(T_k\).
+is the history of average drug purchase until and including date \(T_k\).
 
 *** Calculating the doses, ${X}_1, \ldots, {X}_{{K}}$
 
 #+BEGIN_SRC latex :export results :eval t
-\begin{align*} 
-&{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
-\\ & \qquad + \, u_{k-1}\, \Big(1\{D_{k-1}=D_{k}\} \, {z}(
-\bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) + 1\{D_{k-1}\ne D_{k}\}\,
-{w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) \Big) \\ & \qquad +
-\,u_{k} \,(1-u_{k-1})\, {w}( \bar{S}_{k}, \bar{D}_{k},
-\bar{{C}}_{k} ).
-\end{align*}
+        The average exposure strength \( X_k\) per day for period \(\periodK\)  is
+        computed as follows.
+        \begin{align*} 
+        &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
+        \\ & \qquad + \, u_{k-1}\, 1\{\tilde{\str}_{k-1}=\tilde{\str}_{k}\} \,\,
+ \text{round} \left(\frac{1}{\tilde{s}^{\min}_k} \, 
+   \frac{
+     \sum_{\ell \in I^{(1)}_k} \,D_\ell}{ \sum_{\ell \in I^{(1)}_k} \,
+      H_\ell} 
+  \right) \, \tilde{s}^{\min}_k
+ \\ & \qquad +
+        \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\tilde{\str}_{k-1}\ne \tilde{\str}_{k}\} \Big)\,
+\Big( m^{1}_k \, \tilde{s}^{\max}_k + m^{0}_k \, \tilde{s}^{\min}_k + 
+(1- m^{1}_k)(1- m^{0}_k) \tilde{s}^*_k\Big).
+        \end{align*}
+        Here, \(\tilde{\str}_k\) is the nearest of the predefined pill strengths not
+        exceeding the average strength computed for a period \(T_k\), that
+        is,
+      \begin{align*}
+        \tilde{\str}_k = \underset{ s \in \lbrace S_1,\ldots, S_J\rbrace}{\max} 
+    \left\lbrace s \le  \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{ j}>0\rbrace\, S_{j} \right\rbrace, 
+      \end{align*}
+and we let  \(\tilde{s}^{\min}_k\), \(\tilde{s}^{\text{max}}_k\) and \(\tilde{s}^*_k\) denote the to minimal, maximal and typical dose corresponding to \(\tilde{\str}_k\). 
+Recall again, that \(c_\ell\) was the number of different drugs
+strengths purchased on date \(T_k\),
+      \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). 
 
-Here, ${z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )$ and
-${w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )$ are
-calculated from the mean dose 
+ Furthermore, we have used
 \begin{align*}
-M^{{z}, {w}}_{jk} = \frac{\sum_{i \in {I}^{z, w}_{k}}n_{\ell j}\smin_j}{\sum_{i \in {I}^{{z}, {w}}_{k}} {C}_\ell},
-\end{align*}
-where
-
+        {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \\
+        &  \min \lbrace \ell : \tilde{\str}_\ell = \cdots = \tilde{\str}_{k}  \rbrace \big), \ldots, k-1 \big\rbrace,
+        \end{align*}
+together with
 \begin{align*}
-{I}^{{w}}_{k} = \big\lbrace \min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
+m^{1}_k = \one \left\lbrace 
+   \frac{
+     \sum_{\ell \in I^{(2)}_k} \,D_\ell}{ \sum_{\ell \in I^{(2)}_k} \,
+      H_\ell} > \tilde{s}^{\max}
+ \right\rbrace, \qquad
+m^{0}_k = \one \left\lbrace 
+   \frac{
+     \sum_{\ell \in I^{(2)}_k} \,D_\ell}{ \sum_{\ell \in I^{(2)}_k} \,
+      H_\ell} < \tilde{s}^{\min}
+ \right\rbrace
 \end{align*}
-and, 
+and
 \begin{align*}
-{I}^{{z}}_{k} = \big\lbrace \max \big( &\min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \\
-&  \min \lbrace \ell : g(s_\ell) = \cdots =g( s_{k})  \rbrace \big), \ldots, k-1 \big\rbrace,
-\end{align*}
-where 
-\begin{align*}
-s_\ell = \frac{1}{c_\ell}  \sum_{j=1}^J \one \lbrace n_{\ell j} > 0\rbrace\, \str_{j}, \quad \text{and} \quad g(x) = \sum_{j=1}^{J-1} \one \lbrace S_{j} \le x<  S_{j+1} \rbrace\, S_{j}, 
-\end{align*}
-according to
- \begin{align*}
-{z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \sum_{j=1}^J \text{round}\,\Big ( M_{jk}^{{z}} \mathbin{/} \smin_{j}\Big) \cdot \smin_{j}, \\
-{w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \frac{1}{c_k}\sum_{j=1}^J\max \Big(\one \lbrace n_{jk} >0\rbrace \, \smin_j, \, \one \lbrace M_{jk}^{{w}} > \smax_{j} \rbrace\, \smax_{j} + \one\lbrace M_{jk}^{{w}} < \smin_{j} \rbrace\, 
- \smin_{j}\\
-& + \one \lbrace \smin_{j} \le M_{jk}^{{w}} \le \smax_{j} \rbrace \,\styp_{j}\Big),
+{I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace.
 \end{align*}
 #+END_SRC
-
-where, again, \(c_k= \sum_{j= 1}^J \one\lbrace n_{jk} > 0\rbrace\) is the number of different drugs purchased on date \(T_k\).\\ 
-
-*** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
-
-\begin{align*}
-{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, (1-u_{k})\, (1-u_{k-1})  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{\styp_k} \right)\bigg) + \\
- \left(1-(1-u_{k})\, (1-u_{k-1}) \right)  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg)\bigg]
-\end{align*}
-
-*** Calculating the leftover dose, ${R}_1,\ldots, {R}_{k}$
-
-\begin{align*}
-{R}_{k} = \Big( D_{k-1} + {R}_{k-1} - {X}_{k-1} \left( {E}_{k-1} - {T}_{k-1} \right) \Big) \, u_{k}.\end{align*}
-
 
 
 * User interface
