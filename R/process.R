@@ -30,8 +30,11 @@
     drugdb = dpp$drugdb
     admdb  = dpp$admdb
   }
+  
+  
+  
 
-  return(admdb)
+  return(drugdb)
 } 
 
 

@@ -26,15 +26,16 @@ One package of each drug product is defined by the drug strength
 \(\str\) of the smallest unit (e.g., one pill or half a pill) and the
 amount of such units that it contains. For each drug we distinguish
 \(J\ge 1\) different package types according to the different
-strengths of their smallest units: \(\str_1,\dots,\str_J\). Note that
+strengths: \(\str_1,\dots,\str_J\). For each drug strength \(\str_j\) the values \(\smin_j\), \(\smax_j\), \(\styp_j\)
+ define the minimal, maximal and typical dose per day, respectively. Note that
 the original SAS macro allowed at most 4 different package types. We
-combine all packages purchased on the same date that share the
-strength of their smallest unit. The number of smallest units of type
+combine all packages purchased on the same date that have the same
+strength. The number of smallest units, \(\smin_j\), of type
 \(j\) purchased on date \(T_k\) is denoted by \(n_{jk}\). Thus, the
 total amount \(D_k\) of the drug purchased on date \(T_k\) is given by
 the formula
 \begin{align*}
-D_k=\sum_{j=1}^J n_{jk}\str_{j}.
+D_k=\sum_{j=1}^J n_{jk}\smin_{j} = \sum_{j=1}^J \tilde{n}_{jk} \str_j.
 \end{align*}
 
 Figure ref:fig:1 illustrates the data
@@ -43,16 +44,23 @@ Figure ref:fig:1 illustrates the data
 if (system("echo $USER",intern=TRUE)=="tag")
     setwd("~/research/SoftWare/heaven/worg/")
 else
-    setwd("helene/s/path/")
+    setwd("p:/HELY/medicin-macro/heaven/worg/")
 #+END_SRC
+
+#+RESULTS[<2016-10-17 16:50:14> 0862612a285251181b55a1c4c66caec26359f50d]:
+:RESULTS:
+ Error in system("echo $USER", intern = TRUE) : 'echo' not found
+Error: unexpected 'else' in "else"
+:END:
 
 #+BEGIN_SRC R :results graphics :file "./drug-data.png" :exports none :session *R* :cache yes 
 plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="")
 segments(x0=30,x1=50,y0=10,y1=10,lwd=3)
 #+END_SRC
 
-#+RESULTS[<2016-10-17 14:03:52> c2974bc2d4fc89b03030f748a2618d30b3bb3561]:
+#+RESULTS[<2016-10-17 16:47:59> 48854c356af0ca07dbf4d5ef0fd83efe8cba1a44]:
 [[file:./drug-data.png]]
+
 
 #+LABEL: fig:1
 #+ATTR_LATEX: :width 0.7\textwidth
@@ -71,8 +79,8 @@ ${R}_1,\ldots, {R}_{{Q}}$.
 We compute the number of days hospitalized in the period \(\periodK\)
 as:
 \begin{align*} 
-{A}_{k} &= \sum_{q=1}^{{Q}} \max \left( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)
-\right).
+{A}_{k} &= \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)
+\big).
 \intertext{Accordingly the number of non-hospitalized days in \(\periodK\) is:}
 C_k &= \left({T}_{k+1} - {T}_{k}\right) - {A}_{k}.
 \end{align*}
@@ -87,9 +95,7 @@ The aim is to calculate the ends of the exposure periods \(E_k\) and
 for each exposure period the exposure strength per day \(X_k\). The
 calculations of exposure are based on the drug prescription data and
 the hospitalization dates and depend further on the following
-parameters. For each drug strength \(\str_j\) the values \(\smin_j,
-\smax_j, \styp_j\) define the minimal, maximal and typical dose per
-day, respectively. An integer \(\lag\) defines the number of
+parameters. An integer \(\lag\) defines the number of
 prescription dates back in time to use in the calculations of exposure
 in a given period \periodK.
 
@@ -98,15 +104,15 @@ based on the total drug purchase on date \(T_k\) the individual can be
 exposed at most \(n_k=\sum_{j=1}^J n_{jk}\) days. 
 
 FIXME: would it not be more logical to use \(\tilde n_k = n_{jk}
-\frac{S_j}{\smin_j}\) instead of \(n_k\)?
+\frac{S_j}{\smin_j}\) instead of \(n_k\)? Helene: Not relevant any longer.
 
 
 We use the following notation to indicate if the maximal number of
 exposure days exceeds the non-hospitalized days in period \periodK:
 \begin{align*} 
 u_{k} = \begin{cases}
-0, & n_{jk} \le C_k\\
-1, & n_{jk} > C_k
+0, & n_{k} \le C_k\\
+1, & n_{k} > C_k
 \end{cases}.
 \end{align*}
 We use $\bar{Y}_{k}$ to denote the history of a variable $Y$ up to
@@ -120,12 +126,13 @@ is the history of total drug purchase until and including date \(T_k\).
 
 HELENE: we need to adapt the following formula to the new notations.
 
+#+BEGIN_SRC latex
 \begin{align*} 
 &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, d_{k}^*
 \\ & \qquad + \, u_{k-1}\, \Big(1\{D_{k-1}=D_{k}\} \, {z}(
-\bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) + (1\{D_{k-1}\ne D_{k}\})\,
+\bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) + 1\{D_{k-1}\ne D_{k}\}\,
 {w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) \Big) \\ & \qquad +
-\,u_{k} \,(1-u((D_{k-1}))\, {w}( \bar{S}_{k}, \bar{D}_{k},
+\,u_{k} \,(1-u_{k-1})\, {w}( \bar{S}_{k}, \bar{D}_{k},
 \bar{{C}}_{k} ).
 \end{align*}
 
@@ -133,7 +140,7 @@ Here, ${z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )$ and
 ${w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )$ are
 calculated from the mean dose 
 \begin{align*}
-M^{{z}, {w}}_k = \frac{\sum_{i \in {I}^{z, w}_{k}}D_i}{\sum_{i \in {I}^{{z}, {w}}_{k}} {C}_i},
+M^{{z}, {w}}_{jk} = \frac{\sum_{i \in {I}^{z, w}_{k}}n_{ij}\smin_j}{\sum_{i \in {I}^{{z}, {w}}_{k}} {C}_i},
 \end{align*}
 where
 
@@ -142,15 +149,18 @@ where
 \end{align*}
 and, 
 \begin{align*}
-{I}^{{z}}_{k} = \big\lbrace \max ( &\min \lbrace i : u(D_i) = \cdots = u_{k-1} =1 \rbrace, \\
-&  \min \lbrace i : S_i = \cdots = S_{k}  \rbrace, \ldots, k-1\big\rbrace), \ldots, k-1 \big\rbrace,
+{I}^{{z}}_{k} = \big\lbrace \max \big( &\min \lbrace i : u(D_i) = \cdots = u_{k-1} =1 \rbrace, \\
+&  \min \lbrace i : S_i = \cdots = S_{k}  \rbrace \big), \ldots, k-1 \big\rbrace,
 \end{align*}
 according to
  \begin{align*}
-{z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \max\Big( d_{k}^0, \, \min \left( d_{k}^1, \, 
-\text{round} ( M_{k}^{{z}} \mathbin{/} d_{k}^0) \cdot d_{k}^0\right) \Big), \\
-{w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \one \lbrace M_{k}^{{w}} > d_{k}^1 \rbrace\, d_{k}^1 + \one\lbrace M_{k}^{{w}} < d_{k}^0 \rbrace\,  d_{k}^0 + \one \lbrace d_{k}^0 \le M_{k}^{{w}} \le d_{k}^1 \rbrace \, d_{k}^*.
+{z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \frac{\sum_{j=1}^J \text{round}\,\Big ( M_{jk}^{{z}} \mathbin{/} \smin_{j}\Big) \cdot \smin_{j}}{\sum_{j=1}^J \one \lbrace n_{jk} > 0\rbrace}, \\
+{w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \frac{\sum_{j=1}^J\Big( \one \lbrace M_{jk}^{{w}} > \smax_{j} \rbrace\, \smax_{j} + \one\lbrace M_{jk}^{{w}} < \smin_{j} \rbrace\, 
+ \smin_{j} + \one \lbrace \smin_{j} \le M_{jk}^{{w}} \le \smax_{j} \rbrace \,\styp_{j}\Big)}{\sum_{j=1}^J \one \lbrace n_{jk} > 0\rbrace}.
 \end{align*}
+#+END_SRC
+
+FIXME: the z formular. In macro, it can never be zero, but will always be bigger than \(\smin\)... but here, which \(\smin_j\)?
 
 *** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
 
