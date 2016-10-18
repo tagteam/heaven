@@ -1,22 +1,117 @@
-* Introduction
+% Created 2016-10-18 ti 11:33
+\documentclass{article}
+               \usepackage{listings}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage[T1]{fontenc}
+\usepackage{natbib}
+               \usepackage{authblk}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\one}{1}
+\newcommand{\VV}{\mathbb{V}}
+\newcommand{\PP}{\mbox{P}}
+\newcommand{\norm}{\mathcal{N}}
+\newcommand{\lag}{N}
+\newcommand{\str}{S}
+\newcommand{\smin}{s^{\min}}
+\newcommand{\smax}{s^{\max}}
+\newcommand{\styp}{s^{*}}
+\newcommand{\period}{[a,b]}
+\newcommand{\periodK}{\ensuremath{[T_k,T_{k+1})}}
+\newcommand{\K}{K}
+\newcommand{\kk}{k}
+\newcommand{\D}{D}
+\newcommand{\B}{B}
+\newcommand{\E}{E}
+\newcommand{\XX}{X}
+\newcommand{\LL}{L}
+\newcommand{\QQ}{Q}
+\newcommand{\Ru}{R}
+\newcommand{\GG}{G}
+\newcommand{\T}{T}
+\newcommand{\st}{s}
+\newcommand{\Nn}{N}
+\newcommand{\A}{A}
+\newcommand{\C}{C}
+\newcommand{\uu}{u}
+\newcommand{\vv}{v}
+\newcommand{\zz}{z}
+\newcommand{\ww}{w}
+\newcommand{\M}{M}
+\newcommand{\I}{I}
+\newcommand{\RR}{R}
+
+\lstset{
+keywordstyle=\color{blue},
+commentstyle=\color{red},stringstyle=\color[rgb]{0,.5,0},
+literate={~}{$\sim$}{1},
+basicstyle=\ttfamily\small,
+columns=fullflexible,
+breaklines=true,
+breakatwhitespace=false,
+numbers=left,
+numberstyle=\ttfamily\tiny\color{gray},
+stepnumber=1,
+numbersep=10pt,
+backgroundcolor=\color{white},
+tabsize=4,
+keepspaces=true,
+showspaces=false,
+showstringspaces=false,
+xleftmargin=.23in,
+frame=single,
+basewidth={0.5em,0.4em},
+}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Helene Charlotte Rytgaard and Thomas Alexander Gerds}
+\date{\today}
+\title{From \texttt{\%x\_recepter} to \texttt{Rcpp}: a new user interface and an efficient algorithm}
+\hypersetup{
+ pdfauthor={Helene Charlotte Rytgaard and Thomas Alexander Gerds},
+ pdftitle={From \texttt{\%x\_recepter} to \texttt{Rcpp}: a new user interface and an efficient algorithm},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.1.1 (Org mode 8.3.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\section{Introduction}
+\label{sec:orgheadline1}
 
 The Danish National Prescription Registry (NCBI) provides
 individual-level data on all prescription drugs sold in Danish
-community pharmacies since 1994 citep:kildemoes2011danish. Effects and
+community pharmacies since 1994 \citep{kildemoes2011danish}. Effects and
 side effects of drugs can be assessed in a Danish nation wide registry
 studies. For this the prescription data are linked to the cause of
 death register and other Danish registries
-citep:thygesen2011introduction.
+\citep{thygesen2011introduction}.
 
 This document describes a complex algorithm for the computation of
 drug exposure strength and length relative to a prespecified study
 period \period. Note that the start of the study period has to be
 after the start of the registry.
 
-* Drug prescription data
+\section{Drug prescription data}
+\label{sec:orgheadline2}
 
 We describe the data of a single person who has purchased the drug of
-interest at ${K}$ different dates in the study period \period. The
+interest at \({K}\) different dates in the study period \period. The
 setup can easily be generalized to multiple individuals. The set of
 ordered drug purchase dates for one individual is denoted as
 \begin{equation*}
@@ -39,44 +134,25 @@ D_k=\frac{1}{\# J_k} \sum_{j=1}^J\tilde{n}_{jk}\smin_{j} = \sum_{j=1}^J n_{jk} \
 \end{align*}
 where \(\# J_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the number of different drugs purchased on date \(T_k\). Note that \(n_{jk} = \tilde{n}_{jk} \mathbin{/} (\# J_k)\). \\
 FIXME: does it actually  make sense to divide with number of different drugs (as done in macro)?\\
-FIXME: this way of defining the dosis does not fit with the calculation of dosis sequences... 
-Figure ref:fig:1 illustrates the data
+FIXME: this way of defining the dosis does not fit with the calculation of dosis sequences\ldots{} 
+Figure \ref{fig:1} illustrates the data
 
-#+BEGIN_SRC R :results output raw drawer  :exports none :session *R* :cache yes 
-if (system("echo $USER",intern=TRUE)=="tag")
-    setwd("~/research/SoftWare/heaven/worg/")
-else
-    setwd("p:/HELY/medicin-macro/heaven/worg/")
-#+END_SRC
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{./drug-data.png}
+\caption{\label{fig:1}
+label til figure}
+\end{figure}
 
-#+RESULTS[<2016-10-17 16:50:14> 0862612a285251181b55a1c4c66caec26359f50d]:
-:RESULTS:
- Error in system("echo $USER", intern = TRUE) : 'echo' not found
-Error: unexpected 'else' in "else"
-:END:
-
-#+BEGIN_SRC R :results graphics :file "./drug-data.png" :exports none :session *R* :cache yes 
-plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="")
-segments(x0=30,x1=50,y0=10,y1=10,lwd=3)
-#+END_SRC
-
-#+RESULTS[<2016-10-17 16:47:59> 48854c356af0ca07dbf4d5ef0fd83efe8cba1a44]:
-[[file:./drug-data.png]]
-
-
-#+LABEL: fig:1
-#+ATTR_LATEX: :width 0.7\textwidth
-#+CAPTION: label til figure
-[[file:./drug-data.png]]
-
-* Hospital admission data
+\section{Hospital admission data}
+\label{sec:orgheadline3}
 
 Hospitals usually deliver drugs for their patients. It is therefore
 hensigtsmaessig to take into account periods of hospitalization in the
 calculation of exposure lengths. For a single individual we define up
 to \(Q\) periods of hospitalization by the admission dates
-${L}_1,\ldots, {L}_{{Q}}$ and the corresponding discharge dates
-${R}_1,\ldots, {R}_{{Q}}$. 
+\({L}_1,\ldots, {L}_{{Q}}\) and the corresponding discharge dates
+\({R}_1,\ldots, {R}_{{Q}}\). 
 
 We compute the number of days hospitalized in the period \(\periodK\)
 as:
@@ -88,10 +164,13 @@ C_k &= \left({T}_{k+1} - {T}_{k}\right) - {A}_{k}.
 \end{align*}
 
 FIXME: 
-- need to limit to the study period \period?
-- is the day \(T_{k+1}\) included in \periodK or not?}[3cm]
+\begin{itemize}
+\item need to limit to the study period \period?
+\item is the day \(T_{k+1}\) included in \periodK or not?\}[3cm]
+\end{itemize}
 
-* Exposure strength and exposure lengths
+\section{Exposure strength and exposure lengths}
+\label{sec:orgheadline7}
 
 The aim is to calculate the ends of the exposure periods \(E_k\) and
 for each exposure period the exposure strength per day \(X_k\). The
@@ -117,18 +196,18 @@ u_{k} = \begin{cases}
 1, & n_{k} > C_k
 \end{cases}.
 \end{align*}
-We use $\bar{Y}_{k}$ to denote the history of a variable $Y$ up to
-period $k$. For example,
+We use \(\bar{Y}_{k}\) to denote the history of a variable \(Y\) up to
+period \(k\). For example,
 \begin{align*}
 \bar{D}_{k} = \left( D_{k} ,D_{k-1}, \ldots, D_1\right)
 \end{align*}
 is the history of total drug purchase until and including date \(T_k\).
 
-*** Calculating the doses, ${X}_1, \ldots, {X}_{{K}}$
+\subsubsection{Calculating the doses, \({X}_1, \ldots, {X}_{{K}}\)}
+\label{sec:orgheadline4}
 
 HELENE: we need to adapt the following formula to the new notations.
 
-#+BEGIN_SRC latex :export results :eval t
 \begin{align*} 
 &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, d_{k}^*
 \\ & \qquad + \, u_{k-1}\, \Big(1\{D_{k-1}=D_{k}\} \, {z}(
@@ -156,7 +235,7 @@ and,
 \end{align*}
 where 
 \begin{align*}
-s_i = \frac{1}{\# J_i}  \sum_{j=1}^J \one \lbrace n_{ij} > 0\rbrace\, \str_{j}, \quad \text{and} \quad g(x) = \sum_{j=1}^{J-1} \one \lbrace S_{j} \le x<  S_{j+1} \rbrace\, S_{j}, 
+s_i = \frac{1}{\# J_i}  \sum_{j=1}^J \one \lbrace n_{ij} > 0\rbrace \str_{j}, \quad \text{and} \quad g(x) = \sum_{j=1}^{J-1} \one \lbrace S_{j} \le x<  S_{j+1} \rbrace S_{j}, 
 \end{align*}
 according to
  \begin{align*}
@@ -165,99 +244,42 @@ according to
  \smin_{j}\\
 & + \one \lbrace \smin_{j} \le M_{jk}^{{w}} \le \smax_{j} \rbrace \,\styp_{j}\Big),
 \end{align*}
-#+END_SRC
 
-where, again, \(\#J_k= \sum_{j= 1}^J \one\lbrace n_{jk} > 0\rbrace\) is the number of different drugs purchased on date \(T_k\).\\ 
+where, again, \(\#J_k= \sum_{j= 1}^J \one\lbrace n_{jk} > 0\rbrace\) is the number of different drugs purchased on date \(T_k\).\\
 
 
-*** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
+\subsubsection{Calculating the end dates, \({E}_1,\ldots, {E}_{k}\)}
+\label{sec:orgheadline5}
 
 \begin{align*}
 {E}_{k}= \min \bigg[ {T}_{k+1}-1, \, (1-u_{k})\, (1-u_{k-1})  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{d_{k}^*} \right)\bigg) + \\
  \left(1-(1-u_{k})\, (1-u_{k-1}) \right)  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg)\bigg]
 \end{align*}
 
-*** Calculating the leftover dose, ${R}_1,\ldots, {R}_{k}$
+\subsubsection{Calculating the leftover dose, \({R}_1,\ldots, {R}_{k}\)}
+\label{sec:orgheadline6}
 
 \begin{align*}
 {R}_{k} = \Big( D_{k-1} + {R}_{k-1} - {X}_{k-1} \left( {E}_{k-1} - {T}_{k-1} \right) \Big) \, u_{k}.\end{align*}
 
 
 
-* User interface
+\section{User interface}
+\label{sec:orgheadline9}
 
-#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
-obj <- dpp()
-period(obj) <- as.Date("1995-01-01","2011-01-01")
-drugdb(obj,pnr~eksd) <- recipe.db
-admdb(obj,pnr~inddato+uddato) <- lpr.db
-drug(obj,~painkiller) <- atc("B097BN3V")
-dosis(obj,~painkiller) <- package(value,default=75,min=75,max=150)
-dosis(obj,~painkiller) <- package(value,default=100,min=400,max=100)
-process(obj,id=17)
-#+END_SRC
-
-
-** Output
+\subsection{Output}
+\label{sec:orgheadline8}
 
 The output consists of:
 
--  ${B}_1, \ldots, B_{{K}}$: Starting dates for each prescription
-   period.
--  ${E}_1, \ldots, E_{{K}}$: End dates for each prescription period.
--  ${X}_1, \ldots, {X}_{{K}}$: Calculated dose for each prescription
-   period.
+\begin{itemize}
+\item \({B}_1, \ldots, B_{{K}}\): Starting dates for each prescription
+period.
+\item \({E}_1, \ldots, E_{{K}}\): End dates for each prescription period.
+\item \({X}_1, \ldots, {X}_{{K}}\): Calculated dose for each prescription
+period.
+\end{itemize}
 
-bibliographystyle:chicago
-bibliography:heaven.bib
-
-
-
-
-* HEADER :noexport:
-
-#+TITLE: From \texttt{\%x\_recepter} to \texttt{Rcpp}: a new user interface and an efficient algorithm
-#+AUTHOR: Helene Charlotte Rytgaard and Thomas Alexander Gerds 
-#+LANGUAGE:  en
-#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc author:t
-#+LaTeX_CLASS: org-article
-#+LaTeX_HEADER:\usepackage{authblk}
-# #+LaTeX_HEADER:\author{Helene Charlotte Rytgaard and Thomas Alexander Gerds}
-#+LaTeX_HEADER:\newcommand{\EE}{\mathbb{E}}
-#+LaTeX_HEADER:\newcommand{\one}{1}
-#+LaTeX_HEADER:\newcommand{\VV}{\mathbb{V}}
-#+LaTeX_HEADER:\newcommand{\PP}{\mbox{P}}
-#+LaTeX_HEADER:\newcommand{\norm}{\mathcal{N}}
-#+LaTeX_HEADER:\newcommand{\lag}{N}
-#+LaTeX_HEADER:\newcommand{\str}{S}
-#+LaTeX_HEADER:\newcommand{\smin}{s^{\min}}
-#+LaTeX_HEADER:\newcommand{\smax}{s^{\max}}
-#+LaTeX_HEADER:\newcommand{\styp}{s^{*}}
-#+LaTeX_HEADER:\newcommand{\period}{[a,b]}
-#+LaTeX_HEADER:\newcommand{\periodK}{\ensuremath{[T_k,T_{k+1})}}
-#+LaTeX_HEADER:\newcommand{\K}{K}
-#+LaTeX_HEADER:\newcommand{\kk}{k}
-#+LaTeX_HEADER:\newcommand{\D}{D}
-#+LaTeX_HEADER:\newcommand{\B}{B}
-#+LaTeX_HEADER:\newcommand{\E}{E}
-#+LaTeX_HEADER:\newcommand{\XX}{X}
-#+LaTeX_HEADER:\newcommand{\LL}{L}
-#+LaTeX_HEADER:\newcommand{\QQ}{Q}
-#+LaTeX_HEADER:\newcommand{\Ru}{R}
-#+LaTeX_HEADER:\newcommand{\GG}{G}
-#+LaTeX_HEADER:\newcommand{\T}{T}
-#+LaTeX_HEADER:\newcommand{\st}{s}
-#+LaTeX_HEADER:\newcommand{\Nn}{N}
-#+LaTeX_HEADER:\newcommand{\A}{A}
-#+LaTeX_HEADER:\newcommand{\C}{C}
-#+LaTeX_HEADER:\newcommand{\uu}{u}
-#+LaTeX_HEADER:\newcommand{\vv}{v}
-#+LaTeX_HEADER:\newcommand{\zz}{z}
-#+LaTeX_HEADER:\newcommand{\ww}{w}
-#+LaTeX_HEADER:\newcommand{\M}{M}
-#+LaTeX_HEADER:\newcommand{\I}{I}
-#+LaTeX_HEADER:\newcommand{\RR}{R}
-# #+LaTeX_HEADER:\affil{Department of Biostatistics, University of Copenhagen, Copenhagen, Denmark}
-#+PROPERTY: header-args session *R*
-#+PROPERTY: header-args cache yes
+\bibliographystyle{chicago}
+\bibliography{heaven}
+\end{document}
