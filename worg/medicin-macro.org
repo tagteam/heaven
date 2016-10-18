@@ -26,21 +26,26 @@ One package of each drug product is defined by the drug strength
 \(\str\) of the smallest unit (e.g., one pill or half a pill) and the
 amount of such units that it contains. For each drug we distinguish
 \(J\ge 1\) different package types according to the different
-strengths: \(\str_1,\dots,\str_J\). For each drug strength \(\str_j\) the values \(\smin_j\), \(\smax_j\), \(\styp_j\)
- define the minimal, maximal and typical dose per day, respectively. Note that
-the original SAS macro allowed at most 4 different package types. We
-combine all packages purchased on the same date that have the same
-strength. The number of smallest units, \(\smin_j\), of type
-\(j\) purchased on date \(T_k\) is denoted by \(\tilde{n}_{jk}\). Thus, the
-total amount \(D_k\) of the drug purchased on date \(T_k\) is given by
-the formula
+strengths: \(\str_1,\dots,\str_J\). For each drug strength \(\str_j\)
+the values \(\smin_j\), \(\smax_j\), \(\styp_j\) define the minimal,
+maximal and typical dose per day, respectively. Note that the original
+SAS macro allowed at most 4 different package types. We combine all
+packages purchased on the same date that have the same strength. The
+number of smallest units, \(\smin_j\), of type \(j\) purchased on date
+\(T_k\) is denoted by \(\tilde{n}_{jk}\). Thus, the total amount
+\(D_k\) of the drug purchased on date \(T_k\) is given by the formula
 \begin{align*}
-D_k=\frac{1}{\# J_k} \sum_{j=1}^J\tilde{n}_{jk}\smin_{j} = \sum_{j=1}^J n_{jk} \smin_j,
+D_k=\frac{1}{c_k} \sum_{j=1}^J\tilde{n}_{jk}\smin_{j} = \sum_{j=1}^J n_{jk} \smin_j,
 \end{align*}
-where \(\# J_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the number of different drugs purchased on date \(T_k\). Note that \(n_{jk} = \tilde{n}_{jk} \mathbin{/} (\# J_k)\). \\
-FIXME: does it actually  make sense to divide with number of different drugs (as done in macro)?\\
-FIXME: this way of defining the dosis does not fit with the calculation of dosis sequences... 
-Figure ref:fig:1 illustrates the data
+where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
+number of different drug strengths purchased on date \(T_k\). Note
+that \(n_{jk} = \tilde{n}_{jk} \mathbin{/} (c_k)\). \\
+
+FIXME: does it actually make sense to divide with number of different
+drugs (as done in macro)?\\
+FIXME: this way of defining the dosis does not fit with the
+calculation of dosis sequences...  Figure ref:fig:1 illustrates the
+data
 
 #+BEGIN_SRC R :results output raw drawer  :exports none :session *R* :cache yes 
 if (system("echo $USER",intern=TRUE)=="tag")
@@ -84,7 +89,7 @@ as:
 {A}_{k} &= \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)
 \big).
 \intertext{Accordingly the number of non-hospitalized days in \(\periodK\) is:}
-C_k &= \left({T}_{k+1} - {T}_{k}\right) - {A}_{k}.
+H_k &= \left({T}_{k+1} - {T}_{k}\right) - {A}_{k}.
 \end{align*}
 
 FIXME: 
@@ -105,16 +110,12 @@ To express the exposure in period \(\periodK\) we first note that
 based on the total drug purchase on date \(T_k\) the individual can be
 exposed at most \(n_k=\sum_{j=1}^J n_{jk}\) days. 
 
-FIXME: would it not be more logical to use \(\tilde n_k = n_{jk}
-\frac{S_j}{\smin_j}\) instead of \(n_k\)? Helene: Not relevant any longer.
-
-
 We use the following notation to indicate if the maximal number of
 exposure days exceeds the non-hospitalized days in period \periodK:
 \begin{align*} 
 u_{k} = \begin{cases}
-0, & n_{k} \le C_k\\
-1, & n_{k} > C_k
+0, & n_{k} \le H_k\\
+1, & n_{k} > H_k
 \end{cases}.
 \end{align*}
 We use $\bar{Y}_{k}$ to denote the history of a variable $Y$ up to
@@ -126,11 +127,9 @@ is the history of total drug purchase until and including date \(T_k\).
 
 *** Calculating the doses, ${X}_1, \ldots, {X}_{{K}}$
 
-HELENE: we need to adapt the following formula to the new notations.
-
 #+BEGIN_SRC latex :export results :eval t
 \begin{align*} 
-&{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, d_{k}^*
+&{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
 \\ & \qquad + \, u_{k-1}\, \Big(1\{D_{k-1}=D_{k}\} \, {z}(
 \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) + 1\{D_{k-1}\ne D_{k}\}\,
 {w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} ) \Big) \\ & \qquad +
@@ -142,38 +141,37 @@ Here, ${z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )$ and
 ${w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )$ are
 calculated from the mean dose 
 \begin{align*}
-M^{{z}, {w}}_{jk} = \frac{\sum_{i \in {I}^{z, w}_{k}}n_{ij}\smin_j}{\sum_{i \in {I}^{{z}, {w}}_{k}} {C}_i},
+M^{{z}, {w}}_{jk} = \frac{\sum_{i \in {I}^{z, w}_{k}}n_{\ell j}\smin_j}{\sum_{i \in {I}^{{z}, {w}}_{k}} {C}_\ell},
 \end{align*}
 where
 
 \begin{align*}
-{I}^{{w}}_{k} = \big\lbrace \min \lbrace i : u_i = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
+{I}^{{w}}_{k} = \big\lbrace \min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
 \end{align*}
 and, 
 \begin{align*}
-{I}^{{z}}_{k} = \big\lbrace \max \big( &\min \lbrace i : u_i = \cdots = u_{k-1} =1 \rbrace, \\
-&  \min \lbrace i : g( s_i) = \cdots =g( s_{k})  \rbrace \big), \ldots, k-1 \big\rbrace,
+{I}^{{z}}_{k} = \big\lbrace \max \big( &\min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \\
+&  \min \lbrace \ell : g(s_\ell) = \cdots =g( s_{k})  \rbrace \big), \ldots, k-1 \big\rbrace,
 \end{align*}
 where 
 \begin{align*}
-s_i = \frac{1}{\# J_i}  \sum_{j=1}^J \one \lbrace n_{ij} > 0\rbrace\, \str_{j}, \quad \text{and} \quad g(x) = \sum_{j=1}^{J-1} \one \lbrace S_{j} \le x<  S_{j+1} \rbrace\, S_{j}, 
+s_\ell = \frac{1}{c_\ell}  \sum_{j=1}^J \one \lbrace n_{\ell j} > 0\rbrace\, \str_{j}, \quad \text{and} \quad g(x) = \sum_{j=1}^{J-1} \one \lbrace S_{j} \le x<  S_{j+1} \rbrace\, S_{j}, 
 \end{align*}
 according to
  \begin{align*}
 {z}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \sum_{j=1}^J \text{round}\,\Big ( M_{jk}^{{z}} \mathbin{/} \smin_{j}\Big) \cdot \smin_{j}, \\
-{w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \frac{1}{\#J_k}\sum_{j=1}^J\max \Big(\one \lbrace n_{jk} >0\rbrace \, \smin_j, \, \one \lbrace M_{jk}^{{w}} > \smax_{j} \rbrace\, \smax_{j} + \one\lbrace M_{jk}^{{w}} < \smin_{j} \rbrace\, 
+{w}( \bar{S}_{k}, \bar{D}_{k}, \bar{{C}}_{k} )& = \frac{1}{c_k}\sum_{j=1}^J\max \Big(\one \lbrace n_{jk} >0\rbrace \, \smin_j, \, \one \lbrace M_{jk}^{{w}} > \smax_{j} \rbrace\, \smax_{j} + \one\lbrace M_{jk}^{{w}} < \smin_{j} \rbrace\, 
  \smin_{j}\\
 & + \one \lbrace \smin_{j} \le M_{jk}^{{w}} \le \smax_{j} \rbrace \,\styp_{j}\Big),
 \end{align*}
 #+END_SRC
 
-where, again, \(\#J_k= \sum_{j= 1}^J \one\lbrace n_{jk} > 0\rbrace\) is the number of different drugs purchased on date \(T_k\).\\ 
-
+where, again, \(c_k= \sum_{j= 1}^J \one\lbrace n_{jk} > 0\rbrace\) is the number of different drugs purchased on date \(T_k\).\\ 
 
 *** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
 
 \begin{align*}
-{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, (1-u_{k})\, (1-u_{k-1})  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{d_{k}^*} \right)\bigg) + \\
+{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, (1-u_{k})\, (1-u_{k-1})  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{\styp_k} \right)\bigg) + \\
  \left(1-(1-u_{k})\, (1-u_{k-1}) \right)  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg)\bigg]
 \end{align*}
 
