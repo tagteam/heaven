@@ -1,9 +1,0 @@
-\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Drug prescription data}{}% 2
-\BOOKMARK [1][-]{section.3}{Hospital admission data}{}% 3
-\BOOKMARK [1][-]{section.4}{Exposure strength and exposure lengths}{}% 4
-\BOOKMARK [2][-]{subsubsection.4.0.1}{Calculating the doses, X1, \203, XK}{section.4}% 5
-\BOOKMARK [3][-]{subsubsection.4.0.2}{Calculating the end dates, E1,\203, Ek}{subsubsection.4.0.1}% 6
-\BOOKMARK [3][-]{subsubsection.4.0.3}{Calculating the leftover dose, R1,\203, Rk}{subsubsection.4.0.1}% 7
-\BOOKMARK [1][-]{section.5}{User interface}{}% 8
-\BOOKMARK [2][-]{subsection.5.1}{Output}{section.5}% 9
