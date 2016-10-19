@@ -162,6 +162,8 @@ period $k$. For example,
 \end{align*}
 is the history of average drug purchase until and including date \(T_k\).
 
+
+
 *** Calculating the doses, ${X}_1, \ldots, {X}_{{K}}$
 
 #+BEGIN_SRC latex :export results :eval t
@@ -179,6 +181,20 @@ is the history of average drug purchase until and including date \(T_k\).
         \end{align*}
 
 #+END_SRC
+
+
+*** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
+
+\begin{align*}
+{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, (1-u_{k})\, (1-u_{k-1})  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{\styp_k} \right)\bigg) + \\
+ \left(1-(1-u_{k})\, (1-u_{k-1}) \right)  \, \bigg( {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg)\bigg]
+\end{align*}
+
+*** Calculating the leftover dose, ${R}_1,\ldots, {R}_{k}$
+
+\begin{align*}
+{R}_{k} = \Big( D_{k-1} + {R}_{k-1} - {X}_{k-1} \left( {E}_{k-1} - {T}_{k-1} \right) \Big) \, u_{k}.\end{align*}
+
 
 
 * User interface
