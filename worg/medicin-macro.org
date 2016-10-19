@@ -120,30 +120,32 @@ Furthermore, we use  \(\str_{j(k)}\) to denote the nearest of the predefined pil
       \begin{align*}
        j(k) = \max
     \left\lbrace 
- \ell \in \lbrace 1, \ldots, J\rbrace \, :\,  S_\ell \le  \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j} \right\rbrace. 
+ \ell \in \lbrace 1, \ldots, J\rbrace \, :\,  S_\ell \le 
+ \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j}
+ \right\rbrace. 
       \end{align*}
-Recall again, that \(c_\ell\) was the number of different drugs
+where \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
+S_{j}\) is the average strength for period \(T_k\). Recall again, that \(c_k\) was the number of different drugs
 strengths purchased on date \(T_k\),
       \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). \\
 
-
-We define two index sets to be used for calculating an average dose: 
+We distinguish between two periods to be used for calculating an
+average daily  dose, the first being 
 \begin{align*}
-        {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \\
-        &  \min \lbrace \ell : \tilde{\str}_\ell = \cdots = \tilde{\str}_{k}  \rbrace \big), \ldots, k-1 \big\rbrace,
-        \end{align*}
+ {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace \, :\, u_\ell = \cdots =
+ u_{k-1} =1 \rbrace, \\
+ &  \min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace \,:\,\str_{j(\ell)} = \cdots = \str_{j(k)}  \rbrace \big), \ldots, k-1 \big\rbrace,
+  \end{align*}
 
-and
+and the other being
 \begin{align*}
-{I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
+{I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace\, : \,u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
 \end{align*}
-and the average daily dose over the period defined by \(I^{(w)}_k\) is then defined as, 
+and the average daily dose in the period \(I^{(w)}_k\) is then defined as, 
 \begin{align*}
  M^{(w)}_k =   \frac{
-     \sum_{\ell \in I^{(w)}_k} \, D_\ell}{ \sum_{\ell \in I^{(w)}_k} \, H_\ell}, \qquad w = 1, 2, 
+     \sum_{\ell \in I^{(w)}_k} \, D_\ell}{ \sum_{\ell \in I^{(w)}_k} \, H_\ell}, \qquad w = 1, 2. 
 \end{align*}
-where the choice of \(w\in \lbrace 1,2\rbrace\) depends on the dosis sequence before date \(T_k\). 
-
 At last, we define two binary variables to indicate whether the level
 of the calculated average dose for \(w=2\) is below/above the relevant minimal/maximal daily doses, 
 \begin{align*}
@@ -155,30 +157,28 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
 
 
 
-We use $\bar{Y}_{k}$ to denote the history of a variable $Y$ up to
-period $k$. For example,
-\begin{align*}
-\bar{D}_{k} = \left( D_{k} ,D_{k-1}, \ldots, D_1\right)
-\end{align*}
-is the history of average drug purchase until and including date \(T_k\).
-
-
-
 *** Calculating the doses, ${X}_1, \ldots, {X}_{{K}}$
 
 #+BEGIN_SRC latex :export results :eval t
-        The average exposure strength \( X_k\) per day for period \(\periodK\)  is
-        computed as follows.
-        \begin{align*} 
-        &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
-        \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,
-\underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
- p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)}
- \\ & \qquad +
-        \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\str_{j(k)-1}\ne \str_{j(k)}\} \Big)\,
-\Big( v^{\max}_k \, \smax_{j(k)} + v^{\min}_k \, \smin_{j(k)} + 
-(1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
-        \end{align*}
+          The average exposure strength \( X_k\) per day for period \(\periodK\)  is
+          computed as follows.
+          \begin{align*} 
+          &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
+          \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,\left(
+  \underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
+   p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)}
+  \right)
+   \\ & \qquad +
+          \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\str_{j(k)-1}\ne \str_{j(k)}\} \Big)\,
+  \Big( v^{\max}_k \, \smax_{j(k)} + v^{\min}_k \, \smin_{j(k)} + 
+  (1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
+          \end{align*}
+          Note that
+          \(\left( \underset{p \in \mathbb{N}}{\text{argmin}} \left\vert
+              M^{(1)}_k - p\cdot \smin_{j(k)}\right\vert \cdot
+            \smin_{j(k)}\right) \) is the rounding of the average daily
+          dose \( M^{(1)}_k\) to the nearest factor of the relevant
+          minimal dose \(\smin_{j(k)}\). 
 
 #+END_SRC
 
