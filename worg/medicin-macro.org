@@ -197,6 +197,7 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
 
 
 
+test
 * User interface
 
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
@@ -274,3 +275,4 @@ bibliography:heaven.bib
 # #+LaTeX_HEADER:\affil{Department of Biostatistics, University of Copenhagen, Copenhagen, Denmark}
 #+PROPERTY: header-args session *R*
 #+PROPERTY: header-args cache yes
+test
