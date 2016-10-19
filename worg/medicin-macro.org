@@ -197,7 +197,6 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
 
 
 
-test
 * User interface
 
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
