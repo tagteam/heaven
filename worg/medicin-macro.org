@@ -113,6 +113,48 @@ u_{k} = \begin{cases}
 1, & n_{k} > H_k
 \end{cases}.
 \end{align*}
+
+Furthermore, we use  \(\str_{j(k)}\) to denote the nearest of the predefined pill strengths not
+        exceeding the average strength computed for a period \(T_k\), that
+        is, the index \(j(k)\) is defined as, 
+      \begin{align*}
+       j(k) = \max
+    \left\lbrace 
+ \ell \in \lbrace 1, \ldots, J\rbrace \, :\,  S_\ell \le  \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j} \right\rbrace. 
+      \end{align*}
+Recall again, that \(c_\ell\) was the number of different drugs
+strengths purchased on date \(T_k\),
+      \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). \\
+
+
+We define two index sets to be used for calculating an average dose: 
+\begin{align*}
+        {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \\
+        &  \min \lbrace \ell : \tilde{\str}_\ell = \cdots = \tilde{\str}_{k}  \rbrace \big), \ldots, k-1 \big\rbrace,
+        \end{align*}
+
+and
+\begin{align*}
+{I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
+\end{align*}
+and the average daily dose over the period defined by \(I^{(w)}_k\) is then defined as, 
+\begin{align*}
+ M^{(w)}_k =   \frac{
+     \sum_{\ell \in I^{(w)}_k} \, D_\ell}{ \sum_{\ell \in I^{(w)}_k} \, H_\ell}, \qquad w = 1, 2, 
+\end{align*}
+where the choice of \(w\in \lbrace 1,2\rbrace\) depends on the dosis sequence before date \(T_k\). 
+
+At last, we define two binary variables to indicate whether the level
+of the calculated average dose for \(w=2\) is below/above the relevant minimal/maximal daily doses, 
+\begin{align*}
+v^{\max}_k = \one \left\lbrace M^{(2)}_k > \smax_{j(k)}
+ \right\rbrace, \qquad
+v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
+ \right\rbrace.
+\end{align*}
+
+
+
 We use $\bar{Y}_{k}$ to denote the history of a variable $Y$ up to
 period $k$. For example,
 \begin{align*}
@@ -127,51 +169,15 @@ is the history of average drug purchase until and including date \(T_k\).
         computed as follows.
         \begin{align*} 
         &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
-        \\ & \qquad + \, u_{k-1}\, 1\{\tilde{\str}_{k-1}=\tilde{\str}_{k}\} \,\,
- \text{round} \left(\frac{1}{\tilde{s}^{\min}_k} \, 
-   \frac{
-     \sum_{\ell \in I^{(1)}_k} \,D_\ell}{ \sum_{\ell \in I^{(1)}_k} \,
-      H_\ell} 
-  \right) \, \tilde{s}^{\min}_k
+        \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,
+\underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
+ p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)}
  \\ & \qquad +
-        \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\tilde{\str}_{k-1}\ne \tilde{\str}_{k}\} \Big)\,
-\Big( m^{1}_k \, \tilde{s}^{\max}_k + m^{0}_k \, \tilde{s}^{\min}_k + 
-(1- m^{1}_k)(1- m^{0}_k) \tilde{s}^*_k\Big).
+        \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\str_{j(k)-1}\ne \str_{j(k)}\} \Big)\,
+\Big( v^{\max}_k \, \smax_{j(k)} + v^{\min}_k \, \smin_{j(k)} + 
+(1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
         \end{align*}
-        Here, \(\tilde{\str}_k\) is the nearest of the predefined pill strengths not
-        exceeding the average strength computed for a period \(T_k\), that
-        is,
-      \begin{align*}
-        \tilde{\str}_k = \underset{ s \in \lbrace S_1,\ldots, S_J\rbrace}{\max} 
-    \left\lbrace s \le  \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{ j}>0\rbrace\, S_{j} \right\rbrace, 
-      \end{align*}
-and we let  \(\tilde{s}^{\min}_k\), \(\tilde{s}^{\text{max}}_k\) and \(\tilde{s}^*_k\) denote the to minimal, maximal and typical dose corresponding to \(\tilde{\str}_k\). 
-Recall again, that \(c_\ell\) was the number of different drugs
-strengths purchased on date \(T_k\),
-      \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). 
 
- Furthermore, we have used
-\begin{align*}
-        {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \\
-        &  \min \lbrace \ell : \tilde{\str}_\ell = \cdots = \tilde{\str}_{k}  \rbrace \big), \ldots, k-1 \big\rbrace,
-        \end{align*}
-together with
-\begin{align*}
-m^{1}_k = \one \left\lbrace 
-   \frac{
-     \sum_{\ell \in I^{(2)}_k} \,D_\ell}{ \sum_{\ell \in I^{(2)}_k} \,
-      H_\ell} > \tilde{s}^{\max}
- \right\rbrace, \qquad
-m^{0}_k = \one \left\lbrace 
-   \frac{
-     \sum_{\ell \in I^{(2)}_k} \,D_\ell}{ \sum_{\ell \in I^{(2)}_k} \,
-      H_\ell} < \tilde{s}^{\min}
- \right\rbrace
-\end{align*}
-and
-\begin{align*}
-{I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell : u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace.
-\end{align*}
 #+END_SRC
 
 
