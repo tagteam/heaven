@@ -13,6 +13,8 @@ drug exposure strength and length relative to a prespecified study
 period \period. Note that the start of the study period has to be
 after the start of the registry.
 
+
+
 * Drug prescription data
 
 We describe the data of a single person who has purchased the drug of
@@ -138,7 +140,7 @@ Furthermore, we use  \(\str_{j(k)}\) to denote the nearest of the predefined pil
  \right\rbrace. 
       \end{align*}
 where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
-number of different drug strengths purchased on date \(T_k\),  \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
+number of different drug strengths purchased on date \(T_k\) and \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
 S_{j}\) is the average strength for period \(T_k\). Recall again, that \(c_k\) was the number of different drugs
 strengths purchased on date \(T_k\),
       \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). \\
