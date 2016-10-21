@@ -26,19 +26,31 @@ One package of each drug product is defined by the drug strength
 \(\str\) of the smallest unit (e.g., one pill or half a pill) and the
 amount of such units that it contains. For each drug we distinguish
 \(J\ge 1\) different package types according to the different
-strengths: \(\str_1 <\dots< \str_J\). For each drug strength \(\str_j\)
-the values \(\smin_j\), \(\smax_j\), \(\styp_j\) define the minimal,
-maximal and typical dose per day, respectively. Note that the original
-SAS macro allowed at most 4 different package types. We combine all
-packages purchased on the same date that have the same strength. The
-number of smallest units, \(\smin_j\), of type \(j\) purchased on date
-\(T_k\) is denoted by \(n_{jk}\). Thus, the average amount
-\(D_k\) of the drug purchased on date \(T_k\) is given by the formula
+strengths: \(\str_1 <\dots< \str_J\). 
+ Note that the original SAS
+macro allowed at most 4 different package types. For each drug strength
+\(\str_j\) the values \(\smin_j\), \(\smax_j\), \(\styp_j\) define the
+minimal, maximal and typical dose per day, respectively. Since
+\(\smin_j\) is the smallest dose possible, we must have \(\str_j= p_j
+\smin_j\) for some integer \(p_j\ge 1\). The number of
+smallest units, \(\smin_j\), of type \(j\) purchased on date \(T_k\)
+is denoted by \(n_{jk}\). For each drug strength \(S_j\) we have
+\(G_{jk}\ge 0\) purchases on date \(T_k\). For \(g=1,\ldots, G_{jk}\),
+we let \(\text{pn}_{gk}\) denote the number of packages and \(\text{ps}_{gk}\) denote
+the package size of purchase \(g\).  Thus, the total amount \(D_k\) of
+the drug purchased on date \(T_k\) is given by the formula
 \begin{align*}
-D_k=\frac{1}{c_k} \sum_{j=1}^J n_{jk}\smin_{j},
+D_k=
+ \sum_{j=1}^J \,\left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \, \text{ps}_{gk} \right) 
+\str_j = 
+ \sum_{j=1}^J \,
+\left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \,\text{ps}_{gk} \right) 
+p_j \smin_j = 
+ \sum_{j=1}^J n_{jk}\smin_{j},
 \end{align*}
-where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
-number of different drug strengths purchased on date \(T_k\).  \\
+such that \( n_{jk} = 
+\left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \, \text{ps}_{gk} \right) 
+p_j\). 
 
  Figure ref:fig:1 illustrates the
 data
@@ -59,6 +71,7 @@ Error: unexpected 'else' in "else"
 #+BEGIN_SRC R :results graphics :file "./drug-data.png" :exports none :session *R* :cache yes 
 plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="")
 segments(x0=30,x1=50,y0=10,y1=10,lwd=3)
+
 #+END_SRC
 
 #+RESULTS[<2016-10-17 16:47:59> 48854c356af0ca07dbf4d5ef0fd83efe8cba1a44]:
@@ -124,24 +137,31 @@ Furthermore, we use  \(\str_{j(k)}\) to denote the nearest of the predefined pil
  \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j}
  \right\rbrace. 
       \end{align*}
-where \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
+where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
+number of different drug strengths purchased on date \(T_k\),  \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
 S_{j}\) is the average strength for period \(T_k\). Recall again, that \(c_k\) was the number of different drugs
 strengths purchased on date \(T_k\),
       \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). \\
 
 We distinguish between two periods to be used for calculating an
-average daily  dose, the first being 
+average daily dose, 
 \begin{align*}
  {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace \, :\, u_\ell = \cdots =
  u_{k-1} =1 \rbrace, \\
  &  \min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace \,:\,\str_{j(\ell)} = \cdots = \str_{j(k)}  \rbrace \big), \ldots, k-1 \big\rbrace,
   \end{align*}
 
-and the other being
+and 
 \begin{align*}
 {I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace\, : \,u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
 \end{align*}
-and the average daily dose in the period \(I^{(w)}_k\) is then defined as, 
+Note that \(I^{(2)}_k\) begins on the earliest date \(T_{i_0}\) from
+which the sequence of prescriptions up to time \(T_k\) provides a
+large enough amount of drugs to cover the corresponding number of days
+between \(T_{i_0}\) and \(T_k\), whereas \(I^{(1)}_k\) also takes into
+account that the average doses along the sequence must be the
+same. The average daily dose in the period \(I^{(w)}_k\) is then
+defined as,
 \begin{align*}
  M^{(w)}_k =   \frac{
      \sum_{\ell \in I^{(w)}_k} \, D_\ell}{ \sum_{\ell \in I^{(w)}_k} \, H_\ell}, \qquad w = 1, 2. 

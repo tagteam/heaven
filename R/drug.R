@@ -54,7 +54,7 @@ atc <- function(atc) {
 
 
 ##' @export
-pack <- function(value, def, min, max) {
+pack <- function(value, min, max, def) {
 
   f <- function(dpp, add, i, drugname) {
     if (length(i) > 0) {

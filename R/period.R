@@ -21,15 +21,9 @@
   function(x, ..., value) UseMethod("period<-")
 
 ##' @export
-`period<-` <- function(dpp, per, add = FALSE, value) {
-
-  if (add) {
-    dpp$period[[length(dpp$period)+1]] <- value
-  } else {
-    dpp$period <- list(value)
-  }
+`period<-` <- function(dpp, value) {
   
-  dpp$period <- unique(dpp$period)
+  dpp$period <- value
   
   return(dpp)
 }  

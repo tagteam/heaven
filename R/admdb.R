@@ -34,12 +34,10 @@
   newdata        <- data.frame(sapply(1:length(varnames), function(i) value[, names(value) == varnames[i]])) 
   names(newdata) <- c("pnr", "inddto", "uddto")
 
-  l <- length(dpp$drugdb)+1
-  
   if (add) {
-    dpp$admdb[[l]] <- newdata
+    dpp$admdb <- rbind(dpp$admdb, newdata)
   } else {
-    dpp$admdb[[1]] <- newdata
+    dpp$admdb <- newdata
   }
   
   return(dpp)

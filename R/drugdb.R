@@ -31,16 +31,17 @@
   
   varnames <- c(strsplit(split1, "~")[[1]], split2)
 
-  newdata        <- data.frame(sapply(1:length(varnames), function(i) value[, names(value) == varnames[i]])) 
+  newdata        <- subset(value, select = varnames)
   names(newdata) <- c("pnr", "atc", "eksd", "strnum", "apk", "packsize")
 
-  l <- length(dpp$drugdb)+1
-  
   if (add) {
-    dpp$drugdb[[l]] <- newdata
+    dpp$drugdb <- rbind(dpp$drugdb, newdata)
   } else {
-    dpp$drugdb[[1]] <- newdata
+    dpp$drugdb <- newdata
   }
 
+  dpp$drugdb = dpp$drugdb[order(dpp$drugdb$pnr), ]
+  
   return(dpp)
 } 
+

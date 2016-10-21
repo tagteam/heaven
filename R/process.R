@@ -17,25 +17,28 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`process` <-
-  function(x, ..., value) UseMethod("drugdb")
-
-##' @export
-`process` <- function(dpp, id = NULL, value) {
+`process` <- function(dpp, id = NULL) {
   
-  if (length(id) > 0) {
-    drugdb = lapply(dpp$drugdb, function(x) x[x$pnr %in% id, ]) 
-    admdb  = lapply(dpp$admdb, function(x) x[x$pnr %in% id, ]) 
-  } else {
-    drugdb = dpp$drugdb
-    admdb  = dpp$admdb
-  }
+  dpp1 <- preprocess(dpp, id = id)
   
+  dpp2 <- lapply(1:length(dpp1), function(p) {
+    
+    pnrunique <- unique(dpp1[[p]]$pnr)
+    
+    doses     <- dpp$drugs[[p]]$doses
+    
+    if (length(doses) > 0) 
+      do.call("c", lapply(1:length(pnrunique), function(i) {
+        dat <- dpp1[[p]][dpp1[[p]]$pnr == pnrunique[i], ]
+        if (dim(dat)[1] > 0)
+          innerprocess(dat, doses, names(dpp1)[p]) 
+      }))
+    
+  })
   
-  
-
-  return(drugdb)
+  return(dpp2)
 } 
 
-
+test <- process(d)
+test
 
