@@ -121,7 +121,7 @@ based on the total drug purchase on date \(T_k\) the individual can be
 exposed at most \(n_k=\sum_{j=1}^J n_{jk}\) days. 
 
 We use the following notation to indicate if the maximal number of
-exposure days exceeds the non-hospitalized days in period \periodK:
+exposure days exceeds the number of non-hospitalized days in period \periodK:
 \begin{align*} 
 u_{k} = \begin{cases}
 0, & n_{k} \le H_k\\
