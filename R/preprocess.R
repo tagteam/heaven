@@ -40,10 +40,10 @@
   ##--- any treatments not found in data? 
   trna <- sapply(indata, function(x) dim(x)[1] == 0)
   print(cat("------------------------------","\n"))
-  print(cat("The following treaments were not found in input database:",
+  print(cat("The following treatments were not found in input database:",
             paste(names(trna)[trna], collapse = ", "), "\n"))
   print(cat("------------------------------","\n"))
-
+  
   return(indata)
 } 
 
