@@ -24,7 +24,6 @@
 ##' @examples
 ##' data(samplepop)
 ##' cfh(samplepop)
-##' @export 
 ##' @author Jannik Pallisgaard 
 
 
@@ -62,7 +61,7 @@ cfh<-function(diag){
   # changes diag to diag.table
 }
 
-
+if (FALSE) {
 library(data.table)
 diag<-data.table(sample.diag)
 
@@ -82,5 +81,6 @@ for(i in 1:100000000){
 }
 b<-Sys.time()
 round(b-a,1)
+}
 #----------------------------------------------------------------------
 ### cfh.R ends here

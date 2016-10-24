@@ -27,18 +27,18 @@
                        atc      = atc,
                        pdate    = eksd,
                        strength = strnum,
-                       apk      = apk,
-                       packsize = packsize,
+                       npack    = apk,
+                       ppp      = packsize,
                        add = FALSE, value) {
     
     varnames <- c(deparse(substitute(id)),
                   deparse(substitute(atc)),
                   deparse(substitute(pdate)),
                   deparse(substitute(strength)),
-                  deparse(substitute(apk)), deparse(substitute(packsize)))
+                  deparse(substitute(npack)), deparse(substitute(ppp)))
 
   newdata        <- subset(value, select = varnames)
-  names(newdata) <- c("id", "atc", "pdate", "strength", "apk", "packsize")
+  names(newdata) <- c("id", "atc", "pdate", "strength", "npack", "ppp")
 
   if (add) {
     dpp$drugdb <- rbind(dpp$drugdb, newdata)

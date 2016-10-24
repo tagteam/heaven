@@ -1,5 +1,4 @@
 #include <RcppArmadillo.h>
-#include <innerpreprocess.cpp>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -16,10 +15,10 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
   Rcpp::NumericVector id       = indata["id"];
   Rcpp::NumericVector pdate    = indata["pdate"];
   Rcpp::NumericVector strength = indata["strength"];
-  Rcpp::NumericVector apk      = indata["apk"];
-  Rcpp::NumericVector packsize = indata["packsize"];
+  Rcpp::NumericVector npack    = indata["npack"];
+  Rcpp::NumericVector ppp      = indata["ppp"];
 
-  Rcpp::NumericVector T = wrap(unique(as<arma::vec>(eksd)));
+  Rcpp::NumericVector T = wrap(unique(as<arma::vec>(pdate)));
   
   double K = T.size();
   double J = dval.size(); 
@@ -31,8 +30,8 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
   
   Rcpp::NumericVector strengthunique = wrap(unique(as<arma::vec>(strength)));
 
-  bool baddata = innerpreprocess(id[0], treatname, strengthunique, pdate, apk, packsize, dval);
-  
+ //' bool baddata = innerpreprocess(id[0], treatname, strengthunique, pdate, npack, ppp, dval);
+ bool baddata = 0; 
   DataFrame outdata;
   
   if (baddata) {
@@ -54,13 +53,13 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
       int nevec = evec.size();
       
       Rcpp::NumericVector strength1 = strength[evec];
-      Rcpp::NumericVector apk1      = apk[evec];
-      Rcpp::NumericVector packsize1 = packsize[evec];
+      Rcpp::NumericVector npack1    = npack[evec];
+      Rcpp::NumericVector ppp1      = ppp[evec];
       
       for (int j = 0; j < J; j++) {
         for (int e = 0; e < nevec; e++) {
           if (strength1[e] == dval[j]) {
-            n(k, j) += apk1[e] * packsize1[e] * strength1[e];
+            n(k, j) += npack1[e] * ppp1[e] * strength1[e];
           }
         }
         D[k] += n(k, j);
@@ -79,35 +78,5 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
   
   return(D);
 }
-
-  
-/*** R
-dpp1 <- preprocess(d)
-
-test = innerprocess(dpp1$first1,
-                    d$drugs$first1$doses, 
-                    "first1")
-test
-
-dpp2 <- lapply(1:length(dpp1), function(p) {
-  
-  pnrunique <- unique(dpp1[[p]]$pnr)
-  
-  doses     <- d$drugs[[p]]$doses
-  
-  if (dim(dat)[1] > 0 & length(doses) > 0) 
-    do.call("c", lapply(1:length(pnrunique), function(i) {
-      dat       <- dpp1[[p]][dpp1[[p]]$pnr == pnrunique[i], ]
-      innerprocess(dat, doses, names(dpp1)[p]) 
-    }))
-      
-})  
-dpp2
-
-*/
-    
-  
-  
-   
 
   

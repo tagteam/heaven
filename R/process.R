@@ -22,7 +22,7 @@
   dpp1 <- preprocess(dpp, id = id)
   
   dpp2 <- lapply(1:length(dpp1), function(p) {
-    
+
     idunique <- unique(dpp1[[p]]$id)
     
     doses     <- dpp$drugs[[p]]$doses
@@ -38,6 +38,4 @@
   
   return(dpp2)
 } 
-
-
 

@@ -33,7 +33,7 @@
   
   ##--- only include relevant treatments, store them as list
   indata <- lapply(1:length(dpp$drugs), function(i) 
-    dpp$drugdb[dpp$drugdb$atc %in% dpp$drugs[[i]]$atc, ])
+    drugdb[drugdb$atc %in% dpp$drugs[[i]]$atc, ])
 
   names(indata) <- names(dpp$drugs)
   

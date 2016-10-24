@@ -6,8 +6,8 @@ bool innerpreprocess(double id,
                      std::string treatname,
                      Rcpp::NumericVector strength,
                      Rcpp::NumericVector pdate,
-                     Rcpp::NumericVector apk,
-                     Rcpp::NumericVector packsize,
+                     Rcpp::NumericVector npack,
+                     Rcpp::NumericVector ppp,
                      Rcpp::NumericVector dval
                        ) {
 
@@ -15,9 +15,9 @@ bool innerpreprocess(double id,
   int J = dval.size(); 
     
   for (int k1 = 0; k1 < pdate.size(); k1++) {
-    if(pdate[k1] < 0 || apk[k1] < 0.0001 || packsize[k1] < 0.5) {
+    if(pdate[k1] < 0 || npack[k1] < 0.0001 || ppp[k1] < 0.5) {
       Rcout << "Warning - non-valid prescription - treatment=" << treatname << "id=" << id << 
-        ", pdate=" << pdate[k1] << ", packsize=" << packsize[k1] << std::endl;
+        ", pdate=" << pdate[k1] << ", ppp=" << ppp[k1] << std::endl;
       baddata = 1; 
     }
   }
