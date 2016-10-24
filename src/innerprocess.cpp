@@ -13,9 +13,9 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
   Rcpp::NumericVector dmax = doses["max"];
   Rcpp::NumericVector ddef = doses["def"];
   
-  Rcpp::NumericVector pnr      = indata["pnr"];
-  Rcpp::NumericVector eksd     = indata["eksd"];
-  Rcpp::NumericVector strnum   = indata["strnum"];
+  Rcpp::NumericVector id       = indata["id"];
+  Rcpp::NumericVector pdate    = indata["pdate"];
+  Rcpp::NumericVector strength = indata["strength"];
   Rcpp::NumericVector apk      = indata["apk"];
   Rcpp::NumericVector packsize = indata["packsize"];
 
@@ -29,9 +29,9 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
   Rcpp::NumericVector S(K);
   Rcpp::NumericMatrix n(K, J); 
   
-  Rcpp::NumericVector strnumunique = wrap(unique(as<arma::vec>(strnum)));
+  Rcpp::NumericVector strengthunique = wrap(unique(as<arma::vec>(strength)));
 
-  bool baddata = innerpreprocess(pnr[0], treatname, strnumunique, eksd, apk, packsize, dval);
+  bool baddata = innerpreprocess(id[0], treatname, strengthunique, pdate, apk, packsize, dval);
   
   DataFrame outdata;
   
@@ -41,7 +41,7 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
       treatname << std::endl;
     Rcout << "The computations for this treatment will not be performed" << std::endl << std::endl;
     
-    outdata = Rcpp::DataFrame::create(Rcpp::Named("pnr") = pnr);
+    outdata = Rcpp::DataFrame::create(Rcpp::Named("id") = id);
     
   } else {
 
@@ -49,18 +49,18 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
     
     for (int k = 0; k < K; k++) {
       
-      NumericVector evec = Rcpp::as<Rcpp::NumericVector>(wrap(arma::find(as<arma::vec>(eksd) == T[k])));
+      NumericVector evec = Rcpp::as<Rcpp::NumericVector>(wrap(arma::find(as<arma::vec>(pdate) == T[k])));
       
       int nevec = evec.size();
       
-      Rcpp::NumericVector strnum1   = strnum[evec];
+      Rcpp::NumericVector strength1 = strength[evec];
       Rcpp::NumericVector apk1      = apk[evec];
       Rcpp::NumericVector packsize1 = packsize[evec];
       
       for (int j = 0; j < J; j++) {
         for (int e = 0; e < nevec; e++) {
-          if (strnum1[e] == dval[j]) {
-            n(k, j) += apk1[e] * packsize[e] * strnum1[e];
+          if (strength1[e] == dval[j]) {
+            n(k, j) += apk1[e] * packsize1[e] * strength1[e];
           }
         }
         D[k] += n(k, j);
@@ -72,8 +72,8 @@ Rcpp::NumericVector innerprocess(Rcpp::DataFrame indata,
       S[k] = S[k] / (double) c[k];
     }
     
-    outdata =  Rcpp::DataFrame::create(Rcpp::Named("pnr")      = pnr,
-                                       Rcpp::Named("eksd")     = T
+    outdata =  Rcpp::DataFrame::create(Rcpp::Named("id")      = id,
+                                       Rcpp::Named("pdate")     = T
     );
   }
   

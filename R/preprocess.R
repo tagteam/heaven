@@ -21,15 +21,15 @@
   
   ##--- only look at id=, if specified
   if (length(id) > 0) {
-    drugdb <- dpp$drugdb[dpp$drugdb$pnr %in% id, ]
-    admdb  <- dpp$admdb[dpp$admdb$pnr %in% id, ]
+    drugdb <- dpp$drugdb[dpp$drugdb$id %in% id, ]
+    admdb  <- dpp$admdb[dpp$admdb$id %in% id, ]
   } else {
     drugdb <- dpp$drugdb
     admdb  <- dpp$admdb
   }
   
   ##--- only look at relevant dates 
-  drugdb <- drugdb[drugdb$eksd <= as.Date(dpp$period[2]) & drugdb$eksd >= as.Date(dpp$period[1]), ]
+  drugdb <- drugdb[drugdb$pdate <= as.Date(dpp$period[2]) & drugdb$pdate >= as.Date(dpp$period[1]), ]
   
   ##--- only include relevant treatments, store them as list
   indata <- lapply(1:length(dpp$drugs), function(i) 

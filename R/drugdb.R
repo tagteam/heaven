@@ -1,3 +1,4 @@
+
 ### drugdb.R ---
 #----------------------------------------------------------------------
 ## author: Helene Charlotte Rytgaard
@@ -21,18 +22,23 @@
   function(x, ..., value) UseMethod("drugdb<-")
 
 ##' @export
-`drugdb<-` <- function(dpp, formula = pnr ~ atc + eksd + strnum + apk + packsize, 
+`drugdb<-` <- function(dpp,
+                       id       = pnr,
+                       atc      = atc,
+                       pdate    = eksd,
+                       strength = strnum,
+                       apk      = apk,
+                       packsize = packsize,
                        add = FALSE, value) {
-  
-  fstr <- deparse(formula)
- 
-  split1 <- gsub(" ", "", strsplit(fstr, "~")[[1]])
-  split2 <- strsplit(split1[2], "\\+")[[1]]
-  
-  varnames <- c(strsplit(split1, "~")[[1]], split2)
+    
+    varnames <- c(deparse(substitute(id)),
+                  deparse(substitute(atc)),
+                  deparse(substitute(pdate)),
+                  deparse(substitute(strength)),
+                  deparse(substitute(apk)), deparse(substitute(packsize)))
 
   newdata        <- subset(value, select = varnames)
-  names(newdata) <- c("pnr", "atc", "eksd", "strnum", "apk", "packsize")
+  names(newdata) <- c("id", "atc", "pdate", "strength", "apk", "packsize")
 
   if (add) {
     dpp$drugdb <- rbind(dpp$drugdb, newdata)
@@ -40,8 +46,8 @@
     dpp$drugdb <- newdata
   }
 
-  dpp$drugdb = dpp$drugdb[order(dpp$drugdb$pnr), ]
+  dpp$drugdb = dpp$drugdb[order(dpp$drugdb$id), ]
   
   return(dpp)
-} 
+}
 

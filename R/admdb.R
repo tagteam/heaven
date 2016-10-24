@@ -21,18 +21,18 @@
   function(x, ..., value) UseMethod("admdb<-")
 
 ##' @export
-`admdb<-` <- function(dpp, formula = pnr ~ inddto + uddto, 
+`admdb<-` <- function(dpp,
+                      id     = pnr,
+                      inddto = inddto,
+                      uddto  = uddto, 
                       add = FALSE, value) {
   
-  fstr <- deparse(formula)
-  
-  split1 <- gsub(" ", "", strsplit(fstr, "~")[[1]])
-  split2 <- strsplit(split1[2], "\\+")[[1]]
-  
-  varnames <- c(strsplit(split1, "~")[[1]], split2)
+    varnames <- c(deparse(substitute(id)),
+                  deparse(substitute(inddto)),
+                  deparse(substitute(uddto)))
   
   newdata        <- data.frame(sapply(1:length(varnames), function(i) value[, names(value) == varnames[i]])) 
-  names(newdata) <- c("pnr", "inddto", "uddto")
+  names(newdata) <- c("id", "inddto", "uddto")
 
   if (add) {
     dpp$admdb <- rbind(dpp$admdb, newdata)

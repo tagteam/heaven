@@ -23,13 +23,13 @@
   
   dpp2 <- lapply(1:length(dpp1), function(p) {
     
-    pnrunique <- unique(dpp1[[p]]$pnr)
+    idunique <- unique(dpp1[[p]]$id)
     
     doses     <- dpp$drugs[[p]]$doses
     
     if (length(doses) > 0) 
-      do.call("c", lapply(1:length(pnrunique), function(i) {
-        dat <- dpp1[[p]][dpp1[[p]]$pnr == pnrunique[i], ]
+      do.call("c", lapply(1:length(idunique), function(i) {
+        dat <- dpp1[[p]][dpp1[[p]]$id == idunique[i], ]
         if (dim(dat)[1] > 0)
           innerprocess(dat, doses, names(dpp1)[p]) 
       }))
@@ -39,6 +39,5 @@
   return(dpp2)
 } 
 
-test <- process(d)
-test
+
 
