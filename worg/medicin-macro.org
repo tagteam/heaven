@@ -187,8 +187,9 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
           \begin{align*} 
           &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
           \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,\left(
+\min \left\lbrace
   \underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
-   p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)}
+   p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)} \right\rbrace
   \right)
    \\ & \qquad +
           \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\str_{j(k)-1}\ne \str_{j(k)}\} \Big)\,
@@ -196,9 +197,9 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
   (1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
           \end{align*}
           Note that
-          \(\left( \underset{p \in \mathbb{N}}{\text{argmin}} \left\vert
+          \(\left(\min \left\lbrace \underset{p \in \mathbb{N}}{\text{argmin}} \left\vert
               M^{(1)}_k - p\cdot \smin_{j(k)}\right\vert \cdot
-            \smin_{j(k)}\right) \) is the rounding of the average daily
+            \smin_{j(k)}\right\rbrace\right) \) is the rounding of the average daily
           dose \( M^{(1)}_k\) to the nearest factor of the relevant
           minimal dose \(\smin_{j(k)}\). 
 

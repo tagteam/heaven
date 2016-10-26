@@ -10,7 +10,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                                  Rcpp::DataFrame admdat,
                                  Rcpp::List doses, 
                                  std::string treatname,
-                                 double N
+                                 double N, double maxdepot
                                    ) {
   
   Rcpp::NumericVector dval = doses["value"];
@@ -107,7 +107,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     }
   
     if (jk[k] == jk[k-1] && k > 0)
-      w[k] = 1; 
+      w[k-1] = 1; 
     
     i0[k] = N;
     
@@ -149,6 +149,9 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     
     if (k > 0)
       R[k] = u[k] * (D[k-1] + R[k-1] - X[k-1]*(Enum[k-1] - T[k-1]));
+    
+    if (R[k] > maxdepot)
+      R[k] = maxdepot;
     
     Enum[k] = (1-u[k])*(1-u[k-1]) * (T[k] - 1 + round((D[k] + R[k]) / (double) ddef[jk[k]])) + 
       (1 - (1-u[k])*(1-u[k-1])) * (T[k] - 1 + round((D[k] + R[k]) / (double) X[k]));

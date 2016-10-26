@@ -61,7 +61,7 @@
         admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
         
         if (dim(dat)[1] > 0)
-          innerprocess(dat, admdat, doses, treatname, dpp$N) 
+          innerprocess(dat, admdat, doses, treatname, dpp$N, 10) 
       }))
     
   })
