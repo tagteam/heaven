@@ -76,11 +76,10 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
         }
       }
       D[k] += n(k, j);
-      n(k, j) = n(k, j) / (double) dmin[j];
-      c[k] += (n(k, j) > 0);
       S[k] += (n(k, j) > 0) * dval[j];
     }
     
+    c[k] = nevec;
     S[k] = S[k] / (double) c[k];
     
     double DH = 0; 

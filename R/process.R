@@ -23,10 +23,9 @@
   
   dpp2 <- lapply(1:length(dpp1), function(p) {
 
-    idunique  <- unique(dpp1[[p]]$id)
-    doses     <- dpp$drugs[[p]]$doses
-    treatname <- names(dpp1)[p]
-    
+    idunique     <- unique(dpp1[[p]]$id)
+    doses        <- dpp$drugs[[p]]$doses
+    treatname    <- names(dpp1)[p]
     dosesmissing <- !(dpp1[[p]]$strength %in% doses$value)
     
     baddata <- 0 

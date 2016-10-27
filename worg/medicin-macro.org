@@ -139,7 +139,7 @@ Furthermore, we use  \(\str_{j(k)}\) to denote the nearest of the predefined pil
  \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j}
  \right\rbrace. 
       \end{align*}
-where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
+where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\, G_{jk}\) is the
 number of different drug strengths purchased on date \(T_k\) and \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
 S_{j}\) is the average strength for period \(T_k\). Recall again, that \(c_k\) was the number of different drugs
 strengths purchased on date \(T_k\),
