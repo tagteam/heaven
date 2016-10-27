@@ -54,36 +54,160 @@ such that \( n_{jk} =
 \left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \, \text{ps}_{gk} \right) 
 p_j\). 
 
- Figure ref:fig:1 illustrates the
-data
 
-#+BEGIN_SRC R :results output raw drawer  :exports none :session *R* :cache yes 
+#+BEGIN_SRC R :results output raw drawer  :exports none :session *R*  
 if (system("echo $USER",intern=TRUE)=="tag")
     setwd("~/research/SoftWare/heaven/worg/")
 else
-    setwd("p:/HELY/medicin-macro/heaven/worg/")
+    setwd("~/research/Software/medicin-macro/heaven/worg/")
 #+END_SRC
 
 #+RESULTS[<2016-10-17 16:50:14> 0862612a285251181b55a1c4c66caec26359f50d]:
 :RESULTS:
- Error in system("echo $USER", intern = TRUE) : 'echo' not found
 Error: unexpected 'else' in "else"
 :END:
 
-#+BEGIN_SRC R :results graphics :file "./drug-data.png" :exports none :session *R* :cache yes 
-plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="")
-segments(x0=30,x1=50,y0=10,y1=10,lwd=3)
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports none  :session *R* 
+par(mar=c(3.1,3.1,3.1,3.1))
+
+plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
+     yaxt='n', xaxt='n', axes=FALSE)
+
+vt <- c(15, 50, 80)
+
+axis(1, at=vt, labels=c(expression(T[k-1]), expression(T[k]), expression(T[k+1])))
+axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
+
+vtype <- 100-c(2.5, 5+2.5, 5+5+2.5, 5+5+2.5+2.5)/18*100
+
+axis(4, at=vtype, labels=c("(I)", "(II)", "(IIIa)", "(IIIb)"),
+     las=2, cex.axis=1.1, tck=0.0, lwd=0)
+
+abline(h = 100-5/18*100)
+abline(h = 100-10/18*100)
+
+abline(v = vt[1], lty=2)
+abline(v = vt[2], lty=2)
+abline(v = vt[3], lty=2)
+
+points(vt[1], vtype[1], pch=15, cex=1.3, bg="black")
+points(vt[1], vtype[2], pch=17, cex=1.3, bg="black")
+points(vt[1], vtype[3], pch=15, cex=1.3, bg="black") 
+points(vt[1], vtype[4], pch=19, cex=1.3, bg="black")
+
+points(vt[2], vtype[1], pch=15, cex=1.3, bg="black")
+points(vt[2], vtype[2], pch=17, cex=1.3, bg="black")
+points(vt[2], vtype[3], pch=15, cex=1.3, bg="black")
+points(vt[2], vtype[4], pch=17, cex=1.3, bg="black")
+
+points(vt[3], vtype[3], pch=15, cex=1.3, bg="black")
+
+t12I    <- (vt[2]-vt[1])/1.25+vt[1]
+t23I    <- (vt[3]-vt[2])/1.1+vt[2]
+t12IIIa <- (vt[2]-vt[1])/1.5+vt[1]
+
+segments(x0=t12I,x1=t12I,y0=vtype[1]-1,y1=vtype[1]+1,lwd=1)
+segments(x0=t23I,x1=t23I,y0=vtype[1]-1,y1=vtype[1]+1,lwd=1)
+segments(x0=t12IIIa,x1=t12IIIa,y0=vtype[3]-1,y1=vtype[3]+1,lwd=1)
+
+segments(x0=vt[1],x1=t12I,y0=vtype[1],y1=vtype[1],lwd=1)
+segments(x0=vt[2],x1=t23I,y0=vtype[1],y1=vtype[1],lwd=1)
+
+segments(x0=vt[1],x1=vt[2],y0=vtype[2],y1=vtype[2],lwd=1)
+
+segments(x0=vt[1],x1=t12IIIa,y0=vtype[3],y1=vtype[3],lwd=1)
+segments(x0=vt[2],x1=vt[3],y0=vtype[3],y1=vtype[3],lwd=1)
+
+segments(x0=vt[1],x1=vt[2],y0=vtype[4],y1=vtype[4],lwd=1)
+
+legend("topleft", c(expression(S[1]), expression(S[2]), bquote(S[1]~"or"~S[2])),
+       pch=c(19, 17, 15),# bty = "n"
+       bg="gray90")
 
 #+END_SRC
 
-#+RESULTS[<2016-10-17 16:47:59> 48854c356af0ca07dbf4d5ef0fd83efe8cba1a44]:
-[[file:./drug-data.png]]
 
+
+#+RESULTS[<2016-10-17 16:47:59> 48854c356af0ca07dbf4d5ef0fd83efe8cba1a44]:
+[[file:./drug-dat1a.pdf]]
+file:./drug-dat1a.pdf
 
 #+LABEL: fig:1
-#+ATTR_LATEX: :width 0.7\textwidth
+#+ATTR_LATEX: :width 0.7 :height 0.3 \textwidth
 #+CAPTION: label til figure
-[[file:./drug-data.png]]
+
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports none  :session *R* 
+par(mar=c(3.1,3.1,3.1,3.1))
+
+plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
+     yaxt='n', xaxt='n', axes=FALSE)
+#title(main="Case II")
+
+set.seed(9)
+vt <- sort(round(sample(100, 5)/5)*5)
+
+axis(1, at=vt, labels=c(expression(T[k-4]), expression(T[k-3]), expression(T[k-2]), expression(T[k-1]), expression(T[k])))
+axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
+
+abline(v = vt[1], lty=2)
+abline(v = vt[2], lty=2)
+abline(v = vt[3], lty=2)
+abline(v = vt[4], lty=2)
+abline(v = vt[5], lty=2)
+
+vtype <- c(25, 75)
+axis(4, at=vtype, labels=c(expression(I[k]^(2)), expression(I[k]^(1))),
+     las=2, cex.axis=1.1, tck=0.0, lwd=0)
+
+abline(h = 50)
+
+##--- for w=2
+points(vt[1], vtype[1], pch=15, cex=1.3, bg="black")
+points(vt[2], vtype[1], pch=15, cex=1.3, bg="black")
+points(vt[3], vtype[1], pch=15, cex=1.3, bg="black", col="red")
+points(vt[4], vtype[1], pch=15, cex=1.3, bg="black", col="red")
+points(vt[5], vtype[1], pch=15, cex=1.3, bg="black", col="red")
+
+segments(x0=vt[1],x1=vt[2],y0=vtype[1],y1=vtype[1],lwd=1)
+
+t32 <- (vt[3]-vt[2])/2+vt[2]
+segments(x0=vt[2],x1=t32,y0=vtype[1],y1=vtype[1],lwd=1)
+segments(x0=t32,x1=t32,y0=vtype[1]-1,y1=vtype[1]+1,lwd=1)
+
+segments(x0=vt[3],x1=vt[4],y0=vtype[1],y1=vtype[1],lwd=2, col="red")
+segments(x0=vt[4],x1=vt[5],y0=vtype[1],y1=vtype[1],lwd=2, col="red")
+
+##--- for w=1
+points(vt[1], vtype[2], pch=17, cex=1.3, bg="black")
+points(vt[2], vtype[2], pch=19, cex=1.3, bg="black")
+points(vt[3], vtype[2], pch=19, cex=1.3, bg="black")
+points(vt[4], vtype[2], pch=17, cex=1.3, bg="black", col="red")
+points(vt[5], vtype[2], pch=17, cex=1.3, bg="black", col="red")
+
+segments(x0=vt[1],x1=vt[2],y0=vtype[2],y1=vtype[2],lwd=1)
+
+t32 <- (vt[3]-vt[2])/2+vt[2]
+segments(x0=vt[2],x1=t32,y0=vtype[2],y1=vtype[2],lwd=1)
+segments(x0=t32,x1=t32,y0=vtype[2]-1,y1=vtype[2]+1,lwd=1)
+
+segments(x0=vt[3],x1=vt[4],y0=vtype[2],y1=vtype[2],lwd=1)
+points(vt[4], vtype[2], pch=17, cex=1.3, bg="black", col="red")
+segments(x0=vt[4],x1=vt[5],y0=vtype[2],y1=vtype[2],lwd=2, col="red")
+
+legend("topleft", c(expression(S[1]), expression(S[2]), bquote(S[1]~"or"~S[2])),
+       pch=c(19, 17, 15),# bty = "n"
+       bg="gray90")
+#+END_SRC
+
+
+#+RESULTS:
+[[file:./drug-dat2a.pdf]]o
+#+LABEL: fig:2
+#+ATTR_LATEX: :width 0.7 \textwidth
+#+CAPTION: label til figure
+
 
 * Hospital admission data
 
@@ -162,8 +286,8 @@ which the sequence of prescriptions up to time \(T_k\) provides a
 large enough amount of drugs to cover the corresponding number of days
 between \(T_{i_0}\) and \(T_k\), whereas \(I^{(1)}_k\) also takes into
 account that the average doses along the sequence must be the
-same. The average daily dose in the period \(I^{(w)}_k\) is then
-defined as,
+same. The periods \(I_k^{(1)}\) and \(I_k^{(2)}\) are illustrated in
+Figure  ref:fig:2.   The average daily dose in the period \(I^{(w)}_k\) is then defined as,
 \begin{align*}
  M^{(w)}_k =   \frac{
      \sum_{\ell \in I^{(w)}_k} \, D_\ell}{ \sum_{\ell \in I^{(w)}_k} \, H_\ell}, \qquad w = 1, 2. 
@@ -183,7 +307,9 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
 
 #+BEGIN_SRC latex :export results :eval t
           The average exposure strength \( X_k\) per day for period \(\periodK\)  is
-          computed as follows.
+          computed as follows. 
+ An illustration of the three different cases can be found in
+ Figure ref:fig:1.  
           \begin{align*} 
           &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
           \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,\left(
@@ -204,6 +330,29 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
           minimal dose \(\smin_{j(k)}\). 
 
 #+END_SRC
+
+#+RESULTS:
+#+BEGIN_LaTeX
+The average exposure strength \( X_k\) per day for period \(\periodK\)  is
+          computed as follows.          \begin{align*} 
+          &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
+          \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,\left(
+\min \left\lbrace
+  \underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
+   p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)} \right\rbrace
+  \right)
+   \\ & \qquad +
+          \,\Big( u_{k} \,(1-u_{k-1}) + u_{k-1} 1\{\str_{j(k)-1}\ne \str_{j(k)}\} \Big)\,
+  \Big( v^{\max}_k \, \smax_{j(k)} + v^{\min}_k \, \smin_{j(k)} + 
+  (1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
+          \end{align*}
+          Note that
+          \(\left(\min \left\lbrace \underset{p \in \mathbb{N}}{\text{argmin}} \left\vert
+              M^{(1)}_k - p\cdot \smin_{j(k)}\right\vert \cdot
+            \smin_{j(k)}\right\rbrace\right) \) is the rounding of the average daily
+          dose \( M^{(1)}_k\) to the nearest factor of the relevant
+          minimal dose \(\smin_{j(k)}\).
+#+END_LaTeX
 
 
 *** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
@@ -232,6 +381,19 @@ dosis(obj,~painkiller) <- package(value,default=75,min=75,max=150)
 dosis(obj,~painkiller) <- package(value,default=100,min=400,max=100)
 process(obj,id=17)
 #+END_SRC
+
+#+RESULTS[<2016-10-27 15:06:31> 51aad094598f9a1103cb0485b259143796a0aa28]:
+:RESULTS:
+Error: could not find function "dpp"
+Error in period(obj) <- as.Date("1995-01-01", "2011-01-01") : 
+  object 'obj' not found
+Error: object 'recipe.db' not found
+Error: object 'lpr.db' not found
+Error: could not find function "atc"
+Error: could not find function "package"
+Error: could not find function "package"
+Error: could not find function "process"
+:END:
 
 
 ** Output
