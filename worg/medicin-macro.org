@@ -68,7 +68,7 @@ Error: unexpected 'else' in "else"
 :END:
 
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports none  :session *R* 
+#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports results :session *R* 
 par(mar=c(3.1,3.1,3.1,3.1))
 
 plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
@@ -129,16 +129,15 @@ legend("topleft", c(expression(S[1]), expression(S[2]), bquote(S[1]~"or"~S[2])),
 
 
 
-#+RESULTS[<2016-10-17 16:47:59> 48854c356af0ca07dbf4d5ef0fd83efe8cba1a44]:
-[[file:./drug-dat1a.pdf]]
-file:./drug-dat1a.pdf
-
 #+LABEL: fig:1
-#+ATTR_LATEX: :width 0.7 :height 0.3 \textwidth
-#+CAPTION: label til figure
+#+ATTR_LATEX: :width 0.7 \textwidth
+#+CAPTION: Illustration of the cases to be considered when computing the average daily dosis.
+#+RESULTS:
+[[file:./drug-dat1a.pdf]]
 
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports none  :session *R* 
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports results  :session *R* 
 par(mar=c(3.1,3.1,3.1,3.1))
 
 plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
@@ -202,11 +201,11 @@ legend("topleft", c(expression(S[1]), expression(S[2]), bquote(S[1]~"or"~S[2])),
 #+END_SRC
 
 
-#+RESULTS:
-[[file:./drug-dat2a.pdf]]o
 #+LABEL: fig:2
 #+ATTR_LATEX: :width 0.7 \textwidth
-#+CAPTION: label til figure
+#+CAPTION: Illustration of the periods to use when computing the average daily dosis.
+#+RESULTS:
+[[file:./drug-dat2a.pdf]]
 
 
 * Hospital admission data
@@ -309,7 +308,7 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
           The average exposure strength \( X_k\) per day for period \(\periodK\)  is
           computed as follows. 
  An illustration of the three different cases can be found in
- Figure ref:fig:1.  
+ Figure   ref:fig:1.  
           \begin{align*} 
           &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
           \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,\left(
@@ -334,7 +333,10 @@ v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
 #+RESULTS:
 #+BEGIN_LaTeX
 The average exposure strength \( X_k\) per day for period \(\periodK\)  is
-          computed as follows.          \begin{align*} 
+          computed as follows. 
+ An illustration of the three different cases can be found in
+ Figure   ref:fig:2.  
+          \begin{align*} 
           &{X}_{k} = (1-u_k)\, (1-u_{k-1}) \, \styp_k
           \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k){-}1}=\str_{j(k)}\} \,\,\left(
 \min \left\lbrace
@@ -460,3 +462,4 @@ bibliography:heaven.bib
 #+PROPERTY: header-args session *R*
 #+PROPERTY: header-args cache yes
 test
+
