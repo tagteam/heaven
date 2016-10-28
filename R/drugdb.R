@@ -39,7 +39,10 @@
 
   newdata        <- subset(value, select = varnames)
   names(newdata) <- c("id", "atc", "pdate", "strength", "npack", "ppp")
-
+  
+  if (inherits(newdata$pdate, "factor"))
+    newdata$pdate <- as.Date(newdata$pdate)
+  
   if (add) {
     dpp$drugdb <- rbind(dpp$drugdb, newdata)
   } else {

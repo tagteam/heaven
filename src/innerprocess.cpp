@@ -10,7 +10,9 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                                  Rcpp::DataFrame admdat,
                                  Rcpp::List doses, 
                                  std::string treatname,
-                                 double N, double maxdepot
+                                 double N, 
+                                 double maxdepot, 
+                                 bool trace
                                    ) {
   
   Rcpp::NumericVector dval = doses["value"];
@@ -36,6 +38,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   Rcpp::NumericVector D(K);
   Rcpp::NumericVector S(K);
   Rcpp::NumericMatrix n(K, J); 
+  Rcpp::NumericVector nk(K); 
   Rcpp::NumericVector H(K);
   Rcpp::NumericVector u(K);
   Rcpp::NumericVector jk(K);
@@ -72,10 +75,11 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     for (int j = 0; j < J; j++) {
       for (int e = 0; e < nevec; e++) {
         if (strength1[e] == dval[j]) {
-          n(k, j) += npack1[e] * ppp1[e] * strength1[e];
+          double ne = npack1[e] * ppp1[e] * strength1[e]; 
+          D[k] += ne;
+          n(k, j) += ne / (double) dmin[j];
         }
       }
-      D[k] += n(k, j);
       S[k] += (n(k, j) > 0) * dval[j];
     }
     
@@ -86,17 +90,19 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     
     for (int q = 0; q < admin.size(); ++q) { 
       
-      if (pdate[k] == pdate[k] && pdate[k+1] == pdate[k+1] &&  
-          pdate[k] <= admin[q] && pdate[k+1] >= admin[q])
+      if (pdate[k] == pdate[k] && pdate[k+1] == pdate[k+1])
         DH += max(NumericVector::create(0, min(NumericVector::create(admout[q], pdate[k+1])) - 
           max(NumericVector::create(admin[q], pdate[k]))));  
     }
     
-    H[k] = max(NumericVector::create(1, pdate[k+1] - pdate[k] - DH));
+    if (k < K-1)
+      H[k] = max(NumericVector::create(1, pdate[k+1] - pdate[k] - DH));
+    else
+      H[k] = 1;
     
-    double nk = sum(n(k,_));
+    nk[k] = sum(n(k,_));
     
-    if (nk > H[k] && k < K-1)
+    if (nk[k] > H[k] && k < K-1)
       u[k] = 1;
 
     for (int j = 0; j < J; j++) {
@@ -108,43 +114,43 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     if (jk[k] == jk[k-1] && k > 0)
       w[k-1] = 1; 
     
-    i0[k] = N;
+    i0[k] = 0;
     
     double Dsum; 
     double Hsum; 
     
-    for (int l = 1; l < N; ++l) {
+    for (int l = 1; l < N+1; ++l) {
       if (k-l >= 0) {
-        if (w[k] == 1) {
+        if (w[k-1] == 1) {
           if (u[k-l] == 1 && w[k-l] == 1) {
-            i0[k] = N-l;
+            i0[k] = l;
             Dsum += D[k-l];
             Hsum += H[k-l];
           }
           else 
-            l = N; 
+            l = N+1; 
         } else {
           if (u[k-l] == 1) {
-            i0[k] = N-l;
+            i0[k] = l;
             Dsum += D[k-l];
             Hsum += H[k-l];
-        } else 
-            l = N; 
+          } else 
+            l = N+1; 
         }
       }
     }
     
     if (Hsum > 0)
       M[k] = Dsum / (double) Hsum; 
-    else
+    else 
       M[k] = ddef[jk[k]];
-    
+
     double vmax = (M[k] > dmax[jk[k]]);
     double vmin = (M[k] < dmin[jk[k]]);
     
-    X[k] = (1-u[k])*(1-u[k-1]) * ddef[jk[k]] + 
-      u[k-1]*w[k]*round(M[k] / (double) dmin[jk[k]]) * dmin[jk[k]] +
-      (u[k]*(1-u[k-1]) + u[k-1]*(1-w[k]))*(vmax*dmax[jk[k]] + vmin*dmin[jk[k]] + (1-vmax)*(1-vmin)*ddef[jk[k]]);
+    X[k] = (1-u[k-1]) * ddef[jk[k]] + 
+      u[k-1]*w[k-1]*round(M[k] / (double) dmin[jk[k]]) * dmin[jk[k]] +
+      (u[k-1]*(1-w[k-1]))*(vmax*dmax[jk[k]] + vmin*dmin[jk[k]] + (1-vmax)*(1-vmin)*ddef[jk[k]]);
     
     if (k > 0)
       R[k] = u[k] * (D[k-1] + R[k-1] - X[k-1]*(Enum[k-1] - T[k-1]));
@@ -162,6 +168,19 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     B[k]     = as<std::string>(formatDate(wrap(Date(T[k]))));
     E[k]     = as<std::string>(formatDate(wrap(Date(Enum[k]))));
     
+    if (trace) {
+      if (k < 1)
+        Rcout << std::endl << "id = " << id[0] << std::endl;
+      Rcout << "uk = " << u[k] << ", S = " << S[k];
+      if (i0[k] > 0 && i0[k] > 1)
+        Rcout << ", Ik = {k-" << i0[k] << ", ... , k}"<< std::endl;
+      else if (i0[k] == 1)
+        Rcout << ", Ik = {k-1, k}" << std::endl;
+      else
+        Rcout << ", Ik = {k}" << std::endl;
+      
+    }   
+
   }
   
   outdata =  Rcpp::DataFrame::create(Rcpp::Named("id")     = idout,
@@ -173,6 +192,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                                      Rcpp::Named("M")      = M,
                                      Rcpp::Named("S")      = S,
                                      Rcpp::Named("H")      = H,
+                                     Rcpp::Named("nk")     = nk,
                                      Rcpp::Named("u")      = u,
                                      Rcpp::Named("w")      = w,
                                      Rcpp::Named("i0")     = i0

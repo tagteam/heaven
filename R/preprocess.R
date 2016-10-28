@@ -17,8 +17,8 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`preprocess` <- function(dpp, id = NULL) {
-  
+`preprocess` <- function(dpp, id = NULL, trace = FALSE) {
+
   ##--- only look at id=, if specified
   if (length(id) > 0) {
     drugdb <- dpp$drugdb[dpp$drugdb$id %in% id, ]
@@ -38,11 +38,15 @@
   names(indata) <- names(dpp$drugs)
   
   ##--- any treatments not found in data? 
-  trna <- sapply(indata, function(x) dim(x)[1] == 0)
-  print(cat("------------------------------","\n"))
-  print(cat("The following treatments were not found in input database:",
-            paste(names(trna)[trna], collapse = ", "), "\n"))
-  print(cat("------------------------------","\n"))
+  if (trace) {
+    trna <- sapply(indata, function(x) dim(x)[1] == 0)
+    if (sum(trna) > 0) {
+      print(cat("------------------------------","\n"))
+      print(cat("The following treatments were not found in input database:",
+                paste(names(trna)[trna], collapse = ", "), "\n"))
+      print(cat("------------------------------","\n"))
+    }
+  }
   
   return(indata)
 } 
