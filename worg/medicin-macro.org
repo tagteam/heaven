@@ -1,229 +1,82 @@
 * Introduction
 
 The Danish National Prescription Registry (NCBI) provides
-individual-level data on all prescription drugs sold in Danish
+patient-level data on all prescription drugs sold in Danish
 community pharmacies since 1994 citep:kildemoes2011danish. Effects and
 side effects of drugs can be assessed in a Danish nation wide registry
-studies. For this the prescription data are linked to the cause of
-death register and other Danish registries
-citep:thygesen2011introduction.
+study. For this the prescription data are linked to the cause of death
+register and other Danish registries citep:thygesen2011introduction.
 
-This document describes a complex algorithm for the computation of
-drug exposure strength and length relative to a prespecified study
-period \period. Note that the start of the study period has to be
-after the start of the registry.
-
+This document describes the /medicin macro/ by Christian
+Torp-Pedersen, a complex algorithm for the computation of drug
+exposure strength and length relative to a prespecified study period
+$\period$ in calendar time. Note that the start of the study period has to be after the
+start of the registry in 1994.
 
 
 * Drug prescription data
+label:sec:prescription
 
 We describe the data of a single person who has purchased the drug of
 interest at ${K}$ different dates in the study period \period. The
-setup can easily be generalized to multiple individuals. The set of
-ordered drug purchase dates for one individual is denoted as
+setup can easily be generalized to multiple patients. The set of
+ordered drug purchase dates for one patient is denoted as
 \begin{equation*}
 {T}_1< \cdots< {T}_{K}.
 \end{equation*}
-One package of each drug product is defined by the drug strength
-\(\str\) of the smallest unit (e.g., one pill or half a pill) and the
-amount of such units that it contains. For each drug we distinguish
-\(J\ge 1\) different package types according to the different
-strengths: \(\str_1 <\dots< \str_J\). 
- Note that the original SAS
-macro allowed at most 4 different package types. For each drug strength
-\(\str_j\) the values \(\smin_j\), \(\smax_j\), \(\styp_j\) define the
-minimal, maximal and typical dose per day, respectively. Since
-\(\smin_j\) is the smallest dose possible, we must have \(\str_j= p_j
-\smin_j\) for some integer \(p_j\ge 1\). The number of
-smallest units, \(\smin_j\), of type \(j\) purchased on date \(T_k\)
-is denoted by \(n_{jk}\). For each drug strength \(S_j\) we have
-\(G_{jk}\ge 0\) purchases on date \(T_k\). For \(g=1,\ldots, G_{jk}\),
-we let \(\text{pn}_{gk}\) denote the number of packages and \(\text{ps}_{gk}\) denote
-the package size of purchase \(g\).  Thus, the total amount \(D_k\) of
-the drug purchased on date \(T_k\) is given by the formula
+Here \(K\) is the number of times the patient has purchased one or
+more packages of the same drug product in the period \(\period\). One
+package of each drug product is defined by the drug strength \(\str\)
+of the smallest unit (e.g., one pill or half a pill) and the amount of
+such units that it contains. For each drug product we distinguish \(J\ge 1\)
+different package types according to the different strengths: 
+\begin{equation*}
+\str_1 <\dots< \str_J.
+\end{equation*}
+Note that the original SAS macro allowed at most 4 different package
+types but that the new implementation does not have this
+limitation. For each drug strength \(\str_j\) the values \(\smin_j\),
+\(\smax_j\), \(\styp_j\) define the minimal, maximal and typical dose
+per day, respectively. 
+
+We now describe the total amount of drug purchased on date \(T_k\) and
+the corresponding maximal number of days of supply. First, note that
+since \(\smin_j\) is the minimal dosis, one unit of strength
+\(\str_j\) can supply a maximal number of \((\str_j/\smin_j)\)
+days. Next, consider that on date \(T_k\) the patient purchases
+\(G_{jk}\) many packages of strength \(\str_j\). If the patients
+purchases no package of strength j on date \(T_k\) then
+\(G_{jk}=0\). Since each package may include a different number of
+units the total amount of units of strength \(\str_j\) purchased on date
+\(T_k\) is given by
+\begin{equation*}
+m_{jk}=\sum_{g=1}^{G_{jk}}\text{(number of units in package \(g\))}
+\end{equation*}
+We convert this number to the scale defined by smallest units and
+define the total amount of smallest units of strength \(\str_j\)
+purchased on date \(T_k\) as
+\begin{equation*}
+n_{jk} = m_{jk} \frac{\str_j}{\smin_j}.
+\end{equation*}
+The total amount \(D_k\) of the drug purchased on date \(T_k\) is
+given by the formula
 \begin{align*}
 D_k=
- \sum_{j=1}^J \,\left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \, \text{ps}_{gk} \right) 
-\str_j = 
- \sum_{j=1}^J \,
-\left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \,\text{ps}_{gk} \right) 
-p_j \smin_j = 
- \sum_{j=1}^J n_{jk}\smin_{j},
+ \sum_{j=1}^J m_{jk} S_{j} = \sum_{j=1}^J n_{jk}\smin_{j}.
 \end{align*}
-such that \( n_{jk} = 
-\left( \sum_{g=1}^{G_{jk}} \text{pn}_{gk} \, \text{ps}_{gk} \right) 
-p_j\). 
-
-
-#+BEGIN_SRC R :results output raw drawer  :exports none :session *R*  
-if (system("echo $USER",intern=TRUE)=="tag")
-    setwd("~/research/SoftWare/heaven/worg/")
-else
-    setwd("~/research/Software/medicin-macro/heaven/worg/")
-#+END_SRC
-
-#+RESULTS[<2016-10-17 16:50:14> 0862612a285251181b55a1c4c66caec26359f50d]:
-:RESULTS:
-Error: unexpected 'else' in "else"
-:END:
-
-
-#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports results :session *R* 
-par(mar=c(3.1,3.1,3.1,3.1))
-
-plot(0,0,type="n",xlim=c(10,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
-     yaxt='n', xaxt='n', axes=FALSE)
-
-vt <- c(35, 80)
-
-axis(1, at=vt, labels=c(expression(T[k-1]), expression(T[k])))
-axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
-
-vtype <- 100-seq(0, 100, length = 8)[c(2, 3, 5, 7)]
-
-axis(4, at=vtype, labels=c("(Ia)", "(Ib)", "(II)", "(III)"),
-     las=2, cex.axis=1.1, tck=0.0, lwd=0)
-
-abline(v = vt[1], lty=2)
-abline(v = vt[2], lty=2)
-
-##--- case Ia
-points(vt[1], vtype[1], pch=19, cex=1.3, bg="black")
-points(vt[2], vtype[1], pch=19, cex=2.3, bg="black")
-t12I    <- (vt[2]-vt[1])/1.25+vt[1]
-#t23I    <- (vt[3]-vt[2])/1.1+vt[2]
-segments(x0=t12I,x1=t12I,y0=vtype[1]-1,y1=vtype[1]+1,lwd=1)
-#segments(x0=t23I,x1=t23I,y0=vtype[1]-1,y1=vtype[1]+1,lwd=1)
-segments(x0=vt[1],x1=t12I,y0=vtype[1],y1=vtype[1],lwd=1)
-#segments(x0=vt[2],x1=t23I,y0=vtype[1],y1=vtype[1],lwd=1)
-
-##--- case Ib
-points(vt[1], vtype[2], pch=19, cex=1.3, bg="black")
-points(vt[2], vtype[2], pch=19, cex=1.3, bg="black")
-segments(x0=t12I,x1=t12I,y0=vtype[2]-1,y1=vtype[2]+1,lwd=1)
-#segments(x0=t23I,x1=t23I,y0=vtype[2]-1,y1=vtype[2]+1,lwd=1)
-segments(x0=vt[1],x1=t12I,y0=vtype[2],y1=vtype[2],lwd=1)
-#segments(x0=vt[2],x1=t23I,y0=vtype[2],y1=vtype[2],lwd=1)
-
-##--- case IIa
-points(vt[1], vtype[3], pch=19, cex=1.3, bg="black")
-points(vt[2], vtype[3], pch=19, cex=1.3, bg="black") 
-segments(x0=vt[1],x1=vt[2],y0=vtype[3],y1=vtype[3],lwd=1)
-#segments(x0=vt[2],x1=vt[3],y0=vtype[3],y1=vtype[3],lwd=1)
-#segments(x0=vt[3],x1=vt[3],y0=vtype[3]-1,y1=vtype[3]+1,lwd=1)
-
-##--- case IIb
-#points(vt[1], vtype[4], pch=19, cex=1.3, bg="black")
-#points(vt[2], vtype[4], pch=19, cex=1.3, bg="black") 
-#segments(x0=vt[1],x1=vt[2],y0=vtype[4],y1=vtype[4],lwd=1)
-#t23IIb    <- (vt[3]-vt[2])/1.7+vt[2]
-#segments(x0=t23IIb,x1=t23IIb,y0=vtype[4]-1,y1=vtype[4]+1,lwd=1)
-#segments(x0=vt[2],x1=t23IIb,y0=vtype[4],y1=vtype[4],lwd=1)
-
-##--- case IIIa
-points(vt[1], vtype[4], pch=19, cex=1.3, bg="black")
-points(vt[2], vtype[4], pch=19, cex=2.3, bg="black")
-segments(x0=vt[1],x1=vt[2],y0=vtype[4],y1=vtype[4],lwd=1)
-#segments(x0=vt[2],x1=vt[3],y0=vtype[5],y1=vtype[5],lwd=1)
-#segments(x0=vt[3],x1=vt[3],y0=vtype[5]-1,y1=vtype[5]+1,lwd=1)
-
-##--- case IIIb
-#t23IIIb <- (vt[3]-vt[2])/1.5+vt[2]
-#points(vt[1], vtype[6], pch=19, cex=1.3, bg="black")
-#points(vt[2], vtype[6], pch=19, cex=2.3, bg="black")
-#segments(x0=vt[1],x1=vt[2],y0=vtype[6],y1=vtype[6],lwd=1)
-#segments(x0=vt[2],x1=t23IIIb,y0=vtype[6],y1=vtype[6],lwd=1)
-#segments(x0=t23IIIb,x1=t23IIIb,y0=vtype[6]-1,y1=vtype[6]+1,lwd=1)
-
-#+END_SRC
-
-
-
-#+LABEL: fig:1
-#+ATTR_LATEX: :width 0.7 \textwidth
-#+CAPTION: Illustration of the cases to be considered when computing the average daily dosis.
-#+RESULTS:
-[[file:./drug-dat1a.pdf]]
-
-
-
-#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports results  :session *R* 
-par(mar=c(3.1,3.1,3.1,3.1))
-
-plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
-     yaxt='n', xaxt='n', axes=FALSE)
-#title(main="Case II")
-
-set.seed(9)
-vt <- sort(round(sample(100, 5)/5)*5)
-
-axis(1, at=vt, labels=c(expression(T[k-4]), expression(T[k-3]), expression(T[k-2]), expression(T[k-1]), expression(T[k])))
-axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
-
-abline(v = vt[1], lty=2)
-abline(v = vt[2], lty=2)
-abline(v = vt[3], lty=2)
-abline(v = vt[4], lty=2)
-abline(v = vt[5], lty=2)
-
-vtype <- c(25, 75)
-axis(4, at=vtype, labels=c(expression(I[k]^(2)), expression(I[k]^(1))),
-     las=2, cex.axis=1.1, tck=0.0, lwd=0)
-
-
-##--- for w=2
-points(vt[1], vtype[1], pch=19, cex=1.3, bg="black")
-points(vt[2], vtype[1], pch=19, cex=1.3, bg="black")
-points(vt[3], vtype[1], pch=19, cex=1.3, bg="black", col="red")
-points(vt[4], vtype[1], pch=19, cex=1.3, bg="black", col="red")
-points(vt[5], vtype[1], pch=19, cex=1.3, bg="black", col="red")
-
-segments(x0=vt[1],x1=vt[2],y0=vtype[1],y1=vtype[1],lwd=1)
-
-t32 <- (vt[3]-vt[2])/2+vt[2]
-segments(x0=vt[2],x1=t32,y0=vtype[1],y1=vtype[1],lwd=1)
-segments(x0=t32,x1=t32,y0=vtype[1]-1,y1=vtype[1]+1,lwd=1)
-
-segments(x0=vt[3],x1=vt[4],y0=vtype[1],y1=vtype[1],lwd=2, col="red")
-segments(x0=vt[4],x1=vt[5],y0=vtype[1],y1=vtype[1],lwd=2, col="red")
-
-##--- for w=1
-points(vt[1], vtype[2], pch=19, cex=2.3, bg="black")
-points(vt[2], vtype[2], pch=19, cex=1.3, bg="black")
-points(vt[3], vtype[2], pch=19, cex=1.3, bg="black")
-points(vt[4], vtype[2], pch=19, cex=2.3, bg="black", col="red")
-points(vt[5], vtype[2], pch=19, cex=2.3, bg="black", col="red")
-
-segments(x0=vt[1],x1=vt[2],y0=vtype[2],y1=vtype[2],lwd=1)
-
-t32 <- (vt[3]-vt[2])/2+vt[2]
-segments(x0=vt[2],x1=t32,y0=vtype[2],y1=vtype[2],lwd=1)
-segments(x0=t32,x1=t32,y0=vtype[2]-1,y1=vtype[2]+1,lwd=1)
-
-segments(x0=vt[3],x1=vt[4],y0=vtype[2],y1=vtype[2],lwd=1)
-points(vt[4], vtype[2], pch=19, cex=2.3, bg="black", col="red")
-segments(x0=vt[4],x1=vt[5],y0=vtype[2],y1=vtype[2],lwd=2, col="red")
-#+END_SRC
-
-
-#+LABEL: fig:2
-#+ATTR_LATEX: :width 0.7 \textwidth
-#+CAPTION: Illustration of the periods to use when computing the average daily dosis.
-#+RESULTS:
-[[file:./drug-dat2a.pdf]]
-
+The maximal number of days of supply based on \(D_k\) is 
+\(n_k=\sum_{j=1}^J n_{jk}\).
 
 * Hospital admission data
+label:sec:hospital
 
 Hospitals usually deliver drugs for their patients. It is therefore
-hensigtsmaessig to take into account periods of hospitalization in the
-calculation of exposure lengths. For a single individual we define up
-to \(Q\) periods of hospitalization by the admission dates
-${L}_1,\ldots, {L}_{{Q}}$ and the corresponding discharge dates
-${R}_1,\ldots, {R}_{{Q}}$. 
-
-We compute the number of days hospitalized in the period \(\periodK\)
-as:
+ikke uhensigtsm\ae ssig to take into account periods of
+hospitalization in the calculation of exposure lengths. For a single
+patient we define up to \(Q\) periods of hospitalization by the
+admission dates ${L}_1,\ldots, {L}_{{Q}}$ and the corresponding
+discharge dates ${R}_1,\ldots, {R}_{{Q}}$. We compute the number of
+days a patient is hospitalized in the period \(\periodK\) as:
 \begin{align*} 
 {A}_{k} &= \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)
 \big).
@@ -232,134 +85,203 @@ H_k &= \left({T}_{k+1} - {T}_{k}\right) - {A}_{k}.
 \end{align*}
 
 FIXME: 
-- need to limit to the study period \period?
-- is the day \(T_{k+1}\) included in \periodK or not?}[3cm]
+- what if L_q <a eller R_q>b? limit to the study period \period?
+- should the day \(T_{k+1}\) be included [T_k, T_{k+1}] or not \periodK?
 
 * Exposure strength and exposure lengths
 
-The aim is to calculate the ends of the exposure periods \(E_k\) and
-for each exposure period the exposure strength per day \(X_k\). The
-calculations of exposure are based on the drug prescription data and
-the hospitalization dates and depend further on an integer \(\lag\)
-that defines the number of prescription dates back in time to use in
-the calculations of exposure in a given period \periodK.
+The aim is to estimate the ends of the exposure periods \(E_k\) and
+for each exposure period to estimate the exposure strength per day
+\(X_k\). It is important to note that the estimates are only based on
+the data of the current patient and based on specific assumptions
+which may or may not be valid for a given patient and a given drug.
+The estimates are based on the drug prescription data (Section
+ref:sec:prescription) and the hospitalization dates (Section
+ref:sec:hospital) and depend further on an integer \(\lag\) that
+defines the number of prescription dates back in time to use in the
+calculations of exposure in a given period \periodK.
 
-To express the exposure in period \(\periodK\) we first note that
-based on the total drug purchase on date \(T_k\) the individual can be
-exposed at most \(n_k=\sum_{j=1}^J n_{jk}\) days. 
+** Remark
+The original SAS macro also uses prescription dates in the future to
+estimate the current exposure strength. However, since usually the aim
+is to use the exposure in Poisson and Cox regression where this would
+violate the mathematical framework the authors of this report hesitate
+to implement this feature. To motivate the feature we would very much
+like to see an example which demonstrates that the results of the Cox
+or Poisson regression can be improved when estimates of the current
+exposure depend on future purchases of the drug.
 
-We use the following notation to indicate if the maximal number of
-exposure days exceeds the number of non-hospitalized days in period \periodK:
+** Definition of periods included in the estimates
+
+To express the exposure in period \(\periodK\) recall from section
+ref:sec:prescription that based on the total drug purchase on date
+\(T_k\) the patient can be exposed at most \(n_k=\sum_{j=1}^J n_{jk}\)
+days. We use the following notation to define potential overlap, i.e., to
+indicate if the maximal number of exposure days exceeds the number of
+non-hospitalized days in period \periodK:
 \begin{align*} 
 u_{k} = \begin{cases}
-0, & n_{k} \le H_k\\
-1, & n_{k} > H_k
-\end{cases}.
+0, & n_{k} \le H_k\,\,   \text{\bf out loud: \it the supply at \(T_k\) is empty before \(T_{k+1}\)}\\
+1, & n_{k} > H_k\,\, \text{\bf out loud: \it the supply at \(T_k\) can be sufficient to reach \(T_{k+1}\)}.
+\end{cases}
 \end{align*}
+Note that since \(n_k\) is the number of days with supply of minimal
+doses \(\smin_j\), if the actual doses are higher than the minimal
+doses, it may happen that the patient is not exposed all days in
+\(\periodK\) even if \(u_{k}=1\). The problem is that the actual doses
+are unknown.
 
-Furthermore, we use  \(\str_{j(k)}\) to denote the nearest of the predefined pill strengths not
-        exceeding the average strength computed for a period \(T_k\), that
-        is, the index \(j(k)\) is defined as, 
-      \begin{align*}
-       j(k) = \max
-    \left\lbrace 
- \ell \in \lbrace 1, \ldots, J\rbrace \, :\,  S_\ell \le 
- \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j}
- \right\rbrace. 
-      \end{align*}
-where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\, G_{jk}\) is the
-number of different drug strengths purchased on date \(T_k\) and \( \frac{1}{c_{k}} \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\,
-S_{j}\) is the average strength for period \(T_k\). Recall again, that \(c_k\) was the number of different drugs
-strengths purchased on date \(T_k\),
-      \(c_k = \sum_{j=1}^J \one \lbrace n_{jk} >0\rbrace\). \\
+A first preliminary version of the average dosis per day in period
+\(\periodK\) is calculated as
+\begin{equation*}
+ A_{k}= \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j}
+\end{equation*}
+where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
+number of different drug strengths purchased on date \(T_k\). Since
+the preliminary average \(A_{k}\) may lay between two of the available
+drug strengths we define a second still preliminary version of the
+average dosis per day as the nearest drug strengths which does not
+exceed the average strength and denote this as \(b_{k}\). That is,
+\begin{align}\label{indexj}
+j(k) &= \max \left\lbrace \ell \in \lbrace 1, \ldots, J\rbrace \, :\,  S_\ell \le  A_{k} \right\rbrace
+\intertext{identifies the nearest drug strength which does not exceed the first preliminary average strength and}
+B_{k}&=S_{j(k)}\notag
+\intertext{is this nearest drug strength.} \notag
+\end{align}
+On the following still quite long remaining part of the pilgrim trail
+towards the final estimate of the average daily dosis in period
+\(\periodK\) the next thing to do is to decide how many purchase dates
+back in time should be used. We distinguish between two cases which are also illustrated
+in Figure ref:fig:periods.
+#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports results  :session *R* :width 10 :height 4
+if (system("echo $USER",intern=TRUE)=="tag"){
+    setwd("~/research/SoftWare/heaven/worg/")
+} else{
+    setwd("~/research/Software/medicin-macro/heaven/worg/")
+}
+par(mar=c(3.1,3.1,3.1,3.1))
+plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
+     yaxt='n', xaxt='n', axes=FALSE)
+#title(main="Case II")
 
-We distinguish between two periods to be used for calculating an
-average daily dose, 
-\begin{align*}
- {I}^{(1)}_{k} = \big\lbrace \max \big( &\min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace \, :\, u_\ell = \cdots =
- u_{k-1} =1 \rbrace, \\
- &  \min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace \,:\,\str_{j(\ell)} = \cdots = \str_{j(k)}  \rbrace \big), \ldots, k-1 \big\rbrace,
-  \end{align*}
+## set.seed(9)
+## vt <- sort(round(sample(100, 5)/5)*5)
+vt <- c(5,20,35,55,75,100)
 
-and 
-\begin{align*}
-{I}^{(2)}_{k} = \big\lbrace \min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace\, : \,u_\ell = \cdots = u_{k-1} =1 \rbrace, \ldots, k-1\big\rbrace,
-\end{align*}
-Note that \(I^{(2)}_k\) begins on the earliest date \(T_{i_0}\) from
-which the sequence of prescriptions up to time \(T_k\) provides a
-large enough amount of drugs to cover the corresponding number of days
-between \(T_{i_0}\) and \(T_k\), whereas \(I^{(1)}_k\) also takes into
-account that the average doses along the sequence must be the
-same. The periods \(I_k^{(1)}\) and \(I_k^{(2)}\) are illustrated in
-Figure  ref:fig:2.   The average daily dose in the period \(I^{(w)}_k\) is then defined as,
-\begin{align*}
- M^{(w)}_k =   \frac{
-     \sum_{\ell \in I^{(w)}_k} \, D_\ell}{ \sum_{\ell \in I^{(w)}_k} \, H_\ell}, \qquad w = 1, 2. 
-\end{align*}
-At last, we define two binary variables to indicate whether the level
-of the calculated average dose for \(w=2\) is below/above the relevant minimal/maximal daily doses, 
-\begin{align*}
-v^{\max}_k = \one \left\lbrace M^{(2)}_k > \smax_{j(k)}
- \right\rbrace, \qquad
-v^{\min}_k = \one \left\lbrace M^{(2)}_k  < \smin_{j(k)}
- \right\rbrace.
-\end{align*}
+axis(1, at=vt, labels=c(expression(T[k-5]),expression(T[k-4]), expression(T[k-3]), expression(T[k-2]), expression(T[k-1]), expression(T[k])))
+axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
 
+abline(v = vt, lty=2)
 
-
-*** Calculating the doses, ${X}_1, \ldots, {X}_{{K}}$
-
-#+BEGIN_SRC latex :export results :eval t
-          The average exposure strength \( X_k\) per day for period \(\periodK\)  is
-          computed as follows. 
- An illustration of the three different cases can be found in
- Figure \ref{fig:1}.  
-          \begin{align*} 
-          &{X}_{k} =  (1-u_{k-1}) \, \styp_{j(k)}
-          \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k-1)}=\str_{j(k)}\} \,\left(
-\min \left\lbrace
-  \underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
-   p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)} \right\rbrace
-  \right)
-   \\ & \qquad +
-          \,u_{k-1} 1\{\str_{j(k-1)}\ne \str_{j(k)}\}\,
-  \Big( v^{\max}_k \, \smax_{j(k)} + v^{\min}_k \, \smin_{j(k)} + 
-  (1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
-          \end{align*}
-          Note that
-          \(\left(\min \left\lbrace \underset{p \in \mathbb{N}}{\text{argmin}} \left\vert
-              M^{(1)}_k - p\cdot \smin_{j(k)}\right\vert \cdot
-            \smin_{j(k)}\right\rbrace\right) \) is the rounding of the average daily
-          dose \( M^{(1)}_k\) to the nearest factor of the relevant
-          minimal dose \(\smin_{j(k)}\). 
-
+vtype <- c(25, 75)
+## axis(4, at=vtype, labels=c(expression(I[k]^(2)), expression(I[k]^(1))),
+## las=2, cex.axis=1.1, tck=0.0, lwd=0)
+axis(4, at=vtype, labels=paste("Case",2:1),
+     las=2, cex.axis=1.1, tck=0.0, lwd=0,line=-1,xpd=NA)
+spoints <- function(a,b,pos,col,cex,lwd){
+    points(seq(a,b,5),rep(pos,length(seq(a,b,5))),pch=19,cex=cex,col=col)
+    segments(x0=a,x1=b,y0=pos,y1=pos,lwd=lwd,col=col)
+}
+##--- for case 1
+spoints(a=vt[1],b=vt[2]-10,pos=vtype[2],cex=2.3,col="black",lwd=2)
+spoints(a=vt[2],b=vt[3],pos=vtype[2],cex=1.3,col="black",lwd=1)
+spoints(a=vt[3],b=vt[4],pos=vtype[2],cex=1.3,col="black",lwd=1)
+spoints(a=vt[4],b=vt[6],pos=vtype[2],cex=2.3,col="red",lwd=2)
+##--- for case 2
+spoints(a=vt[1],b=vt[2],pos=vtype[1],cex=2.3,col="black",lwd=2)
+spoints(a=vt[2],b=vt[3]-5,pos=vtype[1],cex=1.3,col="black",lwd=1)
+## spoints(a=vt[3],b=vt[4],pos=vtype[1],cex=1.3,col="black",lwd=1)
+spoints(a=vt[3],b=vt[6],pos=vtype[1],cex=1.3,col="red",lwd=2)
 #+END_SRC
 
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: Illustration of the periods back in time to include into the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength B_{k}. The red periods are included in two cases of the estimate of the average daily dosis in period \periodK.
 #+RESULTS:
-#+BEGIN_LaTeX
-The average exposure strength \( X_k\) per day for period \(\periodK\)  is
-          computed as follows. 
- An illustration of the three different cases can be found in
- Figure \ref{fig:1}.  
-          \begin{align*} 
-          &{X}_{k} =  (1-u_{k-1}) \, \styp_{j(k)}
-          \\ & \qquad + \, u_{k-1}\, 1\{\str_{j(k-1)}=\str_{j(k)}\} \,\left(
-\min \left\lbrace
-  \underset{p \in \mathbb{N}}{\text{argmin}}  \left\vert M^{(1)}_k  - 
-   p\cdot \smin_{j(k)}\right\vert \cdot \smin_{j(k)} \right\rbrace
-  \right)
-   \\ & \qquad +
-          \,u_{k-1} 1\{\str_{j(k-1)}\ne \str_{j(k)}\}\,
-  \Big( v^{\max}_k \, \smax_{j(k)} + v^{\min}_k \, \smin_{j(k)} + 
-  (1- v^{\max}_k)(1- v^{\min}_k) \styp_{j(k)}\Big).
-          \end{align*}
-          Note that
-          \(\left(\min \left\lbrace \underset{p \in \mathbb{N}}{\text{argmin}} \left\vert
-              M^{(1)}_k - p\cdot \smin_{j(k)}\right\vert \cdot
-            \smin_{j(k)}\right\rbrace\right) \) is the rounding of the average daily
-          dose \( M^{(1)}_k\) to the nearest factor of the relevant
-          minimal dose \(\smin_{j(k)}\).
-#+END_LaTeX
+[[file:./drug-dat2a.pdf]]
+
+
+\noindent *Case 1* \it \(T_{ {I}^{(1)}_{k}}\) \it is the closest purchase
+date back in time, such that there is both continuous potential
+overlap and average dosis match. The index is defined as\rm
+\begin{align*}
+ {I}^{(1)}_{k} = &\max \big( \min \lbrace \ell\in \lbrace 1, \ldots, k\rbrace \, :\, u_\ell = \cdots =
+ u_{k-1} =1 \rbrace, \\
+  &\min \lbrace \ell\in \lbrace 1, \ldots, k\rbrace \,:\, B_{\ell} = \cdots = B_{k}  \rbrace \big),
+\intertext{\it The average daily dose in the period \([T_{ {I}^{(1)}_{k}}, T_{k+1})\) is defined as}
+ M^{(1)}_k =   &\frac{ \sum_{\ell= I^{(1)}_k}^{k-1} \, D_\ell}{ \sum_{\ell= I^{(1)}_k}^{k-1} \, H_\ell}.
+\intertext{\bf{Case 2}: \(T_{ {I}^{(2)}_{k}}\) \it is the closest purchase date back in time, such that there is
+  \it continuous potential overlap. The index is defined as}
+{I}^{(2)}_{k} =  &\min \lbrace \ell\in \lbrace 1, \ldots, J\rbrace\, : \,u_\ell = \cdots = u_{k-1} =1 \rbrace.
+\intertext{\it The average daily dose in the period \([T_{ {I}^{(2)}_{k}}, T_{k+1})\) is defined as}
+ M^{(2)}_k =   &\frac{ \sum_{\ell= I^{(2)}_k}^{k-1} \, D_\ell}{ \sum_{\ell= I^{(2)}_k}^{k-1} \, H_\ell}.
+\end{align*}
+
+At last, we define
+the rounding of the average daily dose \( M^{(1)}_k\) to the nearest
+multiple of the minimal dose \(\smin_{j(k)}\) which corresponds to
+index \(j(k)\) defined in equation eqref:indexj as
+\begin{equation*}
+W_k=\min \left\lbrace \underset{p \in
+\mathbb{N}}{\text{argmin}} \left\vert M^{(1)}_k - p\cdot
+\smin_{j(k)}\right\vert \cdot \smin_{j(k)}\right\rbrace.
+\end{equation*}
+
+
+*** Estimate of the daily dosis
+
+The final estimate of the average daily dosis \(X_k\) per day in
+period \(\periodK\) is computed as follows, the computations are
+illustrated in Figure ref:fig:cases.
+\begin{align} 
+          &{X}_{k} =  (1-u_{k-1}) \, \styp_{j(k)}\tag{No overlap}\\
+	  &+ \, u_{k-1}\bigg[\tag{Overlap}
+          \\ & \qquad 1\{B_{k-1}=B_k\} \, W_k \tag{Ia}
+	  \\ & \qquad + 1\{B_{k-1}\ne\B_k\}\, \one \left\lbrace M^{(2)}_k > \smax_{j(k)}\right\rbrace \smax_{j(k)}\tag{Ib}
+	  \\ & \qquad + 1\{B_{k-1}\ne\B_k\} + \one \left\lbrace M^{(2)}_k > \smin_{j(k)}\right\rbrace \smin_{j(k)}\tag{II}
+          \\ & \qquad + 1\{B_{k-1}\ne\B_k\}\, \one \left\lbrace M^{(2)}_k \le \smax_{j(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \le \smin_{j(k)}\right\rbrace \styp_{j(k)}\tag{III}
+	  \bigg].
+\end{align}
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports results :session *R* :width 10 :height 4
+if (system("echo $USER",intern=TRUE)=="tag"){
+    setwd("~/research/SoftWare/heaven/worg/")
+} else{
+    setwd("~/research/Software/medicin-macro/heaven/worg/")
+}
+par(mar=c(3.1,3.1,3.1,3.1))
+plot(0,0,type="n",xlim=c(30,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
+     yaxt='n', xaxt='n', axes=FALSE)
+vt <- c(35, 80)
+axis(1, at=vt, labels=c(expression(T[k-1]), expression(T[k])))
+axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
+vtype <- 100-seq(0, 100, length = 8)[c(2, 3, 5, 7)]
+axis(4, at=vtype, labels=c("(Ia)", "(Ib)", "(II)", "(III)"),
+     las=2, cex.axis=1.1, tck=0.0, lwd=0)
+abline(v = vt[1], lty=2)
+abline(v = vt[2], lty=2)
+spoints <- function(a,b,pos,col,cex,lwd){
+    points(seq(a,b,5),rep(pos,length(seq(a,b,5))),pch=19,cex=cex,col=col)
+    segments(x0=a,x1=b,y0=pos,y1=pos,lwd=lwd,col=col)
+}
+##--- for case 1a
+spoints(a=vt[1],b=vt[2]-10,pos=vtype[1],cex=1.3,col="black",lwd=2)
+spoints(a=vt[2],b=vt[2]+15,pos=vtype[1],cex=2.3,col="black",lwd=2)
+##--- for case 1b
+spoints(a=vt[1],b=vt[2]-20,pos=vtype[2],cex=1.3,col="black",lwd=2)
+spoints(a=vt[2],b=vt[2]+15,pos=vtype[2],cex=1.3,col="black",lwd=2)
+##--- for case 2
+spoints(a=vt[1],b=vt[2]+15,pos=vtype[3],cex=1.3,col="black",lwd=2)
+##--- for case 3
+spoints(a=vt[1],b=vt[2],pos=vtype[4],cex=1.3,col="black",lwd=2)
+spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
+#+END_SRC
+
+#+LABEL: fig:cases
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: Illustration of the 4 cases with overlap that enter the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength B_{k}. 
+#+RESULTS:
+[[file:./drug-dat1a.pdf]]
 
 
 *** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
@@ -378,7 +300,9 @@ The average exposure strength \( X_k\) per day for period \(\periodK\)  is
 
 * User interface
 
-#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+work in progress
+
+#+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
 obj <- dpp()
 period(obj) <- as.Date("1995-01-01","2011-01-01")
 drugdb(obj,pnr~eksd) <- recipe.db
@@ -421,7 +345,7 @@ bibliography:heaven.bib
 
 * HEADER :noexport:
 
-#+TITLE: From \texttt{\%x\_recepter} to \texttt{Rcpp}: a new user interface and an efficient algorithm
+#+TITLE: From \texttt{\%x\_recepter} to \texttt{Rcpp}: a mathematical formulation of the algorithm, a new R-user interface and an efficient implementation
 #+AUTHOR: Helene Charlotte Rytgaard and Thomas Alexander Gerds 
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
@@ -466,5 +390,4 @@ bibliography:heaven.bib
 # #+LaTeX_HEADER:\affil{Department of Biostatistics, University of Copenhagen, Copenhagen, Denmark}
 #+PROPERTY: header-args session *R*
 #+PROPERTY: header-args cache yes
-test
 
