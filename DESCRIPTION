@@ -3,7 +3,7 @@ Type: Package
 Title: Data Preparation Routines For Medical Registry Data
 Version: 0.0.1
 Date: 2016-08-03
-Author: Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter
+Author: Helene Charlotte Rytgaard, Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter
     Enemark Lund, Thomas Alexander Gerds
 Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
 Description: Fast and furious implementations of often used data preparation
@@ -23,11 +23,3 @@ Imports:
 LinkingTo: Rcpp, RcppArmadillo
 License: GPL (>= 3)
 RoxygenNote: 5.0.1
-Collate:
-    'RcppExports.R'
-    'samplediaggenerator.R'
-    'cfh.R'
-    'getAdmLimits.R'
-    'getAdmLimits2.R'
-    'heaven-package.R'
-    'samplediaggenerator.r'

@@ -48,11 +48,6 @@ datoer = data.frame(pnr = unique(sample(c(2000,1000,3000,4000,5000,6000,7000,800
 datoer = datoer[order(datoer$pnr), ]
 datoer0 = datoer
 
-write.table(recept_data, file = "/home/helene/research/Software/medicin-macro/test-sas/recept_data1.csv", 
-            quote = FALSE, sep = ",", row.names = FALSE)
-write.table(datoer0, file = "/home/helene/research/Software/medicin-macro/test-sas/datoer1.csv", 
-            quote = FALSE, sep = ",", row.names = FALSE)
-
 
 library(reshape2)
 
