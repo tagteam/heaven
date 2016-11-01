@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Aug  8 2016 (22:07)
-##           By: CTP
-##     Update #: 13
+## last-updated: Nov  1 2016 (12:34) 
+##           By: Thomas Alexander Gerds
+##     Update #: 15
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -22,7 +22,7 @@
 ##' @title Thomas's first R-version of the sas code from hell
 ##' @param dt data.table which provides variables: pnr, recno, inddto, uddto, pattype. The function assumes these variable names that can be changed
 ##' with the function call when appropriate
-##' @Details
+##' @details
 ##' dt is a data table with the following fields: inddto, uddto, pattype
 ##' if e.g. inddto has a different name, then the function call should include 'inddto="newname"'
 ##' @return
@@ -39,7 +39,7 @@
 ##' newpop[grepl('I21',diag)|substr(diag,1,3)=='410',.(AMIdto=min(inddto),first.ind=min(first.inddto),last.ud=min(last.uddto)),by=list(pnr,admnum)][]
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
-    getAdmLimits <- function(dt,admtype=0,pnr="pnr",inddto="inddto",uddto="uddto",pattype="pattype"){
+getAdmLimits <- function(dt,admtype=0,pnr="pnr",inddto="inddto",uddto="uddto",pattype="pattype"){
     stopifnot(is.data.table(dt))
     ## Select relevant pattype values
     wdt <- dt[pattype %in% admtype]

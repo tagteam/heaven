@@ -360,6 +360,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 work in progress
 
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
+library(heaven)
 d <- dpp()
 drug(d, firstdrugname) <- atc("a")
 drug(d, firstdrugname, add=TRUE) <- atc("b")
@@ -401,8 +402,6 @@ The output consists of:
 
 bibliographystyle:chicago
 bibliography:heaven.bib
-
-* 
 
 
 

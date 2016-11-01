@@ -1,23 +1,10 @@
-### dpp.R ---
-#----------------------------------------------------------------------
-## author: Helene Charlotte Rytgaard
-## created: October 14 2016
-## Version:
-## last-updated: 
-##           By: 
-##     Update #: 
-#----------------------------------------------------------------------
-##
-### Commentary:
-##
-### Change Log:
-#----------------------------------------------------------------------
-##
+##' Create data preprocessing object 
+##'
+##' Create data preprocessing object (dpp)
 ##' @title Create data preprocessing object (dpp)
-##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-dpp <- function(...) { 
+dpp <- function() { 
   out = structure(list(drugdb = NULL,
                        admdb  = NULL, 
                        drugs  = NULL, 
@@ -28,7 +15,6 @@ dpp <- function(...) {
   out
 }
 
-##' @export
 print.dpp <- function(dpp) {
   cat("preprocessing object", "\n")
   cat("-----------------", "\n")
