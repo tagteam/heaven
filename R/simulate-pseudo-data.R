@@ -61,7 +61,7 @@ names(datoer2) = c("pnr", "uddto")
 
 
 datoer = cbind(datoer1, uddto = datoer2[, 2])
-head(datoer)
+
 
 behandling     = "1a"
 antal_recepter = 5
@@ -77,8 +77,6 @@ dos = sort(dos)
 max_depot = 10
 
 (dates = c(Sys.Date()-1500, Sys.Date()+1300))
-
-head(recept_data)
 
 pnrunique = unique(recept_data$pnr)
 receptnr  = rep(1, length(recept_data$pnr))
@@ -101,19 +99,5 @@ recept_data$receptnr = receptnr
 #            quote = FALSE, sep = ",", row.names = FALSE)
 #write.table(datoer0, file = "/home/helene/research/Software/medicin-macro/test-sas/datoer1.csv", 
 #            quote = FALSE, sep = ",", row.names = FALSE)
-
-
-library(reshape2)
-
-datoer1 = melt(datoer[, 1:ncol(datoer) %% 2 == 1], id.vars = "pnr")
-datoer2 = melt(datoer[, c(0, 1, 3:ncol(datoer) %% 2) == 0], id.vars = "pnr")
-datoer1 = datoer1[order(datoer1$pnr), c(1, 3)]
-datoer2 = datoer2[order(datoer2$pnr), c(1, 3)]
-
-names(datoer1) = c("pnr", "inddto")
-names(datoer2) = c("pnr", "uddto")
-
-
-datoer = cbind(datoer1, uddto = datoer2[, 2])
 
 
