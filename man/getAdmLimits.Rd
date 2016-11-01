@@ -21,6 +21,10 @@ for all diagnoses and the examples show how e.g. the first infarction and the as
 }
 \details{
 For now pattype is ignored.
+
+
+dt is a data table with the following fields: inddto, uddto, pattype
+if e.g. inddto has a different name, then the function call should include 'inddto="newname"'
 }
 \examples{
 data(samplediag)

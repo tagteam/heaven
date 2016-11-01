@@ -1,20 +1,13 @@
-### drugdb.R ---
-#----------------------------------------------------------------------
-## author: Helene Charlotte Rytgaard
-## created: October 14 2016
-## Version:
-## last-updated: 
-##           By: 
-##     Update #: 
-#----------------------------------------------------------------------
-##
-### Commentary:
-##
-### Change Log:
-#----------------------------------------------------------------------
-##
+##' Update database
+##' 
+##' Update database
 ##' @title Update database
-##' @param ...
+##' @param dpp a 
+##' @param id a
+##' @param inddto a
+##' @param uddto a
+##' @param add a
+##' @param value a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 `admdb<-` <- function(dpp,

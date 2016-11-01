@@ -1,20 +1,9 @@
-### period.R ---
-#----------------------------------------------------------------------
-## author: Helene Charlotte Rytgaard
-## created: October 14 2016
-## Version:
-## last-updated: 
-##           By: 
-##     Update #: 
-#----------------------------------------------------------------------
-##
-### Commentary:
-##
-### Change Log:
-#----------------------------------------------------------------------
-##
+##' Update database
+##' 
+##' Update database
 ##' @title Update database
-##' @param ...
+##' @param dpp a
+##' @param value a 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 `period<-` <- function(dpp, value) {
