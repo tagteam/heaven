@@ -95,7 +95,25 @@ for (i in 1:length(pnrunique)) {
 }
 
 recept_data$receptnr = receptnr
-table(recept_data$pnr)
-dates
-dos; mindos; maxdos; typdos; 
+
+
+#write.table(recept_data, file = "/home/helene/research/Software/medicin-macro/test-sas/recept_data1.csv", 
+#            quote = FALSE, sep = ",", row.names = FALSE)
+#write.table(datoer0, file = "/home/helene/research/Software/medicin-macro/test-sas/datoer1.csv", 
+#            quote = FALSE, sep = ",", row.names = FALSE)
+
+
+library(reshape2)
+
+datoer1 = melt(datoer[, 1:ncol(datoer) %% 2 == 1], id.vars = "pnr")
+datoer2 = melt(datoer[, c(0, 1, 3:ncol(datoer) %% 2) == 0], id.vars = "pnr")
+datoer1 = datoer1[order(datoer1$pnr), c(1, 3)]
+datoer2 = datoer2[order(datoer2$pnr), c(1, 3)]
+
+names(datoer1) = c("pnr", "inddto")
+names(datoer2) = c("pnr", "uddto")
+
+
+datoer = cbind(datoer1, uddto = datoer2[, 2])
+
 
