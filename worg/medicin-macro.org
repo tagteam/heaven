@@ -482,11 +482,15 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 *** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
 
 \begin{align*}
-{R}_{k} = u_{k-1} \cdot \min \Big[ \text{maxdepot}, \, \max \big( 0, \, D_{k-1} + {R}_{k-1} - {X}_{k-1} \left( {E}_{k-1} - {T}_{k-1} \right)\big)\Big],
+{R}_{k} = u_{k-1} \cdot \min \Big[ \text{maxdepot}, \, \max \Big\lbrace 0, \, D_{k-1} + {R}_{k-1} - {X}_{k-1} \Big( {E}_{k-1} - {T}_{k-1}  -\\
+ \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)\big) \Big)\Big\rbrace\Big],
 \end{align*}
 
-where maxdepot is some user-specified maximum amount of dosis to be ``stored'' from one prescription date to the next.
-
+where maxdepot is some user-specified maximum amount of dosis to be ``stored'' from one prescription date to the next, and 
+\begin{align*}
+ \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)\big)
+\end{align*}
+is again the number of hospitalized days in the period.
 
 * User interface
 
