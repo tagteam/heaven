@@ -26,7 +26,7 @@ ordered drug purchase dates for one patient is denoted as
 \end{equation*}
 Here \(K\) is the number of times the patient has purchased one or
 more packages of the same drug product in the period \(\period\). One
-package of each drug product is defined by the drug strength \(\str\)
+package of each drug product is defined by the drug strength 
 of the smallest unit (e.g., one pill or half a pill) and the amount of
 such units that it contains. For each drug product we distinguish \(J\ge 1\)
 different package types according to the different strengths: 
@@ -35,7 +35,7 @@ different package types according to the different strengths:
 \end{equation*}
 Note that the original SAS macro allowed at most 4 different package
 types but that the new implementation does not have this
-limitation. For each drug strength \(\str_j\) the values \(\smin_j\),
+limitation. For each drug strength \(\str_j\), the values \(\smin_j\),
 \(\smax_j\), \(\styp_j\) define the minimal, maximal and typical dose
 per day, respectively. 
 
@@ -47,7 +47,7 @@ days. Next, consider that on date \(T_k\) the patient purchases
 \(G_{jk}\) many packages of strength \(\str_j\). If the patients
 purchases no package of strength j on date \(T_k\) then
 \(G_{jk}=0\). Since each package may include a different number of
-units the total amount of units of strength \(\str_j\) purchased on date
+units, the total amount of units of strength \(\str_j\) purchased on date
 \(T_k\) is given by
 \begin{equation*}
 m_{jk}=\sum_{g=1}^{G_{jk}}\text{(number of units in package \(g\))}
@@ -70,13 +70,13 @@ The maximal number of days of supply based on \(D_k\) is
 * Hospital admission data
 label:sec:hospital
 
-Hospitals usually deliver drugs for their patients. It is therefore
-ikke uhensigtsm\ae ssig to take into account periods of
-hospitalization in the calculation of exposure lengths. For a single
-patient we define up to \(Q\) periods of hospitalization by the
-admission dates ${L}_1,\ldots, {L}_{{Q}}$ and the corresponding
-discharge dates ${R}_1,\ldots, {R}_{{Q}}$. We compute the number of
-days a patient is not hospitalized in the period \(\periodK\) as:
+Hospitals usually deliver drugs for their patients. It therefore seems
+reasonable to take into account periods of hospitalization in the
+calculation of exposure lengths. For a single patient we define up to
+\(Q\) periods of hospitalization by the admission dates ${L}_1,\ldots,
+{L}_{{Q}}$ and the corresponding discharge dates ${R}_1,\ldots,
+{R}_{{Q}}$. We compute the number of days a patient is not
+hospitalized in the period \(\periodK\) as:
 \begin{align*}
 H_k &= \left({T}_{k+1} - {T}_{k}\right) - \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)\big)
 \end{align*}
@@ -118,38 +118,34 @@ indicate if the maximal number of exposure days exceeds the number of
 non-hospitalized days in period \periodK:
 \begin{align*} 
 u_{k} = \begin{cases}
-0, & n_{k} \le H_k\,\,   \text{\bf out loud: \it the supply at \(T_k\) is empty before \(T_{k+1}\)}\\
-1, & n_{k} > H_k\,\, \text{\bf out loud: \it the supply at \(T_k\) can be sufficient to reach \(T_{k+1}\)}.
+0, & n_{k} \le H_k,\,\,   \text{in words:  \it the supply at \(T_k\) is empty before \(T_{k+1}\)}\\
+1, & n_{k} > H_k,\,\, \text{in words: \it the supply at \(T_k\) can be sufficient to reach \(T_{k+1}\)}.
 \end{cases}
 \end{align*}
-Note that since \(n_k\) is the number of days with supply of minimal
-doses \(\smin_j\), if the actual doses are higher than the minimal
-doses, it may happen that the patient is not exposed all days in
-\(\periodK\) even if \(u_{k}=1\). The problem is that the actual doses
-are unknown.
 
 A first preliminary version of the average dosis per day in period
 \(\periodK\) is calculated as
 \begin{equation*}
  A_{k}= \frac{1}{c_{k}}  \sum_{j=1}^J \one \lbrace n_{jk}>0\rbrace\, S_{j}
 \end{equation*}
-where \(c_k = \sum_{j=1} ^J \one \lbrace n_{jk}>0\rbrace\) is the
+where \(c_k = \sum_{j=1} ^J  G_{jk}\) is the
 number of different drug strengths purchased on date \(T_k\). Since
 the preliminary average \(A_{k}\) may lie between two of the available
 drug strengths we define a second still preliminary version of the
 average dosis per day as the nearest drug strengths which does not
-exceed the average strength and denote this as \(b_{k}\). That is,
+exceed the average strength. That is, the index
 \begin{align}\label{indexj}
 j(k) &= \max \left\lbrace \ell \in \lbrace 1, \ldots, J\rbrace \, :\,  S_\ell \le  A_{k} \right\rbrace
-\intertext{identifies the nearest drug strength which does not exceed the first preliminary average strength and}
-B_{k}&=S_{j(k)}\notag
-\intertext{is this nearest drug strength.} \notag
 \end{align}
-On the following still quite long remaining part of the pilgrim trail
-towards the final estimate of the average daily dosis in period
-\(\periodK\) the next thing to do is to decide how many purchase dates
-back in time should be used. We distinguish between two cases which are also illustrated
-in Figure ref:fig:periods.
+identifies the nearest drug strength which does not exceed the first
+preliminary average strength, and \(S_{j(k)}\) is nearest drug
+strength. Note that in this notation, \(S_{j(k-1)}\) refers to the
+nearest drug strength of the previous prescription date.  On the
+following still quite long remaining part of the pilgrim trail towards
+the final estimate of the average daily dosis in period \(\periodK\)
+the next thing to do is to decide how many purchase dates back in time
+should be used. We distinguish between two cases which are also
+illustrated in Figure ref:fig:periods.
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports results  :session *R* :width 10 :height 4
 if (system("echo $USER",intern=TRUE)=="tag"){
@@ -194,7 +190,7 @@ spoints(a=vt[3],b=vt[6],pos=vtype[1],cex=1.3,col="red",lwd=2)
 
 #+LABEL: fig:periods
 #+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Illustration of the periods back in time to include into the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength B_{k}. The red periods are included in two cases of the estimate of the average daily dosis in period \periodK.
+#+CAPTION: Illustration of the periods back in time to include into the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength B_{k}. The red periods are included in two cases of the estimate of the average daily dosis in period \periodK. Which case to be used is determined by the cases in Figure  ref:fig:cases, such that case (II) in  Figure ref:fig:cases uses case 1 and case (III) in  Figure ref:fig:cases uses case 2.
 #+RESULTS:
 [[file:./drug-dat2a.pdf]]
 
@@ -232,12 +228,13 @@ period \(\periodK\) is computed as follows, the computations are
 illustrated in Figure ref:fig:cases.
 \begin{align} 
           &{X}_{k} =  (1-u_{k-1}) \, \styp_{j(k)}\tag{No overlap}\\
-	  &+ \, u_{k-1}\bigg[\tag{Overlap}
-          \\ & \qquad 1\{B_{k-1}=B_k\} \, W_k \tag{Ia}
-	  \\ & \qquad + 1\{B_{k-1}\ne\B_k\}\, \one \left\lbrace M^{(2)}_k > \smax_{j(k)}\right\rbrace \smax_{j(k)}\tag{Ib}
-	  \\ & \qquad + 1\{B_{k-1}\ne\B_k\}\, \one \left\lbrace M^{(2)}_k > \smin_{j(k)}\right\rbrace \smin_{j(k)}\tag{II}
-          \\ & \qquad + 1\{B_{k-1}\ne\B_k\}\, \one \left\lbrace M^{(2)}_k \le \smax_{j(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \le \smin_{j(k)}\right\rbrace \styp_{j(k)}\tag{III}
-	  \bigg].
+	  &+ \, u_{k-1} 1\{S_{j(k-1)}=S_{j(k)}\}\bigg[\tag{Overlap}
+          \\ & \qquad W_k \tag{II}
+	  \\
+\begin{split}
+ & \qquad + \one \left\lbrace M^{(2)}_k > \smax_{j(k)}\right\rbrace \smax_{j(k)} +  \one \left\lbrace M^{(2)}_k > \smin_{j(k)}\right\rbrace \smin_{j(k)}
+\\ & \qquad +  \one \left\lbrace M^{(2)}_k \le \smax_{j(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \le \smin_{j(k)}\right\rbrace \styp_{j(k)} \bigg].
+\end{split}\tag{III}
 \end{align}
 
 \noindent *Remark*: Note that the original SAS macro (even under the left-only option) also
@@ -307,26 +304,31 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 work in progress
 
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
-obj <- dpp()
-period(obj) <- as.Date("1995-01-01","2011-01-01")
-drugdb(obj,pnr~eksd) <- recipe.db
-admdb(obj,pnr~inddato+uddato) <- lpr.db
-drug(obj,~painkiller) <- atc("B097BN3V")
-dosis(obj,~painkiller) <- package(value,default=75,min=75,max=150)
-dosis(obj,~painkiller) <- package(value,default=100,min=400,max=100)
-process(obj,id=17)
+d <- dpp()
+drug(d, firstdrugname) <- atc("a")
+drug(d, firstdrugname, add=TRUE) <- atc("b")
+drug(d, firstdrugname) <- pack(c(50, 75, 100, 125), 
+                               min = c(10, 50, 25, 50), 
+                               max = c(75, 200, 150, 150), 
+                               def = c(50, 100, 100, 125))
+drugdb(d, add=FALSE, id=pnr) <- recept_data
+admdb(d) <- datoer
+period(d) <- c("2012-01-01", "2015-05-01")
+N(d) <- 2
+process(d,id=3000)
 #+END_SRC
 
-#+RESULTS[<2016-10-27 15:06:31> 51aad094598f9a1103cb0485b259143796a0aa28]:
+#+RESULTS[<2016-11-01 09:58:54> 80afc7a00ee5137b6143534504d7bb50deb33711]:
 :RESULTS:
 Error: could not find function "dpp"
-Error in period(obj) <- as.Date("1995-01-01", "2011-01-01") : 
-  object 'obj' not found
-Error: object 'recipe.db' not found
-Error: object 'lpr.db' not found
 Error: could not find function "atc"
-Error: could not find function "package"
-Error: could not find function "package"
+Error: could not find function "atc"
+ Error: could not find function "pack"
+Error: object 'recept_data' not found
+Error: object 'datoer' not found
+Error in period(d) <- c("2012-01-01", "2015-05-01") : 
+  object 'd' not found
+Error in N(d) <- 2 : object 'd' not found
 Error: could not find function "process"
 :END:
 
@@ -344,6 +346,7 @@ The output consists of:
 bibliographystyle:chicago
 bibliography:heaven.bib
 
+* 
 
 
 
