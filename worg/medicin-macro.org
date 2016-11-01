@@ -14,6 +14,8 @@ $\period$ in calendar time. Note that the start of the study period has to be af
 start of the registry in 1994.
 
 
+
+
 * Drug prescription data
 label:sec:prescription
 
@@ -65,7 +67,29 @@ D_k=
  \sum_{j=1}^J m_{jk} S_{j} = \sum_{j=1}^J n_{jk}\smin_{j}.
 \end{align*}
 The maximal number of days of supply based on \(D_k\) is 
-\(n_k=\sum_{j=1}^J n_{jk}\).
+\(n_k=\sum_{j=1}^J n_{jk}\).\\
+
+Let us consider a small example of an individual \(y\) with four
+purchase dates, \(T_1, T_2, T_3, T_4\), and a drug ``z'' with two
+different strengths, \(S_1=50\) and \(S_2=80\). On the first date, individual \(y
+\) buys two packages with drug strength \(S_1\), the first one with 15
+units and the other with 10 units, and one package with
+drug strength \(S_2\) and  10 units. This means that
+\begin{align*}
+m_{1,1} = 15 + 10 = 25, \qquad m_{2, 1} = 10.
+\end{align*}
+We let the minimal doses corresponding to \(S_1, S_2\) be \(\smin_1 = 10, \smin_2 = 20\), such that 
+\begin{align*}
+n_{1, 1} = 25 \cdot \tfrac{50}{10} = 125, \qquad 
+n_{2, 1} = 10 \cdot \tfrac{80}{20} = 40. 
+\end{align*}
+Thus, the total amount of drug purchased on date \(T_1\) is, 
+\begin{align*}
+D_1 = 125\cdot 10 + 40\cdot 20 = 2050,
+\end{align*}
+and the maximal number of days of supply is \(n_1 = 125 + 40=165 \).
+
+ 
 
 * Hospital admission data
 label:sec:hospital
@@ -80,6 +104,38 @@ hospitalized in the period \(\periodK\) as:
 \begin{align*}
 H_k &= \left({T}_{k+1} - {T}_{k}\right) - \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)\big)
 \end{align*}
+
+We consider again individual \(y \) from the previous section. Let us
+say that \(y\) was hospitalized twice. 
+
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports results  :session *R* :width 15 :height 4
+if (system("echo $USER",intern=TRUE)=="tag"){
+    setwd("~/research/SoftWare/heaven/worg/")
+} else{
+    setwd("~/research/Software/medicin-macro/heaven/worg/")
+}
+par(mar=c(3.1,3.1,3.1,3.1))
+
+T <- c("2012-05-08", "2012-11-11", "2012-12-01", "2013-01-05")
+
+## set.seed(9)
+## vt <- sort(round(sample(100, 5)/5)*5)
+vt <- sapply(T, as.Date)
+
+plot(0,0,type="n",xlim=c(vt[1]-10,vt[4]+10),ylim=c(0,100),xlab="Calendar time",ylab="", 
+     yaxt='n', xaxt='n', axes=FALSE)
+#title(main="Case II")
+
+axis(1, at=vt, labels=T, las=2)
+#+END_SRC
+
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: Illustration of the periods back in time to include into the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength B_{k}. The red periods are included in two cases of the estimate of the average daily dosis in period \periodK. Which case to be used is determined by the cases in Figure  ref:fig:cases, such that case (II) in  Figure ref:fig:cases uses case 1 and case (III) in  Figure ref:fig:cases uses case 2.
+#+RESULTS:
+[[file:./drug-dat1b.pdf]]
+
 
 FIXME: 
 - what if L_q <a eller R_q>b? limit to the study period \period?
