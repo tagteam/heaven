@@ -141,7 +141,7 @@ segments(x0=vt[1],x1=vt[2],y0=vtype[4],y1=vtype[4],lwd=1)
 
 #+LABEL: fig:1
 #+ATTR_LATEX: :width 0.7 \textwidth
-#+CAPTION: Illustration of the cases to be considered when computing the average daily dosis.
+#+CAPTION: Illustration of the cases to be considered when computing the average daily dosis. The sizes of the circles refers to the dosis strength. That is, if the sizes of the circles are the same, the dosis strengths must be the same. 
 #+RESULTS:
 [[file:./drug-dat1a.pdf]]
 
@@ -208,7 +208,7 @@ segments(x0=vt[4],x1=vt[5],y0=vtype[2],y1=vtype[2],lwd=2, col="red")
 
 #+LABEL: fig:2
 #+ATTR_LATEX: :width 0.7 \textwidth
-#+CAPTION: Illustration of the periods to use when computing the average daily dosis.
+#+CAPTION: Illustration of the periods to use when computing the average daily dosis. The sizes of the circles refers to the dosis strength. That is, if the sizes of the circles are the same, the dosis strengths must be the same.
 #+RESULTS:
 [[file:./drug-dat2a.pdf]]
 
