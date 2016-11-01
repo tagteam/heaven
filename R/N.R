@@ -17,14 +17,9 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`N<-` <-
-  function(x, ..., value) UseMethod("N<-")
-
-##' @export
 `N<-` <- function(dpp, ..., value) {
 
   dpp$N <- value
   
   return(dpp)
 }  
-

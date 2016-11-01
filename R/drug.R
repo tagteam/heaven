@@ -17,10 +17,6 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drug<-` <-
-  function(x, ..., value) UseMethod("drug<-")
-
-##' @export
 `drug<-` <- function(dpp, name, add = TRUE, value) {
   
   drugname <- deparse(substitute(name))

@@ -17,10 +17,6 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`period<-` <-
-  function(x, ..., value) UseMethod("period<-")
-
-##' @export
 `period<-` <- function(dpp, value) {
   
   dpp$period <- value
