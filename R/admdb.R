@@ -17,10 +17,6 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`admdb<-` <-
-  function(x, ..., value) UseMethod("admdb<-")
-
-##' @export
 `admdb<-` <- function(dpp,
                       id     = pnr,
                       inddto = inddto,

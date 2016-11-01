@@ -18,10 +18,6 @@
 ##' @param ...
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drugdb<-` <-
-  function(x, ..., value) UseMethod("drugdb<-")
-
-##' @export
 `drugdb<-` <- function(dpp,
                        id       = pnr,
                        atc      = atc,
