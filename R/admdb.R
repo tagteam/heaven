@@ -1,4 +1,4 @@
-##' Update database
+##' Update date database
 ##' 
 ##' Update database
 ##' @title Update database
@@ -9,7 +9,7 @@
 ##' @param add a
 ##' @param value a
 ##' @author Helene Charlotte Rytgaard
-##' @export
+##' @export  
 `admdb<-` <- function(dpp,
                       id     = pnr,
                       inddto = inddto,
