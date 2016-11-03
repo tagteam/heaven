@@ -69,27 +69,29 @@ D_k=
 The maximal number of days of supply based on \(D_k\) is 
 \(n_k=\sum_{j=1}^J n_{jk}\).\\
 
-Let us consider a small example of an individual \(y\) with four
-purchase dates, \(T_1, T_2, T_3, T_4\), and a drug with two
-different strengths, \(S_1=50\) and \(S_2=80\). On the first date, individual \(y
-\) buys two packages with drug strength \(S_1\), the first one with 15
-units and the other with 10 units, and one package with   15 units of 
-drug strength \(S_2\). This means that
+** Example
+label:sec:example
+   
+Consider an patient for who we have recorded four purchase dates,
+\(T_1, T_2, T_3, T_4\), on which the patient purchased a drug in two
+different strengths, \(S_1=50\) and \(S_2=80\). On the first date, the
+patient buys two packages with drug strength \(S_1=50\), the first one
+contains 15 pills and the other one contains 10 pills, and also one
+package with 15 pills of drug strength \(S_2=80\). This means that
 \begin{align*}
 m_{1,1} = 15 + 10 = 25, \qquad m_{2, 1} = 15.
 \end{align*}
-We let the minimal doses corresponding to \(S_1, S_2\) be \(\smin_1 = 25\) and \( \smin_2 = 20\), such that 
+We let the minimal doses corresponding to \(S_1, S_2\) be \(\smin_1 =
+25\) and \( \smin_2 = 20\). This gives
 \begin{align*}
-n_{1, 1} = 25 \cdot \tfrac{50}{25} = 50, \qquad 
-n_{2, 1} = 15 \cdot \tfrac{80}{20} = 60. 
+n_{1, 1} = 25 \cdot \frac{50}{25} = 50, \qquad 
+n_{2, 1} = 15 \cdot \frac{80}{20} = 60. 
 \end{align*}
-Thus, the total amount of drug purchased on date \(T_1\) is, 
+Thus, the total amount of drug purchased on date \(T_1\) is,
 \begin{align*}
 D_1 = 50\cdot 10 + 60\cdot 20 = 1700,
 \end{align*}
 and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).
-
- 
 
 * Hospital admission data
 label:sec:hospital
@@ -105,10 +107,10 @@ hospitalized in the period \(\periodK\) as:
 H_k &= \left({T}_{k+1} - {T}_{k}\right) - \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)\big)
 \end{align*}
 
-We consider again individual \(y \) from the previous section. Let us
-say that \(y\) was hospitalized twice. In Figure ref:fig:ex1, the four
-prescription dates for \(y \) is plotted together with \(y\)'s
-hospitalization periods.
+** Example (continued)
+We consider again the patient of the example in section
+ref:sec:example and now also assume that the patient was hospitalized twice
+(Figure ref:fig:ex1).
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports results  :session *R* :width 10 :height 3
 if (system("echo $USER",intern=TRUE)=="tag"){
@@ -117,55 +119,41 @@ if (system("echo $USER",intern=TRUE)=="tag"){
     setwd("~/research/Software/medicin-macro/heaven/worg/")
 }
 par(mar=c(3.1,3.1,3.1,3.1))
-
-T  <- c("2012-06-08", "2012-10-11", "2012-12-01", "2013-01-05")
-LR <- list(c("2012-07-02", "2012-07-21"),
-           c("2012-08-23", "2012-08-31"))
-
-## set.seed(9)
-## vt <- sort(round(sample(100, 5)/5)*5)
-vt <- sapply(T, as.Date)
-
+T  <- as.Date(c("2012-06-08", "2012-10-11", "2012-12-01", "2013-01-05"))
+LR <- list(as.Date(c("2012-07-02", "2012-07-21")),
+           as.Date(c("2012-08-23", "2012-08-31")))
 plot(0,0,type="n",xlim=c(vt[1]-10,vt[4]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
      yaxt='n', xaxt='n', axes=FALSE)
-#title(main="Case II")
-
 axis(1, at=vt, labels=T, las=0)
-
-points(vt, rep(50, length(vt)), pch=19)
-
-ssegs <- function(a, b, pos, pos2=1, col="black", lwd=1, lty=1){
+## points(vt, rep(50, length(vt)), pch=19)
+ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
     segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
-    segments(x0=a, x1=a, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
-    segments(x0=b, x1=b, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
 }
-
-ssegs(as.Date(LR[[1]][1]), as.Date(LR[[1]][2]), 50, col="red", lty=2)
-ssegs(as.Date(LR[[2]][1]), as.Date(LR[[2]][2]), 50, col="red", lty=2)
-
-ssegs(as.Date(T[1]), as.Date(LR[[1]][1]), 50)
-ssegs(as.Date(LR[[1]][2]), as.Date(LR[[2]][1]), 50)
-ssegs(as.Date(LR[[2]][2]), as.Date(T[2]), 50)
-
-ssegs(as.Date(T[2]), as.Date(T[3]), 50)
-ssegs(as.Date(T[3]), as.Date(T[4]), 50)
-
-segments(as.Date(T[1]), as.Date(T[1]), y0=0, y1=80, lty=2)
-segments(as.Date(T[2]), as.Date(T[2]), y0=0, y1=80, lty=2)
-segments(as.Date(T[3]), as.Date(T[3]), y0=0, y1=80, lty=2)
-segments(as.Date(T[4]), as.Date(T[4]), y0=0, y1=80, lty=2)
-
-legend("top", bty="n",
-   c("days non-hospitalized","days hospitalized"), lty=c(1, 2), col=c("black", "red"))
-
-
+ssegs(LR[[1]][1], LR[[1]][2], 50, col="red", lty=3,lwd=5)
+ssegs(LR[[2]][1], LR[[2]][2], 50, col="red", lty=3,lwd=5)
+ssegs(T[1], LR[[1]][1]-2, 50)
+ssegs(LR[[1]][2]+2, LR[[2]][1]-2, 50)
+ssegs(LR[[2]][2]+2, T[2], 50)
+ssegs(T[2], T[4], 50)
+## ssegs(T[3], T[4], 50)
+## ssegs(T[1], 10+as.Date(T[2]), 40, col="blue",lwd=3)
+segments(T[1], T[1], y0=0, y1=80, lty=2,lwd=1)
+segments(T[2], T[2], y0=0, y1=80, lty=2,lwd=1)
+segments(T[3], T[3], y0=0, y1=80, lty=2,lwd=1)
+segments(T[4], T[4], y0=0, y1=80, lty=2,lwd=1)
+axis(3,
+     lwd=0.1,
+     pos=80,
+     at=sort(c(T,unlist(LR))),
+     labels= c(expression(T[1]),expression(L[1]),expression(R[1]),expression(L[2]),expression(R[2]),expression(T[2]),expression(T[3]),expression(T[4])))
+legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
+       c("days non-hospitalized","days hospitalized","days of supply"), 
+       lty=c(1, 3, 1), col=c("black", "red", "blue"))
 #+END_SRC
-
-
 
 #+LABEL: fig:ex1
 #+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Example of an individual with four prescription dates (marked with bullets) and two periods of hospitalization. 
+#+CAPTION: Illustration of the four prescription dates and the two periods of hospitalization of our example patient. 
 #+RESULTS:
 [[file:./drug-dat1b.pdf]]
 
@@ -212,8 +200,10 @@ u_{k} = \begin{cases}
 \end{cases}
 \end{align*}
 
-In Figure ref:fig:ex2 an illustration for the example with individual
-\(y\) can be found. We see that \(u_1 = 1\). 
+*** Example (continued)
+
+Figure ref:fig:ex2 shows again the data of section ref:sec:example. We
+see that \(u_1 = 1\).
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports results  :session *R* :width 10 :height 3
 if (system("echo $USER",intern=TRUE)=="tag"){
@@ -222,66 +212,43 @@ if (system("echo $USER",intern=TRUE)=="tag"){
     setwd("~/research/Software/medicin-macro/heaven/worg/")
 }
 par(mar=c(3.1,3.1,3.1,3.1))
-
-T  <- c("2012-06-08", "2012-10-11", "2012-12-01", "2013-01-05")
-LR <- list(c("2012-07-02", "2012-07-21"),
-           c("2012-08-23", "2012-08-31"))
-
-## set.seed(9)
-## vt <- sort(round(sample(100, 5)/5)*5)
-vt <- sapply(T, as.Date)
-
-plot(0,0,type="n",xlim=c(vt[1]-10,vt[4]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
+T  <- as.Date(c("2012-06-08", "2012-10-11", "2012-12-01", "2013-01-05"))
+LR <- list(as.Date(c("2012-07-02", "2012-07-21")),
+           as.Date(c("2012-08-23", "2012-08-31")))
+plot(0,0,type="n",xlim=c(vt[1]-10,vt[2]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
      yaxt='n', xaxt='n', axes=FALSE)
-#title(main="Case II")
-
 axis(1, at=vt, labels=T, las=0)
-
-points(vt, rep(50, length(vt)), pch=19)
-
-ssegs <- function(a, b, pos, pos2=1, col="black", lwd=1, lty=1){
+## points(vt, rep(50, length(vt)), pch=19)
+ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
     segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
-    segments(x0=a, x1=a, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
-    segments(x0=b, x1=b, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
+    ## segments(x0=a, x1=a, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
+    ## segments(x0=b, x1=b, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
 }
-
-ssegs(as.Date(LR[[1]][1]), as.Date(LR[[1]][2]), 50, col="red", lty=2)
-ssegs(as.Date(LR[[2]][1]), as.Date(LR[[2]][2]), 50, col="red", lty=2)
-
-ssegs(as.Date(T[1]), as.Date(LR[[1]][1]), 50)
-ssegs(as.Date(LR[[1]][2]), as.Date(LR[[2]][1]), 50)
-ssegs(as.Date(LR[[2]][2]), as.Date(T[2]), 50)
-
-ssegs(as.Date(T[2]), as.Date(T[3]), 50)
-ssegs(as.Date(T[3]), as.Date(T[4]), 50)
-
-ssegs(as.Date(LR[[1]][1]), as.Date(LR[[1]][2]), 40, col="red", lty=2)
-ssegs(as.Date(LR[[2]][1]), as.Date(LR[[2]][2]), 40, col="red", lty=2)
-
-ssegs(as.Date(T[1]), as.Date(LR[[1]][1]), 40, col="blue")
-ssegs(as.Date(LR[[1]][2]), as.Date(LR[[2]][1]), 40, col="blue")
-ssegs(as.Date(LR[[2]][2]), 110 + as.Date(T[1]) + ( as.Date(LR[[1]][2]) - as.Date(LR[[1]][1]) ) + 
-       ( as.Date(LR[[2]][2]) - as.Date(LR[[2]][1]) ) , 40, col="blue")
-
-
-
-segments(as.Date(T[1]), as.Date(T[1]), y0=0, y1=80, lty=2)
-segments(as.Date(T[2]), as.Date(T[2]), y0=0, y1=80, lty=2)
-segments(as.Date(T[3]), as.Date(T[3]), y0=0, y1=80, lty=2)
-segments(as.Date(T[4]), as.Date(T[4]), y0=0, y1=80, lty=2)
-
-
-
-legend("top", bty="n",
-   c("days non-hospitalized","days hospitalized","days of supply"), 
-   lty=c(1, 2, 1), col=c("black", "red", "blue"))
-
-
+ssegs(LR[[1]][1], LR[[1]][2], 50, col="red", lty=3,lwd=5)
+ssegs(LR[[2]][1], LR[[2]][2], 50, col="red", lty=3,lwd=5)
+ssegs(T[1], LR[[1]][1]-2, 50)
+ssegs(LR[[1]][2]+2, LR[[2]][1]-2, 50)
+ssegs(LR[[2]][2]+2, T[2], 50)
+ssegs(T[2], T[4], 50)
+## ssegs(T[3], T[4], 50)
+ssegs(T[1], 10+as.Date(T[2]), 40, col="blue",lwd=3)
+segments(T[1], T[1], y0=0, y1=80, lty=2,lwd=1)
+segments(T[2], T[2], y0=0, y1=80, lty=2,lwd=1)
+segments(T[3], T[3], y0=0, y1=80, lty=2,lwd=1)
+segments(T[4], T[4], y0=0, y1=80, lty=2,lwd=1)
+axis(3,
+     lwd=0.1,
+     pos=80,
+     at=sort(c(T,unlist(LR))),
+     labels= c(expression(T[1]),expression(L[1]),expression(R[1]),expression(L[2]),expression(R[2]),expression(T[2]),expression(T[3]),expression(T[4])))
+legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
+       c("days non-hospitalized","days hospitalized","days of supply"), 
+       lty=c(1, 3, 1), col=c("black", "red", "blue"))
 #+END_SRC
 
 #+LABEL: fig:ex2
 #+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Example of  individual \(y\)'s first prescription and how far it supplies \(y\) with drugs. The maximal number of days of supply \(n_1=110\) (from Section  ref:sec:prescription) is plotted with blue.
+#+CAPTION: For our example patient the figures shows that the maximal number of days of supply \((n_1=110)\) calculated at \(T_{1}\) based on the formula in Section  ref:sec:prescription exceeds \(T_{2}\).
 #+RESULTS:
 [[file:./drug-dat2b.pdf]]
 
@@ -289,17 +256,12 @@ legend("top", bty="n",
 A first preliminary version of the average dosis per day in period
 \(\periodK\) is calculated as
 \begin{equation*}
- A_{k}= \tfrac{1}{c_{k}}  \sum_{j=1}^J G_{jk} \, S_{j}
+ A_{k}= \frac{1}{c_{k}}  \sum_{j=1}^J G_{jk} \, S_{j}
 \end{equation*}
 where \(c_k = \sum_{j=1} ^J G_{jk}\) is the total number of purchases
-on date \(T_k\). For the considered example with individual \(y\) we
-have that,
-\begin{align*}
-A_1 = \tfrac{1}{2+1} \left(2\cdot 50 + 80 \right) =  60.
-\end{align*}
+on date \(T_k\). 
 
-
- Since the preliminary average \(A_{k}\) may lie between two of the available
+Since the preliminary average \(A_{k}\) may lie between two of the available
 drug strengths we define a second, still preliminary, version of the
 average dosis per day as the nearest drug strengths which does not
 exceed the average strength. That is, the index
@@ -308,12 +270,20 @@ b(k) &= \max \left\lbrace j \in \lbrace 1, \ldots, J\rbrace \, :\,  S_j \le  A_{
 \end{align}
 identifies the nearest drug strength which does not exceed the first
 preliminary average strength, and \(S_{b(k)}\) is nearest drug
-strength. For our example, we see that \(b(1) = 1\), as \(S_1=50\) is
-the nearest drug strength not exceeding the average of \(A_1=60 \)
-computed above. Note that in this notation, \(S_{b(k-1)}\) refers to the nearest drug
-strength of the previous prescription date. Let us for instance
-consider date \(T_2\) for our individual \(y\). Then \(b(k-1)=b(1)=
-1\) and \(S_{b(k-1)} = 50\). \\
+strength. 
+
+*** Example (continued)
+
+For the patient of our example we have
+\begin{align*}
+A_1 = \frac{1}{2+1} \left(2\cdot 50 + 80 \right) =  60.
+\end{align*}
+
+We see that \(b(1) = 1\), as \(S_1=50\) is the nearest drug strength
+not exceeding the average of \(A_1=60 \) computed above. Note that in
+this notation, \(S_{b(k-1)}\) refers to the nearest drug strength of
+the previous prescription date. For instance, at date \(T_2\) of our
+patient we have \(b(k-1)=b(1)= 1\) and \(S_{b(k-1)} = 50\). \\
 
 
  On the following still quite long remaining part of the pilgrim trail
@@ -323,7 +293,7 @@ dates back in time should be used. We distinguish between two cases
 which are also illustrated in Figure ref:fig:periods. Which case to be
 used will be made clear later.
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports results  :session *R* :width 10 :height 4
+#+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports none  :session *R* :width 10 :height 4
 if (system("echo $USER",intern=TRUE)=="tag"){
     setwd("~/research/SoftWare/heaven/worg/")
 } else{
@@ -332,17 +302,13 @@ if (system("echo $USER",intern=TRUE)=="tag"){
 par(mar=c(3.1,3.1,3.1,3.1))
 plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
      yaxt='n', xaxt='n', axes=FALSE)
-#title(main="Case II")
 
 ## set.seed(9)
 ## vt <- sort(round(sample(100, 5)/5)*5)
 vt <- c(5,20,35,55,75,100)
-
 axis(1,at=vt,labels=c(expression(T[k-5]),expression(T[k-4]),expression(T[k-3]),expression(T[k-2]),expression(T[k-1]),expression(T[k])))
 axis(1,at=seq(0,100,by = 5),labels=rep(NA, 21))
-
 abline(v = vt, lty=2)
-
 vtype <- c(25, 75)
 ## axis(4, at=vtype, labels=c(expression(I[k]^(2)), expression(I[k]^(1))),
 ## las=2, cex.axis=1.1, tck=0.0, lwd=0)
@@ -364,12 +330,17 @@ spoints(a=vt[2],b=vt[3]-5,pos=vtype[1],cex=1.3,col="black",lwd=1)
 spoints(a=vt[3],b=vt[6],pos=vtype[1],cex=1.3,col="red",lwd=2)
 #+END_SRC
 
-#+LABEL: fig:periods
-#+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Illustration of the periods back in time to include into the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength B_{k}. The red periods are included in two cases of the estimate of the average daily dosis in period \periodK. Which case to be used is determined by the cases in Figure  ref:fig:cases, such that case (II) in  Figure ref:fig:cases uses case 1 and case (III) in  Figure ref:fig:cases uses case 2.
 #+RESULTS:
 [[file:./drug-dat2a.pdf]]
 
+
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: Illustration of the periods back in time to include into the final estimate of the average daily dosis at \(T_k\). Shown are two independent examples illustrating case 1 and case 2, respectively. The size of the dots indicates the preliminary average strength. The red periods are included in the final estimate of the average daily dosis in period \periodK. See also Figure ref:fig:cases.
+[[file:./drug-dat2a.pdf]]
+
+
+# Which case to be used is determined by Figure  ref:fig:cases: case (I) in  Figure ref:fig:cases corresponds to case 1  and case (II) in  Figure ref:fig:cases corresponds to case 2.
 
 \noindent *Case 1* \it \(T_{ {I}^{(1)}_{k}}\) \it is the closest purchase
 date back in time, such that there is both continuous potential
@@ -388,11 +359,8 @@ overlap and average dosis match. The index is defined as\rm
 \end{align*}
 
 
-
-
-
-
-*** Estimate of the daily dosis
+*** Final estimate of the daily dosis
+label:sec:final
 
 The final estimate of the average daily dosis \(X_k\) per day in
 period \(\periodK\) is computed as follows, the computations are
@@ -400,30 +368,31 @@ illustrated in Figure ref:fig:cases.
 \begin{align} 
           &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
 	  &+ \, u_{k-1} \bigg[\tag{Overlap}
-          \\ & \qquad  1\{S_{b(k-1)}=S_{b(k)}\} W_k \tag{II}
+          \\ & \qquad  1\{S_{b(k-1)}=S_{b(k)}\} W_k \tag{I}
 	  \\
 \begin{split}
  & \qquad +  1\{S_{b(k-1)}\neq S_{b(k)}\}\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
 \\ & \qquad + \one \left\lbrace M^{(2)}_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
 \\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \le \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
-\end{split}\tag{III}
+\end{split}\tag{II}
 \end{align}
 
-Consider again our example with individual \(y\), and say that the
-\(y\) made only one drug purchase on the second date \(T_2\), namely a
-package of 10 units of drug strength \(S_1\). We have already argued
-that \(S_{b(1)} = 50\), and now \(S_{b(2)} = 50\) as well, i.e.,
-\(S_{b(k)} = S_{b(k-1)}\) when \(k=2\). Furthermore, Figure
-ref:fig:ex2 shows that shows that \(u_1 =1\), that is, the supply of
-drugs from date \(T_1\) reaches date \(T_2\). This means that we use
-case (II) above to calculate \(X_2\) (\(k=2\)). Thus, we compute,
+*** Example (continued)
+
+We now suppose that our example patient made only one drug purchase on
+the second date \(T_2\), where he bought a package wit 10 pills of
+drug strength \(S_1\). We have already shown that \(S_{b(1)} = 50\),
+and also get \(S_{b(2)} = 50\). This means that \(S_{b(2)} =
+S_{b(1)}\). Figure ref:fig:ex2 shows that \(u_1 =1\), i.e., the
+maximal number of days of supply exceed the period from \(T_1\) to
+\(T_2\). Hence, we are in case (I) of ref:fig:cases and calculate
+\(X_2\) as
 \begin{align*}
-M_2^{(1)} = \frac{D_1}{H_1} = \frac{1700}{98} \approx 17.35,
+M_2^{(1)} = \frac{D_1}{H_1} = \frac{1700}{98} \approx 17.35.
 \end{align*}
-and we round this to the nearest multiple of \(\smin_{b(2)} = 25\),
-that is, \(X_2 = W_2 = 1\cdot \smin_{b(2)} = 25\). \\
-
-
+This value is rounded to the nearest multiple of the minimal
+corresponding dosis \(\smin_{b(2)} = 25\) and hence \(X_2 = W_2 =
+1\cdot \smin_{b(2)} = 25\). \\
 
 \noindent *Remark*: Note that the original SAS macro (even under the left-only option) also
 conditioned on the dosis at time \(T_{k+1}\) but that we do not want
@@ -438,14 +407,14 @@ if (system("echo $USER",intern=TRUE)=="tag"){
 } else{
     setwd("~/research/Software/medicin-macro/heaven/worg/")
 }
-par(mar=c(3.1,3.1,3.1,3.1))
+par(mar=c(3.1,3.1,3.1,8.1))
 plot(0,0,type="n",xlim=c(30,100),ylim=c(0,100),xlab="Calendar time",ylab="", 
      yaxt='n', xaxt='n', axes=FALSE)
 vt <- c(35, 80)
 axis(1, at=vt, labels=c(expression(T[k-1]), expression(T[k])))
 axis(1, at=seq(0, 100, by = 5), labels=rep(NA, 21))
 vtype <- 100-seq(0, 100, length = 8)[c(2, 3, 5, 7)]
-axis(4, at=vtype, labels=c("(Ia)", "(Ib)", "(II)", "(III)"),
+axis(4, at=vtype, labels=c("(no", "overlap)", "(I)", "(II)"),
      las=2, cex.axis=1.1, tck=0.0, lwd=0)
 abline(v = vt[1], lty=2)
 abline(v = vt[2], lty=2)
@@ -468,7 +437,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 
 #+LABEL: fig:cases
 #+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Illustration of the 4 cases with overlap that enter the estimate of the average daily dosis. The size of the dots indicates the second preliminary average strength S_{b(k)}. Note that (Ia) and (Ib) are just the two versions of (I) where (a) the second preliminary average strengths \(S_{b(k-1)}, S_{b(k)}\) from date \(T_{k-1}\) to date \(T_k\) are not the same and (b) where they are the same.
+#+CAPTION: Illustration of the formula for the final estimate of the daily dosis (section ref:sec:final). The size of the dots indicates the preliminary average strength S_{b(k)}. The upper most two lines illustrate the cases without overlap and the other two lines the cases with overlap.
 #+RESULTS:
 [[file:./drug-dat1a.pdf]]
 
@@ -476,7 +445,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 *** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
 
 \begin{align*}
-{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, {T}_{k} - 1+ \text{round} \left( \tfrac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg],
+{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, {T}_{k} - 1+ \text{round} \left( \frac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg],
 \end{align*}
 
 *** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
