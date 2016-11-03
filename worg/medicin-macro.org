@@ -66,8 +66,11 @@ given by the formula
 D_k=
  \sum_{j=1}^J m_{jk} S_{j} = \sum_{j=1}^J n_{jk}\smin_{j}.
 \end{align*}
+
 The maximal number of days of supply based on \(D_k\) is 
-\(n_k=\sum_{j=1}^J n_{jk}\).\\
+\begin{equation*}
+n_k=\sum_{j=1}^J n_{jk}.
+\end{equation*}
 
 ** Example
 label:sec:example
@@ -442,7 +445,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 [[file:./drug-dat1a.pdf]]
 
 
-*** Calculating the end dates, ${E}_1,\ldots, {E}_{k}$
+*** Calculating the dates of end of exposure, ${E}_1,\ldots, {E}_{k}$
 
 \begin{align*}
 {E}_{k}= \min \bigg[ {T}_{k+1}-1, \, {T}_{k} - 1+ \text{round} \left( \frac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg],
@@ -466,8 +469,11 @@ is again the number of hospitalized days in the period.
 work in progress
 
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
+Source(heaven)
 library(heaven)
 d <- dpp()
+recept_data <- simdata() 
+datoer <- simdata(which=2)
 drug(d, firstdrugname) <- atc("a")
 drug(d, firstdrugname, add=TRUE) <- atc("b")
 drug(d, firstdrugname) <- pack(c(50, 75, 100, 125), 
