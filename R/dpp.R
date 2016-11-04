@@ -8,7 +8,6 @@ dpp <- function() {
   out = structure(list(drugdb = NULL,
                        admdb  = NULL, 
                        drugs  = NULL, 
-                       dosis  = NULL, 
                        period = NULL,
                        N      = 2),
                   class = "dpp")
