@@ -37,8 +37,8 @@ simPrescriptionData <- function(n,
                                 m=10,
                                 packages=list("A07"=list(c(200,30),c(400,100),c(400,300),c(500,60)),
                                               "A12B"=list(c(750,100),c(750,250),c(75,500))),
-                                max.packages=3){
-    startDate = as.Date("1995-01-01")
+                                max.packages=3,
+                                startDate = as.Date("1995-01-01")){
     out <- rbindlist(lapply(1:n,function(i){
         pat.i <- rbindlist(lapply(1:length(packages),function(p){
             pack <- unlist(packages[p],recursive=FALSE)
