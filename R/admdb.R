@@ -13,23 +13,17 @@
 `admdb<-` <- function(dpp,
                       id     = pnr,
                       inddto = inddto,
-                      uddto  = uddto, 
-                      add = FALSE, value) {
-  
+                      uddto  = uddto,
+                      add = FALSE,
+                      value) {
     varnames <- c(deparse(substitute(id)),
                   deparse(substitute(inddto)),
                   deparse(substitute(uddto)))
-  
-  newdata        <- data.frame(id     = value[, names(value) == varnames[1]], 
-                               inddto = as.Date(value[, names(value) == varnames[2]]),
-                               uddto  = as.Date(value[, names(value) == varnames[3]]))
-
-  if (add) {
-    dpp$admdb <- rbind(dpp$admdb, newdata)
-  } else {
-    dpp$admdb <- newdata
-  }
-  
-  return(dpp)
+    if (add) {
+        dpp$admdb <- rbind(dpp$admdb, value)
+    } else {
+        dpp$admdb <- value
+    }
+    return(dpp)
 }  
 

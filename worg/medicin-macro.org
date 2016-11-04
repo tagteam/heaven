@@ -76,22 +76,6 @@ n_k=\sum_{j=1}^J n_{jk}.
 label:sec:example
 
 
-#+BEGIN_SRC R :results output drawer   :exports both :session *R* :cache yes
-library(Publish)
-data(Diabetes)
-fit=lm(chol~age+gender,data=Diabetes)
-org(fit)
-#+END_SRC
-
-#+RESULTS[<2016-11-04 16:16:30> f7dc47fec19c36837284305bb7ef9756593ba8fa]:
-:RESULTS:
-| Variable | Units  | Coefficient | CI.95         | p-value |
-|----------+--------+-------------+---------------+---------|
-| age      |        |        0.64 | [0.38;0.90]   | <0.0001 |
-| gender   | female |        0.00 | [0.00;0.00]   |  1.0000 |
-|          | male   |       -2.97 | [-11.57;5.64] |  0.4994 |
-:END:
-
    
 Consider a patient for who we have recorded four purchase dates,
 \(T_1, T_2, T_3, T_4\), on which the patient purchased a drug in two
@@ -114,7 +98,6 @@ D_1 = 50\cdot 10 + 60\cdot 20 = 1700,
 \end{align*}
 and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).
 
-** 
 * Hospital admission data
 label:sec:hospital
 
@@ -134,7 +117,7 @@ We consider again the patient of the example in section
 ref:sec:example and now also assume that the patient was hospitalized twice
 (Figure ref:fig:ex1).
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports results  :session *R* :width 10 :height 3
+#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 10 :height 3
 if (system("echo $USER",intern=TRUE)=="tag"){
     setwd("~/research/SoftWare/heaven/worg/")
 } else{
@@ -179,7 +162,7 @@ legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
 #+LABEL: fig:ex1
 #+ATTR_LATEX: :width 0.8 \textwidth
 #+CAPTION: Illustration of the four prescription dates and the two periods of hospitalization of our example patient. 
-
+[[file:./drug-dat1b.pdf]]
 FIXME: 
 - what if L_q <a eller R_q>b? limit to the study period \period?
 - should the day \(T_{k+1}\) be included [T_k, T_{k+1}] or not \periodK?
@@ -227,7 +210,7 @@ u_{k} = \begin{cases}
 Figure ref:fig:ex2 shows again the data of section ref:sec:example. We
 see that \(u_1 = 1\).
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports results  :session *R* :width 10 :height 3
+#+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports none  :session *R* :width 10 :height 3
 if (system("echo $USER",intern=TRUE)=="tag"){
     setwd("~/research/SoftWare/heaven/worg/")
 } else{
@@ -274,6 +257,7 @@ legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
 #+LABEL: fig:ex2
 #+ATTR_LATEX: :width 0.8 \textwidth
 #+CAPTION: For our example patient the figures shows that the maximal number of days of supply \((n_1=110)\) calculated at \(T_{1}\) based on the formula in Section  ref:sec:prescription exceeds \(T_{2}\).
+[[file:./drug-dat2b.pdf]]
 
 A first preliminary version of the average dosis per day in period
 \(\periodK\) is calculated as
@@ -380,6 +364,14 @@ overlap and average dosis match. The index is defined as\rm
  M^{(2)}_k =   &\frac{ \sum_{\ell= I^{(2)}_k}^{k-1} \, D_\ell}{ \sum_{\ell= I^{(2)}_k}^{k-1} \, H_\ell}.
 \end{align*}
 
+At last, we define the rounding of the average daily dose \(M^{(1)}_k\) to the nearest multiple of the minimal dose
+\(\smin_{j(k)}\) which corresponds to index \(j(k)\) defined in
+equation eqref:indexj as
+\begin{equation*}
+W_k=\max \left\lbrace \underset{p \in
+\mathbb{N}}{\text{argmin}} \left\vert M^{(1)}_k - p
+\smin_{j(k)}\right\vert \smin_{j(k)}\right\rbrace.
+\end{equation*}
 
 *** Final estimate of the daily dosis
 label:sec:final
@@ -423,7 +415,7 @@ examples that the potential damage (the mathematics of the Cox and
 Poisson regression are violated) can be counterbalanced by potential
 benefit.
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports results :session *R* :width 10 :height 4
+#+BEGIN_SRC R :results graphics :file "./drug-dat1a.pdf" :exports none :session *R* :width 10 :height 4
 if (system("echo $USER",intern=TRUE)=="tag"){
     setwd("~/research/SoftWare/heaven/worg/")
 } else{
@@ -463,6 +455,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 #+LABEL: fig:cases
 #+ATTR_LATEX: :width 0.8 \textwidth
 #+CAPTION: Illustration of the formula for the final estimate of the daily dosis (section ref:sec:final). The size of the dots indicates the preliminary average strength S_{b(k)}. The upper most two lines illustrate the cases without overlap and the other two lines the cases with overlap.
+[[file:./drug-dat1a.pdf]]
 
 *** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
 
@@ -480,12 +473,13 @@ is again the number of hospitalized days in the period.
 
 *** Calculating the dates of end of exposure, ${E}_1,\ldots, {E}_{k}$
 
- Note that \(D_k + R_k\) is the total prescription dose at \(T_k\) and
-\(X_k\) is the estimated dose per day. Therefore \(\frac{D_{k} +
-{R}_{k}}{{X}_{k}}\) is a decimal number of days. In the following,
+Note that since \(D_k + R_k\) is the total prescription dose at
+\(T_k\) and \(X_k\) is the estimated dose per day the result of
+\(\frac{D_{k} + {R}_{k}}{{X}_{k}}\) has days as unit. However, the
+result is not necessarily an integer. Therefore, in the following,
 \(\lfloor x \rfloor\) denotes the largest integer value not exceeding
 \(x\), i.e., the rounded value. The estimated end of the exposure
-period in which the daily dose is estimated as \(X_k\) is, 
+period in which the daily dose is estimated as \(X_k\) is,
 \begin{align*}
 {E}_{k}= \min \bigg({T}_{k+1}-1, \, {T}_{k} - 1+  \left\lfloor \frac{D_{k} + {R}_{k}}{{X}_{k}} \right\rfloor\bigg).
 \end{align*}
@@ -495,41 +489,110 @@ period in which the daily dose is estimated as \(X_k\) is,
 
 work in progress
 
-#+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
-# Source(heaven)
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer  :session *R* :cache yes 
+library(Publish)
 library(heaven)
+set.seed(18)
+org(simPrescriptionData(1))
+#+END_SRC
+
+#+RESULTS[<2016-11-04 17:55:17> e941c7b891ba0b6422b85eec5f5347c9dc3a4080]:
+:RESULTS:
+| pnr | atc  |       eksd | strnum | packsize | apk |
+|-----+------+------------+--------+----------+-----|
+|   1 | A07  | 1995-07-15 |    400 |      100 |   3 |
+|   1 | A07  | 1995-10-15 |    500 |       30 |   1 |
+|   1 | A07  | 1997-03-06 |    500 |       60 |   2 |
+|   1 | A07  | 1998-08-30 |    400 |       30 |   2 |
+|   1 | A07  | 1998-11-17 |    200 |       30 |   1 |
+|   1 | A07  | 2000-02-08 |    200 |      300 |   3 |
+|   1 | A07  | 2000-10-01 |    200 |       60 |   3 |
+|   1 | A07  | 2002-02-07 |    200 |      300 |   1 |
+|   1 | A07  | 2004-08-28 |    400 |       60 |   1 |
+|   1 | A12B | 1995-04-09 |     75 |      500 |   2 |
+|   1 | A12B | 1995-07-02 |    750 |      100 |   3 |
+|   1 | A12B | 1995-12-19 |    750 |      100 |   1 |
+|   1 | A12B | 1999-07-14 |    750 |      250 |   1 |
+|   1 | A12B | 2001-10-13 |    750 |      100 |   1 |
+|   1 | A12B | 2003-08-30 |    750 |      500 |   2 |
+:END:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer  :session *R* :cache yes 
+set.seed(18)
+org(simAdmissionData(1))
+#+END_SRC
+
+#+RESULTS[<2016-11-04 17:54:39> aad6f2c9c03990d61e630b28b5478151a7ca6a1a]:
+:RESULTS:
+| pnr |     inddto |      uddto |
+|-----+------------+------------|
+|   1 | 1995-07-15 | 1996-03-10 |
+|   1 | 1995-10-15 | 1996-11-19 |
+|   1 | 2000-10-01 | 2002-09-05 |
+|   1 | 2002-02-07 | 2003-04-07 |
+|   1 | 2004-08-28 | 2004-12-31 |
+:END:
+
+
+#+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
 d <- dpp()
-recept_data <- simdata() 
-datoer <- simdata(which=2)
-drug(d, firstdrugname) <- atc("a")
-drug(d, firstdrugname, add=TRUE) <- atc("b")
-drug(d, firstdrugname) <- pack(c(50, 75, 100, 125), 
+set.seed(18)
+recept_data <- simPrescriptionData(1) 
+datoer <- simAdmissionData(1)
+drug(d, "drug1") <- atc("A12B")
+## drug(d, "drug2", add=TRUE) <- atc("ATC7")
+drug(d, A12B) <- pack(c(50, 75, 100, 125), 
                                min = c(10, 50, 25, 50), 
                                max = c(75, 200, 150, 150), 
                                def = c(50, 100, 100, 125))
 drugdb(d, add=FALSE, id=pnr) <- recept_data
 admdb(d) <- datoer
-period(d) <- c("2012-01-01", "2015-05-01")
+period(d) <- as.Date(c("1995-01-01", "2015-05-01"))
 N(d) <- 2
-process(d,id=3000)
+d
 #+END_SRC
 
-#+RESULTS[<2016-11-04 16:14:49> e8dd52fbb7ab6a8eef3ca3383592ccd37dfc9dca]:
+#+RESULTS[<2016-11-04 18:25:15> 272e4cee8f6e9b86aa56a9ff64b227416075a532]:
 :RESULTS:
-[1] "ERROR : 'at' and 'labels' lengths differ, 2 != 4"
-null device 
-          1
- null device 
-          1
- null device 
-          1
-$firstdrugname
-    id   X          B          E R    D               M   S H   nk u w i0
-1 3000 125 2014-01-16 2014-01-24 0 1125 0.0000002238167 125 1 22.5 0 0  0
+preprocessing object 
+----------------- 
+
+Calculations for treatment(s): 
+ "drug1": A12B 
+ A12B:  
+
+with corresponding dose values: 
+       value min max def
+A12B.1    50  10  75  50
+A12B.2    75  50 200 100
+A12B.3   100  25 150 100
+A12B.4   125  50 150 125
+
+Using N = 2 prescriptions back in time 
+Only interested in prescriptions between 1995-01-01 and 2015-05-01
+:END:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer   :session *R* :cache yes 
+org(process(d))
+#+END_SRC
+
+#+RESULTS[<2016-11-04 18:27:51> 8ac98055c858d6ab30cb63b6158d4fd1741d1582]:
+:RESULTS:
+|   | id |   X |          B |          E | R |     D |                 M |  S |          H |   nk | u | w | i0 |
+|---+----+-----+------------+------------+---+-------+-------------------+----+------------+------+---+---+----|
+| 1 |  1 | 100 | 1995-04-09 | 1995-07-01 | 0 | 75000 |   0.0000001910856 | 75 |   84.31746 | 1500 | 1 | 0 |  0 |
+| 2 |  1 |  75 | 1995-07-02 | 1995-07-01 | 0 |     0 | 889.4954685849862 |  0 |  169.71293 |    0 | 0 | 1 |  1 |
+| 3 |  1 |  50 | 1995-12-19 | 1995-12-18 | 0 |     0 | 889.4954685849862 |  0 | 1303.29752 |    0 | 0 | 1 |  0 |
+| 4 |  1 |  50 | 1999-07-14 | 1999-07-13 | 0 |     0 | 889.4954685849862 |  0 |  821.54330 |    0 | 0 | 1 |  0 |
+| 5 |  1 |  50 | 2001-10-13 | 2001-10-12 | 0 |     0 | 889.4954685849862 |  0 |  686.68886 |    0 | 0 | 1 |  0 |
+| 6 |  1 |  50 | 2003-08-30 | 2003-08-29 | 0 |     0 | 889.4954685849862 |  0 |    1.00000 |    0 | 0 | 0 |  0 |
 :END:
 
 
-** Output
+** COMMENT Output
 
 The output consists of:
 

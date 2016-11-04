@@ -33,7 +33,7 @@ print.dpp <- function(dpp) {
   if (length(dpp$N) > 0)
     cat("Using N =", dpp$N, "prescriptions back in time", "\n")
   if (length(dpp$period) > 1)
-    cat("Only interested in prescriptions between", dpp$period[1], "and", dpp$period[2])  
+    cat("Only interested in prescriptions between", as.character(dpp$period[1]), "and", as.character(dpp$period[2]))  
   cat("\n")
 } 
 

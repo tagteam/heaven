@@ -20,13 +20,17 @@ simAdmissionData <- function(n,
                              longformat=TRUE){
     startDate = as.Date("1995-01-01")
     out <- rbindlist(lapply(1:n,function(i){
-        M = sample(0:m,size=1)
-        dates    = matrix(sort(startDate + runif(M*2,0,10*365.25)), 2, M)
-        dat.i = data.table(inddto = as.Date(dates[1, ], origin = "1970-01-01"),
-                           uddto  = as.Date(dates[2, ], origin = "1970-01-01"))
-        dat.i[, pnr:=i]
+        M = sample(1:m,size=1)
+        ind <- startDate + runif(M,0,10*365.25)
+        udd <- pmin(ind + runif(M,0,3*365.25),startDate+ 10*365.25)
+        dates = matrix(sort(startDate + runif(M*2,0,10*365.25)), 2, M)
+        dat.i = data.table(pnr=i,
+                           inddto = ind,
+                           uddto  = udd)
+        dat.i
     }))
     setkey(out, pnr, inddto)
+    setcolorder(out,c("pnr","inddto","uddto"))
     out
 }
 
