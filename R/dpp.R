@@ -8,7 +8,7 @@ dpp <- function() {
   out = structure(list(drugdb = NULL,
                        admdb  = NULL, 
                        drugs  = NULL, 
-                       period = NULL,
+                       period = c(as.Date("1994-01-01"), as.Date(Sys.Date()+5000)),
                        N      = 2),
                   class = "dpp")
   out
@@ -26,7 +26,7 @@ print.dpp <- function(dpp) {
               sapply(drugs, function(x) paste(x, collapse = ", ")), "\n"))
     cat("\n")
     doses = lapply(dpp$drugs, function(x) x$doses)
-    cat("with corresponding dosis values:", "\n")
+    cat("with corresponding dose values:", "\n")
     print(do.call("rbind", lapply(doses, function(x) as.data.frame(x))))
   } 
   cat("\n")
