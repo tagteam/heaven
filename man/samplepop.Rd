@@ -19,6 +19,7 @@ sample data to test R versions of code from hell
 
 data(samplepop)
 
+
 }
 \keyword{datasets}
 

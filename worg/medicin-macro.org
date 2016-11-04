@@ -469,7 +469,7 @@ is again the number of hospitalized days in the period.
 work in progress
 
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
-Source(heaven)
+# Source(heaven)
 library(heaven)
 d <- dpp()
 recept_data <- simdata() 
@@ -487,19 +487,19 @@ N(d) <- 2
 process(d,id=3000)
 #+END_SRC
 
-#+RESULTS[<2016-11-01 14:02:49> 66e15e5be899c48c8884cf1a12a9ce79fa138112]:
+#+RESULTS[<2016-11-03 16:14:36> 4135c20e9cb0e71c6200a95ec2be0442adbd845f]:
 :RESULTS:
-Error in library(heaven) : there is no package called ‘heaven’
-Error: could not find function "dpp"
-Error: could not find function "atc"
-Error: could not find function "atc"
- Error: could not find function "pack"
-Error: object 'recept_data' not found
-Error: object 'datoer' not found
-Error in period(d) <- c("2012-01-01", "2015-05-01") : 
-  object 'd' not found
-Error in N(d) <- 2 : object 'd' not found
-Error: could not find function "process"
+Loading required package: data.table
+data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
+The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
+
+Attaching package: ‘reshape2’
+
+The following objects are masked from ‘package:data.table’:
+
+    dcast, melt
+Error in .Call("heaven_innerprocess", PACKAGE = "heaven", dat, admdat,  : 
+  "heaven_innerprocess" not available for .Call() for package "heaven"
 :END:
 
 

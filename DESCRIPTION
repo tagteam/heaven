@@ -1,7 +1,7 @@
 Package: heaven
 Type: Package
 Title: Data Preparation Routines For Medical Registry Data
-Version: 0.0.1
+Version: 0.0.2
 Date: 2016-08-03
 Author: Helene Charlotte Rytgaard, Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter
     Enemark Lund, Thomas Alexander Gerds
@@ -14,12 +14,9 @@ Depends:
 Imports:
     stats,
     graphics,
-    Rcpp (>= 0.11.5),
     parallel,
     doParallel,
-    foreach,
-    RcppArmadillo,
-    plyr
+    foreach
 LinkingTo: Rcpp, RcppArmadillo
 License: GPL (>= 3)
 RoxygenNote: 5.0.1
