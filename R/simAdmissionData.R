@@ -22,12 +22,13 @@ simAdmissionData <- function(n,
     out <- rbindlist(lapply(1:n,function(i){
         M = sample(0:m,size=1)
         dates    = matrix(sort(startDate + runif(M*2,0,10*365.25)), 2, M)
-        dat.i = data.table(indate  = as.Date(dates[1, ], origin = "1970-01-01"),
-                           outdate = as.Date(dates[2, ], origin = "1970-01-01"))
+        dat.i = data.table(inddto = as.Date(dates[1, ], origin = "1970-01-01"),
+                           uddto  = as.Date(dates[2, ], origin = "1970-01-01"))
         dat.i[, pnr:=i]
     }))
-    setkey(out, pnr, indate)
+    setkey(out, pnr, inddto)
     out
 }
+
 
 

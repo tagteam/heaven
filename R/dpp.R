@@ -14,6 +14,7 @@ dpp <- function() {
   out
 }
 
+##' @export
 print.dpp <- function(dpp) {
   cat("preprocessing object", "\n")
   cat("-----------------", "\n")

@@ -74,8 +74,26 @@ n_k=\sum_{j=1}^J n_{jk}.
 
 ** Example
 label:sec:example
+
+
+#+BEGIN_SRC R :results output drawer   :exports both :session *R* :cache yes
+library(Publish)
+data(Diabetes)
+fit=lm(chol~age+gender,data=Diabetes)
+org(fit)
+#+END_SRC
+
+#+RESULTS[<2016-11-04 16:16:30> f7dc47fec19c36837284305bb7ef9756593ba8fa]:
+:RESULTS:
+| Variable | Units  | Coefficient | CI.95         | p-value |
+|----------+--------+-------------+---------------+---------|
+| age      |        |        0.64 | [0.38;0.90]   | <0.0001 |
+| gender   | female |        0.00 | [0.00;0.00]   |  1.0000 |
+|          | male   |       -2.97 | [-11.57;5.64] |  0.4994 |
+:END:
+
    
-Consider an patient for who we have recorded four purchase dates,
+Consider a patient for who we have recorded four purchase dates,
 \(T_1, T_2, T_3, T_4\), on which the patient purchased a drug in two
 different strengths, \(S_1=50\) and \(S_2=80\). On the first date, the
 patient buys two packages with drug strength \(S_1=50\), the first one
@@ -96,6 +114,7 @@ D_1 = 50\cdot 10 + 60\cdot 20 = 1700,
 \end{align*}
 and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).
 
+** 
 * Hospital admission data
 label:sec:hospital
 
@@ -154,12 +173,12 @@ legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
        lty=c(1, 3, 1), col=c("black", "red", "blue"))
 #+END_SRC
 
-#+LABEL: fig:ex1
-#+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Illustration of the four prescription dates and the two periods of hospitalization of our example patient. 
 #+RESULTS:
 [[file:./drug-dat1b.pdf]]
 
+#+LABEL: fig:ex1
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: Illustration of the four prescription dates and the two periods of hospitalization of our example patient. 
 
 FIXME: 
 - what if L_q <a eller R_q>b? limit to the study period \period?
@@ -249,12 +268,12 @@ legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
        lty=c(1, 3, 1), col=c("black", "red", "blue"))
 #+END_SRC
 
-#+LABEL: fig:ex2
-#+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: For our example patient the figures shows that the maximal number of days of supply \((n_1=110)\) calculated at \(T_{1}\) based on the formula in Section  ref:sec:prescription exceeds \(T_{2}\).
 #+RESULTS:
 [[file:./drug-dat2b.pdf]]
 
+#+LABEL: fig:ex2
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: For our example patient the figures shows that the maximal number of days of supply \((n_1=110)\) calculated at \(T_{1}\) based on the formula in Section  ref:sec:prescription exceeds \(T_{2}\).
 
 A first preliminary version of the average dosis per day in period
 \(\periodK\) is calculated as
@@ -376,7 +395,7 @@ illustrated in Figure ref:fig:cases.
 \begin{split}
  & \qquad +  1\{S_{b(k-1)}\neq S_{b(k)}\}\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
 \\ & \qquad + \one \left\lbrace M^{(2)}_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
-\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \le \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
+\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
 \end{split}\tag{II}
 \end{align}
 
@@ -438,18 +457,12 @@ spoints(a=vt[1],b=vt[2],pos=vtype[4],cex=1.3,col="black",lwd=2)
 spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 #+END_SRC
 
-#+LABEL: fig:cases
-#+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: Illustration of the formula for the final estimate of the daily dosis (section ref:sec:final). The size of the dots indicates the preliminary average strength S_{b(k)}. The upper most two lines illustrate the cases without overlap and the other two lines the cases with overlap.
 #+RESULTS:
 [[file:./drug-dat1a.pdf]]
 
-
-*** Calculating the dates of end of exposure, ${E}_1,\ldots, {E}_{k}$
-
-\begin{align*}
-{E}_{k}= \min \bigg[ {T}_{k+1}-1, \, {T}_{k} - 1+ \text{round} \left( \frac{D_{k} + {R}_{k}}{{X}_{k}} \right)\bigg],
-\end{align*}
+#+LABEL: fig:cases
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: Illustration of the formula for the final estimate of the daily dosis (section ref:sec:final). The size of the dots indicates the preliminary average strength S_{b(k)}. The upper most two lines illustrate the cases without overlap and the other two lines the cases with overlap.
 
 *** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
 
@@ -463,6 +476,20 @@ where maxdepot is some user-specified maximum amount of dosis to be ``stored'' f
  \sum_{q=1}^{{Q}} \max \big( 0,\,\min \left({T}_{k+1},{R}_{q}\right) - \max\left({T}_{k}, {L}_{q}\right)\big)
 \end{align*}
 is again the number of hospitalized days in the period.
+
+
+*** Calculating the dates of end of exposure, ${E}_1,\ldots, {E}_{k}$
+
+ Note that \(D_k + R_k\) is the total prescription dose at \(T_k\) and
+\(X_k\) is the estimated dose per day. Therefore \(\frac{D_{k} +
+{R}_{k}}{{X}_{k}}\) is a decimal number of days. In the following,
+\(\lfloor x \rfloor\) denotes the largest integer value not exceeding
+\(x\), i.e., the rounded value. The estimated end of the exposure
+period in which the daily dose is estimated as \(X_k\) is, 
+\begin{align*}
+{E}_{k}= \min \bigg({T}_{k+1}-1, \, {T}_{k} - 1+  \left\lfloor \frac{D_{k} + {R}_{k}}{{X}_{k}} \right\rfloor\bigg).
+\end{align*}
+
 
 * User interface
 
@@ -487,19 +514,18 @@ N(d) <- 2
 process(d,id=3000)
 #+END_SRC
 
-#+RESULTS[<2016-11-03 16:14:36> 4135c20e9cb0e71c6200a95ec2be0442adbd845f]:
+#+RESULTS[<2016-11-04 16:14:49> e8dd52fbb7ab6a8eef3ca3383592ccd37dfc9dca]:
 :RESULTS:
-Loading required package: data.table
-data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
-The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
-
-Attaching package: ‘reshape2’
-
-The following objects are masked from ‘package:data.table’:
-
-    dcast, melt
-Error in .Call("heaven_innerprocess", PACKAGE = "heaven", dat, admdat,  : 
-  "heaven_innerprocess" not available for .Call() for package "heaven"
+[1] "ERROR : 'at' and 'labels' lengths differ, 2 != 4"
+null device 
+          1
+ null device 
+          1
+ null device 
+          1
+$firstdrugname
+    id   X          B          E R    D               M   S H   nk u w i0
+1 3000 125 2014-01-16 2014-01-24 0 1125 0.0000002238167 125 1 22.5 0 0  0
 :END:
 
 
