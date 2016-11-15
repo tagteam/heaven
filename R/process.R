@@ -63,6 +63,6 @@ process <- function(dpp, treatments = NULL, id = NULL,maxdepot = 10,trace = FALS
     outlist <- sapply(treatments, treatfun)
     names(outlist) <- treatments
     
-    retur
+    return(outlist)
 }
 
