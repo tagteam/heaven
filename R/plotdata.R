@@ -7,7 +7,8 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`plotdata` <- function(dpp) {
+plot.dpp <- function(dpp) {
+  
   T  <- unique(dpp$drugdb$pdate)
   LR <- lapply(1:nrow(dpp$admdb), function(i) c(dpp$admdb$inddto[i], dpp$admdb$uddto[i]))
   
