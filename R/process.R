@@ -59,10 +59,11 @@ process <- function(dpp, treatments = NULL, id = NULL,maxdepot = 10,trace = FALS
     ## })
     ## names(dpp2) <- names(dpp1)
     ## return(dpp2)
-    
-    outlist <- sapply(treatments, treatfun)
+
+    outlist <- lapply(treatments, treatfun)
     names(outlist) <- treatments
     
     return(outlist)
 }
+
 
