@@ -75,7 +75,6 @@ n_k=\sum_{j=1}^J n_{jk}.
 ** Example
 label:sec:example
 
-
    
 Consider a patient for who we have recorded four purchase dates,
 \(T_1, T_2, T_3, T_4\), on which the patient purchased a drug in two
@@ -94,9 +93,73 @@ n_{2, 1} = 15 \cdot \frac{80}{20} = 60.
 \end{align*}
 Thus, the total amount of drug purchased on date \(T_1\) is,
 \begin{align*}
-D_1 = 50\cdot 10 + 60\cdot 20 = 1700,
+D_1 = 50\cdot 25 + 60\cdot 20 = 2450,
 \end{align*}
-and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).
+and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).\\
+
+We put the date on a form appropriate for the implemented software.
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
+T  <- as.Date(c(rep("2012-06-08", 3), "2012-10-11", rep("2012-12-01",2), "2013-01-05"))
+exdata <- data.frame(pnr      = rep(1, length(T)), 
+                     atc      = rep("A07", length(T)), 
+                     eksd     = T, 
+                     strnum   = c(50, 50, 80, 50, 50, 50, 80), 
+                     packsize = c(15, 10, 15, 10, 10, 10, 15), 
+                     apk      = c(rep(1, 5), 2, 1))
+library(heaven)
+library(Publish)
+d <- dpp()
+drugdb(d) <- exdata
+org(d$drugdb)
+drug(d, exdrug) <- atc("A07")
+drug(d, exdrug) <- pack(c(50, 80),
+                        min = c(25, 20), 
+                        max = c(100, 100), 
+                        def = c(50, 60))
+set.seed(5)
+admdb(d) <- simAdmissionData(1, startDate = "2006-01-01")
+org(d$admdb)
+ex <- process(d)
+org(ex$exdrug[, names(ex$exdrug) %in% c("B", "D", "nk")])
+#+END_SRC
+
+#+RESULTS[<2016-11-15 17:09:57> fa5b719abdc534f109845196757a23f4f78b6a1a]:
+:RESULTS:
+|     |         id | atc        |      pdate | strength | npack | ppp |
+|-----+------------+------------+------------+----------+-------+-----|
+|   1 |          1 | A07        | 2012-06-08 |       50 |     1 |  15 |
+|   2 |          1 | A07        | 2012-06-08 |       50 |     1 |  10 |
+|   3 |          1 | A07        | 2012-06-08 |       80 |     1 |  15 |
+|   4 |          1 | A07        | 2012-10-11 |       50 |     1 |  10 |
+|   5 |          1 | A07        | 2012-12-01 |       50 |     1 |  10 |
+|   6 |          1 | A07        | 2012-12-01 |       50 |     2 |  10 |
+|   7 |          1 | A07        | 2013-01-05 |       80 |     1 |  15 |
+| pnr |     inddto | uddto      |            |          |       |     |
+|-----+------------+------------+------------+----------+-------+-----|
+|   1 | 2012-11-07 | 2012-11-10 |            |          |       |     |
+|   1 | 2015-03-03 | 2015-03-04 |            |          |       |     |
+|     |          B | D          |         nk |          |       |     |
+|-----+------------+------------+------------+----------+-------+-----|
+|   1 | 2012-06-08 | 2450       |        110 |          |       |     |
+|   2 | 2012-10-11 | 500        |         20 |          |       |     |
+|   3 | 2012-12-01 | 1500       |         60 |          |       |     |
+|   4 | 2013-01-05 | 1200       |         60 |          |       |     |
+:END:
+
+We illustrate how the data is preprocessed according to Section
+ref:sec:prescription.
+
+
+#+RESULTS[<2016-11-15 15:08:41> d4a28eecb5fa2bc00138bc444c3031e537d5f221]:
+:RESULTS:
+[1] 4
+:END:
+
+
+
 
 * Hospital admission data
 label:sec:hospital
@@ -118,42 +181,29 @@ ref:sec:example and now also assume that the patient was hospitalized twice
 (Figure ref:fig:ex1).
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 10 :height 3
-if (system("echo $USER",intern=TRUE)=="tag"){
-    setwd("~/research/SoftWare/heaven/worg/")
-} else{
-    setwd("~/research/Software/medicin-macro/heaven/worg/")
-}
-par(mar=c(3.1,3.1,3.1,3.1))
-T  <- as.Date(c("2012-06-08", "2012-10-11", "2012-12-01", "2013-01-05"))
-LR <- list(as.Date(c("2012-07-02", "2012-07-21")),
-           as.Date(c("2012-08-23", "2012-08-31")))
-plot(0,0,type="n",xlim=c(vt[1]-10,vt[4]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
-     yaxt='n', xaxt='n', axes=FALSE)
-axis(1, at=vt, labels=T, las=0)
-## points(vt, rep(50, length(vt)), pch=19)
-ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
-    segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
-}
-ssegs(LR[[1]][1], LR[[1]][2], 50, col="red", lty=3,lwd=5)
-ssegs(LR[[2]][1], LR[[2]][2], 50, col="red", lty=3,lwd=5)
-ssegs(T[1], LR[[1]][1]-2, 50)
-ssegs(LR[[1]][2]+2, LR[[2]][1]-2, 50)
-ssegs(LR[[2]][2]+2, T[2], 50)
-ssegs(T[2], T[4], 50)
-## ssegs(T[3], T[4], 50)
-## ssegs(T[1], 10+as.Date(T[2]), 40, col="blue",lwd=3)
-segments(T[1], T[1], y0=0, y1=80, lty=2,lwd=1)
-segments(T[2], T[2], y0=0, y1=80, lty=2,lwd=1)
-segments(T[3], T[3], y0=0, y1=80, lty=2,lwd=1)
-segments(T[4], T[4], y0=0, y1=80, lty=2,lwd=1)
-axis(3,
-     lwd=0.1,
-     pos=80,
-     at=sort(c(T,unlist(LR))),
-     labels= c(expression(T[1]),expression(L[1]),expression(R[1]),expression(L[2]),expression(R[2]),expression(T[2]),expression(T[3]),expression(T[4])))
-legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
-       c("days non-hospitalized","days hospitalized","days of supply"), 
-       lty=c(1, 3, 1), col=c("black", "red", "blue"))
+T  <- as.Date(c(rep("2012-06-08", 3), "2012-10-11", rep("2012-12-01",2), "2013-01-05"))
+exdata <- data.frame(pnr      = rep(1, length(T)), 
+                     atc      = rep("A07", length(T)), 
+                     eksd     = T, 
+                     strnum   = c(50, 50, 80, 50, 50, 50, 80), 
+                     packsize = c(15, 10, 15, 10, 10, 10, 15), 
+                     apk      = c(rep(1, 5), 2, 1))
+library(heaven)
+library(Publish)
+d <- dpp()
+drugdb(d) <- exdata
+org(d$drugdb)
+drug(d, exdrug) <- atc("A07")
+drug(d, exdrug) <- pack(c(50, 80),
+                        min = c(25, 20), 
+                        max = c(100, 100), 
+                        def = c(50, 60))
+set.seed(5)
+admdb(d) <- simAdmissionData(1, startDate = "2006-01-01")
+org(d$admdb)
+ex <- process(d)
+org(ex$exdrug[, names(ex$exdrug) %in% c("B", "D", "nk")])
+plot(d)
 #+END_SRC
 
 #+RESULTS:
