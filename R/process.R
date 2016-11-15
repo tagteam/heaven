@@ -8,7 +8,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL,maxdepot = 10,trace = FALSE) {
+process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FALSE) {
     
     period <- dpp$period
     dpp1 <- preprocess(dpp, id = id, trace = trace)
@@ -43,6 +43,7 @@ process <- function(dpp, treatments = NULL, id = NULL,maxdepot = 10,trace = FALS
         if (trace) print(cat("Missing:", paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
         baddata <- 1
       }
+      
       if (baddata)
         print(cat("Computations for treatment named", treatname, "will terminate", "\n"))
       else if (length(doses) > 0) {
@@ -56,9 +57,6 @@ process <- function(dpp, treatments = NULL, id = NULL,maxdepot = 10,trace = FALS
         return(out)
       }
     }
-    ## })
-    ## names(dpp2) <- names(dpp1)
-    ## return(dpp2)
 
     outlist <- lapply(treatments, treatfun)
     names(outlist) <- treatments

@@ -16,13 +16,14 @@
 ##' 
 ##' @export
 simAdmissionData <- function(n,
-                             m=5,
-                             longformat=TRUE){
-    startDate = as.Date("1995-01-01")
+                             m = 5,
+                             startDate = "1995-01-01", 
+                             longformat = TRUE){
+   startDate <- as.Date(startDate)
     out <- rbindlist(lapply(1:n,function(i){
         M = sample(1:m,size=1)
         ind <- startDate + runif(M,0,10*365.25)
-        udd <- pmin(ind + runif(M,0,3*365.25),startDate+ 10*365.25)
+        udd <- pmin(ind + runif(M,0,10), startDate + 10*365.25)
         dates = matrix(sort(startDate + runif(M*2,0,10*365.25)), 2, M)
         dat.i = data.table(pnr=i,
                            inddto = ind,
