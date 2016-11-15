@@ -17,10 +17,10 @@
         admdb  <- dpp$admdb
     }
     ##--- only look at relevant dates 
-    drugdb <- drugdb[pdate <= dpp$period[2] & pdate >= dpp$period[1], ]
+    drugdb <- drugdb[drugdb$pdate <= dpp$period[2] & drugdb$pdate >= dpp$period[1], ]
     ##--- only include relevant treatments, store them as list
-    atcs <- dpp$drugs[[1]][[1]]
-    indata <- drugdb[atc == atcs]
+    atcs <- unlist(sapply(dpp$drugs, function(x) x$atc))
+    indata <- drugdb[drugdb$atc %in% atcs, ]
     ## names(indata) <- names(dpp$drugs)
     ##--- any treatments not found in data? 
     if (trace) {
@@ -35,6 +35,4 @@
   
   return(indata)
 } 
-
-
 
