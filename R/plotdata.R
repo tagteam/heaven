@@ -14,10 +14,10 @@ plot.dpp <- function(dpp) {
   
   par(mar=c(3.1,3.1,3.1,3.1))
   
-  plot(0,0,type="n",xlim=c(vT[1]-10,vT[length(vT)]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
+  plot(0,0,type="n",xlim=c(T[1]-10,T[length(T)]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
        yaxt='n', xaxt='n', axes=FALSE)
-  axis(1, at=vT, labels=T, las=0)
-  ## points(vt, rep(50, length(vt)), pch=19)
+  axis(1, at=T, labels=T, las=0)
+  
   ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
     segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
     segments(a, a, y0=pos-pos2, y1=pos+pos2, lty=lty, lwd=lwd, col=col)
