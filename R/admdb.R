@@ -16,14 +16,22 @@
                       uddto  = uddto,
                       add = FALSE,
                       value) {
+    
     varnames <- c(deparse(substitute(id)),
                   deparse(substitute(inddto)),
                   deparse(substitute(uddto)))
+    
+    newdata        <- subset(value, select = varnames)
+    names(newdata) <- c("id", "inddto", "uddto")
+    
     if (add) {
-        dpp$admdb <- rbind(dpp$admdb, value)
+        dpp$admdb <- rbind(dpp$admdb, newdata)
     } else {
-        dpp$admdb <- value
+        dpp$admdb <- newdata
     }
+    
+    dpp$admdb = dpp$admdb[order(dpp$admdb$id), ]
+    
     return(dpp)
 }  
 
