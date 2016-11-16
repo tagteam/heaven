@@ -14,7 +14,7 @@ plot.dpp <- function(dpp) {
   
   par(mar=c(3.1,3.1,3.1,3.1))
   
-  plot(0,0,type="n",xlim=c(T[1]-10,T[length(T)]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
+  plot(0,0,type="n",xlim=c(T[1]-10,T[length(T)]),ylim=c(0,120),xlab="Calendar time",ylab="", 
        yaxt='n', xaxt='n', axes=FALSE)
   axis(1, at=T, labels=T, las=0)
   
