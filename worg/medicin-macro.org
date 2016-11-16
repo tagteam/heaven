@@ -96,12 +96,12 @@ Thus, the total amount of drug purchased on date \(T_1\) is,
 D_1 = 50\cdot 25 + 60\cdot 20 = 2450,
 \end{align*}
 and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).\\
-
+q
 We put the date on a form appropriate for the implemented software.
 
-
+#+name: ex1
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes
 T  <- as.Date(c(rep("2012-06-08", 3), "2012-10-11", rep("2012-12-01",2), "2013-01-05"))
 exdata <- data.frame(pnr      = rep(1, length(T)), 
                      atc      = rep("A07", length(T)), 
@@ -109,53 +109,80 @@ exdata <- data.frame(pnr      = rep(1, length(T)),
                      strnum   = c(50, 50, 80, 50, 50, 50, 80), 
                      packsize = c(15, 10, 15, 10, 10, 10, 15), 
                      apk      = c(rep(1, 5), 2, 1))
+devtools::install_github("tagteam/heaven", force = TRUE)
 library(heaven)
 library(Publish)
 d <- dpp()
 drugdb(d) <- exdata
 org(d$drugdb)
+#+END_SRC
+
+#+RESULTS[<2016-11-16 09:30:14> e82373e45e8a86c38b81a16f8cfacafbb5f61a41]:
+:RESULTS:
+Downloading GitHub repo tagteam/heaven@master
+from URL https://api.github.com/repos/tagteam/heaven/zipball/master
+Installing heaven
+'/usr/lib/R/bin/R' --no-site-file --no-environ --no-save --no-restore --quiet CMD INSTALL  \
+  '/tmp/RtmpYLc2yL/devtools8fc23d868bd/tagteam-heaven-7a382bb'  \
+  --library='/home/helene/R/x86_64-pc-linux-gnu-library/3.2' --install-tests 
+
+
+Reloading installed heaven
+|   | id | atc |      pdate | strength | npack | ppp |
+|---+----+-----+------------+----------+-------+-----|
+|  1 |  1 | A07 | 2012-06-08 |       50 |     1 |  15 |
+|  2 |  1 | A07 | 2012-06-08 |       50 |     1 |  10 |
+|  3 |  1 | A07 | 2012-06-08 |       80 |     1 |  15 |
+|  4 |  1 | A07 | 2012-10-11 |       50 |     1 |  10 |
+|  5 |  1 | A07 | 2012-12-01 |       50 |     1 |  10 |
+|  6 |  1 | A07 | 2012-12-01 |       50 |     2 |  10 |
+|  7 |  1 | A07 | 2013-01-05 |       80 |     1 |  15 |
+:END:
+
+
+Reloading installed heaven
+|   | id | atc |      pdate | strength | npack | ppp |
+|---+----+-----+------------+----------+-------+-----|
+|  1 |  1 | A07 | 2012-06-08 |       50 |     1 |  15 |
+|  2 |  1 | A07 | 2012-06-08 |       50 |     1 |  10 |
+|  3 |  1 | A07 | 2012-06-08 |       80 |     1 |  15 |
+|  4 |  1 | A07 | 2012-10-11 |       50 |     1 |  10 |
+|  5 |  1 | A07 | 2012-12-01 |       50 |     1 |  10 |
+|  6 |  1 | A07 | 2012-12-01 |       50 |     2 |  10 |
+|  7 |  1 | A07 | 2013-01-05 |       80 |     1 |  15 |
+:END:
+
+We illustrate how the data is preprocessed according to Section
+ref:sec:prescription.
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
 drug(d, exdrug) <- atc("A07")
 drug(d, exdrug) <- pack(c(50, 80),
                         min = c(25, 20), 
                         max = c(100, 100), 
                         def = c(50, 60))
-set.seed(5)
+set.seed(8)
 admdb(d) <- simAdmissionData(1, startDate = "2006-01-01")
 org(d$admdb)
 ex <- process(d)
 org(ex$exdrug[, names(ex$exdrug) %in% c("B", "D", "nk")])
 #+END_SRC
 
-#+RESULTS[<2016-11-15 17:09:57> fa5b719abdc534f109845196757a23f4f78b6a1a]:
+
+#+RESULTS[<2016-11-16 09:26:41> 097b7ff8433511e0c6a440a7ae167f1a19ea0d4b]:
 :RESULTS:
-|     |         id | atc        |      pdate | strength | npack | ppp |
-|-----+------------+------------+------------+----------+-------+-----|
-|   1 |          1 | A07        | 2012-06-08 |       50 |     1 |  15 |
-|   2 |          1 | A07        | 2012-06-08 |       50 |     1 |  10 |
-|   3 |          1 | A07        | 2012-06-08 |       80 |     1 |  15 |
-|   4 |          1 | A07        | 2012-10-11 |       50 |     1 |  10 |
-|   5 |          1 | A07        | 2012-12-01 |       50 |     1 |  10 |
-|   6 |          1 | A07        | 2012-12-01 |       50 |     2 |  10 |
-|   7 |          1 | A07        | 2013-01-05 |       80 |     1 |  15 |
-| pnr |     inddto | uddto      |            |          |       |     |
-|-----+------------+------------+------------+----------+-------+-----|
-|   1 | 2012-11-07 | 2012-11-10 |            |          |       |     |
-|   1 | 2015-03-03 | 2015-03-04 |            |          |       |     |
-|     |          B | D          |         nk |          |       |     |
-|-----+------------+------------+------------+----------+-------+-----|
-|   1 | 2012-06-08 | 2450       |        110 |          |       |     |
-|   2 | 2012-10-11 | 500        |         20 |          |       |     |
-|   3 | 2012-12-01 | 1500       |         60 |          |       |     |
-|   4 | 2013-01-05 | 1200       |         60 |          |       |     |
-:END:
-
-We illustrate how the data is preprocessed according to Section
-ref:sec:prescription.
-
-
-#+RESULTS[<2016-11-15 15:08:41> d4a28eecb5fa2bc00138bc444c3031e537d5f221]:
-:RESULTS:
-[1] 4
+| pnr |     inddto |      uddto |     |
+|-----+------------+------------+-----|
+|   1 | 2008-01-30 | 2008-02-03 |     |
+|   1 | 2012-07-08 | 2012-07-13 |     |
+|   1 | 2013-12-30 | 2014-01-10 |     |
+|     |          B |          D |  nk |
+|-----+------------+------------+-----|
+|   1 | 2012-06-08 |       4900 | 220 |
+|   2 | 2012-10-11 |       1000 |  40 |
+|   3 | 2012-12-01 |       3000 | 120 |
+|   4 | 2013-01-05 |       2400 | 120 |
 :END:
 
 
@@ -180,7 +207,7 @@ We consider again the patient of the example in section
 ref:sec:example and now also assume that the patient was hospitalized twice
 (Figure ref:fig:ex1).
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 10 :height 3
+#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 15 :height 3
 T  <- as.Date(c(rep("2012-06-08", 3), "2012-10-11", rep("2012-12-01",2), "2013-01-05"))
 exdata <- data.frame(pnr      = rep(1, length(T)), 
                      atc      = rep("A07", length(T)), 
@@ -198,7 +225,7 @@ drug(d, exdrug) <- pack(c(50, 80),
                         min = c(25, 20), 
                         max = c(100, 100), 
                         def = c(50, 60))
-set.seed(5)
+set.seed(25)
 admdb(d) <- simAdmissionData(1, startDate = "2006-01-01")
 org(d$admdb)
 ex <- process(d)
@@ -654,6 +681,8 @@ The output consists of:
 
 bibliographystyle:chicago
 bibliography:heaven.bib
+
+
 
 
 
