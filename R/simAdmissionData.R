@@ -23,7 +23,7 @@ simAdmissionData <- function(n,
     out <- rbindlist(lapply(1:n,function(i){
         M = sample(1:m,size=1)
         ind <- startDate + runif(M,0,10*365.25)
-        udd <- pmin(ind + runif(M,0,10), startDate + 10*365.25)
+        udd <- pmin(ind + runif(M,0,15), startDate + 10*365.25)
         dates = matrix(sort(startDate + runif(M*2,0,10*365.25)), 2, M)
         dat.i = data.table(pnr=i,
                            inddto = ind,
