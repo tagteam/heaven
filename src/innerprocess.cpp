@@ -40,6 +40,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   Rcpp::NumericMatrix n(K, J); 
   Rcpp::NumericVector nk(K); 
   Rcpp::NumericVector H(K);
+  Rcpp::NumericVector DH(K);
   Rcpp::NumericVector u(K);
   Rcpp::NumericVector jk(K);
   Rcpp::NumericVector w(K);
@@ -85,21 +86,18 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     
     c[k] = nevec;
     S[k] = S[k] / (double) c[k];
-    
-    double DH = 0; 
-    
-    for (int q = 0; q < admin.size(); ++q) { 
-      
-      if (pdate[k] == pdate[k] && pdate[k+1] == pdate[k+1])
-        DH += max(NumericVector::create(0, min(NumericVector::create(admout[q], pdate[k+1])) - 
-          max(NumericVector::create(admin[q], pdate[k]))));  
-    }
-    
-    if (k < K-1)
-      H[k] = max(NumericVector::create(1, pdate[k+1] - pdate[k] - DH));
-    else
+
+    if (k < K-1) {
+      for (int q = 0; q < admin.size(); ++q) { 
+        if (T[k] == T[k] && T[k+1] == T[k+1])
+          DH[k] += max(NumericVector::create(0, min(NumericVector::create(admout[q], T[k+1])) - 
+            max(NumericVector::create(admin[q], T[k]))));  
+      }
+      H[k] = max(NumericVector::create(1, T[k+1] - T[k] - DH[k]));
+    } else {
       H[k] = 1;
-    
+    }
+        
     nk[k] = sum(n(k,_));
     
     if (nk[k] > H[k] && k < K-1)
@@ -192,6 +190,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                                      Rcpp::Named("M")      = M,
                                      Rcpp::Named("S")      = S,
                                      Rcpp::Named("H")      = H,
+                                     Rcpp::Named("DH")     = DH,
                                      Rcpp::Named("nk")     = nk,
                                      Rcpp::Named("u")      = u,
                                      Rcpp::Named("w")      = w,
