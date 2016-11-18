@@ -44,7 +44,7 @@ simPrescriptionData <- function(n,
         pat.i <- rbindlist(lapply(1:length(packages),function(p){
             pack <- unlist(packages[p],recursive=FALSE)
             M=sample(1:m,size=1) ## number of prescription dates
-            data.table(eksd = startDate + runif(M,0,10*365.25),
+            data.table(eksd = startDate + runif(M,0,5*365.25),
                        atc = names(packages)[p],
                        packsize = sample(sapply(pack,"[",2),size=M,replace=TRUE),
                        apk=sample(1:max.packages,size=M,replace=TRUE),
