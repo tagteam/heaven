@@ -26,7 +26,7 @@ print.dpp <- function(dpp) {
               sapply(drugs, function(x) paste(x, collapse = ", ")), "\n"))
     cat("\n")
     doses = lapply(dpp$drugs, function(x) x$doses)
-    cat("with corresponding dose values:", "\n")
+    cat("Dose values to be used in calculations:", "\n")
     print(do.call("rbind", lapply(doses, function(x) as.data.frame(x))))
     cat("\n")
     if (length(dpp$drugdb) > 0) {
