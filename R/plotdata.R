@@ -22,7 +22,10 @@ plot.dpp <- function(dpp, drug=NULL, id=1) {
   T  <- unique(drugdb$pdate)
   T <- sort(T)
   
-  LR <- lapply(1:nrow(admdb[admdb$inddto <= T[length(T)], ]), function(i) c(admdb$inddto[i], admdb$uddto[i]))
+  nadm <- nrow(admdb[admdb$inddto <= T[length(T)], ])
+  
+  if (nadm > 0)
+    LR <- lapply(1:nadm, function(i) c(admdb$inddto[i], admdb$uddto[i]))
   
   par(mar=c(3.1,3.1,3.1,3.1))
   
@@ -45,16 +48,26 @@ plot.dpp <- function(dpp, drug=NULL, id=1) {
   }
   
   sapply(1:(length(T)-1), Tsegs)
-  sapply(LR, LRsegs)
+  if (nadm > 0)
+    sapply(LR, LRsegs)
 
+  if (nadm > 0) {
+    atvec    <- c(T, unlist(LR))
+    labelvec <- c(sapply(1:length(T), function(i) eval(bquote(expression(T[.(i)])))), 
+                  sapply(1:length(LR), function(i) c(eval(bquote(expression(L[.(i)]))),
+                                                     eval(bquote(expression(R[.(i)]))))))
+  } else {
+    atvec    <- T
+    labelvec <- sapply(1:length(T), function(i) eval(bquote(expression(T[.(i)]))))
+  }
+  
   axis(3,
        lwd=0.1,
        pos=80,
-       at=c(T, unlist(LR)),
-       labels=c(sapply(1:length(T), function(i) eval(bquote(expression(T[.(i)])))), 
-                sapply(1:length(LR), function(i) c(eval(bquote(expression(L[.(i)]))),
-                                                   eval(bquote(expression(R[.(i)])))))))
+       at=atvec,
+       labels=labelvec)
   
   sapply(T, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
-  sapply(unlist(LR), function(x) segments(x, x, y0=0, y1=80, col="red", lty=2,lwd=0.5))
+  if (nadm > 0)
+    sapply(unlist(LR), function(x) segments(x, x, y0=0, y1=80, col="red", lty=2,lwd=0.5))
 } 
