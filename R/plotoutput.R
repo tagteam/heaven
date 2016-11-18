@@ -37,7 +37,7 @@ plotoutput <- function(out, drug=NULL) {
   }
   
   Bnsegs <- function(i) {
-    ssegs(B[i], B[i]+nk[i], 50+length(B)*4-i*4, col="blue", lty=5, lwd=1)
+    ssegs(B[i], B[i]+nk[i], 50+length(B)*4-i*4, col="black", lty=5, lwd=1)
     ssegs(B[i]+nk[i], B[i]+nk[i]+DH[i], 50+length(B)*4-i*4, col="darkred", lty=5, lwd=1)
   }
   
@@ -52,7 +52,7 @@ plotoutput <- function(out, drug=NULL) {
   sapply(B, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
   
   Spoints <- function(i) {
-    points(B[i], 50+length(B)*4-i*4, pch=21, cex=2*Sjk[i]/max(Sjk), bg="blue")
+    points(B[i], 50+length(B)*4-i*4, pch=21, cex=2*Sjk[i]/max(Sjk), bg="black")
   }
   
   sapply(1:length(B), Spoints)
