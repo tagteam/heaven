@@ -12,7 +12,7 @@ plot.dpp <- function(dpp, drug=NULL, id=1) {
   if (length(drug) == 0) 
     j <- 1
   else
-    j <- 1:length(dpp$drugs)[names(dpp$drugs) == drug]
+    j <- (1:length(dpp$drugs))[names(dpp$drugs) == drug]
 
   drugdb <- data.frame(dpp$drugdb)
   drugdb <- drugdb[drugdb$atc %in% dpp$drugs[[j]]$atc & drugdb$id == id, ]

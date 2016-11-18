@@ -12,7 +12,7 @@ plotoutput <- function(out, drug=NULL, id=1) {
   if (length(drug) == 0) 
     j <- 1
   else
-    j <- 1:length(out)[names(out) == drug]
+    j <- (1:length(out))[names(out) == drug]
   
   drugout <- out[[j]]
   drugout <- drugout[drugout$id == id, ]
