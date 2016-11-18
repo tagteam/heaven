@@ -36,7 +36,7 @@ plotoutput <- function(out, drug=NULL) {
   
   Bnsegs <- function(i) {
     ssegs(B[i], B[i]+nk[i], 50+length(B)*4-i*4, col="blue", lty=5, lwd=1)
-    ssegs(B[i]+nk[i], B[i]+nk[i]+DH[i], 50+length(B)*4-i*4, col="darkblue", lty=5, lwd=1)
+    ssegs(B[i]+nk[i], B[i]+nk[i]+DH[i], 50+length(B)*4-i*4, col="darkred", lty=5, lwd=1)
   }
   
   sapply(1:length(B), Bnsegs)

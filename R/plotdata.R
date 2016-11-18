@@ -17,9 +17,9 @@ plot.dpp <- function(dpp, drug=NULL) {
   drugdb <- dpp$drugdb[dpp$drugdb$atc %in% d$drugs[[j]]$atc,]
   
   T  <- unique(drugdb$pdate)
-  LR <- lapply(1:nrow(dpp$admdb), function(i) c(dpp$admdb$inddto[i], dpp$admdb$uddto[i]))
-  
   T <- sort(T)
+  
+  LR <- lapply(1:nrow(dpp$admdb[dpp$admdb$inddto <= T[length(T)], ]), function(i) c(dpp$admdb$inddto[i], dpp$admdb$uddto[i]))
   
   par(mar=c(3.1,3.1,3.1,3.1))
   
