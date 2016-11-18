@@ -23,15 +23,6 @@
     indata <- drugdb[drugdb$atc %in% atcs, ]
     ## names(indata) <- names(dpp$drugs)
     ##--- any treatments not found in data? 
-    if (trace) {
-        trna <- sapply(indata, function(x) dim(x)[1] == 0)
-        if (sum(trna) > 0) {
-            print(cat("------------------------------","\n"))
-            print(cat("The following treatments were not found in input database:",
-                      paste(names(trna)[trna], collapse = ", "), "\n"))
-            print(cat("------------------------------","\n"))
-        }
-    }
   
   return(indata)
 } 

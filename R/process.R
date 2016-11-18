@@ -16,31 +16,35 @@ process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FA
     if (length(treatments) == 0) 
       treatments <- names(dpp$drugs)
       
-    idunique     <- unique(dpp1$id)
+    if (length(id) == 0)
+      idunique <- unique(dpp1$id)
+    else 
+      idunique <- unique(id[id %in% dpp1$id])
 
     treatfun <- function(treatname) {
 
       j            <- (1:length(dpp$drugs))[names(dpp$drugs) == treatname]
       doses        <- dpp$drugs[[j]]$doses 
-      dosesmissing <- !(dpp1$strength %in% doses$value)
+      dpp2         <- dpp1[dpp1$atc %in% dpp$drugs[[j]]$atc, ]
+      dosesmissing <- !(dpp2$strength %in% doses$value)
       
       baddata <- 0 
       
-      if (any(dpp1$pdate < 0)) {
+      if (any(dpp2$pdate < 0)) {
         if (trace) print(cat("Warning - non-valid prescription - negative date specified"))
         baddata <- 1
       } 
-      if (any(dpp1$npack < 0.0001)) {
+      if (any(dpp2$npack < 0.0001)) {
         if (trace) print(cat("Warning - non-valid prescription - number of packages not valid"))
         baddata <- 1
       } 
-      if (any(dpp1$ppp < 0.5)) {
+      if (any(dpp2$ppp < 0.5)) {
         if (trace) print(cat("Warning - non-valid prescription - pills per package not valid"))
         baddata <- 1
       } 
       if (any(dosesmissing)) {
         if (trace) print(cat("Warning - not all doses are defined for treatment named", treatname))
-        if (trace) print(cat("Missing:", paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
+        if (trace) print(cat("Missing:", paste(unique(dpp2$strength[dosesmissing]), collapse=", ")))
         baddata <- 1
       }
       
@@ -48,7 +52,7 @@ process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FA
         print(cat("Computations for treatment named", treatname, "will terminate", "\n"))
       else if (length(doses) > 0) {
         out <- do.call("rbind", lapply(1:length(idunique), function(i) {
-          dat    <- dpp1[dpp1$id == idunique[i], ]
+          dat    <- dpp2[dpp2$id == idunique[i], ]
           admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
           dat <- dat[order(dat$pdate), ]
           if (dim(dat)[1] > 0)
