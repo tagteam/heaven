@@ -21,6 +21,8 @@ plotoutput <- function(out, drug=NULL) {
   Sjk <- drugout$Sjk
   i0  <- drugout$i0
   DH  <- drugout$DH
+  w   <- c(0, drugout$w)
+  u   <- c(0, drugout$u)
   
   par(mar=c(3.1,3.1,3.1,3.1))
   
@@ -56,7 +58,19 @@ plotoutput <- function(out, drug=NULL) {
   sapply(1:length(B), Spoints)
   
   Esegs <- function(i) {
-    ssegs(B[i-i0[i]], B[i], 50+length(B)*4-length(B)*4-i*4, col="darkgreen", lty=5, lwd=1)
+    if (w[i] & u[i]) {
+      segcol <- "darkgreen"
+      text   <- "(I)"
+    } else if (u[i]) {
+      segcol <- "darkblue"
+      text   <- "(II)"
+    } else {
+      segcol <- "black"
+      text   <- ""
+    }
+    ycoor <- 50+length(B)*4-length(B)*4-i*4
+    ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
+    text(B[i]+10, ycoor, text, col=segcol)
   }
   
   sapply(1:length(B), Esegs)
