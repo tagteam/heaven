@@ -117,8 +117,8 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     double Dsum; 
     double Hsum; 
     
-  //' Dsum = 0; 
-  //'  Hsum = 0; 
+   Dsum = 0; 
+   Hsum = 0; 
     
     for (int l = 1; l < N+1; ++l) {
       if (k-l >= 0) {
