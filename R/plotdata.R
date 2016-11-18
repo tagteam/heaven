@@ -16,7 +16,7 @@ plot.dpp <- function(dpp, drug=NULL, id=1) {
 
   drugdb <- data.frame(dpp$drugdb)
   drugdb <- drugdb[drugdb$atc %in% dpp$drugs[[j]]$atc & drugdb$id == id, ]
-  admdb  <- d$admdb[d$admdb$id == id, ]
+  admdb  <- dpp$admdb[dpp$admdb$id == id, ]
   
   T  <- unique(drugdb$pdate)
   T <- sort(T)
