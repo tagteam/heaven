@@ -30,10 +30,12 @@ print.dpp <- function(dpp) {
     print(do.call("rbind", lapply(doses, function(x) as.data.frame(x))))
     cat("\n")
     if (length(dpp$drugdb) > 0) {
-      dosesindata = sapply(drugs, function(x) unique(dpp$drugdb$strength[dpp$drugdb$atc %in% x]))
-      cat("Doses found in data:", "\n", sapply(1:length(drugs), function(i)
+      dosesindata  = sapply(drugs, function(x) unique(dpp$drugdb$strength[dpp$drugdb$atc %in% x]))
+      dosesmissing = sapply(1:length(dosesindata), function(i) dosesindata[[i]][!(dosesindata[[i]] %in% sapply(doses, function(x)
+        x$value)[[i]])])
+      cat("Doses found in data and not in the above:", "\n", sapply(1:length(drugs), function(i)
         paste(paste0(names(drugs)[i], ":"),
-        sapply(dosesindata[i], function(x) paste(x, collapse = ", ")), "\n")), "\n")
+        sapply(dosesmissing[i], function(x) paste(x, collapse = ", ")), "\n")), "\n")
     }
     cat("\n")
   } 
