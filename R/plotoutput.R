@@ -7,7 +7,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plotoutput <- function(out, drug=NULL) {
+plotoutput <- function(out, drug=NULL, id=1) {
   
   if (length(drug) == 0) 
     j <- 1
@@ -15,6 +15,7 @@ plotoutput <- function(out, drug=NULL) {
     j <- 1:length(out)[names(out) == drug]
   
   drugout <- out[[j]]
+  drugout <- drugout[drugout$id == id, ]
   
   B   <- drugout$B
   nk  <- drugout$nk
