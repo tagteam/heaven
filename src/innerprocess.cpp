@@ -7,13 +7,13 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
-                                 Rcpp::DataFrame admdat,
-                                 Rcpp::List doses, 
-                                 std::string treatname,
-                                 double N, 
-                                 double maxdepot, 
-                                 bool trace
-                                   ) {
+                             Rcpp::DataFrame admdat,
+                             Rcpp::List doses, 
+                             std::string treatname,
+                             double N, 
+                             double maxdepot, 
+                             bool trace
+) {
   
   Rcpp::NumericVector dval = doses["value"];
   Rcpp::NumericVector dmin = doses["min"];
@@ -28,9 +28,9 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   
   Rcpp::NumericVector admin  = admdat["inddto"];
   Rcpp::NumericVector admout = admdat["uddto"];
-
+  
   Rcpp::NumericVector T = wrap(unique(as<arma::vec>(pdate)));
-
+  
   double K = T.size();
   double J = dval.size(); 
   
@@ -56,7 +56,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   Rcpp::NumericVector X(K);
   
   Rcpp::NumericVector strengthunique = wrap(unique(as<arma::vec>(strength)));
- 
+  
   DataFrame outdata;
   
   Function formatDate("format.Date");
@@ -73,20 +73,20 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     Rcpp::NumericVector npack1    = npack[evec];
     Rcpp::NumericVector ppp1      = ppp[evec];
     
-    for (int j = 0; j < J; j++) {
-      for (int e = 0; e < nevec; e++) {
+    for (int e = 0; e < nevec; e++) {
+      S[k] += strength1[e];
+      for (int j = 0; j < J; j++) {
         if (strength1[e] == dval[j]) {
           double ne = npack1[e] * ppp1[e] * strength1[e]; 
           D[k] += ne;
           n(k, j) += ne / (double) dmin[j];
         }
       }
-      S[k] += (n(k, j) > 0) * dval[j];
     }
     
     c[k] = nevec;
     S[k] = S[k] / (double) c[k];
-
+    
     if (k < K-1) {
       for (int q = 0; q < admin.size(); ++q) { 
         if (T[k] == T[k] && T[k+1] == T[k+1])
@@ -97,18 +97,18 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     } else {
       H[k] = 1;
     }
-        
+    
     nk[k] = sum(n(k,_));
     
     if (nk[k] > H[k] && k < K-1)
       u[k] = 1;
-
+    
     for (int j = 0; j < J; j++) {
       if (S[k] >= dval[j]) {
         jk[k] = j;
       }
     }
-  
+    
     if (jk[k] == jk[k-1] && k > 0)
       w[k-1] = 1; 
     
@@ -116,6 +116,9 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     
     double Dsum; 
     double Hsum; 
+    
+  //' Dsum = 0; 
+  //'  Hsum = 0; 
     
     for (int l = 1; l < N+1; ++l) {
       if (k-l >= 0) {
@@ -142,7 +145,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
       M[k] = Dsum / (double) Hsum; 
     else 
       M[k] = ddef[jk[k]];
-
+    
     double vmax = (M[k] > dmax[jk[k]]);
     double vmin = (M[k] < dmin[jk[k]]);
     
@@ -178,7 +181,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
         Rcout << ", Ik = {k}" << std::endl;
       
     }   
-
+    
   }
   
   outdata =  Rcpp::DataFrame::create(Rcpp::Named("id")     = idout,
@@ -189,15 +192,16 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                                      Rcpp::Named("D")      = D,
                                      Rcpp::Named("M")      = M,
                                      Rcpp::Named("S")      = S,
+                                     Rcpp::Named("c")      = c,
+                                     Rcpp::Named("jk")     = jk,
+                                     Rcpp::Named("Sjk")    = dval[jk],
                                      Rcpp::Named("H")      = H,
                                      Rcpp::Named("DH")     = DH,
                                      Rcpp::Named("nk")     = nk,
                                      Rcpp::Named("u")      = u,
                                      Rcpp::Named("w")      = w,
                                      Rcpp::Named("i0")     = i0
-                                       );
+  );
   
   return(outdata);
 }
-
-  

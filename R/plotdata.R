@@ -7,10 +7,19 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plot.dpp <- function(dpp) {
+plot.dpp <- function(dpp, drug=NULL) {
   
-  T  <- unique(dpp$drugdb$pdate)
+  if (length(drug) == 0) 
+    j <- 1
+  else
+    j <- 1:length(dpp$drugs)[names(dpp$drugs) == drug]
+  
+  drugdb <- dpp$drugdb[dpp$drugdb$atc %in% d$drugs[[j]]$atc,]
+  
+  T  <- unique(drugdb$pdate)
   LR <- lapply(1:nrow(dpp$admdb), function(i) c(dpp$admdb$inddto[i], dpp$admdb$uddto[i]))
+  
+  T <- sort(T)
   
   par(mar=c(3.1,3.1,3.1,3.1))
   
@@ -47,4 +56,3 @@ plot.dpp <- function(dpp) {
   sapply(T, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
   sapply(unlist(LR), function(x) segments(x, x, y0=0, y1=80, col="red", lty=2,lwd=0.5))
 } 
-
