@@ -30,8 +30,10 @@ print.dpp <- function(dpp) {
     print(do.call("rbind", lapply(doses, function(x) as.data.frame(x))))
     cat("\n")
     if (length(dpp$drugdb) > 0) {
-      dosesindata = unique(dpp$drugdb$strength[dpp$drugdb$atc %in% unlist(drugs)])
-      cat("Doses found in data:", paste(dosesindata, collapse = ", "), "\n")
+      dosesindata = sapply(drugs, function(x) unique(dpp$drugdb$strength[dpp$drugdb$atc %in% x]))
+      cat("Doses found in data:", "\n", sapply(1:length(drugs), function(i)
+        paste(paste0(names(drugs)[i], ":"),
+        sapply(dosesindata[i], function(x) paste(x, collapse = ", ")), "\n")), "\n")
     }
     cat("\n")
   } 
