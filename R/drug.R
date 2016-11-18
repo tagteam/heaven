@@ -8,7 +8,7 @@
 ##' @param value a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drug<-` <- function(dpp, name, add = TRUE, value) {
+`drug<-` <- function(dpp, name, add = FALSE, value) {
   
   drugname <- deparse(substitute(name))
   
