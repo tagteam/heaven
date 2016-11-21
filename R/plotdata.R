@@ -7,8 +7,11 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plot.dpp <- function(dpp, drug=NULL, id=1) {
+plot.dpp <- function(dpp, drug=NULL, id=NULL) {
   
+  if (length(id) == 0)
+    id = dpp$drugdb$id[1] 
+
   if (length(drug) == 0) 
     j <- 1
   else
@@ -76,6 +79,9 @@ plot.dpp <- function(dpp, drug=NULL, id=1) {
       sapply(T, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
       if (nadm > 0)
         sapply(unlist(LR), function(x) segments(x, x, y0=0, y1=80, col="red", lty=2,lwd=0.5))
+      
+      title(main=paste("input data for id =", id, "and drug =", names(dpp$drugs)[j]))
+      
     } else 
       print("Only one date - no plot produced")
   }

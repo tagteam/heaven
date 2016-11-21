@@ -7,13 +7,16 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plotoutput <- function(out, drug=NULL, id=1) {
+plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
+  
+  if (length(id) == 0)
+    id = dpp$drugdb$id[1] 
   
   if (length(drug) == 0) 
     j <- 1
   else
     j <- (1:length(out))[names(out) == drug]
-  
+
   if (length(j) == 0) {
     print(paste("no drug named", drug, "in specified input"))
   } else {
@@ -61,22 +64,24 @@ plotoutput <- function(out, drug=NULL, id=1) {
     
     sapply(1:length(B), Spoints)
     
-    Esegs <- function(i) {
-      if (w[i] & u[i]) {
-        segcol <- "darkgreen"
-        text   <- "(I)"
-      } else if (u[i]) {
-        segcol <- "darkblue"
-        text   <- "(II)"
-      } else {
-        segcol <- "black"
-        text   <- ""
+    if (which == 2) {
+      Esegs <- function(i) {
+        if (w[i] & u[i]) {
+          segcol <- "darkgreen"
+          text   <- "(I)"
+        } else if (u[i]) {
+          segcol <- "darkblue"
+          text   <- "(II)"
+        } else {
+          segcol <- "black"
+          text   <- ""
+        }
+        ycoor <- 50+length(B)*4-length(B)*4-i*4
+        ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
+        text(B[i]+10, ycoor, text, col=segcol)
       }
-      ycoor <- 50+length(B)*4-length(B)*4-i*4
-      ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
-      text(B[i]+10, ycoor, text, col=segcol)
+      
+      sapply(1:length(B), Esegs)
     }
-    
-    sapply(1:length(B), Esegs)
   }
 }
