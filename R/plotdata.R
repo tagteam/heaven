@@ -31,7 +31,7 @@ plot.dpp <- function(dpp, drug=NULL, id=NULL) {
     nT <- length(T)
     
     if (nT > 1) {
-      nadm <- nrow(admdb[admdb$inddto <= T[nT], ])
+      nadm <- nrow(admdb[admdb$inddto <= T[nT] & admdb$uddto > T[1], ])
       
       if (nadm > 0)
         LR <- lapply(1:nadm, function(i) c(admdb$inddto[i], admdb$uddto[i]))
