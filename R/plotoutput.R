@@ -84,7 +84,7 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
         }
         ycoor <- y+length(B)*4-length(B)*4-i*4
         ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
-        text(B[i]+(B[length(B)]-B[1]), ycoor, text, col=segcol)
+        text(B[i]+(B[length(B)]-B[1])/60, ycoor, text, col=segcol)
       }
       
       sapply(1:length(B), Esegs)
