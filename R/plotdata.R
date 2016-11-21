@@ -38,7 +38,7 @@ plot.dpp <- function(dpp, drug=NULL, id=NULL) {
       
       par(mar=c(3.1,3.1,3.1,3.1))
       
-      plot(0,0,type="n",xlim=c(T[1],T[nT]),ylim=c(0,120),xlab="Calendar time",ylab="", 
+      plot(0,0,type="n",xlim=c(T[1],T[nT]),ylim=c(0,90),xlab="Calendar time",ylab="", 
            yaxt='n', xaxt='n', axes=FALSE)
       axis(1, at=T, labels=T, las=0)
       

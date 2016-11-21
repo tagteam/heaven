@@ -39,7 +39,7 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
     
     par(mar=c(3.1,3.1,3.1,3.1))
     
-    plot(0,0,type="n",xlim=c(B[1],B[length(B)]+nk[length(B)]),ylim=c(0,120),xlab="Calendar time",ylab="", 
+    plot(0,0,type="n",xlim=c(B[1],B[length(B)]+nk[length(B)]),ylim=c(0,90),xlab="Calendar time",ylab="", 
          yaxt='n', xaxt='n', axes=FALSE)
     axis(1, at=c(B, B[length(B)]+nk[length(B)]), labels=c(B, ""), las=0)
     
