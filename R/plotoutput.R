@@ -90,5 +90,5 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
       sapply(1:length(B), Esegs)
     }
   }
-  title(main=paste("input data for id =", id, "and drug =", names(dpp$drugs)[j]))
+  title(main=paste("input data for id =", id, "and drug =", names(out)[j]))
 }
