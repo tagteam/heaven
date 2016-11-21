@@ -34,7 +34,7 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
     if (which==2) {
       y <- 50
     } else {
-      y <- 60-4*length(B)/2
+      y <- 30
     }
     
     par(mar=c(3.1,3.1,3.1,3.1))
@@ -82,7 +82,7 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
           segcol <- "black"
           text   <- ""
         }
-        ycoor <- y+length(B)*4-i*4
+        ycoor <- y+length(B)*4-length(B)*4-i*4
         ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
         text(B[i]+(B[length(B)]-B[1]), ycoor, text, col=segcol)
       }
