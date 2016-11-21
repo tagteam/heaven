@@ -31,6 +31,12 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
     w   <- c(0, drugout$w)
     u   <- c(0, drugout$u)
     
+    if (which==2) {
+      y <- 50
+    } else {
+      y <- 30
+    }
+    
     par(mar=c(3.1,3.1,3.1,3.1))
     
     plot(0,0,type="n",xlim=c(B[1],B[length(B)]+nk[length(B)]),ylim=c(0,120),xlab="Calendar time",ylab="", 
@@ -44,8 +50,8 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
     }
     
     Bnsegs <- function(i) {
-      ssegs(B[i], B[i]+nk[i], 50+length(B)*4-i*4, col="black", lty=5, lwd=1)
-      ssegs(B[i]+nk[i], B[i]+nk[i]+DH[i], 50+length(B)*4-i*4, col="darkred", lty=5, lwd=1)
+      ssegs(B[i], B[i]+nk[i], y+length(B)*4-i*4, col="black", lty=5, lwd=1)
+      ssegs(B[i]+nk[i], B[i]+nk[i]+DH[i], y+length(B)*4-i*4, col="darkred", lty=5, lwd=1)
     }
     
     sapply(1:length(B), Bnsegs)
@@ -59,7 +65,7 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
     sapply(B, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
     
     Spoints <- function(i) {
-      points(B[i], 50+length(B)*4-i*4, pch=21, cex=2*Sjk[i]/max(Sjk), bg="black")
+      points(B[i], y+length(B)*4-i*4, pch=21, cex=2*Sjk[i]/max(Sjk), bg="black")
     }
     
     sapply(1:length(B), Spoints)
@@ -76,7 +82,7 @@ plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
           segcol <- "black"
           text   <- ""
         }
-        ycoor <- 50+length(B)*4-length(B)*4-i*4
+        ycoor <- y+length(B)*4-length(B)*4-i*4
         ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
         text(B[i]+10, ycoor, text, col=segcol)
       }
