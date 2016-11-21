@@ -9,14 +9,14 @@
 ##' @export
 plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
   
-  if (length(id) == 0)
-    id = out$id[1] 
-  
-  if (length(drug) == 0) 
+  if (length(drug) == 0) {
     j <- 1
-  else
+  } else
     j <- (1:length(out))[names(out) == drug]
 
+  if (length(id) == 0)
+    id = out[[j]]$id[1] 
+  
   if (length(j) == 0) {
     print(paste("no drug named", drug, "in specified input"))
   } else {
