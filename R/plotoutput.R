@@ -10,7 +10,7 @@
 plotoutput <- function(out, drug=NULL, id=NULL, which=2) {
   
   if (length(id) == 0)
-    id = dpp$drugdb$id[1] 
+    id = out$id[1] 
   
   if (length(drug) == 0) 
     j <- 1
