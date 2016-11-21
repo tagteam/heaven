@@ -5,9 +5,9 @@ patient-level data on all prescription drugs sold in Danish
 community pharmacies since 1994 citep:kildemoes2011danish. Effects and
 side effects of drugs can be assessed in a Danish nation wide registry
 study. For this the prescription data are linked to the cause of death
-register and other Danish registries citep:thygesen2011introduction.
+register and other Danish registries citep:thygesen2011introduction.\\
 
-This document describes the /medicin macro/ by Christian
+\noindent This document describes the /medicin macro/ by Christian
 Torp-Pedersen, a complex algorithm for the computation of drug
 exposure strength and length relative to a prespecified study period
 $\period$ in calendar time. Note that the start of the study period has to be after the
@@ -39,9 +39,9 @@ Note that the original SAS macro allowed at most 4 different package
 types but that the new implementation does not have this
 limitation. For each drug strength \(\str_j\), the values \(\smin_j\),
 \(\smax_j\), \(\styp_j\) define the minimal, maximal and typical dose
-per day, respectively. 
+per day, respectively. \\
 
-We now describe the total amount of drug purchased on date \(T_k\) and
+\noindent We now describe the total amount of drug purchased on date \(T_k\) and
 the corresponding maximal number of days of supply. First, note that
 since \(\smin_j\) is the minimal dosis, one unit of strength
 \(\str_j\) can supply a maximal number of \((\str_j/\smin_j)\)
@@ -67,7 +67,7 @@ D_k=
  \sum_{j=1}^J m_{jk} S_{j} = \sum_{j=1}^J n_{jk}\smin_{j}.
 \end{align*}
 
-The maximal number of days of supply based on \(D_k\) is 
+\noindent The maximal number of days of supply based on \(D_k\) is 
 \begin{equation*}
 n_k=\sum_{j=1}^J n_{jk}.
 \end{equation*}
@@ -96,94 +96,56 @@ Thus, the total amount of drug purchased on date \(T_1\) is,
 D_1 = 50\cdot 25 + 60\cdot 20 = 2450,
 \end{align*}
 and the maximal number of days of supply is \(n_1 = 50 + 60=110 \).\\
-q
-We put the date on a form appropriate for the implemented software.
+
+\noindent We put the date on a form appropriate for the implemented software.
 
 #+name: ex1
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes
-T  <- as.Date(c(rep("2012-06-08", 3), "2012-10-11", rep("2012-12-01",2), "2013-01-05"))
-exdata <- data.frame(pnr      = rep(1, length(T)), 
-                     atc      = rep("A07", length(T)), 
-                     eksd     = T, 
-                     strnum   = c(50, 50, 80, 50, 50, 50, 80), 
-                     packsize = c(15, 10, 15, 10, 10, 10, 15), 
-                     apk      = c(rep(1, 5), 2, 1))
-devtools::install_github("tagteam/heaven", force = TRUE)
-library(heaven)
-library(Publish)
-d <- dpp()
-drugdb(d) <- exdata
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
 org(d$drugdb)
 #+END_SRC
 
-#+RESULTS[<2016-11-16 09:30:14> e82373e45e8a86c38b81a16f8cfacafbb5f61a41]:
+#+RESULTS[<2016-11-21 12:14:53> 7f757f04e0718963a611b1da281aa28ef142f9c5]:
 :RESULTS:
-Downloading GitHub repo tagteam/heaven@master
-from URL https://api.github.com/repos/tagteam/heaven/zipball/master
-Installing heaven
-'/usr/lib/R/bin/R' --no-site-file --no-environ --no-save --no-restore --quiet CMD INSTALL  \
-  '/tmp/RtmpYLc2yL/devtools8fc23d868bd/tagteam-heaven-7a382bb'  \
-  --library='/home/helene/R/x86_64-pc-linux-gnu-library/3.2' --install-tests 
-
-
-Reloading installed heaven
-|   | id | atc |      pdate | strength | npack | ppp |
-|---+----+-----+------------+----------+-------+-----|
-|  1 |  1 | A07 | 2012-06-08 |       50 |     1 |  15 |
-|  2 |  1 | A07 | 2012-06-08 |       50 |     1 |  10 |
-|  3 |  1 | A07 | 2012-06-08 |       80 |     1 |  15 |
-|  4 |  1 | A07 | 2012-10-11 |       50 |     1 |  10 |
-|  5 |  1 | A07 | 2012-12-01 |       50 |     1 |  10 |
-|  6 |  1 | A07 | 2012-12-01 |       50 |     2 |  10 |
-|  7 |  1 | A07 | 2013-01-05 |       80 |     1 |  15 |
+|    | id | atc |      pdate | strength | npack | ppp |
+|----+----+-----+------------+----------+-------+-----|
+|  1 |  1 | A07 | 2012-05-08 |       50 |    10 |   1 |
+|  2 |  1 | A07 | 2012-05-08 |       50 |    15 |   1 |
+|  3 |  1 | A07 | 2012-05-08 |       80 |    10 |   1 |
+|  4 |  1 | A07 | 2012-08-11 |       50 |    15 |   1 |
+|  5 |  1 | A07 | 2013-03-15 |       50 |    10 |   1 |
+|  6 |  1 | A07 | 2013-03-15 |       50 |    10 |   2 |
+|  7 |  1 | A07 | 2013-05-05 |       80 |    10 |   1 |
+|  8 |  1 | A07 | 2013-05-25 |       80 |    15 |   3 |
+|  9 |  1 | A07 | 2013-10-01 |       50 |    10 |   2 |
+| 10 |  1 | A07 | 2013-10-01 |       80 |    10 |   1 |
+| 11 |  1 | A07 | 2013-12-28 |       80 |    10 |   1 |
 :END:
 
-
-Reloading installed heaven
-|   | id | atc |      pdate | strength | npack | ppp |
-|---+----+-----+------------+----------+-------+-----|
-|  1 |  1 | A07 | 2012-06-08 |       50 |     1 |  15 |
-|  2 |  1 | A07 | 2012-06-08 |       50 |     1 |  10 |
-|  3 |  1 | A07 | 2012-06-08 |       80 |     1 |  15 |
-|  4 |  1 | A07 | 2012-10-11 |       50 |     1 |  10 |
-|  5 |  1 | A07 | 2012-12-01 |       50 |     1 |  10 |
-|  6 |  1 | A07 | 2012-12-01 |       50 |     2 |  10 |
-|  7 |  1 | A07 | 2013-01-05 |       80 |     1 |  15 |
-:END:
-
-We illustrate how the data is preprocessed according to Section
-ref:sec:prescription.
+\noindent We illustrate how the data is preprocessed according to Section
+ref:sec:prescription. In the table below, we have the unique list of
+dates, \verb+B+, the total doses, \verb+D+, and the days of supply,
+\verb+nk+.
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
-drug(d, exdrug) <- atc("A07")
-drug(d, exdrug) <- pack(c(50, 80),
-                        min = c(25, 20), 
-                        max = c(100, 100), 
-                        def = c(50, 60))
-set.seed(8)
-admdb(d) <- simAdmissionData(1, startDate = "2006-01-01")
-org(d$admdb)
-ex <- process(d)
 org(ex$exdrug[, names(ex$exdrug) %in% c("B", "D", "nk")])
 #+END_SRC
 
-
-#+RESULTS[<2016-11-16 09:26:41> 097b7ff8433511e0c6a440a7ae167f1a19ea0d4b]:
+#+RESULTS[<2016-11-21 12:15:00> 3875a0561d85f2b75cbade99e635fd0eaab329ed]:
 :RESULTS:
-| pnr |     inddto |      uddto |     |
-|-----+------------+------------+-----|
-|   1 | 2008-01-30 | 2008-02-03 |     |
-|   1 | 2012-07-08 | 2012-07-13 |     |
-|   1 | 2013-12-30 | 2014-01-10 |     |
-|     |          B |          D |  nk |
-|-----+------------+------------+-----|
-|   1 | 2012-06-08 |       4900 | 220 |
-|   2 | 2012-10-11 |       1000 |  40 |
-|   3 | 2012-12-01 |       3000 | 120 |
-|   4 | 2013-01-05 |       2400 | 120 |
+|   |          B |    D |  nk |
+|---+------------+------+-----|
+| 1 | 2012-05-08 | 2050 |  90 |
+| 2 | 2012-08-11 |  750 |  30 |
+| 3 | 2013-03-15 | 1500 |  60 |
+| 4 | 2013-05-05 |  800 |  40 |
+| 5 | 2013-05-25 | 3600 | 180 |
+| 6 | 2013-10-01 | 1800 |  80 |
+| 7 | 2013-12-28 |  800 |  40 |
 :END:
+
+
 
 
 
@@ -204,32 +166,47 @@ H_k &= \left({T}_{k+1} - {T}_{k}\right) - \sum_{q=1}^{{Q}} \max \big( 0,\,\min \
 
 ** Example (continued)
 We consider again the patient of the example in section
-ref:sec:example and now also assume that the patient was hospitalized twice
+ref:sec:example and now also assume that the patient was hospitalized two times
 (Figure ref:fig:ex1).
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 15 :height 3
-T  <- as.Date(c(rep("2012-06-08", 3), "2012-10-11", rep("2012-12-01",2), "2013-01-05"))
-exdata <- data.frame(pnr      = rep(1, length(T)), 
-                     atc      = rep("A07", length(T)), 
-                     eksd     = T, 
-                     strnum   = c(50, 50, 80, 50, 50, 50, 80), 
-                     packsize = c(15, 10, 15, 10, 10, 10, 15), 
-                     apk      = c(rep(1, 5), 2, 1))
-library(heaven)
-library(Publish)
-d <- dpp()
-drugdb(d) <- exdata
-org(d$drugdb)
-drug(d, exdrug) <- atc("A07")
-drug(d, exdrug) <- pack(c(50, 80),
-                        min = c(25, 20), 
-                        max = c(100, 100), 
-                        def = c(50, 60))
-set.seed(25)
-admdb(d) <- simAdmissionData(1, startDate = "2006-01-01")
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
 org(d$admdb)
-ex <- process(d)
-org(ex$exdrug[, names(ex$exdrug) %in% c("B", "D", "nk")])
+#+END_SRC
+
+#+RESULTS[<2016-11-21 12:15:08> 0e2466d1b0df902fc7e8272acbb697f5cca0bc6b]:
+:RESULTS:
+|   | id |     inddto |      uddto |
+|---+----+------------+------------|
+| 1 |  1 | 2012-06-11 | 2012-06-28 |
+| 2 |  1 | 2013-01-03 | 2013-01-18 |
+:END:
+
+\noindent We compute the number of days hospitalized, \verb+DH+, and the number
+of days non-hospitalized, \verb+H+.
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
+org(ex$exdrug[, names(ex$exdrug) %in% c("B", "DH", "H")])
+#+END_SRC
+
+#+RESULTS[<2016-11-21 12:15:13> a71bb2b15728ab0d2e873ee6a39fe53466461046]:
+:RESULTS:
+|   |          B |   H | DH |
+|---+------------+-----+----|
+| 1 | 2012-05-08 |  78 | 17 |
+| 2 | 2012-08-11 | 201 | 15 |
+| 3 | 2013-03-15 |  51 |  0 |
+| 4 | 2013-05-05 |  20 |  0 |
+| 5 | 2013-05-25 | 129 |  0 |
+| 6 | 2013-10-01 |  88 |  0 |
+| 7 | 2013-12-28 |   1 |  0 |
+:END:
+
+
+
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 15 :height 3
 plot(d)
 #+END_SRC
 
@@ -240,16 +217,16 @@ plot(d)
 #+ATTR_LATEX: :width 0.8 \textwidth
 #+CAPTION: Illustration of the four prescription dates and the two periods of hospitalization of our example patient. 
 [[file:./drug-dat1b.pdf]]
-FIXME: 
-- what if L_q <a eller R_q>b? limit to the study period \period?
-- should the day \(T_{k+1}\) be included [T_k, T_{k+1}] or not \periodK?
+
+
+
 
 * Exposure strength and exposure lengths
 
 The aim is to estimate the ends of the exposure periods \(E_k\) and
 for each exposure period to estimate the exposure strength per day
 \(X_k\). It is important to note that the estimates are only based on
-the data of the current patient and based on specific assumptions
+the data of the current patient and on specific assumptions
 which may or may not be valid for a given patient and a given drug.
 The estimates are based on the drug prescription data (Section
 ref:sec:prescription) and the hospitalization dates (Section
@@ -284,48 +261,13 @@ u_{k} = \begin{cases}
 
 *** Example (continued)
 
-Figure ref:fig:ex2 shows again the data of section ref:sec:example. We
-see that \(u_1 = 1\).
+Figure ref:fig:ex2 shows again the data of section ref:sec:example,
+together with an illustration of the number of days of supply. The
+black lines show the actual days of medicin supply, and the red lines
+are the days hospitalized. 
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports none  :session *R* :width 10 :height 3
-if (system("echo $USER",intern=TRUE)=="tag"){
-    setwd("~/research/SoftWare/heaven/worg/")
-} else{
-    setwd("~/research/Software/medicin-macro/heaven/worg/")
-}
-par(mar=c(3.1,3.1,3.1,3.1))
-T  <- as.Date(c("2012-06-08", "2012-10-11", "2012-12-01", "2013-01-05"))
-LR <- list(as.Date(c("2012-07-02", "2012-07-21")),
-           as.Date(c("2012-08-23", "2012-08-31")))
-plot(0,0,type="n",xlim=c(vt[1]-10,vt[2]+10),ylim=c(0,120),xlab="Calendar time",ylab="", 
-     yaxt='n', xaxt='n', axes=FALSE)
-axis(1, at=vt, labels=T, las=0)
-## points(vt, rep(50, length(vt)), pch=19)
-ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
-    segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
-    ## segments(x0=a, x1=a, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
-    ## segments(x0=b, x1=b, y0=pos-pos2, y1=pos+pos2, lwd=lwd, col=col)
-}
-ssegs(LR[[1]][1], LR[[1]][2], 50, col="red", lty=3,lwd=5)
-ssegs(LR[[2]][1], LR[[2]][2], 50, col="red", lty=3,lwd=5)
-ssegs(T[1], LR[[1]][1]-2, 50)
-ssegs(LR[[1]][2]+2, LR[[2]][1]-2, 50)
-ssegs(LR[[2]][2]+2, T[2], 50)
-ssegs(T[2], T[4], 50)
-## ssegs(T[3], T[4], 50)
-ssegs(T[1], 10+as.Date(T[2]), 40, col="blue",lwd=3)
-segments(T[1], T[1], y0=0, y1=80, lty=2,lwd=1)
-segments(T[2], T[2], y0=0, y1=80, lty=2,lwd=1)
-segments(T[3], T[3], y0=0, y1=80, lty=2,lwd=1)
-segments(T[4], T[4], y0=0, y1=80, lty=2,lwd=1)
-axis(3,
-     lwd=0.1,
-     pos=80,
-     at=sort(c(T,unlist(LR))),
-     labels= c(expression(T[1]),expression(L[1]),expression(R[1]),expression(L[2]),expression(R[2]),expression(T[2]),expression(T[3]),expression(T[4])))
-legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
-       c("days non-hospitalized","days hospitalized","days of supply"), 
-       lty=c(1, 3, 1), col=c("black", "red", "blue"))
+#+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports none  :session *R* :width 14 :height 7
+plotoutput(ex, which=1)
 #+END_SRC
 
 #+RESULTS:
@@ -333,18 +275,20 @@ legend(x=T[1],y=150,xpd=NA, bty="n",ncol=3,lwd=c(3,5,3),
 
 #+LABEL: fig:ex2
 #+ATTR_LATEX: :width 0.8 \textwidth
-#+CAPTION: For our example patient the figures shows that the maximal number of days of supply \((n_1=110)\) calculated at \(T_{1}\) based on the formula in Section  ref:sec:prescription exceeds \(T_{2}\).
+#+CAPTION: For our example patient the figures shows the maximal number of days of supply calculated at each time point based on the formula in Section  ref:sec:prescription.
 [[file:./drug-dat2b.pdf]]
 
-A first preliminary version of the average dosis per day in period
+
+
+\noindent A first preliminary version of the average dosis per day in period
 \(\periodK\) is calculated as
 \begin{equation*}
  A_{k}= \frac{1}{c_{k}}  \sum_{j=1}^J G_{jk} \, S_{j}
 \end{equation*}
 where \(c_k = \sum_{j=1} ^J G_{jk}\) is the total number of purchases
-on date \(T_k\). 
+on date \(T_k\). \\
 
-Since the preliminary average \(A_{k}\) may lie between two of the available
+\noindent Since the preliminary average \(A_{k}\) may lie between two of the available
 drug strengths we define a second, still preliminary, version of the
 average dosis per day as the nearest drug strengths which does not
 exceed the average strength. That is, the index
@@ -355,6 +299,7 @@ identifies the nearest drug strength which does not exceed the first
 preliminary average strength, and \(S_{b(k)}\) is nearest drug
 strength. 
 
+
 *** Example (continued)
 
 For the patient of our example we have
@@ -362,19 +307,19 @@ For the patient of our example we have
 A_1 = \frac{1}{2+1} \left(2\cdot 50 + 80 \right) =  60.
 \end{align*}
 
-We see that \(b(1) = 1\), as \(S_1=50\) is the nearest drug strength
+\noindent We see that \(b(1) = 1\), as \(S_1=50\) is the nearest drug strength
 not exceeding the average of \(A_1=60 \) computed above. Note that in
 this notation, \(S_{b(k-1)}\) refers to the nearest drug strength of
 the previous prescription date. For instance, at date \(T_2\) of our
 patient we have \(b(k-1)=b(1)= 1\) and \(S_{b(k-1)} = 50\). \\
 
 
- On the following still quite long remaining part of the pilgrim trail
+\noindent  On the following still quite long remaining part of the pilgrim trail
 towards the final estimate of the average daily dosis in period
 \(\periodK\), the next thing to do is to decide how many purchase
 dates back in time should be used. We distinguish between two cases
 which are also illustrated in Figure ref:fig:periods. Which case to be
-used will be made clear later.
+used will be made clear later.\\
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat2a.pdf" :exports none  :session *R* :width 10 :height 4
 if (system("echo $USER",intern=TRUE)=="tag"){
@@ -425,7 +370,7 @@ spoints(a=vt[3],b=vt[6],pos=vtype[1],cex=1.3,col="red",lwd=2)
 
 # Which case to be used is determined by Figure  ref:fig:cases: case (I) in  Figure ref:fig:cases corresponds to case 1  and case (II) in  Figure ref:fig:cases corresponds to case 2.
 
-\noindent *Case 1* \it \(T_{ {I}^{(1)}_{k}}\) \it is the closest purchase
+\noindent *Case 1*: \it \(T_{ {I}^{(1)}_{k}}\) \it is the closest purchase
 date back in time, such that there is both continuous potential
 overlap and average dosis match. The index is defined as\rm
 \begin{align*}
@@ -441,14 +386,34 @@ overlap and average dosis match. The index is defined as\rm
  M^{(2)}_k =   &\frac{ \sum_{\ell= I^{(2)}_k}^{k-1} \, D_\ell}{ \sum_{\ell= I^{(2)}_k}^{k-1} \, H_\ell}.
 \end{align*}
 
-At last, we define the rounding of the average daily dose \(M^{(1)}_k\) to the nearest multiple of the minimal dose
-\(\smin_{j(k)}\) which corresponds to index \(j(k)\) defined in
-equation eqref:indexj as
+\noindent At last, we define the rounding of the average daily dose
+\(M^{(1)}_k\) to the nearest multiple of the minimal dose
+\(\smin_{b(k)}\) (the index \(b(k)\) defined in
+equation eqref:indexj) smaller than the average dose, that is
 \begin{equation*}
-W_k=\max \left\lbrace \underset{p \in
-\mathbb{N}}{\text{argmin}} \left\vert M^{(1)}_k - p
-\smin_{j(k)}\right\vert \smin_{j(k)}\right\rbrace.
+W_k= \left\lfloor \frac{M_k^{(1)}}{\smin_{b(k)}} \right \rfloor \smin_{b(k)}.
 \end{equation*}
+
+*** Example (continued)
+
+
+Figure  ref:fig:ex3 shows the periods to be used in the calculations for our example patient. 
+
+#+BEGIN_SRC R :results graphics :file "./drug-dat2c.pdf" :exports none  :session *R* :width 10 :height 5
+plotoutput(ex)
+#+END_SRC
+
+#+RESULTS:
+[[file:./drug-dat2c.pdf]]
+
+#+LABEL: fig:ex3
+#+ATTR_LATEX: :width 0.8 \textwidth
+#+CAPTION: The cases for our patient. 
+[[file:./drug-dat2c.pdf]]
+
+
+
+
 
 *** Final estimate of the daily dosis
 label:sec:final
@@ -470,6 +435,25 @@ illustrated in Figure ref:fig:cases.
 
 *** Example (continued)
 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
+org(ex$exdrug[, names(ex$exdrug) %in% c("B", "S", "Sjk", "M", "X")])
+#+END_SRC
+
+#+RESULTS[<2016-11-21 13:45:01> d59c21814c7ba951aa4cfba47c930a773a0dc07d]:
+:RESULTS:
+|   |  X |          B |        M |  S | Sjk |
+|---+----+------------+----------+----+-----|
+| 1 | 50 | 2012-05-08 | 50.00000 | 60 |  50 |
+| 2 | 25 | 2012-08-11 | 26.28205 | 50 |  50 |
+| 3 | 50 | 2013-03-15 | 50.00000 | 50 |  50 |
+| 4 | 60 | 2013-05-05 | 29.41176 | 80 |  80 |
+| 5 | 40 | 2013-05-25 | 40.00000 | 80 |  80 |
+| 6 | 50 | 2013-10-01 | 29.50000 | 65 |  50 |
+| 7 | 60 | 2013-12-28 | 60.00000 | 80 |  80 |
+:END:
+
+FIXME: læs her!!!!
 We now suppose that our example patient made only one drug purchase on
 the second date \(T_2\), where he bought a package wit 10 pills of
 drug strength \(S_1\). We have already shown that \(S_{b(1)} = 50\),
@@ -534,6 +518,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 #+CAPTION: Illustration of the formula for the final estimate of the daily dosis (section ref:sec:final). The size of the dots indicates the preliminary average strength S_{b(k)}. The upper most two lines illustrate the cases without overlap and the other two lines the cases with overlap.
 [[file:./drug-dat1a.pdf]]
 
+
 *** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
 
 \begin{align*}
@@ -561,7 +546,6 @@ period in which the daily dose is estimated as \(X_k\) is,
 {E}_{k}= \min \bigg({T}_{k+1}-1, \, {T}_{k} - 1+  \left\lfloor \frac{D_{k} + {R}_{k}}{{X}_{k}} \right\rfloor\bigg).
 \end{align*}
 
-
 * User interface
 
 work in progress
@@ -574,25 +558,22 @@ set.seed(18)
 org(simPrescriptionData(1))
 #+END_SRC
 
-#+RESULTS[<2016-11-04 17:55:17> e941c7b891ba0b6422b85eec5f5347c9dc3a4080]:
+#+RESULTS[<2016-11-21 13:45:01> e941c7b891ba0b6422b85eec5f5347c9dc3a4080]:
 :RESULTS:
 | pnr | atc  |       eksd | strnum | packsize | apk |
 |-----+------+------------+--------+----------+-----|
-|   1 | A07  | 1995-07-15 |    400 |      100 |   3 |
-|   1 | A07  | 1995-10-15 |    500 |       30 |   1 |
-|   1 | A07  | 1997-03-06 |    500 |       60 |   2 |
-|   1 | A07  | 1998-08-30 |    400 |       30 |   2 |
-|   1 | A07  | 1998-11-17 |    200 |       30 |   1 |
-|   1 | A07  | 2000-02-08 |    200 |      300 |   3 |
-|   1 | A07  | 2000-10-01 |    200 |       60 |   3 |
-|   1 | A07  | 2002-02-07 |    200 |      300 |   1 |
-|   1 | A07  | 2004-08-28 |    400 |       60 |   1 |
-|   1 | A12B | 1995-04-09 |     75 |      500 |   2 |
-|   1 | A12B | 1995-07-02 |    750 |      100 |   3 |
-|   1 | A12B | 1995-12-19 |    750 |      100 |   1 |
-|   1 | A12B | 1999-07-14 |    750 |      250 |   1 |
-|   1 | A12B | 2001-10-13 |    750 |      100 |   1 |
-|   1 | A12B | 2003-08-30 |    750 |      500 |   2 |
+|   1 | A07  | 1995-01-01 |    400 |       30 |   1 |
+|   1 | A07  | 1995-03-17 |    200 |      300 |   3 |
+|   1 | A07  | 1995-06-18 |    400 |       30 |   3 |
+|   1 | A07  | 1995-08-06 |    500 |       30 |   1 |
+|   1 | A07  | 1996-07-15 |    200 |       60 |   2 |
+|   1 | A07  | 1997-08-17 |    200 |      300 |   1 |
+|   1 | A07  | 1998-03-20 |    400 |       30 |   1 |
+|   1 | A07  | 1999-09-11 |    400 |      100 |   3 |
+|   1 | A07  | 1999-12-17 |    200 |       60 |   1 |
+|   1 | A12B | 1995-02-16 |    750 |      500 |   2 |
+|   1 | A12B | 1995-09-23 |     75 |      250 |   1 |
+|   1 | A12B | 1996-05-04 |    750 |      250 |   1 |
 :END:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -601,18 +582,19 @@ set.seed(18)
 org(simAdmissionData(1))
 #+END_SRC
 
-#+RESULTS[<2016-11-04 17:54:39> aad6f2c9c03990d61e630b28b5478151a7ca6a1a]:
+#+RESULTS[<2016-11-21 13:45:01> aad6f2c9c03990d61e630b28b5478151a7ca6a1a]:
 :RESULTS:
 | pnr |     inddto |      uddto |
 |-----+------------+------------|
-|   1 | 1995-07-15 | 1996-03-10 |
-|   1 | 1995-10-15 | 1996-11-19 |
-|   1 | 2000-10-01 | 2002-09-05 |
-|   1 | 2002-02-07 | 2003-04-07 |
-|   1 | 2004-08-28 | 2004-12-31 |
+|   1 | 1996-01-27 | 1996-02-06 |
+|   1 | 1996-07-28 | 1996-08-13 |
+|   1 | 2006-07-02 | 2006-07-31 |
+|   1 | 2009-03-16 | 2009-04-02 |
+|   1 | 2014-04-26 | 2014-05-19 |
 :END:
 
 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
 d <- dpp()
 set.seed(18)
@@ -631,7 +613,7 @@ N(d) <- 2
 d
 #+END_SRC
 
-#+RESULTS[<2016-11-04 18:25:15> 272e4cee8f6e9b86aa56a9ff64b227416075a532]:
+#+RESULTS[<2016-11-21 13:45:01> 272e4cee8f6e9b86aa56a9ff64b227416075a532]:
 :RESULTS:
 preprocessing object 
 ----------------- 
@@ -640,32 +622,20 @@ Calculations for treatment(s):
  "drug1": A12B 
  A12B:  
 
-with corresponding dose values: 
+Dose values to be used in calculations: 
        value min max def
 A12B.1    50  10  75  50
 A12B.2    75  50 200 100
 A12B.3   100  25 150 100
 A12B.4   125  50 150 125
 
+Doses found in data and not in the above: 
+ "drug1": 750, 75 
+ A12B:  
+ 
+
 Using N = 2 prescriptions back in time 
 Only interested in prescriptions between 1995-01-01 and 2015-05-01
-:END:
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports both :results output raw drawer   :session *R* :cache yes 
-org(process(d))
-#+END_SRC
-
-#+RESULTS[<2016-11-04 18:27:51> 8ac98055c858d6ab30cb63b6158d4fd1741d1582]:
-:RESULTS:
-|   | id |   X |          B |          E | R |     D |                 M |  S |          H |   nk | u | w | i0 |
-|---+----+-----+------------+------------+---+-------+-------------------+----+------------+------+---+---+----|
-| 1 |  1 | 100 | 1995-04-09 | 1995-07-01 | 0 | 75000 |   0.0000001910856 | 75 |   84.31746 | 1500 | 1 | 0 |  0 |
-| 2 |  1 |  75 | 1995-07-02 | 1995-07-01 | 0 |     0 | 889.4954685849862 |  0 |  169.71293 |    0 | 0 | 1 |  1 |
-| 3 |  1 |  50 | 1995-12-19 | 1995-12-18 | 0 |     0 | 889.4954685849862 |  0 | 1303.29752 |    0 | 0 | 1 |  0 |
-| 4 |  1 |  50 | 1999-07-14 | 1999-07-13 | 0 |     0 | 889.4954685849862 |  0 |  821.54330 |    0 | 0 | 1 |  0 |
-| 5 |  1 |  50 | 2001-10-13 | 2001-10-12 | 0 |     0 | 889.4954685849862 |  0 |  686.68886 |    0 | 0 | 1 |  0 |
-| 6 |  1 |  50 | 2003-08-30 | 2003-08-29 | 0 |     0 | 889.4954685849862 |  0 |    1.00000 |    0 | 0 | 0 |  0 |
 :END:
 
 
@@ -678,12 +648,6 @@ The output consists of:
 -  ${E}_1, \ldots, E_{{K}}$: End dates for each prescription period.
 -  ${X}_1, \ldots, {X}_{{K}}$: Calculated dose for each prescription
    period.
-
-bibliographystyle:chicago
-bibliography:heaven.bib
-
-
-
 
 
 * HEADER :noexport:
