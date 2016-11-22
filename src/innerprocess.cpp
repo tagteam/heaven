@@ -12,7 +12,8 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                              std::string treatname,
                              double N, 
                              double maxdepot, 
-                             bool trace
+                             bool trace, 
+                             bool out
 ) {
   
   Rcpp::NumericVector dval = doses["value"];
@@ -54,6 +55,8 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   Rcpp::NumericVector Enum(K);
   Rcpp::NumericVector R(K);
   Rcpp::NumericVector X(K);
+  
+  LogicalVector yj(K);
   
   Rcpp::NumericVector strengthunique = wrap(unique(as<arma::vec>(strength)));
   
@@ -163,9 +166,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
       Enum[k] = T[k+1]-1;
     
     idout[k] = id[0];
-    B[k]     = as<std::string>(formatDate(wrap(Date(T[k]))));
-    E[k]     = as<std::string>(formatDate(wrap(Date(Enum[k]))));
-    
+
     if (trace) {
       if (k < 1)
         Rcout << std::endl << "id = " << id[0] << std::endl;
@@ -176,10 +177,25 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
         Rcout << ", Ik = {k-1, k}" << std::endl;
       else
         Rcout << ", Ik = {k}" << std::endl;
-      
     }   
     
+    if (k > 0 && out) {
+      if (X[k-1] == X[k] && Enum[k-1] >= (T[k]-1)) {
+        T[k] = T[k-1];
+        yj[k-1] = 1; 
+      } else if (X[k-1] != X[k] && Enum[k-1] >= (T[k]-1)) { 
+        T[k] = max(NumericVector::create(T[k], Enum[k-1] + 1));
+        Enum[k]  = max(NumericVector::create(Enum[k], T[k] + 1));
+      } else {
+        Enum[k]  = max(NumericVector::create(Enum[k], T[k-1] + 1));
+      }
+    }
+    
+    B[k] = as<std::string>(formatDate(wrap(Date(T[k]))));
+    E[k] = as<std::string>(formatDate(wrap(Date(Enum[k]))));
   }
+  
+  NumericVector Sjk = dval[jk]; 
   
   outdata =  Rcpp::DataFrame::create(Rcpp::Named("id")     = idout,
                                      Rcpp::Named("X")      = X,
@@ -191,13 +207,14 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
                                      Rcpp::Named("A")      = S,
                                      Rcpp::Named("c")      = c,
                                      Rcpp::Named("jk")     = jk,
-                                     Rcpp::Named("Sjk")    = dval[jk],
+                                     Rcpp::Named("Sjk")    = Sjk,
                                      Rcpp::Named("H")      = H,
                                      Rcpp::Named("DH")     = DH,
                                      Rcpp::Named("nk")     = nk,
                                      Rcpp::Named("u")      = u,
                                      Rcpp::Named("w")      = w,
-                                     Rcpp::Named("i0")     = i0
+                                     Rcpp::Named("i0")     = i0,
+                                     Rcpp::Named("yj")     = !(yj)
   );
   
   return(outdata);

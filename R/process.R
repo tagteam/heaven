@@ -8,7 +8,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FALSE) {
+process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FALSE, out = FALSE) {
     
     period <- dpp$period
     dpp1 <- preprocess(dpp, id = id, trace = trace)
@@ -16,9 +16,9 @@ process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FA
     if (length(treatments) == 0) 
       treatments <- names(dpp$drugs)
       
-    if (length(id) == 0)
+    if (length(id) == 0) {
       idunique <- unique(dpp1$id)
-    else 
+    } else 
       idunique <- unique(id[id %in% dpp1$id])
 
     treatfun <- function(treatname) {
@@ -56,13 +56,18 @@ process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FA
           admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
           dat <- dat[order(dat$pdate), ]
           if (dim(dat)[1] > 0)
-            innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot, trace) 
+            innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot, trace, out) 
         }))
         return(out)
       }
     }
 
-    outlist <- lapply(treatments, treatfun)
+    
+    if (out) {
+      outlist <- lapply(lapply(treatments, treatfun), function(x) x[x$yj, names(x) != "yj"])
+    } else
+      outlist <- lapply(lapply(treatments, treatfun), function(x) x[, names(x) != "yj"])
+      
     names(outlist) <- treatments
     
     return(outlist)
