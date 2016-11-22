@@ -414,9 +414,9 @@ average daily doses.
 org(ex$exdrug[, names(ex$exdrug) %in% c("B", "A", "Sjk", "M")])
 #+END_SRC
 
-#+RESULTS[<2016-11-21 13:46:33> 859b77398c67d890a38a86fa3d0cd42be82c564d]:
+#+RESULTS[<2016-11-22 09:46:01> 0172acaf2b70ab8f1e5098e9e3380dec4eabfecb]:
 :RESULTS:
-|   |          B |        M |  S | Sjk |
+|   |          B |        M |  A | Sjk |
 |---+------------+----------+----+-----|
 | 1 | 2012-05-08 | 50.00000 | 60 |  50 |
 | 2 | 2012-08-11 | 26.28205 | 50 |  50 |
@@ -426,6 +426,7 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "A", "Sjk", "M")])
 | 6 | 2013-10-01 | 29.50000 | 65 |  50 |
 | 7 | 2013-12-28 | 60.00000 | 80 |  80 |
 :END:
+
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat2c.pdf" :exports none  :session *R* :width 10 :height 5 :cache yes
 plotoutput(ex)
@@ -452,7 +453,11 @@ are illustrated in Figure ref:fig:cases.
 \begin{align} 
           &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
 	  &+ \, u_{k-1} \bigg[\tag{Overlap}
-          \\ & \qquad  1\{S_{b(k-1)}=S_{b(k)}\} W_k \tag{I}
+          \\ \begin{split}
+ & \qquad   1\{S_{b(k-1)}= S_{b(k)}\}\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace W_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
+\end{split}\tag{I}
 	  \\
 \begin{split}
  & \qquad +  1\{S_{b(k-1)}\neq S_{b(k)}\}\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
@@ -468,12 +473,12 @@ the example individual.
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
-org(ex$exdrug[, names(ex$exdrug) %in% c("B", "S", "Sjk", "M", "X")])
+org(ex$exdrug[, names(ex$exdrug) %in% c("B", "A", "Sjk", "M", "X")])
 #+END_SRC
 
-#+RESULTS[<2016-11-21 13:45:01> d59c21814c7ba951aa4cfba47c930a773a0dc07d]:
+#+RESULTS[<2016-11-22 09:46:44> d457e302aaae92e6dedd2f293d75aa11238874f5]:
 :RESULTS:
-|   |  X |          B |        M |  S | Sjk |
+|   |  X |          B |        M |  A | Sjk |
 |---+----+------------+----------+----+-----|
 | 1 | 50 | 2012-05-08 | 50.00000 | 60 |  50 |
 | 2 | 25 | 2012-08-11 | 26.28205 | 50 |  50 |
