@@ -147,7 +147,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     double vmin = (M[k] < dmin[jk[k]]);
     
     X[k] = (1-u[k-1]) * ddef[jk[k]] + 
-      u[k-1]*w[k-1]*round(M[k] / (double) dmin[jk[k]]) * dmin[jk[k]] +
+      u[k-1]*w[k-1]*((1-vmax)*(1-vmin)*round(M[k] / (double) dmin[jk[k]]) * dmin[jk[k]] + vmax*dmax[jk[k]] + vmin*dmin[jk[k]]) +
       (u[k-1]*(1-w[k-1]))*(vmax*dmax[jk[k]] + vmin*dmin[jk[k]] + (1-vmax)*(1-vmin)*ddef[jk[k]]);
     
     if (k > 0)
