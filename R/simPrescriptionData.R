@@ -5,8 +5,7 @@
 ##' @param n Number of patients
 ##' @param m Maximal number of prescription dates per patient
 ##' @param packages Named list of association lists. The names of the list are ATC codes.
-##' The association list consists of drug strength and package size (number of pills). See details.
-##' @param max.packages
+##' @param max.packages Integer. How many packages do we want as maximal on one day.
 ##' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas Alexander Gerds \email{tag@@biostat.ku.dk} 
 ##' @details 
 ##' 
