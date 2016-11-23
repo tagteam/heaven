@@ -8,7 +8,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FALSE, out = FALSE) {
+process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FALSE, out = TRUE) {
     
     period <- dpp$period
     dpp1 <- preprocess(dpp, id = id, trace = trace)
