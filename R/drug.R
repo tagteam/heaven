@@ -1,11 +1,11 @@
-##' Update database
+##' Update preprocessing object with new drug.
 ##'
-##' Update database
-##' @title Update database
-##' @param dpp a
-##' @param name a
-##' @param add a 
-##' @param value a
+##' @title Add new drug
+##' @param dpp Data preprocessing object
+##' @param name Name of the drug. (Just write, don't use "") 
+##' @param add Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten.  
+##' @usage drug(d, drugname1) <- value
+##' @return The data preprocessing object is updated. 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 `drug<-` <- function(dpp, name, add = FALSE, value) {
