@@ -271,7 +271,7 @@ are the days hospitalized. Note that if the concatenation of the black
 and red line in each period reaches the next date, then \(u_k=1\).\\
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports none  :session *R* :width 14 :height 7 :cache yes 
-plotoutput(ex, which=1)
+plot(ex, which=1)
 #+END_SRC
 
 #+RESULTS[<2016-11-21 14:47:55> 11d349f7cd322f7820a2ad73700ce28429dd8cda]:
@@ -429,7 +429,7 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "A", "Sjk", "M")])
 
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat2c.pdf" :exports none  :session *R* :width 10 :height 5 :cache yes
-plotoutput(ex)
+plot(ex)
 #+END_SRC
 
 #+RESULTS[<2016-11-21 14:47:55> 8736143754c7f1cd107b58bd2b621b8148b85a21]:
@@ -444,7 +444,7 @@ plotoutput(ex)
 
 
 
-*** Final estimate of the daily dosis
+** Final estimate of the daily dosis
 label:sec:final
 
 The final estimate of the average daily dosis \(X_k\) per day in
@@ -454,13 +454,13 @@ are illustrated in Figure ref:fig:cases.
           &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
 	  &+ \, u_{k-1} \bigg[\tag{Overlap}
           \\ \begin{split}
- & \qquad   1\{S_{b(k-1)}= S_{b(k)}\}\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+ & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
 \\ & \qquad + \one \left\lbrace W_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
 \\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
 \end{split}\tag{I}
 	  \\
 \begin{split}
- & \qquad +  1\{S_{b(k-1)}\neq S_{b(k)}\}\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+ & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
 \\ & \qquad + \one \left\lbrace M^{(2)}_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
 \\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
 \end{split}\tag{II}
@@ -468,7 +468,7 @@ are illustrated in Figure ref:fig:cases.
 
 *** Example (continued)
 
-\noindent The following table show the final estimated daily doses for
+\noindent The following table shows the final estimated daily doses for
 the example individual.
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -556,7 +556,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 [[file:./drug-dat1a.pdf]]
 
 
-*** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
+** Calculating the leftover doses, ${R}_1,\ldots, {R}_{k}$
 
 \noindent The leftover doses are computed as, 
 \begin{align*}
@@ -570,7 +570,7 @@ spoints(a=vt[2],b=vt[2]+15,pos=vtype[4],cex=2.3,col="black",lwd=2)
 is again the number of hospitalized days in the period.
 
 
-*** Calculating the dates of end of exposure, ${E}_1,\ldots, {E}_{k}$
+** Calculating the dates of end of exposure, ${E}_1,\ldots, {E}_{k}$
 
 Note that since \(D_k + R_k\) is the total prescription dose at
 \(T_k\) and \(X_k\) is the estimated dose per day the result of
@@ -607,6 +607,43 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("id", "B", "E", "X", "R")])
 | 7 |  1 | 60 | 2013-12-28 | 2014-01-09 |  0 |
 :END:
 
+
+
+
+** Final concatenation of treatment periods
+
+\noindent The last step of the estimation of treatment periods
+concatenates treatment periods with same final dose. Furthermore, if
+there is a gap between two periods, a period filling out this gap is
+defined and the final dose here is set to 0. That way, a period will
+always begin after the last day of the previous period. 
+
+*** Example (continued)
+
+\noindent The following table shows the estimated estimated periods
+and doses for the example individual.
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
+org(ex1$exdrug)
+#+END_SRC
+
+#+RESULTS[<2016-11-23 10:23:38> 1c57f487dc41f88ad144500a60e88e2def63b24e]:
+:RESULTS:
+|    | id |  X |          B |          E |
+|----+----+----+------------+------------|
+|  1 |  1 | 25 | 2012-08-11 | 2012-09-09 |
+|  2 |  1 |  0 | 2012-09-10 | 2013-03-14 |
+|  3 |  1 | 50 | 2013-03-15 | 2013-04-13 |
+|  4 |  1 |  0 | 2013-04-14 | 2013-05-04 |
+|  5 |  1 | 60 | 2013-05-05 | 2013-05-18 |
+|  6 |  1 |  0 | 2013-05-19 | 2013-05-24 |
+|  7 |  1 | 40 | 2013-05-25 | 2013-08-22 |
+|  8 |  1 |  0 | 2013-08-23 | 2013-09-30 |
+|  9 |  1 | 50 | 2013-10-01 | 2013-11-05 |
+| 10 |  1 |  0 | 2013-11-06 | 2013-12-27 |
+| 11 |  1 | 60 | 2013-12-28 | 2014-01-09 |
+:END:
 
 
 
@@ -761,7 +798,7 @@ N(d) <- 3
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes 
-ex <- process(d) 
+ex <- process(d, out=FALSE) 
 #+END_SRC
 
 \noindent This produces an output data set for each of the specified
@@ -791,7 +828,7 @@ plot the periods to use for calculations, as was seen in Figure
 ref:fig:ex2.
 
 #+BEGIN_SRC R :results graphics :file "./drug-dat4b.pdf" :exports none  :session *R* :width 15 :height 5 :cache yes
-plotoutput(ex, id=1, drug="ex2")
+plot(ex, id=1, drug="ex2")
 #+END_SRC
 
 #+RESULTS[<2016-11-21 15:14:25> 20d83270c303d71190e332c06b3801e46960e1e4]:
