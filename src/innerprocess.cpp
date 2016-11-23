@@ -199,9 +199,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   }
   
   yk[K-1] = 1; 
-  yk[0]   = 1; 
-  
-  ylength += 2;
+  ylength += 1;
   
   NumericVector Sjk = dval[jk]; 
   
