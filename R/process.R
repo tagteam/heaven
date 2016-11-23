@@ -4,12 +4,12 @@
 ##' @title Update database
 ##' @param dpp a
 ##' @param id a 
-##' @param maxdepot a
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FALSE, out = TRUE) {
+process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE) {
     
+    maxrep <- dpp$maxrep
     period <- dpp$period
     dpp1 <- preprocess(dpp, id = id, trace = trace)
     
@@ -56,7 +56,7 @@ process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FA
           admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
           dat <- dat[order(dat$pdate), ]
           if (dim(dat)[1] > 0)
-            innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot, trace, out) 
+            innerprocess(dat, admdat, doses, treatname, dpp$N, maxrep, trace, out) 
         }))
         return(out)
       }

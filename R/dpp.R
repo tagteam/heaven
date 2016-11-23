@@ -9,7 +9,8 @@ dpp <- function() {
                        admdb  = NULL, 
                        drugs  = NULL, 
                        period = c(1, 1e10),
-                       N      = 2),
+                       N      = 2, 
+                       maxrep = 10),
                   class = "dpp")
   out
 }
