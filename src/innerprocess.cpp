@@ -48,7 +48,6 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   Rcpp::NumericVector M(K);
   Rcpp::NumericVector i0(K);
   
-  
   Rcpp::NumericVector idout(K);
   Rcpp::DateVector B(K);
   Rcpp::DateVector E(K);
@@ -56,7 +55,8 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
   Rcpp::NumericVector R(K);
   Rcpp::NumericVector X(K);
   
-  LogicalVector yj(K);
+  Rcpp::NumericVector yk(K);
+  double ylength;
   
   Rcpp::NumericVector strengthunique = wrap(unique(as<arma::vec>(strength)));
   
@@ -154,7 +154,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
       (u[k-1]*(1-w[k-1]))*(vmax*dmax[jk[k]] + vmin*dmin[jk[k]] + (1-vmax)*(1-vmin)*ddef[jk[k]]);
     
     if (k > 0)
-      R[k] = u[k] * (D[k-1] + R[k-1] - X[k-1]*(Enum[k-1] - T[k-1]));
+      R[k] = max(NumericVector::create(0, u[k] * (D[k-1] + R[k-1] - X[k-1]*(Enum[k-1] - T[k-1]))));
     
     if (R[k] > maxdepot)
       R[k] = maxdepot;
@@ -179,43 +179,86 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
         Rcout << ", Ik = {k}" << std::endl;
     }   
     
-    if (k > 0 && out) {
+    if (k > 1 && out) {
       if (X[k-1] == X[k] && Enum[k-1] >= (T[k]-1)) {
         T[k] = T[k-1];
-        yj[k-1] = 1; 
+        yk[k-1] = 0; 
       } else if (X[k-1] != X[k] && Enum[k-1] >= (T[k]-1)) { 
         T[k] = max(NumericVector::create(T[k], Enum[k-1] + 1));
-        Enum[k]  = max(NumericVector::create(Enum[k], T[k] + 1));
-      } else {
-        Enum[k]  = max(NumericVector::create(Enum[k], T[k-1] + 1));
+        Enum[k] = max(NumericVector::create(Enum[k], T[k] + 1));
+        yk[k-1] = 1; 
+      } else if (round(Enum[k-1]) < (T[k]-1)) {
+        //'Enum[k] = max(NumericVector::create(Enum[k], T[k-1] + 1));
+        yk[k-1] = 2; 
       }
+      ylength += yk[k-1];
     }
     
     B[k] = as<std::string>(formatDate(wrap(Date(T[k]))));
     E[k] = as<std::string>(formatDate(wrap(Date(Enum[k]))));
   }
   
+  yk[K-1] = 1; 
+  yk[0]   = 1; 
+  
+  ylength += 2;
+  
   NumericVector Sjk = dval[jk]; 
   
-  outdata =  Rcpp::DataFrame::create(Rcpp::Named("id")     = idout,
-                                     Rcpp::Named("X")      = X,
-                                     Rcpp::Named("B")      = B,
-                                     Rcpp::Named("E")      = E,
-                                     Rcpp::Named("R")      = R,
-                                     Rcpp::Named("D")      = D,
-                                     Rcpp::Named("M")      = M,
-                                     Rcpp::Named("A")      = S,
-                                     Rcpp::Named("c")      = c,
-                                     Rcpp::Named("jk")     = jk,
-                                     Rcpp::Named("Sjk")    = Sjk,
-                                     Rcpp::Named("H")      = H,
-                                     Rcpp::Named("DH")     = DH,
-                                     Rcpp::Named("nk")     = nk,
-                                     Rcpp::Named("u")      = u,
-                                     Rcpp::Named("w")      = w,
-                                     Rcpp::Named("i0")     = i0,
-                                     Rcpp::Named("yj")     = !(yj)
-  );
-  
+  if (!out) {
+    outdata = Rcpp::DataFrame::create(Rcpp::Named("id")     = idout,
+                                      Rcpp::Named("X")      = X,
+                                      Rcpp::Named("B")      = B,
+                                      Rcpp::Named("E")      = E,
+                                      Rcpp::Named("R")      = R,
+                                      Rcpp::Named("D")      = D,
+                                      Rcpp::Named("M")      = M,
+                                      Rcpp::Named("A")      = S,
+                                      Rcpp::Named("c")      = c,
+                                      Rcpp::Named("jk")     = jk,
+                                      Rcpp::Named("Sjk")    = Sjk,
+                                      Rcpp::Named("H")      = H,
+                                      Rcpp::Named("DH")     = DH,
+                                      Rcpp::Named("nk")     = nk,
+                                      Rcpp::Named("u")      = u,
+                                      Rcpp::Named("w")      = w,
+                                      Rcpp::Named("i0")     = i0,
+                                      Rcpp::Named("yj")     = yk);
+  } else {
+    Rcpp::NumericVector id1(ylength);
+    Rcpp::DateVector B1(ylength); 
+    Rcpp::DateVector E1(ylength); 
+    Rcpp::NumericVector X1(ylength); 
+    
+    double k1 = 0;
+    
+    for (int k = 0; k < K; k++) {
+      
+      double K1 = yk[k];
+      
+      for (int kk = 0; kk < K1; kk++) {
+        
+        id1[k1] = id[0];
+        
+        if (!(kk > 0 && K1 == 2)) {
+          B1[k1] = as<std::string>(formatDate(wrap(Date(T[k])))); 
+          E1[k1] = as<std::string>(formatDate(wrap(Date(Enum[k]))));
+          X1[k1] = X[k];
+        } else {
+          B1[k1] = as<std::string>(formatDate(wrap(Date(Enum[k]+1)))); 
+          E1[k1] = as<std::string>(formatDate(wrap(Date(T[k+1]-1)))); 
+          X1[k1] = 0; 
+        } 
+
+        k1 += 1;
+      }
+    }
+    
+    outdata = Rcpp::DataFrame::create(Rcpp::Named("id")     = id1,
+                                       Rcpp::Named("X")      = X1,
+                                       Rcpp::Named("B")      = B1,
+                                       Rcpp::Named("E")      = E1);
+  }
+
   return(outdata);
 }

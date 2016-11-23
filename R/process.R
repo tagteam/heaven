@@ -61,13 +61,14 @@ process <- function(dpp, treatments = NULL, id = NULL, maxdepot = 10, trace = FA
         return(out)
       }
     }
-
+  
     
-    if (out) {
-      outlist <- lapply(lapply(treatments, treatfun), function(x) x[x$yj, names(x) != "yj"])
-    } else
-      outlist <- lapply(lapply(treatments, treatfun), function(x) x[, names(x) != "yj"])
+  #  if (out) {
+ #     outlist <- lapply(lapply(treatments, treatfun), function(x) x[x$yj, names(x) != "yj"])
+  #  } else
+  #    outlist <- lapply(lapply(treatments, treatfun), function(x) x[x$yj, names(x) != "yj"])
       
+    outlist <- lapply(treatments, treatfun)
     names(outlist) <- treatments
     
     return(outlist)
