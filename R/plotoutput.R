@@ -7,7 +7,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plot.outdpp <- function(out, drug=NULL, id=NULL, which=2) {
+plot.dppout <- function(out, drug=NULL, id=NULL, which=2) {
   
   if (!(attr(out, "type"))) {
     if (length(drug) == 0) {
