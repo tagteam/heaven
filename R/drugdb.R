@@ -40,7 +40,7 @@
     dpp$drugdb <- newdata
   }
 
-  dpp$drugdb = dpp$drugdb[order(dpp$drugdb$id), ]
+  dpp$drugdb = dpp$drugdb[order(dpp$drugdb$id, dpp$drugdb$pdate), ]
   
   return(dpp)
 }
