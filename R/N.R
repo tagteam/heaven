@@ -1,13 +1,12 @@
-##' Update database
+##' Set the number of prescriptions to use in calculations
 ##'
-##' Update database
-##' @title Update database
+##' @title Prescription window
 ##' @param dpp a
 ##' @param ... a 
 ##' @param value a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`N<-` <- function(dpp, ..., value) {
+`pwindow<-` <- function(dpp, ..., value) {
 
   dpp$N <- value
   
