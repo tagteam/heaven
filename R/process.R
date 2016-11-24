@@ -9,7 +9,7 @@
 ##' @export
 process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE) {
     
-    maxrep <- dpp$maxrep
+    maxdepot <- dpp$maxdepot
     period <- dpp$period
     dpp1 <- preprocess(dpp, id = id, trace = trace)
     
@@ -56,7 +56,7 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE
           admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
           dat <- dat[order(dat$pdate), ]
           if (dim(dat)[1] > 0)
-            innerprocess(dat, admdat, doses, treatname, dpp$N, maxrep, trace, out) 
+            innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot, trace, out) 
         }))
         return(out)
       }
