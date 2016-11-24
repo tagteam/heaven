@@ -647,7 +647,7 @@ org(ex1$exdrug)
 
 
 
-* User interface
+*  User interface
 
 In the following, we show how to use the implemented
 \verb+R+-interface.  Firstly, the package is loaded and an empty object
@@ -659,43 +659,6 @@ library(heaven)
 d <- dpp()
 #+END_SRC
 
-#+RESULTS[<2016-11-21 14:32:34> c159a62d19174b9f7e100f1bc29ab9739eaf0fb7]:
-:RESULTS:
-[1] "Only one date - no plot produced"
-Warning message:
-In is.na(x) : is.na() applied to non-(list or vector) of type 'NULL'
-X11cairo 
-       2
- X11cairo 
-       2
- X11cairo 
-       2
-[[1]]
-NULL
-
-[[2]]
-NULL
-
-[[3]]
-NULL
-
-[[4]]
-NULL
-
-[[5]]
-NULL
-
-[[6]]
-NULL
-
-[[7]]
-NULL
-
-X11cairo 
-       2
- X11cairo 
-       2
-:END:
 
 \noindent For this example, we consider simulated data. The following
 code generates data using functions supplied in the \verb+heaven+ package.
@@ -838,6 +801,9 @@ plot(ex, id=1, drug="ex2")
 #+ATTR_LATEX: :width 1.05 \textwidth
 #+CAPTION: Days of supply and periods to be used to calculate mean doses for one of the individuals in the simulated data.
 [[file:./drug-dat4b.pdf]]
+
+bibliographystyle:chicago
+bibliography:heaven
 
 ** COMMENT Output
 
