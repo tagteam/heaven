@@ -48,9 +48,9 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE
         baddata <- 1
       }
       
-      if (baddata)
+      if (baddata) {
         print(cat("Computations for treatment named", treatname, "will terminate", "\n"))
-      else if (length(doses) > 0) {
+      } else if (length(doses) > 0) {
         out <- do.call("rbind", lapply(1:length(idunique), function(i) {
           dat    <- dpp2[dpp2$id == idunique[i], ]
           admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
@@ -63,6 +63,7 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE
     }
     
     outlist <- structure(lapply(treatments, treatfun),
+                         #drugdb = dpp1, 
                          type = out,
                          class = "dppout")
     names(outlist) <- treatments

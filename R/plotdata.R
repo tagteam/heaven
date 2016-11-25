@@ -7,82 +7,60 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plot.dpp <- function(dpp, drug=NULL, id=NULL) {
+plot.dpp <- function(dpp, drug=NULL) {
   
-  if (length(id) == 0)
-    id = dpp$drugdb$id[1] 
-
   if (length(drug) == 0) 
-    j <- 1
+    j <- (1:length(dpp$drugs))
   else
     j <- (1:length(dpp$drugs))[names(dpp$drugs) == drug]
-
+  
+  atc <- unlist(sapply(j, function(j) dpp$drugs[[j]]$atc))
+  
   if (length(j) == 0) {
     print(paste("no drug named", drug, "in specified input"))
   } else {
-    drugdb <- data.frame(dpp$drugdb)
-    drugdb <- drugdb[drugdb$atc %in% dpp$drugs[[j]]$atc & drugdb$id == id, ]
-    admdb  <- data.frame(dpp$admdb)
-    admdb  <- admdb[admdb$id == id, ]
+    d1 <- data.frame(dpp$drugdb)
+    d1 <- d1[d1$atc %in% atc, ]
+    a1 <- data.frame(dpp$admdb)
     
-    T  <- unique(drugdb$pdate)
-    T <- sort(T)
+    d1 <- d1[dpp$period[1] <= d1$pdate & d1$pdate <= dpp$period[2], ]
+    d1 <- d1[order(d1$id, d1$pdate), ]
+    #-- sort after first date
     
-    nT <- length(T)
+    d1$pfirst <- as.Date(unlist(lapply(unique(d1$id), function(x) rep(d1$pdate[d1$id == x][1], sum(d1$id == x)))), 
+                         origin = "1970-01-01")
+    d1$plast  <- as.Date(unlist(sapply(unique(d1$id), function(x) rep(d1$pdate[d1$id == x][length(d1$pdate[d1$id == x])], 
+                                                                      sum(d1$id == x)))), origin = "1970-01-01")
     
-    if (nT > 1) {
-      nadm <- nrow(admdb[admdb$inddto <= T[nT] & admdb$uddto > T[1], ])
-      
-      if (nadm > 0)
-        LR <- lapply(1:nadm, function(i) c(admdb$inddto[i], admdb$uddto[i]))
-      
-      par(mar=c(3.1,3.1,3.1,3.1))
-      
-      plot(0,0,type="n",xlim=c(T[1],T[nT]),ylim=c(0,90),xlab="Calendar time",ylab="", 
-           yaxt='n', xaxt='n', axes=FALSE)
-      axis(1, at=T, labels=T, las=0)
-      
-      ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
-        segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
-        segments(a, a, y0=pos-pos2, y1=pos+pos2, lty=lty, lwd=lwd, col=col)
-        segments(b, b, y0=pos-pos2, y1=pos+pos2, lty=lty, lwd=lwd, col=col)
-      }
-      
-      LRsegs <- function(vLR) {
-        ssegs(vLR[1], vLR[2], 50, col="red", lty=1, lwd=2)
-      }
-      
-      Tsegs <- function(i) {
-        ssegs(T[i], T[i+1], 50, col="black", lty=1, lwd=2)
-      }
-      
-      sapply(1:(nT-1), Tsegs)
-      if (nadm > 0)
-        sapply(LR, LRsegs)
-      
-      if (nadm > 0) {
-        atvec    <- c(T, unlist(LR))
-        labelvec <- c(sapply(1:nT, function(i) eval(bquote(expression(T[.(i)])))), 
-                      sapply(1:length(LR), function(i) c(eval(bquote(expression(L[.(i)]))),
-                                                         eval(bquote(expression(R[.(i)]))))))
-      } else {
-        atvec    <- T
-        labelvec <- sapply(1:nT, function(i) eval(bquote(expression(T[.(i)]))))
-      }
-      
-      axis(3,
-           lwd=0.1,
-           pos=80,
-           at=atvec,
-           labels=labelvec)
-      
-      sapply(T, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
-      if (nadm > 0)
-        sapply(unlist(LR), function(x) segments(x, x, y0=0, y1=80, col="red", lty=2,lwd=0.5))
-      
-      title(main=paste("input data for id =", id, "and drug =", names(dpp$drugs)[j]))
-      
-    } else 
-      print("Only one date - no plot produced")
+    d1 <- d1[order(d1$pfirst, d1$id, d1$pdate), ]
+    d1
+    d1$idorder <- unlist(sapply(1:length(unique(d1$id)), function(i) rep(i, sum(d1$id == unique(d1$id)[i]))))
+    
+    a1$idorder <- sapply(a1$id, function(x) unique(d1$idorder[d1$id == x]))
+    a1$pfirst <- sapply(a1$id, function(x) unique(d1$pfirst[d1$id == x]))
+    a1$plast <- sapply(a1$id, function(x) unique(d1$plast[d1$id == x]))
+    
+    a1 <- a1[order(a1$idorder), ]
+    a1 <- a1[a1$pfirst <= a1$uddto & a1$inddto <= a1$plast, ]
+    
+    d1$idorder <- factor(d1$idorder, labels = unique(d1$id))
+    
+    natc <- length(unique(d1$atc))
+    col <- topo.colors(natc)
+    
+    if (length(drug) > 0)
+      title <- paste("prescription dates for treatment", drug)
+    else 
+      title <- "prescription dates"
+    
+    ggplot(data = d1, aes(x = pdate, y = idorder)) + geom_point(size = 1.1, aes(col = atc)) + 
+      geom_segment(data = a1, aes(x = inddto,  xend = uddto,
+                                  y = idorder, yend = idorder, col = "admission periods")) + 
+      xlab("time") + ylab("individual") +
+      guides(color = guide_legend(override.aes = list(shape=c(rep(16, natc), NA), 
+                                                      linetype=c(rep(0, natc), 1)))) + 
+      scale_color_manual("", values = c(col, "red")) + theme_bw() +
+      theme(legend.position = "bottom") +
+      ggtitle(title)
   }
 } 

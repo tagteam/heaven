@@ -7,91 +7,49 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plot.dppout <- function(out, drug=NULL, id=NULL, which=2) {
+plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9) {
+
+  if (length(drug) == 0) {
+    j <- (1:length(out)) 
+  } else
+    j <- (1:length(out))[names(out) == drug]
+
+  drugout <- data.frame(rbindlist(lapply(j, function(j) {
+    dat <- out[[j]]
+    dat$drug <- rep(names(out)[j], dim(dat)[1])
+    return(dat)})))
   
-  if (!(attr(out, "type"))) {
-    if (length(drug) == 0) {
-      j <- 1
-    } else
-      j <- (1:length(out))[names(out) == drug]
+  if (length(id) == 0)
+    id <- unique(drugout$id[drugout$id %in% unique(drugout$id)[1:min(idmax, length(unique(drugout$id)))]])
     
-    if (length(id) == 0)
-      id = out[[j]]$id[1] 
+  drugout <- drugout[drugout$id %in% id, ]
+  
+  natc <- length(unique(d1$atc))
+  col <- topo.colors(natc)
+  
+  if (length(drug) > 0) {
+    title <- paste("final estimated doses for treatment", drug)
+  } else 
+    title <- "final estimated doses"
+
+  drugout$idname <- paste("id =", drugout$id)
+      
+  if (attr(out, "type")) {
+
+    gout <- ggplot(data = drugout, aes(xmin = B, xmax = E, ymin = 0, ymax = X)) + 
+      geom_rect(aes(fill = drug), alpha = 0.5) + 
+      facet_wrap( ~ idname, scales = "free") + theme_bw() +
+      scale_fill_manual("treatment: ", values = col) + 
+      ggtitle(title) + theme(legend.position = "bottom") +
+      scale_x_date()
+  
+  } else {
     
-    if (length(j) == 0) {
-      print(paste("no drug named", drug, "in specified input"))
-    } else {
-      drugout <- out[[j]]
-      drugout <- drugout[drugout$id == id, ]
-      
-      B   <- drugout$B
-      nk  <- drugout$nk
-      Sjk <- drugout$Sjk
-      i0  <- drugout$i0
-      DH  <- drugout$DH
-      w   <- c(0, drugout$w)
-      u   <- c(0, drugout$u)
-      
-      if (which==2) {
-        y <- 50
-      } else {
-        y <- 30
-      }
-      
-      par(mar=c(3.1,3.1,3.1,3.1))
-      
-      plot(0,0,type="n",xlim=c(B[1],B[length(B)]+nk[length(B)]),ylim=c(0,90),xlab="Calendar time",ylab="", 
-           yaxt='n', xaxt='n', axes=FALSE)
-      axis(1, at=c(B, B[length(B)]+nk[length(B)]), labels=c(B, ""), las=0)
-      
-      ssegs <- function(a, b, pos, pos2=1, col="black", lwd=3, lty=1){
-        segments(x0=a, x1=b, y0=pos, y1=pos, lwd=lwd, col=col, lty=lty)
-        segments(a, a, y0=pos-pos2, y1=pos+pos2, lty=lty, lwd=lwd, col=col)
-        segments(b, b, y0=pos-pos2, y1=pos+pos2, lty=lty, lwd=lwd, col=col)
-      }
-      
-      Bnsegs <- function(i) {
-        ssegs(B[i], B[i]+nk[i], y+length(B)*4-i*4, col="black", lty=5, lwd=1)
-        ssegs(B[i]+nk[i], B[i]+nk[i]+DH[i], y+length(B)*4-i*4, col="darkred", lty=5, lwd=1)
-      }
-      
-      sapply(1:length(B), Bnsegs)
-      
-      axis(3,
-           lwd=0.1,
-           pos=80,
-           at=c(B, B[length(B)]+nk[length(B)]),
-           labels=c(sapply(1:length(B), function(i) eval(bquote(expression(B[.(i)])))), ""))
-      
-      sapply(B, function(x) segments(x, x, y0=0, y1=80, lty=2,lwd=0.5))
-      
-      Spoints <- function(i) {
-        points(B[i], y+length(B)*4-i*4, pch=21, cex=2*Sjk[i]/max(Sjk), bg="black")
-      }
-      
-      sapply(1:length(B), Spoints)
-      
-      if (which == 2) {
-        Esegs <- function(i) {
-          if (w[i] & u[i]) {
-            segcol <- "darkgreen"
-            text   <- "(I)"
-          } else if (u[i]) {
-            segcol <- "darkblue"
-            text   <- "(II)"
-          } else {
-            segcol <- "black"
-            text   <- ""
-          }
-          ycoor <- y+length(B)*4-length(B)*4-i*4
-          ssegs(B[i-i0[i]], B[i], ycoor, col=segcol, lty=5, lwd=1)
-          text(B[i]+(B[length(B)]-B[1])/60, ycoor, text, col=segcol)
-        }
-        
-        sapply(1:length(B), Esegs)
-      }
-    }
-    title(main=paste("input data for id =", id, "and drug =", names(out)[j]))
-    
+    print("lala")
   }
+  
+  
+  
+  return(gout)
 }
+
