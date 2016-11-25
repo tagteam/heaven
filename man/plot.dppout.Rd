@@ -4,7 +4,7 @@
 \alias{plot.dppout}
 \title{Update database}
 \usage{
-\method{plot}{dppout}(out, drug = NULL, id = NULL, which = 2)
+\method{plot}{dppout}(out, drug = NULL, id = NULL, idmax = 9)
 }
 \arguments{
 \item{id}{a}

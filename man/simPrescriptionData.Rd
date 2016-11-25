@@ -26,6 +26,7 @@ Simulate prescription data alike the Danish medical registry
 
 
 http://www.medicinpriser.dk/
+http://pro.medicin.dk/
 
 A07: strength 200, number of pills 30
      strength 400, number of pills 100

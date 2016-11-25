@@ -4,7 +4,7 @@
 \alias{plot.dpp}
 \title{Update database}
 \usage{
-\method{plot}{dpp}(dpp, drug = NULL, id = NULL)
+\method{plot}{dpp}(dpp, drug = NULL)
 }
 \arguments{
 \item{dpp}{a}
