@@ -63,7 +63,6 @@ plot.dpp <- function(dpp, drug=NULL) {
       guides(color = guide_legend(override.aes = list(shape=c(rep(16, natc), NA), 
                                                       linetype=c(rep(0, natc), 1)))) + 
       scale_color_manual("", values = c(col, "red")) + theme_bw() +
-      theme(legend.position = "bottom") +
-      ggtitle(title)
+      theme(legend.position = "bottom")
   }
 } 
