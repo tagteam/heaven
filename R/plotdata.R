@@ -9,12 +9,15 @@
 ##' @export
 plot.dpp <- function(dpp, drug=NULL) {
   
-  if (length(drug) == 0) 
+  if (length(drug) == 0) {
     j <- (1:length(dpp$drugs))
-  else
+  } else
     j <- (1:length(dpp$drugs))[names(dpp$drugs) == drug]
   
-  atc <- unlist(sapply(j, function(j) dpp$drugs[[j]]$atc))
+  if (j[length(j)] > 0) {
+    atc <- unlist(sapply(j, function(j) dpp$drugs[[j]]$atc))
+  } else 
+    atc <- unique(dpp$drugdb$atc)
   
   if (length(j) == 0) {
     print(paste("no drug named", drug, "in specified input"))
@@ -48,9 +51,9 @@ plot.dpp <- function(dpp, drug=NULL) {
     natc <- length(unique(d1$atc))
     col <- topo.colors(natc)
     
-    if (length(drug) > 0)
+    if (length(drug) > 0) {
       title <- paste("prescription dates for treatment", drug)
-    else 
+    } else 
       title <- "prescription dates"
     
     ggplot(data = d1, aes(x = pdate, y = idorder)) + geom_point(size = 1.1, aes(col = atc)) + 
