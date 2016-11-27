@@ -7,7 +7,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE) {
+process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE, keepdrugdb = FALSE) {
     
     maxdepot <- dpp$maxdepot
     period <- dpp$period
@@ -62,12 +62,20 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE
       }
     }
     
-    outlist <- structure(lapply(treatments, treatfun),
-                         #drugdb = dpp1, 
-                         type = out,
-                         class = "dppout")
+    outlist <- structure(lapply(treatments, treatfun), 
+                         type   = out,
+                         period = dpp$period,
+                         class  = "dppout")
     names(outlist) <- treatments
 
+    if (keepdrugdb) {
+      treat <- t(data.frame(lapply(1:length(d$drugs), function(i) 
+        sapply(d$drugs[[i]]$atc, function(x)
+          c(x, names(d$drugs)[i])))))
+      dpp1$treatment <- sapply(dpp1$atc, function(x) treat[treat[, 1] == x, 2])
+      attr(outlist, "drugdb") <- dpp1
+    }
+    
     return(outlist)
 }
 

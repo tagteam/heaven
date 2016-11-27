@@ -67,4 +67,3 @@ plot.dpp <- function(dpp, drug=NULL) {
       theme(legend.position = "bottom")
   }
 } 
-plot(d)
