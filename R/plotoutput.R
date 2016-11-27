@@ -65,10 +65,10 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
     } else 
       gout <- gout + scale_x_date(labels = date_format("%b %Y"))
       
-  
+    drugdb <- data.frame(attr(out, "drugdb"))
+    
     if (trace & length(drugdb) > 0 & length(id) == 1) {
       
-      drugdb <- data.frame(attr(out, "drugdb"))
       dat <- drugdb[drugdb$id == id, ]
       if (length(drug) > 0)
         dat <- dat[dat$treatment == drug, ]
@@ -97,4 +97,12 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
   return(gout)
 }
 
-
+#plot(out, fix = TRUE)
+plot(out, normalize = TRUE)
+plot(out)
+#plot(out, drug="ex2")
+#plot(out, id = 5, drug="ex1")
+plot(out, id = 5, drug="ex1", trace=TRUE)
+plot(out, id = 5, trace=FALSE)
+plot(out, id = 7, trace=TRUE)
+ex1
