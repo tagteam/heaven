@@ -179,7 +179,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
         Rcout << ", Ik = {k}" << std::endl;
     }   
     
-    if (k > 1 && out) {
+    if (k > 0 && out) {
       if (X[k-1] == X[k] && Enum[k-1] >= (T[k]-1)) {
         T[k] = T[k-1];
         yk[k-1] = 0; 

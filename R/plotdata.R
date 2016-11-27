@@ -50,6 +50,7 @@ plot.dpp <- function(dpp, drug=NULL) {
     
     natc <- length(unique(d1$atc))
     col <- topo.colors(natc)
+      #colorRampPalette(c("darkblue", "darkgreen"))(natc)
     
     if (length(drug) > 0) {
       title <- paste("prescription dates for treatment", drug)
@@ -66,3 +67,4 @@ plot.dpp <- function(dpp, drug=NULL) {
       theme(legend.position = "bottom")
   }
 } 
+plot(d)

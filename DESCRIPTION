@@ -11,7 +11,9 @@ Description: Fast and furious implementations of often used data preparation
 Depends:
     R (>= 2.9.0),
     data.table(>= 1.9.6),
-    ggplot2
+    ggplot2, 
+    gridExtra, 
+    scales
 Imports:
     stats,
     graphics,
