@@ -7,7 +7,7 @@
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE, keep_data = FALSE) {
+process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = TRUE, keep_data = FALSE) {
     
     maxdepot <- dpp$maxdepot
     period <- dpp$period
@@ -56,16 +56,16 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE
           admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
           dat <- dat[order(dat$pdate), ]
           if (dim(dat)[1] > 0)
-            innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot, trace, out) 
+            innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot, trace, out_data) 
         }))
         return(out)
       }
     }
     
     outlist <- structure(lapply(treatments, treatfun), 
-                         type   = out,
-                         period = dpp$period,
-                         class  = "dppout")
+                         out_data = out_data,
+                         period   = dpp$period,
+                         class    = "dppout")
     names(outlist) <- treatments
 
     if (keep_data) {
