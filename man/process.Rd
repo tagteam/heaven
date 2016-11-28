@@ -4,7 +4,8 @@
 \alias{process}
 \title{Update database}
 \usage{
-process(dpp, treatments = NULL, id = NULL, trace = FALSE, out = TRUE)
+process(dpp, treatments = NULL, id = NULL, trace = FALSE,
+  out_data = TRUE, keep_data = FALSE)
 }
 \arguments{
 \item{dpp}{a}

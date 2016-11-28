@@ -4,14 +4,15 @@
 \alias{plot.dppout}
 \title{Update database}
 \usage{
-\method{plot}{dppout}(out, drug = NULL, id = NULL, idmax = 9)
+\method{plot}{dppout}(out, drug = NULL, id = NULL, idmax = 9,
+  trace = FALSE, fix_x = FALSE, normalize = FALSE)
 }
 \arguments{
 \item{id}{a}
 
-\item{dpp}{a}
-
 \item{trace}{a}
+
+\item{dpp}{a}
 }
 \description{
 Function to plot output etc

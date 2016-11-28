@@ -38,7 +38,7 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
 
   drugout$idname <- paste("id =", drugout$id)
       
-  if (attr(out, "type")) {
+  if (attr(out, "out_data")) {
     
     if (normalize) {
       drugout$final <- sapply(1:dim(drugout)[1], function(i)
