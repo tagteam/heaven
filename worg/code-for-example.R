@@ -1,6 +1,25 @@
 #devtools::install_github("tagteam/heaven", force = TRUE, Rcpp = TRUE)
+
+#remove.packages(c("ggplot2"))
+#install.packages('ggplot2', dependencies = TRUE)
+###install.packages("lattice")
 library(heaven)
 library(Publish)
+
+install.packages('ggplot2', dep = TRUE)
+
+
+library(heaven)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+d$drugdb
+str(d$drugdb)
+admdb(d) <- admdata
+str(d$admdb)
+plot(d)
 
 T <- as.Date(c(rep("2012-05-08", 3), "2012-08-11", rep("2013-03-15", 2), "2013-05-05",
                "2013-05-25", rep("2013-10-01", 2), "2013-12-28"))
@@ -37,7 +56,10 @@ plot(d)
 N(d) <- 3
 ex <- process(d, out=FALSE)
 ex
-exdata
+
+ex <- process(d, keepdrugdb = TRUE)
+ex
+plot(ex)
 plotoutput(ex, which=1)
 plotoutput(ex)
 org(ex$exdrug[, names(ex$exdrug) %in% c("B", "M")])
@@ -45,3 +67,5 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "M")])
 
 ex1 <- process(d)
 ex1
+
+

@@ -537,6 +537,7 @@ plot(out)
 #+BEGIN_SRC R :results graphics :file "./drug-fig-2.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
 library(heaven)
 library(Publish)
+setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 set.seed(8)
 drugdata <- simPrescriptionData(10)
 admdata <- simAdmissionData(10)
@@ -585,9 +586,10 @@ out1 <- process(d, keep_data = TRUE)
 plot(out1, id = 5, trace = TRUE)
 #+END_SRC
 
-#+BEGIN_SRC R :results graphics :file "./drug-fig-3.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
+#+BEGIN_SRC R :results graphics :file "./drug-fig-3.pdf" :exports none  :session *R* :width 6 :height 4
 library(heaven)
 library(Publish)
+setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 set.seed(8)
 drugdata <- simPrescriptionData(10)
 admdata <- simAdmissionData(10)
@@ -627,7 +629,28 @@ file:./drug-fig-3.pdf
  :BEAMER_opt: shrink=20
  :END:
 
+- \noindent The ~R~-interface and the following formulas are all based
+  on the implementation of ~medicin macro~ (~left_only~).
+- The computations performed consists basically of an averaging over a
+  set of prescriptions back in time (set by the user)
+- A number of things will for each prescription date help us determine how
+  many dates back in time we should use for the calculations: 
+  - The number of days of supply of a certain drug is calculated based on
+    the minimal possible doses for a drug
+  - The actual number of dates between the prescription periods (where
+    the number of days hospitalized is subtracted)
+  - Whether or not the total amount of drug purchased at time \(k\) is
+    approximately the same as purchased at earlier times
 
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+file:./drug-dat2a.pdf
+
+
+*** Final formula
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
 
 \begin{align} 
           &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
@@ -735,7 +758,7 @@ some explanations
     :END:
     
 
-** Discussion
+* Final remarks
 *** Discussion
 - cumulative exposure
  + andre macroer?
