@@ -531,7 +531,7 @@ A ~plot()~-function to visualize the output is defined in the package:
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 out <- process(d)
-plot(out)
+plot(out, idmax = 4)
 #+END_SRC
 
 #+BEGIN_SRC R :results graphics :file "./drug-fig-2.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
@@ -556,11 +556,11 @@ drug(d, "treatment2") <- pack(c(200, 400, 500),
                      def = c(300, 200, 500))
 pwindow(d) <- 3
 out <- process(d)
-plot(out)
+plot(out, idmax = 4)
 #+END_SRC
 
 
-#+RESULTS[<2016-11-28 11:25:44> 2ce6eed8fb1fed41c3a92dc81715a62769aa7eb6]:
+#+RESULTS[<2016-11-28 12:06:55> c4ecb36feed40e5aa5ee6fad113d85c384736b3f]:
 [[file:./drug-fig-2.pdf]]
 
 
@@ -642,6 +642,24 @@ file:./drug-fig-3.pdf
   - Whether or not the total amount of drug purchased at time \(k\) is
     approximately the same as purchased at earlier times
 
+
+*** Technical details 
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+\noindent The following plot shows the different cases that we
+consider: \\
+
+
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+file:./drug-dat1a.pdf
+
+\vspace{0.2cm}
+\noindent The following plot shows the different cases that we
+consider: \\
+
 #+LABEL: fig:periods
 #+ATTR_LATEX: :width 0.8 \textwidth
 file:./drug-dat2a.pdf
@@ -657,13 +675,13 @@ file:./drug-dat2a.pdf
 	  &+ \, u_{k-1} \bigg[\tag{Overlap}
           \\ \begin{split}
  & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
-\\ & \qquad + \one \left\lbrace W_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\ & \qquad + \one \left\lbrace W_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
 \\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
 \end{split}\tag{I}
 	  \\
 \begin{split}
  & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
-\\ & \qquad + \one \left\lbrace M^{(2)}_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\ & \qquad + \one \left\lbrace M^{(2)}_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
 \\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
 \end{split}\tag{II}
 \end{align}
@@ -763,6 +781,11 @@ some explanations
 - cumulative exposure
  + andre macroer?
 - tradition in other registry data research groups
+
+** To be solved
+*** To be solved...
+
+
 
 * HEADER :noexport:
 
