@@ -8,9 +8,7 @@
 ##' @return The data preprocessing object is updated. 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drug<-` <- function(dpp, name, add = FALSE, value) {
-  
-  drugname <- deparse(substitute(name))
+`drug<-` <- function(dpp, drugname, add = FALSE, value) {
   
   i <- (1:length(dpp$drugs))[names(dpp$drugs) == drugname]
 
@@ -18,6 +16,8 @@
   
   return(dpp)
 }  
+
+
 
 ##' @export
 atc <- function(atc) {
