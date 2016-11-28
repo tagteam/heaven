@@ -96,3 +96,4 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
   
   return(gout)
 }
+
