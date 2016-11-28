@@ -54,7 +54,7 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
     gout <- ggplot(data = drugout) + 
       geom_rect(data = drugout, aes(xmin = B, xmax = E, ymin = 0, ymax = final, fill = drug), alpha = 0.5) + 
       facet_wrap( ~ idname, scales = "free") + theme_bw() +
-      guides(fill = guide_legend(override.aes = list(size=c(rep(10.8, natc))))) +
+      guides(fill = guide_legend(override.aes = list(size=c(rep(6.8, natc))))) +
       scale_fill_manual("treatment: ", values = col) +  
       #ggtitle(title) + 
       theme(legend.position = "bottom") + 
