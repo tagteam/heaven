@@ -1,0 +1,803 @@
+
+* Introduction
+** Overall Purpose
+*** Association studies 
+
+- Exposure-outcome analysis
+ + lalala
+- Example: PPI 
+
+* SAS Interface
+** Input data
+*** Input data: Drug database
+
+Example data:
+#+name: chunkdrugdb
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+drugdata[1:15, ]
+#+END_SRC
+
+#+RESULTS[<2016-11-25 13:31:54> d73b672156c2815a23232a5838bae7bfaffda091]:
+#+begin_example
+    pnr  atc       eksd strnum packsize apk
+ 1:   1  A07 1996-06-15    400       30   1
+ 2:   1  A07 1997-04-14    500       60   1
+ 3:   1  A07 1998-03-23    400       30   2
+ 4:   1  A07 1998-11-05    200      300   1
+ 5:   1  A07 1999-08-30    400      100   1
+ 6:   1 A12B 1997-08-21    750      500   1
+ 7:   2  A07 1995-05-03    400       60   2
+ 8:   2  A07 1995-07-10    500       60   1
+ 9:   2  A07 1995-09-02    400       60   2
+10:   2  A07 1995-09-21    400       60   3
+11:   2  A07 1995-11-19    500      100   1
+12:   2  A07 1996-04-26    400      100   1
+13:   2  A07 1996-09-21    200       60   1
+14:   2  A07 1997-07-18    400      300   1
+15:   2  A07 1999-05-19    400      100   2
+#+end_example
+
+
+*** Input data: Admission database
+Example data: 
+#+name: chunkadmdb
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+set.seed(8)
+admdata <- simAdmissionData(10)
+admdata[1:15, ]
+#+END_SRC
+
+#+RESULTS[<2016-11-25 13:31:47> 56f4c64d7b73d0de08139677facac7e6be36d42b]:
+#+begin_example
+    pnr     inddto      uddto
+ 1:   1 1999-02-27 1999-03-13
+ 2:   1 2008-01-14 2008-01-28
+ 3:   1 2010-12-29 2011-01-30
+ 4:   2 1996-10-14 1996-10-14
+ 5:   2 2003-08-25 2003-09-06
+ 6:   2 2004-02-21 2004-04-03
+ 7:   2 2007-11-22 2007-11-28
+ 8:   2 2010-05-20 2010-06-14
+ 9:   3 1999-06-23 1999-07-20
+10:   3 2005-06-03 2005-06-22
+11:   4 2008-04-07 2008-04-11
+12:   4 2014-07-20 2014-08-17
+13:   5 1999-03-01 1999-03-09
+14:   5 2007-06-19 2007-07-06
+15:   5 2011-05-07 2011-06-18
+#+end_example
+
+
+
+*** Current interface (medicin macro)
+ :PROPERTIES:
+ :BEAMER_opt: shrink=55
+ :END:
+
+#+BEGIN_SRC SAS  :results code raw drawer  :exports code  :cache yes 
+%x_recepter(recept_data, /* forventes at indeholde variable - skulle gerne passe med DST-standarder:
+                                  pnr - cpr/patientidentifikation
+                                  atc - ATC kode
+                                  eksd - udleveringsdato som sas-dato
+                                  strnum - numerisk styrke
+                                  apk - antal udleverede pakker
+                                  packsize - antal piller i hver pakke*/
+
+                  datoer, /* Et produkt af medicin-hjælpe-macro eller andet program som ordner ALLE indlæggelser pr PNR på
+                          EEN record med fortløbende inddto uddto */
+
+
+                  out, /* tabel over behandlingsperioder - navn på SAS datasæt valgt af brugeren*/
+                  1a, /* atc kode - den behandling som der skal beregnes på*/
+                  5, /* antal recepter der indgår i beregninger - testet med 5, altså op til 2 før og 2 efter interesserecept */
+                  50,  75, 100, 125, /* Doser svarende til de følgende variable - det er pillestørrelser
+                         - her og de følgende variable skal ALLE have en værdi. Hvis der findes færre skal der blot gentages*/
+                  10, 50, 25, 50,    /* Mindst accepterede dosis af lægemidler på hver pillestyrke*/
+                  75, 200, 150, 150,    /* Max accepterede dosis*/
+                  50, 100,  75, 100,    /* Typiske doser - en slags "default" dosis - og startdosis altid ved left_only */
+                  10, /* Maximum sktørrelse af "restdosis" som kan overføres til følgende receptperioder. Denne giver mulighed for
+                   at forhindre excessiv ophobning hvis små antagelser om maxdosis medfører til tiltagende stort depot
+                   Max_depot er piller*styrke - Hvis der højst må gemmes 100 piller a 10 mg, så er max_depot 1000
+                   */
+                  '01sep12'd, /* første og sidste dato som har interesse kan angives som en "SAS-dato" eller med konventionen
+                     'ddmmyy'd     */
+                  '02may20'd,
+                  1, /* Hvis værdien er 1 så kommer der tracking udskrift i loggen - hvis nul, så ikke. Tilsvarende slettes en række
+                    temporære datasæt hvis værdien er 0 */
+                  1, /* Hvis værdien er 1 så kommer der grafer */
+                  test, /* præfix på generede variable som kan benyttes til at skelne fra lignende variable genereret i andre trin*/
+                  0 /* danner tabeller "l_" hvor doser og sluttider KUN regnes bagud*/
+                  );
+#+END_SRC
+
+** Output data
+*** Output data
+
+Continuing example: (FIXME: Except NOT the same)
+#+name: chunksasout
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+out_alt <- read.csv("~/research/Software/medicin-macro/test-sas/nov-23/out_alt.csv")
+out_alt[1:15, ]
+#+END_SRC
+
+#+RESULTS[<2016-11-25 13:36:42> f8820f8e8040d1409c5c94203a90a25764125200]:
+#+begin_example
+    pnr dosis startdag slutdag
+1  1000    50  17SEP15 06OCT15
+2  1000   100  23JAN20 28JAN20
+3  1000   100  08APR20 22MAY20
+4  2000    20  15MAY13 05AUG13
+5  2000    75  04NOV15 16NOV15
+6  2000   100  15MAR17 21MAY17
+7  3000   100  16MAR13 21MAR13
+8  3000   100  26APR13 02MAY13
+9  3000    50  10MAR16 08MAY16
+10 3000    75  04JAN19 16JAN19
+11 3000   100  14JUL19 04AUG19
+12 3000   150  05AUG19 16AUG19
+13 3000    75  17AUG19 22AUG19
+14 3000    50  01NOV19 19NOV19
+15 3000    75  20NOV19 16DEC19
+#+end_example
+
+** Immediate limitations
+*** Immediate limitations
+
+- Slow
+- Lack of transparency
+- Other issues:  
+  + Dependence on the future
+  + Only possible to specify four different doses
+  + Possible to run for parts of data? Only specific individuals? 
+ 
+* New R Interface 
+
+*** Input data: Drug database (unchanged)
+
+#+name: chunkdrugdb
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+drugdata[1:15, ]
+#+END_SRC
+
+#+RESULTS[<2016-11-25 13:31:54> d73b672156c2815a23232a5838bae7bfaffda091]:
+#+begin_example
+    pnr  atc       eksd strnum packsize apk
+ 1:   1  A07 1996-06-15    400       30   1
+ 2:   1  A07 1997-04-14    500       60   1
+ 3:   1  A07 1998-03-23    400       30   2
+ 4:   1  A07 1998-11-05    200      300   1
+ 5:   1  A07 1999-08-30    400      100   1
+ 6:   1 A12B 1997-08-21    750      500   1
+ 7:   2  A07 1995-05-03    400       60   2
+ 8:   2  A07 1995-07-10    500       60   1
+ 9:   2  A07 1995-09-02    400       60   2
+10:   2  A07 1995-09-21    400       60   3
+11:   2  A07 1995-11-19    500      100   1
+12:   2  A07 1996-04-26    400      100   1
+13:   2  A07 1996-09-21    200       60   1
+14:   2  A07 1997-07-18    400      300   1
+15:   2  A07 1999-05-19    400      100   2
+#+end_example
+
+
+*** Input data: Admission database (unchanged)
+
+#+name: chunkadmdb
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+set.seed(8)
+admdata <- simAdmissionData(10)
+admdata[1:15, ]
+#+END_SRC
+
+#+RESULTS[<2016-11-25 13:31:47> 56f4c64d7b73d0de08139677facac7e6be36d42b]:
+#+begin_example
+    pnr     inddto      uddto
+ 1:   1 1999-02-27 1999-03-13
+ 2:   1 2008-01-14 2008-01-28
+ 3:   1 2010-12-29 2011-01-30
+ 4:   2 1996-10-14 1996-10-14
+ 5:   2 2003-08-25 2003-09-06
+ 6:   2 2004-02-21 2004-04-03
+ 7:   2 2007-11-22 2007-11-28
+ 8:   2 2010-05-20 2010-06-14
+ 9:   3 1999-06-23 1999-07-20
+10:   3 2005-06-03 2005-06-22
+11:   4 2008-04-07 2008-04-11
+12:   4 2014-07-20 2014-08-17
+13:   5 1999-03-01 1999-03-09
+14:   5 2007-06-19 2007-07-06
+15:   5 2011-05-07 2011-06-18
+#+end_example
+
+
+** Visualization tools
+*** Tools for visualizing the data (input)
+ :PROPERTIES:
+ :BEAMER_opt: shrink=10
+ :END:
+
+A ~plot()~-function to show purchases and admission periods for the
+patients (i.e., visualizing input data): \\
+
+\vspace{0.5cm}
+
+#+BEGIN_SRC R :results graphics :file "./drug-fig-1.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
+library(heaven)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+plot(d)
+#+END_SRC
+
+#+RESULTS[<2016-11-25 15:16:07> 6d438e77e7e2239ef66d5e5f32ac3aa589de69c3]:
+[[file:./drug-fig-1.pdf]]
+
+#+LABEL: fig:ex1
+#+ATTR_LATEX: :width 1 \textwidth
+file:./drug-fig-1.pdf
+
+** User details 
+*** How to use the interface
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+\noindent Load package: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+library(heaven)
+#+END_SRC
+
+\noindent Create empty object: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+d <- dpp()
+#+END_SRC
+
+\noindent Attach relevant data: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+drugdb(d) <- drugdata
+admdb(d) <- admissiondata
+#+END_SRC
+
+\noindent Add treatments: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                              min = c(250, 25), 
+                              max = c(1000, 100), 
+                              def = c(750, 100))
+#+END_SRC
+
+\noindent Specify window of prescription dates to use in calculations: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+pwindow(d) <- 3 ## use 3 prescriptions back in time 
+#+END_SRC
+
+*** How to use the interface
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+\noindent When everything is specified, we perform the calculations by
+running:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+process(d)
+#+END_SRC
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+pwindow(d) <- 3
+out <- process(d)
+out[1]
+#+END_SRC
+
+#+RESULTS[<2016-11-28 10:07:13> 254d6ef36671f34746b2181f5e1ffc27c1ba2743]:
+#+begin_example
+$treatment1
+   id   X          B          E
+1   1 100 1997-08-21 2007-11-26
+2   2 100 1995-09-09 2030-02-05
+3   3 100 1995-06-21 1997-08-12
+4   3   0 1997-08-13 1998-02-21
+5   3 100 1998-02-22 2010-02-08
+6   4 100 1995-01-01 2030-08-17
+7   5 100 1995-02-14 1996-02-23
+8   5   0 1996-02-24 1996-04-25
+9   5  75 1996-04-26 1997-08-20
+10  5 100 1997-08-21 2000-03-01
+11  6 100 1995-01-01 1995-03-16
+12  6   0 1995-03-17 1995-09-23
+13  6  25 1995-09-24 1996-05-04
+14  6 100 1996-05-05 2015-01-26
+15  7 100 1995-06-27 1999-09-16
+16  8 100 1996-09-26 2009-08-27
+17  9 100 1995-05-09 1999-06-18
+18  9   0 1999-06-19 1999-11-18
+19  9 100 1999-11-19 2001-06-03
+20 10 100 1995-09-13 2014-04-21
+#+end_example
+
+
+
+*** How to use the interface
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+\noindent We may add treaments:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+drug(d, "treatment2") <- atc("A07")
+drug(d, "treatment2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+#+END_SRC
+
+\noindent And then perform calculations again: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+process(d)
+#+END_SRC
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+drug(d, "treatment2") <- atc("A07")
+drug(d, "treatment2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+pwindow(d) <- 3
+out <- process(d)
+lapply(out[1:2], head)
+#+END_SRC
+
+#+RESULTS[<2016-11-28 10:09:02> b087ff44e2c3049b4e5617354237a8df293fe61a]:
+#+begin_example
+$treatment1
+  id   X          B          E
+1  1 100 1997-08-21 2007-11-26
+2  2 100 1995-09-09 2030-02-05
+3  3 100 1995-06-21 1997-08-12
+4  3   0 1997-08-13 1998-02-21
+5  3 100 1998-02-22 2010-02-08
+6  4 100 1995-01-01 2030-08-17
+
+$treatment2
+  id   X          B          E
+1  1 200 1996-06-15 1996-08-13
+2  1   0 1996-08-14 1997-04-13
+3  1 500 1997-04-14 1997-06-12
+4  1   0 1997-06-13 1998-03-22
+5  1 200 1998-03-23 1998-07-20
+6  1   0 1998-07-21 1998-11-04
+#+end_example
+
+
+*** How to use the interface
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+
+\noindent The function can be used treatment and/or id speficic:
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+process(d, treatment = "treatment2")
+#+END_SRC
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+drug(d, "treatment2") <- atc("A07")
+drug(d, "treatment2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+pwindow(d) <- 3
+out <- process(d, treatment = "treatment2")
+lapply(out[1], head)
+#+END_SRC
+
+#+RESULTS[<2016-11-28 10:16:07> 2be524535c80c33de7a9e484ffb9036c05739ed6]:
+: $treatment2
+:   id   X          B          E
+: 1  1 200 1996-06-15 1996-08-13
+: 2  1   0 1996-08-14 1997-04-13
+: 3  1 500 1997-04-14 1997-06-12
+: 4  1   0 1997-06-13 1998-03-22
+: 5  1 200 1998-03-23 1998-07-20
+: 6  1   0 1998-07-21 1998-11-04
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+process(d, id = 9)
+#+END_SRC
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+drug(d, "treatment2") <- atc("A07")
+drug(d, "treatment2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+pwindow(d) <- 3
+out <- process(d, id = 9)
+out[1:2]
+#+END_SRC
+
+#+RESULTS[<2016-11-28 10:34:20> 9d691c83c775f7d74f6bd237dcf584e7a0cbc940]:
+#+begin_example
+$treatment1
+  id   X          B          E
+1  9 100 1995-05-09 1999-06-18
+2  9   0 1999-06-19 1999-11-18
+3  9 100 1999-11-19 2001-06-03
+
+$treatment2
+  id   X          B          E
+1  9 200 1996-02-22 1996-04-08
+2  9 500 1996-04-09 1996-05-26
+3  9   0 1996-05-27 1998-05-22
+4  9 300 1998-05-23 1998-06-11
+5  9   0 1998-06-12 1999-11-21
+6  9 500 1999-11-22 2000-09-16
+#+end_example
+
+** Output plotting
+*** Built-in tools for varieties of output visulizations
+ :PROPERTIES:
+ :BEAMER_opt: shrink=10
+ :END:
+
+A ~plot()~-function to visualize the output is defined in the package:
+\\
+
+\vspace{0.2cm}
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+out <- process(d)
+plot(out)
+#+END_SRC
+
+#+BEGIN_SRC R :results graphics :file "./drug-fig-2.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+drug(d, "treatment2") <- atc("A07")
+drug(d, "treatment2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+pwindow(d) <- 3
+out <- process(d)
+plot(out)
+#+END_SRC
+
+
+#+RESULTS[<2016-11-28 11:25:44> 2ce6eed8fb1fed41c3a92dc81715a62769aa7eb6]:
+[[file:./drug-fig-2.pdf]]
+
+
+
+#+LABEL: fig:ex2
+#+ATTR_LATEX: :width 1 \textwidth
+file:./drug-fig-2.pdf
+
+
+*** Built-in tools for varieties of output visulizations
+ :PROPERTIES:
+ :BEAMER_opt: shrink=10
+ :END:
+
+We may also take a closer view on the underlying purchases behind the
+final exposures estimated: \\
+
+\vspace{0.2cm}
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+out1 <- process(d, keep_data = TRUE)
+plot(out1, id = 5, trace = TRUE)
+#+END_SRC
+
+#+BEGIN_SRC R :results graphics :file "./drug-fig-3.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+drug(d, "treatment2") <- atc("A07")
+drug(d, "treatment2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+pwindow(d) <- 3
+out1 <- process(d, keep_data = TRUE)
+plot(out1, id = 5, trace = TRUE)
+#+END_SRC
+
+#+RESULTS[<2016-11-28 11:28:39> 593c3dd58559e92e0369d635626bf6d33fa9c6b8]:
+[[file:./drug-fig-3.pdf]]
+
+
+
+#+LABEL: fig:ex3
+#+ATTR_LATEX: :width 1 \textwidth
+file:./drug-fig-3.pdf
+
+
+
+
+** Technical details 
+*** Technical details 
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+
+
+\begin{align} 
+          &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
+	  &+ \, u_{k-1} \bigg[\tag{Overlap}
+          \\ \begin{split}
+ & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace W_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
+\end{split}\tag{I}
+	  \\
+\begin{split}
+ & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace M^{(2)}_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
+\end{split}\tag{II}
+\end{align}
+
+
+
+*** First slide
+aa  
+#+BEGIN_SRC R  :results output  :exports both  :session *R* :cache yes 
+cat(1+1,"\n")
+#+END_SRC
+
+#+RESULTS[<2016-11-24 16:35:37> 816b7a96fd2032b5ec62c6ff254844b8c0eb1858]:
+:RESULTS:
+[fn:1] 2
+:END:
+
+*** code output
+
+#+name: ex1
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes 
+library(heaven)
+set.seed(8)
+drugdata <- simPrescriptionData(10, startDate = "2006-01-01")
+org(drugdata)
+#+END_SRC
+
+#+RESULTS[<2016-11-24 16:47:12> d8ebfa4e06c779a9a0a6bfbb3366c543d8b61c06]:
+#+begin_example
+     pnr  atc       eksd strnum packsize apk
+  1:   1  A07 2007-06-16    400       30   1
+  2:   1  A07 2008-04-14    500       60   1
+  3:   1  A07 2009-03-23    400       30   2
+  4:   1  A07 2009-11-05    200      300   1
+  5:   1  A07 2010-08-30    400      100   1
+ ---                                        
+121:  10 A12B 2006-10-07    750      500   3
+122:  10 A12B 2007-11-24    750      100   3
+123:  10 A12B 2008-01-23    750      100   1
+124:  10 A12B 2008-05-16    750      500   2
+125:  10 A12B 2009-11-27    750      250   3
+#+end_example
+
+*** slide 2
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output  :session *R* :cache yes 
+2+2
+#+END_SRC
+
+#+RESULTS[<2016-11-24 16:44:20> f6191e2bedc1265bcd487ee12e37e7b427054a51]:
+: [1] 4
+
+*** Formula 
+ :PROPERTIES:
+ :BEAMER_opt: shrink=30
+ :END:
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 0.7
+    :END:
+
+\begin{align} 
+          &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
+	  &+ \, u_{k-1} \bigg[\tag{Overlap}
+          \\ \begin{split}
+ & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace W_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
+\end{split}\tag{I}
+	  \\
+\begin{split}
+ & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace M^{(2)}_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
+\end{split}\tag{II}
+\end{align}
+
+**** Titled column 
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :BEAMER_env: block
+    :END:
+some explanations
+
+**** Back to no columns 
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+    
+
+** Discussion
+*** Discussion
+- cumulative exposure
+ + andre macroer?
+- tradition in other registry data research groups
+
+* HEADER :noexport:
+
+#+TITLE: Medicin Macro
+#+SUBTITLE: A matemathical formulation of the algorithm, an efficient implementation and a new R interface
+#+Author: Helene Charlotte Rytgaard
+#+Latex_header:\institute{University of Copenhagen, Section of Biostatistics}
+#+DATE: December 8, 2016
+#+EMAIL: hely@sund.ku.dk
+#+OPTIONS: H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS: TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#  #+LaTeX_HEADER: \titlegraphic{\includegraphics[width=3cm]{xx.jpeg}}
+#  #+ LaTeX_class_options: [handout]
+#+BEAMER_THEME: Berkeley [height=20pt]
+#+LaTeX_class_options: [table] 
+#+LaTeX_HEADER: \subtitle{}
+#+LaTeX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LaTeX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \RequirePackage{array}
+#+LATEX_HEADER: \RequirePackage{multirow}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\small,formatcom = {\color[rgb]{0.5,0,0}}}
+#+LaTeX_HEADER:\newcommand{\EE}{\mathbb{E}}
+#+LaTeX_HEADER:\newcommand{\one}{1}
+#+LaTeX_HEADER:\newcommand{\VV}{\mathbb{V}}
+#+LaTeX_HEADER:\newcommand{\PP}{\mbox{P}}
+#+LaTeX_HEADER:\newcommand{\norm}{\mathcal{N}}
+#+LaTeX_HEADER:\newcommand{\lag}{N}
+#+LaTeX_HEADER:\newcommand{\str}{S}
+#+LaTeX_HEADER:\newcommand{\smin}{s^{\min}}
+#+LaTeX_HEADER:\newcommand{\smax}{s^{\max}}
+#+LaTeX_HEADER:\newcommand{\styp}{s^{*}}
+#+LaTeX_HEADER:\newcommand{\period}{[a,b]}
+#+LaTeX_HEADER:\newcommand{\periodK}{\ensuremath{[T_k,T_{k+1})}}
+#+LaTeX_HEADER:\newcommand{\K}{K}
+#+LaTeX_HEADER:\newcommand{\kk}{k}
+#+LaTeX_HEADER:\newcommand{\D}{D}
+#+LaTeX_HEADER:\newcommand{\B}{B}
+#+LaTeX_HEADER:\newcommand{\E}{E}
+#+LaTeX_HEADER:\newcommand{\XX}{X}
+#+LaTeX_HEADER:\newcommand{\LL}{L}
+#+LaTeX_HEADER:\newcommand{\QQ}{Q}
+#+LaTeX_HEADER:\newcommand{\Ru}{R}
+#+LaTeX_HEADER:\newcommand{\GG}{G}
+#+LaTeX_HEADER:\newcommand{\T}{T}
+#+LaTeX_HEADER:\newcommand{\st}{s}
+#+LaTeX_HEADER:\newcommand{\Nn}{N}
+#+LaTeX_HEADER:\newcommand{\A}{A}
+#+LaTeX_HEADER:\newcommand{\C}{C}
+#+LaTeX_HEADER:\newcommand{\uu}{u}
+#+LaTeX_HEADER:\newcommand{\vv}{v}
+#+LaTeX_HEADER:\newcommand{\zz}{z}
+#+LaTeX_HEADER:\newcommand{\ww}{w}
+#+LaTeX_HEADER:\newcommand{\M}{M}
+#+LaTeX_HEADER:\newcommand{\I}{I}
+#+LaTeX_HEADER:\newcommand{\RR}{R}
+#+PROPERTY: header-args session *R*
+#+PROPERTY: header-args cache yes
