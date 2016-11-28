@@ -58,6 +58,7 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
       scale_fill_manual("treatment: ", values = col) +  
       #ggtitle(title) + 
       theme(legend.position = "bottom") + 
+      xlab("purchase dates") + 
       ylab(ylab) + theme(strip.background = element_rect(fill="white"))
       
     if (fix_x) {
@@ -83,7 +84,7 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
         geom_point(data = dat, aes(x = pdate, y = y, size = D, col = treatment, alpha = 0.5)) +
         guides(color = guide_legend(override.aes = list(size  = c(rep(8.0, natc)),
                                                         alpha = c(rep(0.5, natc))))) +
-        scale_color_manual("treatment (size of bubbles indicative of how much purchased): ", values = col) + 
+        scale_color_manual("treatment (size of bubbles indicative of total amount purchased): ", values = col) + 
         guides(fill = FALSE) + 
         guides(size = FALSE) + guides(alpha = FALSE)
     }
