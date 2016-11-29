@@ -1,11 +1,11 @@
-### admData.R --- 
+### compare-with-sas.R --- 
 #----------------------------------------------------------------------
 ## author: Thomas Alexander Gerds
 ## created: Nov 29 2016 (15:36) 
 ## Version: 
-## last-updated: Nov 29 2016 (16:20) 
+## last-updated: Nov 29 2016 (16:24) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 6
+##     Update #: 7
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
