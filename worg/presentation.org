@@ -152,7 +152,7 @@ out_alt[1:15, ]
 *** Immediate limitations
 
 - Speed
-  +  ~C++~ can be used in ~R~ 
+  + Each drug is processed separately 
 \vspace{0.2cm}
 - Lack of transparency
   + Mathematical formulas? 
@@ -160,82 +160,45 @@ out_alt[1:15, ]
 - Other issues:  
   + Dependence on the future
   + Only possible to specify four different doses
-  + Possible to run for parts of data? Only specific individuals? 
+  + Graphical checks (working?)? 
  
 * New R Interface 
+*** New R interface
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
 
-*** Input data: Drug database (unchanged)
+\vspace{0.2cm}
 
-#+name: chunkdrugdb
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
-library(heaven)
-set.seed(8)
-drugdata <- simPrescriptionData(10)
-drugdata[1:15, ]
+- Same input data sets as before (almost)
+  + Admission dates data set long format
+\vspace{0.1cm}
+- Attach relevant data (more user details in a moment)
+
+
+\vspace{0.2cm}
+
+#+BEGIN_SRC R :results output :exports code  :session *R* :width 6 :height 4 :cache yes
+drugdb(d) <- drugdata
+admdb(d) <- admdata
 #+END_SRC
 
-#+RESULTS[<2016-11-25 13:31:54> d73b672156c2815a23232a5838bae7bfaffda091]:
-#+begin_example
-    pnr  atc       eksd strnum packsize apk
- 1:   1  A07 1996-06-15    400       30   1
- 2:   1  A07 1997-04-14    500       60   1
- 3:   1  A07 1998-03-23    400       30   2
- 4:   1  A07 1998-11-05    200      300   1
- 5:   1  A07 1999-08-30    400      100   1
- 6:   1 A12B 1997-08-21    750      500   1
- 7:   2  A07 1995-05-03    400       60   2
- 8:   2  A07 1995-07-10    500       60   1
- 9:   2  A07 1995-09-02    400       60   2
-10:   2  A07 1995-09-21    400       60   3
-11:   2  A07 1995-11-19    500      100   1
-12:   2  A07 1996-04-26    400      100   1
-13:   2  A07 1996-09-21    200       60   1
-14:   2  A07 1997-07-18    400      300   1
-15:   2  A07 1999-05-19    400      100   2
-#+end_example
+\vspace{0.1}
+- ~plot()~-function to show purchases and admission periods 
+\vspace{0.2}
 
-
-*** Input data: Admission database (unchanged)
-
-#+name: chunkadmdb
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
-library(heaven)
-set.seed(8)
-admdata <- simAdmissionData(10)
-admdata[1:15, ]
+#+BEGIN_SRC R :results output :exports code  :session *R* :width 6 :height 4 :cache yes
+plot(d)
 #+END_SRC
-
-#+RESULTS[<2016-11-25 13:31:47> 56f4c64d7b73d0de08139677facac7e6be36d42b]:
-#+begin_example
-    pnr     inddto      uddto
- 1:   1 1999-02-27 1999-03-13
- 2:   1 2008-01-14 2008-01-28
- 3:   1 2010-12-29 2011-01-30
- 4:   2 1996-10-14 1996-10-14
- 5:   2 2003-08-25 2003-09-06
- 6:   2 2004-02-21 2004-04-03
- 7:   2 2007-11-22 2007-11-28
- 8:   2 2010-05-20 2010-06-14
- 9:   3 1999-06-23 1999-07-20
-10:   3 2005-06-03 2005-06-22
-11:   4 2008-04-07 2008-04-11
-12:   4 2014-07-20 2014-08-17
-13:   5 1999-03-01 1999-03-09
-14:   5 2007-06-19 2007-07-06
-15:   5 2011-05-07 2011-06-18
-#+end_example
 
 
 ** Visualization tools
-*** Tools for visualizing the data (input)
+*** Input visualization tools
  :PROPERTIES:
  :BEAMER_opt: shrink=10
  :END:
 
-A ~plot()~-function to show purchases and admission periods for the
-patients (i.e., visualizing input data): \\
+
 
 \vspace{0.5cm}
 
@@ -295,7 +258,7 @@ drug(d, "treatment1") <- pack(c(750, 75),
 \noindent Specify window of prescription dates to use in calculations: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
-pwindow(d) <- 3 ## use 3 prescriptions back in time 
+pwindow(d) <- 3 ## include data from up to 3 previous purchase dates into the calculation of the daily dosis 
 #+END_SRC
 
 *** How to use the interface
@@ -522,7 +485,6 @@ $treatment2
 6  9 500 1999-11-22 2000-09-16
 #+end_example
 
-** Output plotting
 *** Built-in tools for output visulizations
  :PROPERTIES:
  :BEAMER_opt: shrink=10
@@ -574,7 +536,7 @@ plot(out, idmax = 4)
 #+ATTR_LATEX: :width 1 \textwidth
 file:./drug-fig-2.pdf
 
-
+** Technical details
 *** Technical details 
  :PROPERTIES:
  :BEAMER_opt: shrink=20
@@ -582,7 +544,7 @@ file:./drug-fig-2.pdf
 
 
 \vspace{0.1cm}
-... the mathematical part (formulas left out here) ... \\
+... the mathematical part ... \\
 
 \vspace{0.2cm}
 - \noindent The ~R~-interface and the following formulas are all based
@@ -603,6 +565,72 @@ file:./drug-fig-2.pdf
 \vspace{0.05cm}
 - Exposure periods are then calculated based on these average dose
   amounts
+
+
+*** Final formula (a  snippet of what we have worked on)
+ :PROPERTIES:
+ :BEAMER_opt: shrink=40
+ :END:
+
+
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 1.0
+    :END:
+
+\begin{align} 
+          &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
+	  &+ \, u_{k-1} \bigg[\tag{Overlap}
+          \\ \begin{split}
+ & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace W_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
+\end{split}\tag{I}
+	  \\
+\begin{split}
+ & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace M^{(2)}_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
+\end{split}\tag{II}
+\end{align}
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 0.1
+    :END:
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+
+
+ \(M_k^{(1)},\, M_k^{(2)}\) are average doses over the periods \\
+\vspace{0.4cm}
+
+
+  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose \\
+
+**** Back to no columns 
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 0.1
+    :END:
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 1.3
+    :END:
+
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+file:./drug-dat2a.pdf
+
 
 
 *** More output visulizations
@@ -654,6 +682,51 @@ plot(out1, id = 5, trace = TRUE)
 #+LABEL: fig:ex3
 #+ATTR_LATEX: :width 1 \textwidth
 file:./drug-fig-3.pdf
+
+*** Final formula
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 0.9
+    :END:
+
+\begin{align} 
+          &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
+	  &+ \, u_{k-1} \bigg[\tag{Overlap}
+          \\ \begin{split}
+ & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace W_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
+\end{split}\tag{I}
+	  \\
+\begin{split}
+ & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
+\\ & \qquad + \one \left\lbrace M^{(2)}_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
+\end{split}\tag{II}
+\end{align}
+
+**** Untitled column
+    :PROPERTIES:
+    :BEAMER_col: 0.4
+    :END:
+
+
+ \(M_k^{(1)},\, M_k^{(2)}\) are average doses over the periods \\
+\vspace{0.4cm}
+
+
+  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose \\
+
+**** Back to no columns 
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+#+LABEL: fig:periods
+#+ATTR_LATEX: :width 0.8 \textwidth
+file:./drug-dat2a.pdf
+
 
 
 
