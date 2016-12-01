@@ -11,68 +11,78 @@
 * SAS Interface
 ** Input data
 *** Input data: Drug database
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
 
-Example data:
+\vspace{0.2cm}
+Example data: 
+\vspace{0.2cm}
+
 #+name: chunkdrugdb
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
-library(heaven)
-set.seed(8)
-drugdata <- simPrescriptionData(10)
-drugdata[1:15, ]
+drugdata <- read.csv("~/research/Software/medicin-macro/test-sas/nov-23/recept_data.csv")
+drugdata[1:15, -c(2, 5, 9)]
 #+END_SRC
 
-#+RESULTS[<2016-11-25 13:31:54> d73b672156c2815a23232a5838bae7bfaffda091]:
+#+RESULTS[<2016-12-01 11:08:54> 21a52fc43eb958a09790e141cca6d8dbecedc142]:
 #+begin_example
-    pnr  atc       eksd strnum packsize apk
- 1:   1  A07 1996-06-15    400       30   1
- 2:   1  A07 1997-04-14    500       60   1
- 3:   1  A07 1998-03-23    400       30   2
- 4:   1  A07 1998-11-05    200      300   1
- 5:   1  A07 1999-08-30    400      100   1
- 6:   1 A12B 1997-08-21    750      500   1
- 7:   2  A07 1995-05-03    400       60   2
- 8:   2  A07 1995-07-10    500       60   1
- 9:   2  A07 1995-09-02    400       60   2
-10:   2  A07 1995-09-21    400       60   3
-11:   2  A07 1995-11-19    500      100   1
-12:   2  A07 1996-04-26    400      100   1
-13:   2  A07 1996-09-21    200       60   1
-14:   2  A07 1997-07-18    400      300   1
-15:   2  A07 1999-05-19    400      100   2
+   atc       eksd  pnr strnum apk packsize
+1   1a 2020-04-08 1000     75   3       20
+2   1a 2011-10-30 1000    125   2        5
+3   1a 2020-01-23 1000    125   1        5
+4   1a 2015-09-17 1000     50   2       10
+5   2a 2012-05-04 1000     50   3        5
+6   2a 2011-10-11 1000     75   2        9
+7   2a 2015-12-20 1000    125   1        9
+8   2a 2015-10-27 1000    100   3       18
+9   2a 2015-04-18 1000     50   3       18
+10  1a 2017-03-15 2000    125   3       18
+11  1a 2015-11-04 2000    100   2        5
+12  1a 2013-05-15 2000     50   3        9
+13  1a 2011-04-25 2000    125   3        5
+14  1a 2013-07-11 2000     50   2        5
+15  2a 2014-02-02 2000    100   1        9
+  .
+  .
+  .
 #+end_example
 
 
 *** Input data: Admission database
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
+
+\vspace{0.2cm}
 Example data: 
+\vspace{0.2cm}
+
 #+name: chunkadmdb
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
-library(heaven)
-set.seed(8)
-admdata <- simAdmissionData(10)
-admdata[1:15, ]
+datoer <- read.csv("~/research/Software/medicin-macro/test-sas/nov-23/datoer.csv")
+rbindlist(lapply(1:dim(datoer)[1], function(i) {
+    max <- datoer$max_indl[i]+1
+    rows <- datoer[i, ]
+    if (max < 4) {
+        for (j in max:4) {
+            rows[, j*2+1:2] <- NA
+        }}
+    return(rows)}))
 #+END_SRC
 
-#+RESULTS[<2016-11-25 13:31:47> 56f4c64d7b73d0de08139677facac7e6be36d42b]:
-#+begin_example
-    pnr     inddto      uddto
- 1:   1 1999-02-27 1999-03-13
- 2:   1 2008-01-14 2008-01-28
- 3:   1 2010-12-29 2011-01-30
- 4:   2 1996-10-14 1996-10-14
- 5:   2 2003-08-25 2003-09-06
- 6:   2 2004-02-21 2004-04-03
- 7:   2 2007-11-22 2007-11-28
- 8:   2 2010-05-20 2010-06-14
- 9:   3 1999-06-23 1999-07-20
-10:   3 2005-06-03 2005-06-22
-11:   4 2008-04-07 2008-04-11
-12:   4 2014-07-20 2014-08-17
-13:   5 1999-03-01 1999-03-09
-14:   5 2007-06-19 2007-07-06
-15:   5 2011-05-07 2011-06-18
-#+end_example
+#+RESULTS[<2016-12-01 11:17:59> 23cd3f7d1d9fdafff59461fc6ef8289f9422a6dd]:
+:     pnr max_indl    inddto1     uddto1    inddto2     uddto2    inddto3     uddto3    inddto4     uddto4
+: 1: 1000        3 2012-04-12 2012-04-25 2015-01-30 2015-02-14 2017-05-28 2017-05-31 2021-02-21 2021-03-08
+: 2: 2000        2 2012-12-10 2012-12-15 2015-05-31 2015-06-05         NA         NA         NA         NA
+: 3: 4000        1 2011-05-14 2011-05-23         NA         NA         NA         NA         NA         NA
+: 4: 5000        4 2011-10-11 2011-10-13 2015-01-25 2015-02-01 2017-03-15 2017-03-23 2020-04-08 2020-04-21
+: 5: 6000        1 2011-04-25 2011-04-30         NA         NA         NA         NA         NA         NA
+: 6: 7000        1 2013-03-16 2013-03-21         NA         NA         NA         NA         NA         NA
+: 7: 8000        4 2011-06-30 2011-07-02 2014-02-02 2014-02-07 2016-03-10 2016-03-23 2019-12-21 2019-12-28
+: 8: 9000        4 2012-09-01 2012-09-14 2015-04-18 2015-05-03 2019-01-30 2019-02-12 2021-02-21 2021-02-27
 
 
 
@@ -120,7 +130,7 @@ admdata[1:15, ]
 ** Output data
 *** Output data
 
-Continuing example: (FIXME: Except NOT the same)
+Continuing example: 
 #+name: chunksasout
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
@@ -172,7 +182,28 @@ out_alt[1:15, ]
 
 - Same input data sets as before (almost)
   + Admission dates data set long format
-\vspace{0.1cm}
+\vspace{0.2cm}
+
+#+name: chunkadmdb
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
+library(heaven)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+admdata[1:5, ]
+#+END_SRC
+
+#+RESULTS[<2016-12-01 11:19:45> 314398f64b6e1a21d5911ae2525affb8a1bcafd5]:
+:    pnr     inddto      uddto
+: 1:   1 2003-12-20 2003-12-24
+: 2:   1 2006-07-20 2006-09-01
+: 3:   1 2007-04-30 2007-05-15
+: 4:   1 2010-11-27 2011-01-02
+: 5:   1 2013-05-11 2013-05-16
+...
+ \vspace{0.1cm}
+
 - Attach relevant data (more user details in a moment)
 
 
