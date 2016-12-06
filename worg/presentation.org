@@ -9,6 +9,16 @@
 - Example: PPI 
 
 * SAS Interface
+
+*** 
+
+ 
+\vspace{2cm}
+
+\LARGE\center{Existing SAS Interface}
+
+\vspace{5cm}
+
 ** Input data
 *** Input data: Drug database
  :PROPERTIES:
@@ -173,6 +183,14 @@ out_alt[1:15, ]
   + Graphical checks (working?)? 
  
 * New R Interface 
+
+*** 
+\vspace{2cm}
+
+\LARGE\center{New R Interface}
+
+\vspace{5cm}
+
 *** New R interface
  :PROPERTIES:
  :BEAMER_opt: shrink=20
@@ -291,6 +309,7 @@ drug(d, "treatment1") <- pack(c(750, 75),
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 pwindow(d) <- 3 ## include data from up to 3 previous purchase dates into the calculation of the daily dosis 
 #+END_SRC
+
 
 *** How to use the interface
  :PROPERTIES:
@@ -637,9 +656,9 @@ file:./drug-fig-2.pdf
     :END:
 
 
- \(M_k^{(1)},\, M_k^{(2)}\) are average doses over the periods \\
+ \(M_k^{(1)},\, M_k^{(2)}\) are average doses \color{red}over the periods \\
 \vspace{0.4cm}
-
+\color{black}
 
   \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose \\
 
@@ -714,45 +733,7 @@ plot(out1, id = 5, trace = TRUE)
 #+ATTR_LATEX: :width 1 \textwidth
 file:./drug-fig-3.pdf
 
-*** Final formula
 
-**** Untitled column
-    :PROPERTIES:
-    :BEAMER_col: 0.9
-    :END:
-
-\begin{align} 
-          &{X}_{k} =  (1-u_{k-1}) \, \styp_{b(k)}\tag{No overlap}\\
-	  &+ \, u_{k-1} \bigg[\tag{Overlap}
-          \\ \begin{split}
- & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
-\\ & \qquad + \one \left\lbrace W_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
-\\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
-\end{split}\tag{I}
-	  \\
-\begin{split}
- & \qquad +  1\Big\lbrace S_{b(k-1)}\neq S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace M^{(2)}_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
-\\ & \qquad + \one \left\lbrace M^{(2)}_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
-\\& \qquad + \one \left\lbrace M^{(2)}_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace M^{(2)}_k \ge \smin_{b(k)}\right\rbrace \styp_{b(k)}\bigg) \bigg].
-\end{split}\tag{II}
-\end{align}
-
-**** Untitled column
-    :PROPERTIES:
-    :BEAMER_col: 0.4
-    :END:
-
-
- \(M_k^{(1)},\, M_k^{(2)}\) are average doses over the periods \\
-\vspace{0.4cm}
-
-
-  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose \\
-
-**** Back to no columns 
-    :PROPERTIES:
-    :BEAMER_env: ignoreheading
-    :END:
 
 #+LABEL: fig:periods
 #+ATTR_LATEX: :width 0.8 \textwidth

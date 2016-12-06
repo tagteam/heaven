@@ -30,10 +30,10 @@
 
   newdata        <- subset(value, select = varnames)
   names(newdata) <- c("id", "atc", "pdate", "strength", "npack", "ppp")
-  
-  if (inherits(newdata$pdate, "factor"))
-    newdata$pdate <- as.Date(newdata$pdate)
-  
+
+  if (!inherits(newdata$pdate, "Date"))
+    stop("dates must be in Date format")
+
   if (add) {
     dpp$drugdb <- rbind(dpp$drugdb, newdata)
   } else {
