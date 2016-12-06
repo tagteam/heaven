@@ -660,7 +660,28 @@ file:./drug-fig-2.pdf
 \vspace{0.4cm}
 \color{black}
 
-  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose \\
+  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose, \\
+e.g.: 
+
+#+BEGIN_SRC R :results graphics :file "./drug-small-fig.pdf" :exports none  :session *R* :width 4 :height 1 :cache yes
+setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
+par(mar=c(2.1,2.1,0.1,2.1))
+plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="",ylab="", 
+     yaxt='n', xaxt='n', axes=FALSE)
+axis(1,at=c(0, 25, 40, 75, 100),labels=c("", expression(3~s[min]), 
+                                 expression(M[k]^{(1)}), expression(4~s[min]), ""))
+#+END_SRC
+
+
+#+RESULTS[<2016-12-06 10:57:28> 8df0b8c3f87b2e3439a6ea2911f304abd6695543]:
+[[file:./drug-small-fig.pdf]]
+
+
+
+#+LABEL: fig:ex2
+#+ATTR_LATEX: :width 1 \textwidth
+file:./drug-small-fig.pdf
+
 
 **** Back to no columns 
     :PROPERTIES:
