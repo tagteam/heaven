@@ -211,6 +211,7 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "DH", "H")])
 library(heaven)
 T <- as.Date(c(rep("2012-05-08", 3), "2012-08-11", rep("2013-03-15", 2), "2013-05-05",
                "2013-05-25", rep("2013-10-01", 2), "2013-12-28"))
+setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 exdata <- data.frame(pnr = rep(1, length(T)), 
                      eksd = T,
                      atc = rep("A07", length(T)), 
@@ -232,7 +233,7 @@ admdb(d, id = id) <- admdb
 plot(d)
 #+END_SRC
 
-#+RESULTS[<2016-12-07 13:32:35> 86475326b8e7f2b94b035fa5e11e0b3f5d59d09c]:
+#+RESULTS[<2016-12-07 16:10:35> d41a449471ead5302db07e75befbb1017c1f8f0c]:
 [[file:./drug-fig-1.pdf]]
 
 
@@ -458,40 +459,10 @@ value.
 *** Example (continued)
 
 
-Figure ref:fig:ex3 shows the cases and periods to be used in the calculations
-for our example patient, and the following output shows the computed
-average daily doses. 
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R :exports output :results output raw drawer  :session *R* :cache yes 
-org(ex$exdrug[, names(ex$exdrug) %in% c("B", "A", "Sjk", "M")])
-#+END_SRC
-
-#+RESULTS[<2016-11-22 09:46:01> 0172acaf2b70ab8f1e5098e9e3380dec4eabfecb]:
-:RESULTS:
-|   |          B |        M |  A | Sjk |
-|---+------------+----------+----+-----|
-| 1 | 2012-05-08 | 50.00000 | 60 |  50 |
-| 2 | 2012-08-11 | 26.28205 | 50 |  50 |
-| 3 | 2013-03-15 | 50.00000 | 50 |  50 |
-| 4 | 2013-05-05 | 29.41176 | 80 |  80 |
-| 5 | 2013-05-25 | 40.00000 | 80 |  80 |
-| 6 | 2013-10-01 | 29.50000 | 65 |  50 |
-| 7 | 2013-12-28 | 60.00000 | 80 |  80 |
-:END:
+The following output shows the computed
+average daily doses for our example patient. 
 
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat2c.pdf" :exports none  :session *R* :width 10 :height 5 :cache yes
-plot(ex)
-#+END_SRC
-
-#+RESULTS[<2016-11-25 15:12:08> 6a07fcd5cfb729a91664f9076c7a3d7acffb2890]:
-[[file:./drug-dat2c.pdf]]
-
-#+LABEL: fig:ex3
-#+ATTR_LATEX: :width 1.05 \textwidth
-#+CAPTION: The cases for our patient. 
-[[file:./drug-dat2c.pdf]]
 
 
 
@@ -792,11 +763,22 @@ one named ``ex1'' and one named ``ex2''. \\
 \noindent We may plot the data for any of the drugs and any of the
 individuals in the data.\\
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat3b.pdf" :exports none  :session *R* :width 15 :height 5 :cache yes
-plot(d, id = 4, drug = "ex1")
+#+BEGIN_SRC R :results graphics :file "./drug-dat3b.pdf" :exports none  :session *R* :width 8 :height 7 :cache yes
+setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
+getwd()
+
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+plot(d)
 #+END_SRC
 
-#+RESULTS[<2016-11-21 15:10:34> 266570b1eb5e1963429e9f6bdf3a1c867d724bf1]:
+#+RESULTS[<2016-12-07 16:12:57> a37dc319ed9cbe4074c5f533dd10cd7cc2472c48]:
 [[file:./drug-dat3b.pdf]]
 
 #+LABEL: fig:ex5
@@ -856,16 +838,36 @@ org(head(ex1out[, names(ex1out) %in% c("id", "X", "B", "E", "R")]))
 plot the periods to use for calculations, as was seen in Figure
 ref:fig:ex2.
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat4b.pdf" :exports none  :session *R* :width 15 :height 5 :cache yes
-plot(ex, id=1, drug="ex2")
+#+BEGIN_SRC R :results graphics :file "./drug-dat4b.pdf" :exports none  :session *R* :width 12 :height 12 :cache yes
+library(heaven)
+library(Publish)
+set.seed(8)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+d <- dpp()
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+drug(d, "drug1") <- atc("A12B")
+drug(d, "drug1") <- pack(c(750, 75), 
+                            min = c(250, 25), 
+                            max = c(1000, 100), 
+                            def = c(750, 100))
+drug(d, "drug2") <- atc("A07")
+drug(d, "drug2") <- pack(c(200, 400, 500), 
+                     min = c(100, 100, 250),
+                     max = c(400, 500, 1000), 
+                     def = c(300, 200, 500))
+pwindow(d) <- 3
+out <- process(d, keep_data = TRUE)
+plot(out, trace = TRUE)
 #+END_SRC
 
-#+RESULTS[<2016-11-25 15:12:09> 2529d2029a62a3c14bcd8d2770483593fd7ad752]:
+#+RESULTS[<2016-12-07 16:14:44> 61b91678d832f295623445464674f25ff9baa144]:
 [[file:./drug-dat4b.pdf]]
 
 #+LABEL: fig:ex6
 #+ATTR_LATEX: :width 1.05 \textwidth
-#+CAPTION: Days of supply and periods to be used to calculate mean doses for one of the individuals in the simulated data.
+#+CAPTION: Days of supply and periods to be used to calculate mean doses for some of the individuals in the simulated data.
 [[file:./drug-dat4b.pdf]]
 
 bibliographystyle:chicago
