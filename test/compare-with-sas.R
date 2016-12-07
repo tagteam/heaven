@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Nov 29 2016 (15:36) 
 ## Version: 
-## last-updated: Nov 29 2016 (16:24) 
+## last-updated: Nov 29 2016 (17:34) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 7
+##     Update #: 8
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -50,9 +50,9 @@ d$maxdepot
 plot(d)
 
 #process(d, out_data = FALSE)
-(out <- process(d))
+(out <- process(d, keep_data = TRUE))
 plot(out)
-
+plot(out, trace=TRUE)
 
 
 
