@@ -91,9 +91,31 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
   
   } else {
     
-    print("lala")
+    drugout$B1 <- as.Date(c(sapply(1:(dim(drugout)[1]-1), function(i) {
+      if (drugout$u[i] == 1) {
+        drugout$B[i+1]
+      } else
+        drugout$B[i] + drugout$nk[i] + drugout$DH[i]
+    }), drugout$B[dim(drugout)[1]] + drugout$nk[dim(drugout)[1]]), origin = "1970-01-01")
+    
+    B2 <- rbindlist(lapply(1:(dim(drugout)[1]), function(i) {
+      points <- seq(drugout$B[i], drugout$B1[i], length = max(as.numeric((drugout$B1[i]-drugout$B[i])/10), 3))
+      data.frame(points,
+                 drug = rep(drugout$drug, length(points)), 
+                 id   = rep(drugout$id, length(points)))
+    }))
+    
+    gout <- ggplot(data = drugout, aes(x = B, y = factor(id))) + geom_point(aes(col = drug)) +
+      geom_point(data = B2, aes(x = points, y = factor(id), col = drug)) +
+      scale_color_manual("treatment: ", values = col) + 
+      xlab("purchase dates") + ylab("id") + 
+      geom_segment(data = drugout, aes(x = B,  xend = B1,
+                                       y = id, yend = id, col = drug)) +
+      facet_wrap( ~ drug, scales = "free") + theme_bw() + 
+      geom_vline(xintercept = as.numeric(drugout$B), linetype = "longdash", alpha = 0.3) + 
+      theme(legend.position = "bottom") 
+      gout
   }
-  
   
   return(gout)
 }
