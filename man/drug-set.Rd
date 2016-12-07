@@ -9,9 +9,9 @@ drug(d, drugname1) <- value
 \arguments{
 \item{dpp}{Data preprocessing object}
 
-\item{name}{Name of the drug. (Just write, don't use "")}
-
 \item{add}{Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten.}
+
+\item{name}{Name of the drug. (Just write, don't use "")}
 }
 \value{
 The data preprocessing object is updated.
