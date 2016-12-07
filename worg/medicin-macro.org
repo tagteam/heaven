@@ -207,19 +207,41 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "DH", "H")])
 :END:
 
 
+#+BEGIN_SRC R :results graphics :file "./drug-fig-1.pdf" :exports none  :session *R* :width 6 :height 2 :cache yes
+library(heaven)
+T <- as.Date(c(rep("2012-05-08", 3), "2012-08-11", rep("2013-03-15", 2), "2013-05-05",
+               "2013-05-25", rep("2013-10-01", 2), "2013-12-28"))
+exdata <- data.frame(pnr = rep(1, length(T)), 
+                     eksd = T,
+                     atc = rep("A07", length(T)), 
+                     packsize = c(1, 1, 1, 1, 1, 2, 1, 3, 2, 1, 1),
+                     apk = c(10, 15, 10, 15, 10, 10, 10, 15, 10, 10, 10), 
+                     strnum = c(50, 50, 80, 50, 50, 50, 80, 80, 50, 80, 80))
+d <- dpp()
+drugdb(d) <- exdata
+drug(d, "exdrug") <- atc(c("A07", "A12B"))
+drug(d, "exdrug") <- pack(c(50, 80), 
+                        min = c(25, 20),
+                        max = c(100, 100), 
+                        def = c(50, 60))
 
-
-#+BEGIN_SRC R :results graphics :file "./drug-dat1b.pdf" :exports none  :session *R* :width 15 :height 5 :cache yes
+admdb <- data.frame(id = rep(1, 2),
+                    inddto = as.Date(c("2012-06-11", "2013-01-03")),
+                    uddto  = as.Date(c("2012-06-28", "2013-01-18")))
+admdb(d, id = id) <- admdb
 plot(d)
 #+END_SRC
 
-#+RESULTS[<2016-11-21 14:47:55> f3e2711f70d75fdf7295b8da55f6dbace9c30f89]:
-[[file:./drug-dat1b.pdf]]
+#+RESULTS[<2016-12-07 13:32:35> 86475326b8e7f2b94b035fa5e11e0b3f5d59d09c]:
+[[file:./drug-fig-1.pdf]]
+
+
+
 
 #+LABEL: fig:ex1
-#+ATTR_LATEX: :width 1.2 \textwidth
+#+ATTR_LATEX: :width 0.9 \textwidth
 #+CAPTION: Illustration of the four prescription dates and the two periods of hospitalization of our example patient. 
-[[file:./drug-dat1b.pdf]]
+[[file:./drug-fig-1.pdf]]
 
 
 
@@ -270,11 +292,35 @@ black lines show the actual days of medicin supply, and the red lines
 are the days hospitalized. Note that if the concatenation of the black
 and red line in each period reaches the next date, then \(u_k=1\).\\
 
-#+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports none  :session *R* :width 14 :height 7 :cache yes 
-plot(ex, which=1)
+#+BEGIN_SRC R :results graphics :file "./drug-dat2b.pdf" :exports none  :session *R* :width 8 :height 3 :cache yes 
+library(heaven)
+setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
+T <- as.Date(c(rep("2012-05-08", 3), "2012-08-11", rep("2013-03-15", 2), "2013-05-05",
+               "2013-05-25", rep("2013-10-01", 2), "2013-12-28"))
+exdata <- data.frame(pnr = rep(1, length(T)), 
+                     eksd = T,
+                     atc = rep("A07", length(T)), 
+                     packsize = c(1, 1, 1, 1, 1, 2, 1, 3, 2, 1, 1),
+                     apk = c(10, 15, 10, 15, 10, 10, 10, 15, 10, 10, 10), 
+                     strnum = c(50, 50, 80, 50, 50, 50, 80, 80, 50, 80, 80))
+d <- dpp()
+drugdb(d) <- exdata
+drug(d, "exdrug") <- atc(c("A07", "A12B"))
+drug(d, "exdrug") <- pack(c(50, 80), 
+                          min = c(25, 20),
+                          max = c(100, 100), 
+                          def = c(50, 60))
+
+admdb <- data.frame(id = rep(1, 2),
+                    inddto = as.Date(c("2012-06-11", "2013-01-03")),
+                    uddto  = as.Date(c("2012-06-28", "2013-01-18")))
+admdb(d, id = id) <- admdb
+pwindow(d) <- 3
+ex <- process(d, out=FALSE)
+plot(ex)
 #+END_SRC
 
-#+RESULTS[<2016-11-21 14:47:55> 11d349f7cd322f7820a2ad73700ce28429dd8cda]:
+#+RESULTS[<2016-12-07 15:02:04> 6aca0220d88121cf5722ad76e1e155d7904e2999]:
 [[file:./drug-dat2b.pdf]]
 
 #+LABEL: fig:ex2
@@ -347,9 +393,14 @@ vtype <- c(25, 75)
 ## las=2, cex.axis=1.1, tck=0.0, lwd=0)
 axis(4, at=vtype, labels=paste("Case",c("II", "I")),
      las=2, cex.axis=1.1, tck=0.0, lwd=0,line=-1,xpd=NA)
-spoints <- function(a,b,pos,col,cex,lwd){
-    points(seq(a,b,5),rep(pos,length(seq(a,b,5))),pch=19,cex=cex,col=col)
-    segments(x0=a,x1=b,y0=pos,y1=pos,lwd=lwd,col=col)
+spoints <- function(a,b,pos,col,cex,lwd,notall=TRUE){
+    if (notall) {
+        points(seq(a,b,5),rep(pos,length(seq(a,b,5))),pch=19,cex=cex,col=col)
+        segments(x0=a,x1=b,y0=pos,y1=pos,lwd=lwd,col=col)
+    } else {
+        points(seq(a,b,5)[1:4],rep(pos,length(seq(a,b,5)[1:4])),pch=19,cex=cex,col=col)
+        segments(x0=a,x1=b,y0=pos,y1=pos,lwd=lwd,col=col)
+    }
 }
 ##--- for case 1
 spoints(a=vt[1],b=vt[2]-10,pos=vtype[2],cex=2.3,col="black",lwd=2)
@@ -357,10 +408,12 @@ spoints(a=vt[2],b=vt[3],pos=vtype[2],cex=1.3,col="black",lwd=1)
 spoints(a=vt[3],b=vt[4],pos=vtype[2],cex=1.3,col="black",lwd=1)
 spoints(a=vt[4],b=vt[6],pos=vtype[2],cex=2.3,col="red",lwd=2)
 ##--- for case 2
-spoints(a=vt[1],b=vt[2],pos=vtype[1],cex=2.3,col="black",lwd=2)
-spoints(a=vt[2],b=vt[3]-5,pos=vtype[1],cex=1.3,col="black",lwd=1)
-## spoints(a=vt[3],b=vt[4],pos=vtype[1],cex=1.3,col="black",lwd=1)
-spoints(a=vt[3],b=vt[6],pos=vtype[1],cex=1.3,col="red",lwd=2)
+spoints(a=vt[1],b=vt[2]-10,pos=vtype[1],cex=2.3,col="black",lwd=2)
+spoints(a=vt[2],b=vt[3],pos=vtype[1],cex=1.3,col="red",lwd=1)
+spoints(a=vt[3],b=vt[4],pos=vtype[1],cex=1.3,col="red",lwd=1)
+spoints(a=vt[4],b=vt[5],pos=vtype[1],cex=2.3,col="red",lwd=2,notall=FALSE)
+spoints(a=vt[5],b=vt[6],pos=vtype[1],cex=1.3,col="red",lwd=2)
+spoints(a=vt[6],b=vt[6],pos=vtype[1],cex=2.3,col="red",lwd=2)
 #+END_SRC
 
 #+RESULTS:
@@ -432,7 +485,7 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "A", "Sjk", "M")])
 plot(ex)
 #+END_SRC
 
-#+RESULTS[<2016-11-21 14:47:55> 8736143754c7f1cd107b58bd2b621b8148b85a21]:
+#+RESULTS[<2016-11-25 15:12:08> 6a07fcd5cfb729a91664f9076c7a3d7acffb2890]:
 [[file:./drug-dat2c.pdf]]
 
 #+LABEL: fig:ex3
@@ -455,7 +508,7 @@ are illustrated in Figure ref:fig:cases.
 	  &+ \, u_{k-1} \bigg[\tag{Overlap}
           \\ \begin{split}
  & \qquad   1\Big\lbrace S_{b(k-1)}= S_{b(k)}\Big\rbrace\bigg( \one \left\lbrace W_k > \smax_{b(k)}\right\rbrace \smax_{b(k)}
-\\ & \qquad + \one \left\lbrace W_k > \smin_{b(k)}\right\rbrace \smin_{b(k)} 
+\\ & \qquad + \one \left\lbrace W_k < \smin_{b(k)}\right\rbrace \smin_{b(k)} 
 \\& \qquad + \one \left\lbrace W_k \le \smax_{b(k)}\right\rbrace \one \left\lbrace W_k \ge \smin_{b(k)}\right\rbrace W_k\bigg) \bigg].
 \end{split}\tag{I}
 	  \\
@@ -659,6 +712,10 @@ library(heaven)
 d <- dpp()
 #+END_SRC
 
+#+RESULTS[<2016-11-25 15:12:09> c159a62d19174b9f7e100f1bc29ab9739eaf0fb7]:
+:RESULTS:
+:END:
+
 
 \noindent For this example, we consider simulated data. The following
 code generates data using functions supplied in the \verb+heaven+ package.
@@ -724,6 +781,10 @@ drug(d, ex2) <- pack(c(200, 400, 500),
                      def = c(300, 200, 500))
 #+END_SRC
 
+#+RESULTS[<2016-11-25 15:12:09> a5288410551fb2669c8186d297245777ee850b1c]:
+:RESULTS:
+:END:
+
 \noindent Note how the default, minimum and maximum doses are
 specified for each treatment. In the above, we have two treatments,
 one named ``ex1'' and one named ``ex2''. \\
@@ -764,6 +825,11 @@ N(d) <- 3
 ex <- process(d, out=FALSE) 
 #+END_SRC
 
+#+RESULTS[<2016-11-25 15:12:09> 3da00b0c65ecd81e35276cb5e0a3b79b6b831455]:
+:RESULTS:
+Error in order(dat$pdate) : argument 1 is not a vector
+:END:
+
 \noindent This produces an output data set for each of the specified
 treatments, \verb+ex1+ and \verb+ex2+. 
 
@@ -794,7 +860,7 @@ ref:fig:ex2.
 plot(ex, id=1, drug="ex2")
 #+END_SRC
 
-#+RESULTS[<2016-11-21 15:14:25> 20d83270c303d71190e332c06b3801e46960e1e4]:
+#+RESULTS[<2016-11-25 15:12:09> 2529d2029a62a3c14bcd8d2770483593fd7ad752]:
 [[file:./drug-dat4b.pdf]]
 
 #+LABEL: fig:ex6
