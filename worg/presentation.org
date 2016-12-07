@@ -34,54 +34,42 @@ code from hell, medicin macro, ...
 \vspace{5cm}
 
 ** Input data
-*** Input data: Drug database
+*** Input data
  :PROPERTIES:
- :BEAMER_opt: shrink=20
+ :BEAMER_opt: shrink=50
  :END:
 
-\vspace{0.2cm}
-Example data: 
-\vspace{0.2cm}
+**** Untitled: 
+    :PROPERTIES:
+    :BEAMER_col: 0.1
+    :END:
+
+**** Drug purchases: 
 
 #+name: chunkdrugdb
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
 drugdata <- read.csv("~/research/Software/medicin-macro/test-sas/nov-23/recept_data.csv")
-drugdata[1:15, -c(2, 5, 9)]
+drugdata[1:8, -c(2, 5, 9)]
 #+END_SRC
 
-#+RESULTS[<2016-12-01 11:08:54> 21a52fc43eb958a09790e141cca6d8dbecedc142]:
-#+begin_example
-   atc       eksd  pnr strnum apk packsize
-1   1a 2020-04-08 1000     75   3       20
-2   1a 2011-10-30 1000    125   2        5
-3   1a 2020-01-23 1000    125   1        5
-4   1a 2015-09-17 1000     50   2       10
-5   2a 2012-05-04 1000     50   3        5
-6   2a 2011-10-11 1000     75   2        9
-7   2a 2015-12-20 1000    125   1        9
-8   2a 2015-10-27 1000    100   3       18
-9   2a 2015-04-18 1000     50   3       18
-10  1a 2017-03-15 2000    125   3       18
-11  1a 2015-11-04 2000    100   2        5
-12  1a 2013-05-15 2000     50   3        9
-13  1a 2011-04-25 2000    125   3        5
-14  1a 2013-07-11 2000     50   2        5
-15  2a 2014-02-02 2000    100   1        9
-  .
-  .
-  .
-#+end_example
+#+RESULTS[<2016-12-07 16:55:04> c801918b72e87f4c984e2694612bdc3dd3c9df75]:
+:   atc       eksd  pnr strnum apk packsize
+: 1  1a 2020-04-08 1000     75   3       20
+: 2  1a 2011-10-30 1000    125   2        5
+: 3  1a 2020-01-23 1000    125   1        5
+: 4  1a 2015-09-17 1000     50   2       10
+: 5  2a 2012-05-04 1000     50   3        5
+: 6  2a 2011-10-11 1000     75   2        9
+: 7  2a 2015-12-20 1000    125   1        9
+: 8  2a 2015-10-27 1000    100   3       18
 
+**** Untitled: 
+    :PROPERTIES:
+    :BEAMER_col: 0.1
+    :END:
 
-*** Input data: Admission database
- :PROPERTIES:
- :BEAMER_opt: shrink=20
- :END:
-
-\vspace{0.2cm}
-Example data: 
-\vspace{0.2cm}
+**** Admission dates: 
 
 #+name: chunkadmdb
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -97,7 +85,7 @@ rbindlist(lapply(1:dim(datoer)[1], function(i) {
     return(rows)}))
 #+END_SRC
 
-#+RESULTS[<2016-12-01 11:17:59> 23cd3f7d1d9fdafff59461fc6ef8289f9422a6dd]:
+#+RESULTS[<2016-12-07 17:00:41> 21d71be73e3ea194ecbc965462cfd382a1e224e5]:
 :     pnr max_indl    inddto1     uddto1    inddto2     uddto2    inddto3     uddto3    inddto4     uddto4
 : 1: 1000        3 2012-04-12 2012-04-25 2015-01-30 2015-02-14 2017-05-28 2017-05-31 2021-02-21 2021-03-08
 : 2: 2000        2 2012-12-10 2012-12-15 2015-05-31 2015-06-05         NA         NA         NA         NA
@@ -107,6 +95,8 @@ rbindlist(lapply(1:dim(datoer)[1], function(i) {
 : 6: 7000        1 2013-03-16 2013-03-21         NA         NA         NA         NA         NA         NA
 : 7: 8000        4 2011-06-30 2011-07-02 2014-02-02 2014-02-07 2016-03-10 2016-03-23 2019-12-21 2019-12-28
 : 8: 9000        4 2012-09-01 2012-09-14 2015-04-18 2015-05-03 2019-01-30 2019-02-12 2021-02-21 2021-02-27
+
+
 
 
 
@@ -154,6 +144,9 @@ rbindlist(lapply(1:dim(datoer)[1], function(i) {
 
 ** Output data
 *** Output data
+ :PROPERTIES:
+ :BEAMER_opt: shrink=20
+ :END:
 
 Continuing example: 
 #+name: chunksasout
@@ -187,7 +180,7 @@ out_alt[1:15, ]
 *** Immediate limitations
 
 - Speed
-  + Each drug is processed separately 
+  + Each drug must be processed separately, repeating the macro call
 \vspace{0.2cm}
 - Lack of transparency
   + Mathematical formulas? 
@@ -196,6 +189,7 @@ out_alt[1:15, ]
   + Dependence on the future
   + Only possible to specify four different doses
   + Graphical checks (working?)? 
+
  
 * New R Interface 
 
@@ -205,6 +199,44 @@ out_alt[1:15, ]
 \LARGE\center{New R Interface}
 
 \vspace{5cm}
+
+
+*** Addressing the issues in SAS
+ :PROPERTIES:
+ :BEAMER_opt: shrink=10
+ :END:
+
+- Speed
+  + We use the ~Rcpp~ to integrate ~C++~-code directly in ~R~
+
+\vspace{0.2cm}
+- Lack of transparency
+  + We have written up all steps in the macro explicitly 
+  + Everything is collected in a documentation article 
+
+\vspace{0.2cm}
+- New interface
+  - Object oriented coding for more effiency
+  - Visualization tools to plot input data and output estimates
+  - Accessed via ~R~-package ~heaven~ (github) 
+
+\vspace{0.1cm}
+In ~R~ the package is installed via: 
+#+name: chunkgithub
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
+devtools::install_github("tagteam/heaven")
+#+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:42> 6a5cc8e079da9ffff7ca9d74491fb05b1fae0a96]:
+: Skipping install of 'heaven' from a github remote, the SHA1 (183e8600) has not changed since last install.
+:   Use `force = TRUE` to force installation
+
+\vspace{0.1cm}
+Intro to ~R~-packages: http://r-pkgs.had.co.nz/ \\
+How to use Git in Rstudio: http://r-pkgs.had.co.nz/git.html
+
+
 
 *** New R interface
  :PROPERTIES:
@@ -247,6 +279,8 @@ drugdb(d) <- drugdata
 admdb(d) <- admdata
 #+END_SRC
 
+#+RESULTS[<2016-12-07 17:00:42> 29eb09f561f642d4d7824b33d9fe50a1930c85c3]:
+
 \vspace{0.1cm}
 - ~plot()~-function to show purchases and admission periods 
 \vspace{0.2cm}
@@ -254,6 +288,8 @@ admdb(d) <- admdata
 #+BEGIN_SRC R :results output :exports code  :session *R* :width 6 :height 4 :cache yes
 plot(d)
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> a90a4182ffe973369bd89f7ca501251dbc596040]:
 
 
 ** Visualization tools
@@ -296,11 +332,15 @@ plot(d)
 library(heaven)
 #+END_SRC
 
+#+RESULTS[<2016-12-07 17:00:43> 71045dfd56a538f10da541e7332fc05169b0bb79]:
+
 \noindent Create empty object: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 d <- dpp()
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> 0becf5c9f492bec7c09e718e56c90f3dc9598b29]:
 
 \noindent Attach relevant data: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -308,6 +348,9 @@ d <- dpp()
 drugdb(d) <- drugdata
 admdb(d) <- admissiondata
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> 0cc8a2499ccc7a633f2cd2a812a5342678f7fe63]:
+: Error: object 'admissiondata' not found
 
 \noindent Add treatments: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -319,11 +362,15 @@ drug(d, "treatment1") <- pack(c(750, 75),
                               def = c(750, 100))
 #+END_SRC
 
+#+RESULTS[<2016-12-07 17:00:43> aa1b8316ab44910256767ed649adf78ef0fed9cd]:
+
 \noindent Specify window of prescription dates to use in calculations: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 pwindow(d) <- 3 ## include data from up to 3 previous purchase dates into the calculation of the daily dosis 
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> 82facfcd96524d7c4ecec773e7a1d93b50a78935]:
 
 
 *** How to use the interface
@@ -337,6 +384,10 @@ running:
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 process(d)
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> e732c4f345d319fe197118bab1382675aa9c253d]:
+: Error in innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot,  : 
+:   index out of bounds
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
@@ -401,11 +452,17 @@ drug(d, "treatment2") <- pack(c(200, 400, 500),
                      def = c(300, 200, 500))
 #+END_SRC
 
+#+RESULTS[<2016-12-07 17:00:43> 85f68d36d96d0ffab09561f04407c8a171ff1f5b]:
+
 \noindent And then perform calculations again: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 process(d)
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> e732c4f345d319fe197118bab1382675aa9c253d]:
+: Error in innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot,  : 
+:   index out of bounds
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
@@ -466,6 +523,10 @@ $treatment2
 process(d, treatment = "treatment2")
 #+END_SRC
 
+#+RESULTS[<2016-12-07 17:00:43> b8f86fc8ed8f1f3648a3b0541b67e41b8a0c9255]:
+: Error in innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot,  : 
+:   index out of bounds
+
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
 library(heaven)
@@ -506,6 +567,10 @@ lapply(out[1], head)
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 process(d, id = 9)
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:43> 9bce188b84dbed3b40bd044ade149c35ffdfca91]:
+: Error in innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot,  : 
+:   index out of bounds
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports results :results output   :session *R* :cache yes 
@@ -555,7 +620,7 @@ $treatment2
  :BEAMER_opt: shrink=10
  :END:
 
-A ~plot()~-function to visualize the output is defined in the package:
+A ~plot()~-function to visualize the output:
 \\
 
 \vspace{0.2cm}
@@ -563,8 +628,11 @@ A ~plot()~-function to visualize the output is defined in the package:
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output   :session *R* :cache yes 
 out <- process(d)
-plot(out, idmax = 4)
+plot(out, id = 1)
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:04:10> 5f72f7e123bcdd55714a8eb041d0eb1052ae6820]:
+
 
 #+BEGIN_SRC R :results graphics :file "./drug-fig-2.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
 library(heaven)
@@ -573,6 +641,7 @@ set.seed(8)
 drugdata <- simPrescriptionData(10)
 admdata <- simAdmissionData(10)
 d <- dpp()
+setwd("~/research/Software/medicin-macro/heaven/worg")
 drugdb(d) <- drugdata
 admdb(d) <- admdata
 drug(d, "treatment1") <- atc("A12B")
@@ -587,11 +656,11 @@ drug(d, "treatment2") <- pack(c(200, 400, 500),
                      def = c(300, 200, 500))
 pwindow(d) <- 3
 out <- process(d)
-plot(out, idmax = 4)
+plot(out, id = 1)
 #+END_SRC
 
 
-#+RESULTS[<2016-11-28 15:09:43> c4ecb36feed40e5aa5ee6fad113d85c384736b3f]:
+#+RESULTS[<2016-12-07 17:04:29> 05d37ef019cf7f46332ac720c16993a81e1a1887]:
 [[file:./drug-fig-2.pdf]]
 
 
@@ -685,7 +754,7 @@ axis(1,at=c(0, 25, 40, 75, 100),labels=c("", expression(3~s[min]),
 #+END_SRC
 
 
-#+RESULTS[<2016-12-06 10:57:28> 8df0b8c3f87b2e3439a6ea2911f304abd6695543]:
+#+RESULTS[<2016-12-07 17:00:44> f77cda134848f2834055663ea24b2f8a9d0314f3]:
 [[file:./drug-small-fig.pdf]]
 
 #+LABEL: fig:ex2
@@ -730,6 +799,13 @@ out1 <- process(d, keep_data = TRUE)
 plot(out1, id = 5, trace = TRUE)
 #+END_SRC
 
+#+RESULTS[<2016-12-07 17:00:44> 259c51ed0fc6b89bfa6b5367f05ef123bde1c57e]:
+:  X11cairo 
+:        2
+: Error in innerprocess(dat, admdat, doses, treatname, dpp$N, maxdepot,  : 
+:   index out of bounds
+: Error in plot(out1, id = 5, trace = TRUE) : object 'out1' not found
+
 #+BEGIN_SRC R :results graphics :file "./drug-fig-3.pdf" :exports none  :session *R* :width 6 :height 4
 library(heaven)
 library(Publish)
@@ -768,7 +844,7 @@ file:./drug-fig-3.pdf
 
 
 
-* Real example
+* Real Example
 *** Example: Omeprazol
  :PROPERTIES:
  :BEAMER_opt: shrink=30
@@ -855,6 +931,12 @@ admData
 #+BEGIN_SRC R :results output raw drawer  :exports none :session *R* :cache yes 
 setwd("~/research/Software/medicin-macro/heaven/worg")
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:44> 7a9382967fcbd16a0590961f779a8d4282210926]:
+:RESULTS:
+ X11cairo 
+       2
+:END:
 
 #+BEGIN_SRC R :results graphics :file "./drug-fig-ex-1.pdf" :exports none  :session *R* :width 6 :height 2
 admData <- data.frame(inddto = sapply(c("2004-01-20", "2004-01-22", "2006-06-20", "2006-06-23", "2010-01-21",
@@ -963,6 +1045,29 @@ maxdepot(d) <- 4000
 
 process(d)
 #+END_SRC
+
+#+RESULTS[<2016-12-07 17:00:44> d44b3e41af36a86ed059b80b506cd3303010f946]:
+#+begin_example
+ X11cairo 
+       2
+$omeprazol
+  id  X          B          E
+1  1 40 2010-11-02 2010-12-08
+2  1 80 2010-12-09 2011-10-09
+3  1  0 2011-10-10 2011-10-23
+4  1 80 2011-10-24 2011-11-20
+5  1  0 2011-11-21 2012-01-29
+6  1 40 2012-01-30 2012-04-03
+7  1 80 2012-04-04 2013-02-05
+
+attr(,"out_data")
+[1] TRUE
+attr(,"period")
+1997-01-01 2012-12-31 
+      9862      15705 
+attr(,"class")
+[1] "dppout"
+#+end_example
 
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}

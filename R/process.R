@@ -27,7 +27,7 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data =
       doses        <- dpp$drugs[[j]]$doses 
       dpp2         <- dpp1[dpp1$atc %in% dpp$drugs[[j]]$atc, ]
       dosesmissing <- !(dpp2$strength %in% doses$value)
-      
+
       baddata <- 0 
       
       if (any(dpp2$pdate < 0)) {
