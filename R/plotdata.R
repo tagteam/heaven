@@ -36,7 +36,7 @@ plot.dpp <- function(dpp, drug=NULL) {
                                                                       sum(d1$id == x)))), origin = "1970-01-01")
     
     d1 <- d1[order(d1$pfirst, d1$id, d1$pdate), ]
-    d1
+    
     d1$idorder <- unlist(sapply(1:length(unique(d1$id)), function(i) rep(i, sum(d1$id == unique(d1$id)[i]))))
     
     a1$idorder <- sapply(a1$id, function(x) unique(d1$idorder[d1$id == x]))

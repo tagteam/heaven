@@ -1,12 +1,26 @@
 
 * Introduction
 ** Overall Purpose
-*** Association studies 
+*** Register data preprocessing steps
+ :PROPERTIES:
+ :BEAMER_opt: shrink=9
+ :END:
 
-... Tomy
-- Exposure-outcome analysis
- + lalala
-- Example: PPI 
+**** Input:  
+
+=pop=, =lmdb=, =lpr=, =indh=, =dod=, =sogne= ...
+
+**** Data preprocessing
+
+code from hell, medicin macro, ...
+
+**** Output:
+
+#+ATTR_LaTeX: :align cccccm{2cm}m{2cm}
+| Time 1 | Time 2 | Status | Age | Sex | Comorbidity in interval | Exposure in interval |
+|--------+--------+--------+-----+-----+-------------------------+----------------------|
+|        |        |        |     |     |                         |                      |
+
 
 * SAS Interface
 
@@ -101,7 +115,7 @@ rbindlist(lapply(1:dim(datoer)[1], function(i) {
  :BEAMER_opt: shrink=55
  :END:
 
-#+BEGIN_SRC SAS  :results code raw drawer  :exports code  :cache yes 
+#+BEGIN_EXAMPLE
 %x_recepter(recept_data, /* forventes at indeholde variable - skulle gerne passe med DST-standarder:
                                   pnr - cpr/patientidentifikation
                                   atc - ATC kode
@@ -135,7 +149,8 @@ rbindlist(lapply(1:dim(datoer)[1], function(i) {
                   test, /* præfix på generede variable som kan benyttes til at skelne fra lignende variable genereret i andre trin*/
                   1 /* danner tabeller "l_" hvor doser og sluttider KUN regnes bagud*/
                   );
-#+END_SRC
+
+#+END_EXAMPLE
 
 ** Output data
 *** Output data
@@ -232,9 +247,9 @@ drugdb(d) <- drugdata
 admdb(d) <- admdata
 #+END_SRC
 
-\vspace{0.1}
+\vspace{0.1cm}
 - ~plot()~-function to show purchases and admission periods 
-\vspace{0.2}
+\vspace{0.2cm}
 
 #+BEGIN_SRC R :results output :exports code  :session *R* :width 6 :height 4 :cache yes
 plot(d)
@@ -267,7 +282,7 @@ plot(d)
 
 #+LABEL: fig:ex1
 #+ATTR_LATEX: :width 1 \textwidth
-file:./drug-fig-1.pdf
+[[file:./drug-fig-1.pdf]]
 
 ** User details 
 *** How to use the interface
@@ -554,7 +569,6 @@ plot(out, idmax = 4)
 #+BEGIN_SRC R :results graphics :file "./drug-fig-2.pdf" :exports none  :session *R* :width 6 :height 4 :cache yes
 library(heaven)
 library(Publish)
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 set.seed(8)
 drugdata <- simPrescriptionData(10)
 admdata <- simAdmissionData(10)
@@ -660,11 +674,9 @@ file:./drug-fig-2.pdf
 \vspace{0.4cm}
 \color{black}
 
-  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose, \\
-e.g.: 
+  \(W_k\) is a rounding of \(M_k^{(1)}\) to nearest multiple of relevant minimal dose
 
 #+BEGIN_SRC R :results graphics :file "./drug-small-fig.pdf" :exports none  :session *R* :width 4 :height 1 :cache yes
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 par(mar=c(2.1,2.1,0.1,2.1))
 plot(0,0,type="n",xlim=c(0,100),ylim=c(0,100),xlab="",ylab="", 
      yaxt='n', xaxt='n', axes=FALSE)
@@ -676,11 +688,9 @@ axis(1,at=c(0, 25, 40, 75, 100),labels=c("", expression(3~s[min]),
 #+RESULTS[<2016-12-06 10:57:28> 8df0b8c3f87b2e3439a6ea2911f304abd6695543]:
 [[file:./drug-small-fig.pdf]]
 
-
-
 #+LABEL: fig:ex2
 #+ATTR_LATEX: :width 1 \textwidth
-file:./drug-small-fig.pdf
+# file:./drug-small-fig.pdf
 
 
 **** Back to no columns 
@@ -723,7 +733,6 @@ plot(out1, id = 5, trace = TRUE)
 #+BEGIN_SRC R :results graphics :file "./drug-fig-3.pdf" :exports none  :session *R* :width 6 :height 4
 library(heaven)
 library(Publish)
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 set.seed(8)
 drugdata <- simPrescriptionData(10)
 admdata <- simAdmissionData(10)
@@ -742,23 +751,18 @@ drug(d, "treatment2") <- pack(c(200, 400, 500),
                      def = c(300, 200, 500))
 pwindow(d) <- 3
 out1 <- process(d, keep_data = TRUE)
-plot(out1, id = 5, trace = TRUE)
+plot(out1, id = 5, trace = TRUE)+theme(legend.title=element_text(size=8),legend.text=element_text(size=6))
 #+END_SRC
 
 #+RESULTS[<2016-11-28 11:28:39> 593c3dd58559e92e0369d635626bf6d33fa9c6b8]:
 [[file:./drug-fig-3.pdf]]
 
 
-
 #+LABEL: fig:ex3
-#+ATTR_LATEX: :width 1 \textwidth
+#+ATTR_LATEX: :width .9 \textwidth
 file:./drug-fig-3.pdf
 
 
-
-#+LABEL: fig:periods
-#+ATTR_LATEX: :width 0.8 \textwidth
-file:./drug-dat2a.pdf
 
 
 
@@ -848,8 +852,11 @@ admData
 
 **** Plotting the data:  
 
+#+BEGIN_SRC R :results output raw drawer  :exports none :session *R* :cache yes 
+setwd("~/research/Software/medicin-macro/heaven/worg")
+#+END_SRC
+
 #+BEGIN_SRC R :results graphics :file "./drug-fig-ex-1.pdf" :exports none  :session *R* :width 6 :height 2
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 admData <- data.frame(inddto = sapply(c("2004-01-20", "2004-01-22", "2006-06-20", "2006-06-23", "2010-01-21",
                                        "2010-01-14", "2010-01-26", "2010-07-05", "2010-10-21", "2011-07-14",
                                        "2011-12-01", "2011-12-14", "2011-12-25", "2011-12-29"), as.Date),
@@ -860,7 +867,7 @@ admData$pnr <- rep(1, dim(admData)[1])
 admData$inddto <- as.Date(admData$inddto, origin="1970-01-01")
 admData$uddto <- as.Date(admData$uddto, origin="1970-01-01")
 library(heaven)
-PPI <- read.table("~/research/Software/medicin-macro/heaven/data/samplePPIData.csv", header=TRUE, sep=";")
+PPI <- read.table("../data/samplePPIData.csv", header=TRUE, sep=";")
 PPI$eksd <- as.Date(PPI$eksd, format="%d/%m/%Y")
 d <- dpp()
 drugdb(d) <- PPI
@@ -884,7 +891,7 @@ plot(d)
 
 #+LABEL: fig:ex1-1
 #+ATTR_LATEX: :width 1 \textwidth
-file:./drug-fig-ex-1.pdf
+[[file:./drug-fig-ex-1.pdf]]
 
 
 *** Example: Omeprazol
@@ -894,7 +901,7 @@ file:./drug-fig-ex-1.pdf
 
 \LARGE{Using medicin-macro:}
 
-#+BEGIN_SRC SAS  :results code raw drawer  :exports code  :cache yes 
+#+BEGIN_EXAMPLE
 %x_recepter(PPI, /* forventes at indeholde variable - skulle gerne passe med DST-standarder:
                                   pnr - cpr/patientidentifikation
                                   atc - ATC kode
@@ -928,9 +935,7 @@ file:./drug-fig-ex-1.pdf
                   test, /* præfix på generede variable som kan benyttes til at skelne fra lignende variable genereret i andre trin*/
                   1 /* danner tabeller "l_" hvor doser og sluttider KUN regnes bagud*/
                   );
-#+END_SRC
-
-
+#+END_EXAMPLE
 
 
 *** Example: Omeprazol
@@ -1021,7 +1026,6 @@ plot(out)
 
 
 #+BEGIN_SRC R :results graphics :file "./drug-fig-ex-2.pdf" :exports none  :session *R* :width 8 :height 6
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 admData <- data.frame(inddto = sapply(c("2004-01-20", "2004-01-22", "2006-06-20", "2006-06-23", "2010-01-21",
                                        "2010-01-14", "2010-01-26", "2010-07-05", "2010-10-21", "2011-07-14",
                                        "2011-12-01", "2011-12-14", "2011-12-25", "2011-12-29"), as.Date),
@@ -1032,7 +1036,7 @@ admData$pnr <- rep(1, dim(admData)[1])
 admData$inddto <- as.Date(admData$inddto, origin="1970-01-01")
 admData$uddto <- as.Date(admData$uddto, origin="1970-01-01")
 library(heaven)
-PPI <- read.table("~/research/Software/medicin-macro/heaven/data/samplePPIData.csv", header=TRUE, sep=";")
+PPI <- read.table("../data/samplePPIData.csv", header=TRUE, sep=";")
 PPI$eksd <- as.Date(PPI$eksd, format="%d/%m/%Y")
 d <- dpp()
 drugdb(d) <- PPI
@@ -1074,7 +1078,6 @@ plot(out1, trace = TRUE)
 
 
 #+BEGIN_SRC R :results graphics :file "./drug-fig-ex-3.pdf" :exports none  :session *R* :width 8 :height 6
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
 admData <- data.frame(inddto = sapply(c("2004-01-20", "2004-01-22", "2006-06-20", "2006-06-23", "2010-01-21",
                                        "2010-01-14", "2010-01-26", "2010-07-05", "2010-10-21", "2011-07-14",
                                        "2011-12-01", "2011-12-14", "2011-12-25", "2011-12-29"), as.Date),
@@ -1085,7 +1088,7 @@ admData$pnr <- rep(1, dim(admData)[1])
 admData$inddto <- as.Date(admData$inddto, origin="1970-01-01")
 admData$uddto <- as.Date(admData$uddto, origin="1970-01-01")
 library(heaven)
-PPI <- read.table("~/research/Software/medicin-macro/heaven/data/samplePPIData.csv", header=TRUE, sep=";")
+PPI <- read.table("../data/samplePPIData.csv", header=TRUE, sep=";")
 PPI$eksd <- as.Date(PPI$eksd, format="%d/%m/%Y")
 d <- dpp()
 drugdb(d) <- PPI
@@ -1112,13 +1115,6 @@ plot(out1, trace = TRUE)
 file:./drug-fig-ex-3.pdf
 
 
-* Final remarks
-*** Discussion
-
-... Tomy
-- cumulative exposure
- + andre macroer?
-- tradition in other registry data research groups
 
 *** 
 
