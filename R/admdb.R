@@ -24,7 +24,7 @@
     newdata        <- subset(value, select = varnames)
     names(newdata) <- c("id", "inddto", "uddto")
     
-    if (!inherits(newdata$pdate, "Date"))
+    if (!inherits(newdata$inddto, "Date") | !inherits(newdata$uddto, "Date"))
       stop("dates must be in Date format")
     
     if (add) {
