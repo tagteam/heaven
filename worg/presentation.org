@@ -1,26 +1,30 @@
-
 * Introduction
 ** Overall Purpose
 *** Register data preprocessing steps
  :PROPERTIES:
  :BEAMER_opt: shrink=9
  :END:
-
 **** Input:  
 
 =pop=, =lmdb=, =lpr=, =indh=, =dod=, =sogne= ...
 
 **** Data preprocessing
 
-code from hell, medicin macro, ...
+- code from hell, medicin macro, ...
+- =data.table=, =doParallel=, ...
 
 **** Output:
 
-#+ATTR_LaTeX: :align cccccm{2cm}m{2cm}
-| Time 1 | Time 2 | Status | Age | Sex | Comorbidity in interval | Exposure in interval |
-|--------+--------+--------+-----+-----+-------------------------+----------------------|
-|        |        |        |     |     |                         |                      |
+| Year | Age | Sex | Comorb | Expo | RiskTime | Event | Death |
+|------+-----+-----+--------+------+----------+-------+-------|
+| 1996 | 1   | 1   | 0      | 0    | 471163   | 16    | 458   |
+| .    | .   | .   | .      | .    | .        | .     | .     |
+| .    | .   | .   | .      | .    | .        | .     | .     |
+| 2015 | 7   | 0   | 1      | 1    | 11184    | 5     | 127   | 
+ 
+**** Poisson regression
 
+=speedglm=, interaction, linearity, trend tests etc.
 
 * SAS Interface
 
@@ -766,8 +770,6 @@ file:./drug-fig-3.pdf
 
 
 
-
-
 * Real example
 *** Example: Omeprazol
  :PROPERTIES:
@@ -893,7 +895,6 @@ plot(d)
 #+ATTR_LATEX: :width 1 \textwidth
 [[file:./drug-fig-ex-1.pdf]]
 
-
 *** Example: Omeprazol
  :PROPERTIES:
  :BEAMER_opt: shrink=55
@@ -936,7 +937,6 @@ plot(d)
                   1 /* danner tabeller "l_" hvor doser og sluttider KUN regnes bagud*/
                   );
 #+END_EXAMPLE
-
 
 *** Example: Omeprazol
  :PROPERTIES:
@@ -1007,7 +1007,6 @@ $omeprazol
 6  1 40 2012-01-30 2012-04-03
 7  1 80 2012-04-04 2013-02-05
 #+end_example
-
 
 
 *** Example: Omeprazol
@@ -1115,9 +1114,7 @@ plot(out1, trace = TRUE)
 file:./drug-fig-ex-3.pdf
 
 
-
 *** 
-
 **** Untitled column
     :PROPERTIES:
     :BEAMER_col: 0.1
@@ -1129,7 +1126,6 @@ file:./drug-fig-ex-3.pdf
     :END:
 Thank you
 
-
 **** Untitled column
     :PROPERTIES:
     :BEAMER_col: 0.9
@@ -1138,6 +1134,17 @@ Thank you
 #+ATTR_LATEX: :width 0.5\textwidth
 [[file:./M9ipndpcE.png]]
 
+*** Volunteers & todo list
+
+Volunteers who would like to contribute to =heaven= should send  
+their github account name to the package manager.
+
+\vfill
+Contributions can be 
+ - subroutines for the preprocessing master 
+ - worked examples 
+ - improve help files
+ - wish lists (extensions, new features, etc.) 
 
 * HEADER :noexport:
 
