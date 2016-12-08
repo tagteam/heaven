@@ -252,10 +252,10 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
       }
     }
     
-    outdata = Rcpp::DataFrame::create(Rcpp::Named("id")     = id1,
-                                       Rcpp::Named("X")      = X1,
-                                       Rcpp::Named("B")      = B1,
-                                       Rcpp::Named("E")      = E1);
+    outdata = Rcpp::DataFrame::create(Rcpp::Named("id")         = id1,
+                                       Rcpp::Named("outdose")   = X1,
+                                       Rcpp::Named("startdate") = B1,
+                                       Rcpp::Named("enddate")   = E1);
   }
 
   return(outdata);
