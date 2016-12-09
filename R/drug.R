@@ -57,6 +57,10 @@ pack <- function(value, min, max, def) {
       dpp$drugs$drugname$doses = list(value = value, min = min, max = max, def = def)
       names(dpp$drugs)[length(dpp$drugs)] = drugname
     }
+    
+    if (length(dpp$drugs[[i]]$doses$value) > length(unique(dpp$drugs[[i]]$doses$value)))
+      warning("the same dosis has been specified twice")
+    
     return(dpp$drugs)
   }
   
