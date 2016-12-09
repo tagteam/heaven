@@ -12,3 +12,7 @@ innerprocess <- function(dat, admdat, doses, treatname, N, maxdepot, trace, out)
     .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, treatname, N, maxdepot, trace, out)
 }
 
+timesTwo <- function(x) {
+    .Call('heaven_timesTwo', PACKAGE = 'heaven', x)
+}
+
