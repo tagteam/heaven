@@ -43,6 +43,9 @@ atc <- function(atc) {
 ##' @export
 pack <- function(value, min, max, def) {
 
+  if (length(unique(value)) != unique(value))
+    warning("The same value has been specified more than once: This will lead to errors.")
+  
   f <- function(dpp, add, i, drugname) {
     if (length(i) > 0) {
       if (add)
