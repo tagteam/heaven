@@ -24,9 +24,13 @@ plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FAL
     
   drugout <- drugout[drugout$id %in% id, ]
   
-  period <- as.Date(c(max(attr(out, "period")[1], min(drugout$B)), 
-                      min(attr(out, "period")[2], max(drugout$E))), origin="1970-01-01")
+  #period <- as.Date(c(max(attr(out, "period")[1], min(drugout$B)), 
+   #                   min(attr(out, "period")[2], max(drugout$E))), origin="1970-01-01")
+
+  period <- as.Date(c(min(drugout$B), 
+                      max(drugout$E)), origin="1970-01-01")
   
+    
   natc <- length(j)
   col <- #topo.colors(natc)
     colorRampPalette(c("darkblue", "darkgreen"))(natc)

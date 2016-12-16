@@ -7,10 +7,11 @@
 dpp <- function() { 
   out = structure(list(drugdb   = NULL,
                        admdb    = NULL, 
-                       drugs    = NULL, 
-                       period   = c(1, 1e10),
-                       N        = 2, 
-                       maxdepot = 10),
+                       drugs    = NULL#, 
+                       #period   = c(1, 1e10),
+                       #N        = 2, 
+                       #maxdepot = 10
+                       ),
                   class = "dpp")
   out
 }
@@ -33,8 +34,8 @@ print.dpp <- function(dpp) {
   } 
   if (length(dpp$N) > 0)
     cat("Using N =", dpp$N, "prescriptions back in time", "\n")
-  if (length(dpp$period) > 1 & dpp$period[1] != 1)
-    cat("Only interested in prescriptions between", as.character(dpp$period[1]), "and", as.character(dpp$period[2]))  
+  #if (length(dpp$period) > 1 & dpp$period[1] != 1)
+   # cat("Only interested in prescriptions between", as.character(dpp$period[1]), "and", as.character(dpp$period[2]))  
 
   cat("\n")
 } 
