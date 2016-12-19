@@ -2,29 +2,29 @@
 % Please edit documentation in R/drugdb.R
 \name{drugdb<-}
 \alias{drugdb<-}
-\title{Update database}
+\title{Update drug prescription database}
 \usage{
 drugdb(dpp, id = pnr, atc = atc, pdate = eksd, strength = strnum,
   npack = apk, ppp = packsize, add = FALSE) <- value
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{Data preprocessing object}
 
-\item{id}{a}
+\item{id}{The name of the column containing the id numbers (default is pnr)}
 
-\item{atc}{a}
+\item{atc}{The name of the column containing the atc codes (default is atc)}
 
-\item{pdate}{a}
+\item{pdate}{The name of the column containing the prescription dates (default is eksd)}
 
-\item{strength}{a}
+\item{strength}{The name of the column containing the numerical dose strengths (default is strnum)}
 
-\item{npack}{a}
+\item{npack}{The name of the column containing the number of packages (default is apk)}
 
-\item{ppp}{a}
+\item{ppp}{The name of the column containing the number of pills per package (default is packsize)}
 
-\item{add}{a}
+\item{add}{Logical value, per default set to FALSE which means that already existing data in the preprocessing object will be overwritten.}
 
-\item{value}{a}
+\item{value}{The data set to be loaded to the object.}
 }
 \description{
 Update database
