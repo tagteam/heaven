@@ -4,17 +4,25 @@
 \alias{pwindow<-}
 \title{Prescription window}
 \usage{
-pwindow(dpp, ...) <- value
+pwindow(dpp, drug = NULL) <- value
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{The preprocessing object}
 
-\item{...}{a}
+\item{drug}{If specified, the name (in quotes) of the drug to update the value for. If unspecified, the value is updated for all drugs in the preprocessing object.}
 
-\item{value}{a}
+\item{value}{The value for how many prescriptions to use back in time for calculations}
 }
 \description{
 Set the number of prescriptions to use in calculations
+}
+\examples{
+
+d <- dpp()
+drug(d, "treatment1") <- atc("A12B")
+
+pwindow(d, drug="treatment1") <- 3
+
 }
 \author{
 Helene Charlotte Rytgaard

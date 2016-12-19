@@ -2,22 +2,27 @@
 % Please edit documentation in R/maxdepot.R
 \name{maxdepot<-}
 \alias{maxdepot<-}
-\title{Update database}
+\title{Set value of maximum depot.}
 \usage{
-maxdepot(dpp, ...) <- value
+maxdepot(dpp, drug = NULL) <- value
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{The preprocessing object}
 
-\item{...}{a}
+\item{drug}{If specified, the name (in quotes) of the drug to update the value for. If unspecified, the value is updated for all drugs in the preprocessing object.}
 
-\item{value}{a}
+\item{value}{The maximum depot that can be transferred from one prescription period to the next.}
 }
 \description{
-maximum repositary
+The maximum depot that can be transferred from one prescription period to the next.
 }
-\details{
-maximum repositary
+\examples{
+
+d <- dpp()
+drug(d, "treatment1") <- atc("A12B")
+
+maxdepot(d, drug="treatment1") <- 1000
+
 }
 \author{
 Helene Charlotte Rytgaard

@@ -2,20 +2,27 @@
 % Please edit documentation in R/period.R
 \name{period<-}
 \alias{period<-}
-\title{Update database}
+\title{Set period of time}
 \usage{
-period(dpp) <- value
+period(dpp, drug = NULL) <- value
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{The preprocessing object}
 
-\item{value}{a}
+\item{drug}{If specified, the name (in quotes) of the drug to update the value for. If unspecified, the value is updated for all drugs in the preprocessing object.}
+
+\item{value}{Date vector of start and end date (must be date format).}
 }
 \description{
-Update database
+Set the relevant period of time.
 }
-\details{
-Update database
+\examples{
+
+d <- dpp()
+drug(d, "treatment1") <- atc("A12B")
+
+period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
+
 }
 \author{
 Helene Charlotte Rytgaard
