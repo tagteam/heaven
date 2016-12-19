@@ -2,16 +2,25 @@
 % Please edit documentation in R/plotdata.R
 \name{plot.dpp}
 \alias{plot.dpp}
-\title{Update database}
+\title{Plot function for data preprocessing object}
 \usage{
-\method{plot}{dpp}(dpp, drug = NULL)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+
+d <- dpp()
+
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+
+plot(d)
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{Data preprocessing object}
 
-\item{id}{a}
-
-\item{trace}{a}
+\item{drug}{If specified, only data for this object is plotted.}
+}
+\value{
+A plot is returned, nothing is changed about the preprocessing object.
 }
 \description{
 Function to plot dates etc

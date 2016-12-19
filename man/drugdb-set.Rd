@@ -4,8 +4,10 @@
 \alias{drugdb<-}
 \title{Update drug prescription database}
 \usage{
-drugdb(dpp, id = pnr, atc = atc, pdate = eksd, strength = strnum,
-  npack = apk, ppp = packsize, add = FALSE) <- value
+drugdata <- simPrescriptionData(10)
+
+d <- dpp()
+drugdb(d) <- drugdata
 }
 \arguments{
 \item{dpp}{Data preprocessing object}

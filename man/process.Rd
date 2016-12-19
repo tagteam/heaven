@@ -2,23 +2,26 @@
 % Please edit documentation in R/process.R
 \name{process}
 \alias{process}
-\title{Update database}
+\title{Process to estimate prescription lengths and averages}
 \usage{
 process(dpp, treatments = NULL, id = NULL, trace = FALSE,
-  out_data = TRUE, keep_data = FALSE)
+  out_data = FALSE, keep_data = FALSE)
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{Data preprocessing object}
 
-\item{id}{a}
+\item{treatments}{If specified, calcations will only be performed for these treatments.}
 
-\item{trace}{a}
+\item{id}{If specified, calculations will only be performed for these individuals.}
+
+\item{trace}{If TRUE, messages are outputted for the user.}
+
+\item{out_data}{If TRUE, all data is outputted, and this can be used for plotting. This should only be used for debugging or similar.}
+
+\item{keep_data}{If TRUE, the input data is saved in the object as well. This can can be used for plotting.}
 }
 \description{
-Update database
-}
-\details{
-Update database
+Processing function, to perform calculations according to the data and variables specified in preprocessing object.
 }
 \author{
 Helene Charlotte Rytgaard

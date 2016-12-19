@@ -1,13 +1,15 @@
-##' Update database
+##' Processing function, to perform calculations according to the data and variables specified in preprocessing object. 
 ##' 
-##' Update database
-##' @title Update database
-##' @param dpp a
-##' @param id a 
-##' @param trace a
+##' @title Process to estimate prescription lengths and averages 
+##' @param dpp Data preprocessing object
+##' @param treatments If specified, calcations will only be performed for these treatments. 
+##' @param id If specified, calculations will only be performed for these individuals.
+##' @param trace If TRUE, messages are outputted for the user. 
+##' @param out_data If TRUE, all data is outputted, and this can be used for plotting. This should only be used for debugging or similar. 
+##' @param keep_data If TRUE, the input data is saved in the object as well. This can can be used for plotting. 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = TRUE, keep_data = FALSE) {
+process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = FALSE, keep_data = FALSE) {
   
   #  dpp1 <- preprocess(dpp, id = id, trace = trace)
     

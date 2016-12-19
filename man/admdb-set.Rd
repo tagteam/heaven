@@ -4,8 +4,10 @@
 \alias{admdb<-}
 \title{Update admission dates database}
 \usage{
-admdb(dpp, id = pnr, inddto = inddto, uddto = uddto, add = FALSE) <-
-  value
+admdata <- simAdmissionData(10)
+
+d <- dpp()
+admdb(d) <- admdata
 }
 \arguments{
 \item{dpp}{Data preprocessing object}

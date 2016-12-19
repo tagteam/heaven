@@ -2,10 +2,17 @@
 ##'
 ##' @title Add new drug
 ##' @param dpp Data preprocessing object
-##' @param name Name of the drug. (Just write, don't use "") 
-##' @param add Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten.  
-##' @usage drug(d, drugname1) <- value
-##' @return The data preprocessing object is updated. 
+##' @param name The name (in quotes) of the drug to update the value for. 
+##' @param add Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.   
+##' @usage
+##' 
+##' d <- dpp()
+##' drug(d, "treatment1") <- atc("A12B")
+##' drug(d, "treatment1") <- pack(c(750, 75), 
+##'                               min = c(250, 25),
+##'                               max = c(1000, 100),
+##'                               def = c(750, 100))
+##' 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 `drug<-` <- function(dpp, drugname, add = FALSE, value) {
@@ -17,8 +24,14 @@
   return(dpp)
 }  
 
-
-
+##' @title Add atc codes to object. 
+##' @param atc Quoted atc codes, a vector if multiple values.  
+##' @usage
+##' 
+##' d <- dpp()
+##' drug(d, "treatment1") <- atc("A12B")
+##' 
+##' @author Helene Charlotte Rytgaard
 ##' @export
 atc <- function(atc) {
   
@@ -39,7 +52,21 @@ atc <- function(atc) {
   return(f)
 }  
 
-
+##' @title Add atc codes to object. 
+##' @param value The dose sizes corresponding to those found in data. Note that the same value should never be repeated.  
+##' @param min The corresponding minimal doses (same order as 'value').
+##' @param max The corresponding maximal doses (same order as 'value'). 
+##' @param def The corresponding default doses (same order as 'value'). 
+##' @usage
+##' 
+##' d <- dpp()
+##' drug(d, "treatment1") <- atc("A12B")
+##' drug(d, "treatment1") <- pack(c(750, 75), 
+##'                               min = c(250, 25),
+##'                               max = c(1000, 100),
+##'                               def = c(750, 100))
+##' 
+##' @author Helene Charlotte Rytgaard
 ##' @export
 pack <- function(value, min, max, def) {
 

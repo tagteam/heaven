@@ -1,10 +1,22 @@
 ##' Function to plot dates etc
 ##' 
 ##' Function to plot dates etc
-##' @title Update database
-##' @param dpp a
-##' @param id a
-##' @param trace a
+##' @title Plot function for data preprocessing object
+##' @param dpp Data preprocessing object
+##' @param drug If specified, only data for this object is plotted. 
+##' @usage 
+##' 
+##' drugdata <- simPrescriptionData(10)
+##' admdata <- simAdmissionData(10)
+##' 
+##' d <- dpp()
+##' 
+##' drugdb(d) <- drugdata
+##' admdb(d) <- admdata
+##' 
+##' plot(d)
+##' 
+##' @return A plot is returned, nothing is changed about the preprocessing object. 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 plot.dpp <- function(dpp, drug=NULL) {
