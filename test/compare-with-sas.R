@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Nov 29 2016 (15:36) 
 ## Version: 
-## last-updated: Nov 29 2016 (17:34) 
+## last-updated: Dec 16 2016 (16:36) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 8
+##     Update #: 10
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -56,7 +56,24 @@ plot(out, trace=TRUE)
 
 
 
-#----------------------------------------------------------------------
-### admData.R ends here
+source("~/research/SoftWare/UseSas/R/medicinMacro.R")
+ppi=read.table("~/research/SoftWare/heaven/data/PPI.csv",sep=";",header=TRUE,stringsAsFactors=FALSE)
+adm=read.table("~/research/SoftWare/heaven/data/admData.csv",sep=";",header=TRUE,stringsAsFactors=FALSE)
+## a=medicinMacro(drug=ppi,adm=adm,atc="A02BC02",name="omeprazol",sas="/usr/local/bin/sas",server="doob",user="grb615")
+adm$inddto <- as.Date(adm$inddto)
+adm$uddto <- as.Date(adm$uddto)
+ppi$eksd <- as.Date(ppi$eksd,format="%d/%m/%Y")
+library(heaven)
+d=dpp()
+drugdb(d) <- ppi
+admdb(d) <- adm
+plot(d)
+drug(d, "omeprazol") <- atc("A02BC02")
+drug(d, "omeprazol") <- pack(c(10, 20, 40), 
+                              min = c(10, 20,40), 
+                              max = c(20, 40,60), 
+                             def = c(10, 20,40))
+period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
+
 
 
