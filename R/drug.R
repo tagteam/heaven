@@ -43,9 +43,6 @@ atc <- function(atc) {
 ##' @export
 pack <- function(value, min, max, def) {
 
-  if (length(unique(value)) != unique(value))
-    warning("The same value has been specified more than once: This will lead to errors.")
-  
   f <- function(dpp, add, i, drugname) {
     if (length(i) > 0) {
       if (add)
@@ -55,14 +52,13 @@ pack <- function(value, min, max, def) {
                                     def   = c(dpp$drugs[[i]]$doses$def, def))
       else
         dpp$drugs[[i]]$doses = list(value = value, min = min, max = max, def = def)
-    }
-    else { 
+    } else { 
       dpp$drugs$drugname$doses = list(value = value, min = min, max = max, def = def)
       names(dpp$drugs)[length(dpp$drugs)] = drugname
     }
     
     if (length(dpp$drugs[[i]]$doses$value) > length(unique(dpp$drugs[[i]]$doses$value)))
-      warning("the same dosis has been specified twice")
+      cat("WARNING: The same value has been specified more than once - inconsistencies may occur.")
     
     return(dpp$drugs)
   }

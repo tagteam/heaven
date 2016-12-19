@@ -26,7 +26,7 @@ plot.dpp <- function(dpp, drug=NULL) {
     d1 <- d1[d1$atc %in% atc, ]
     a1 <- data.frame(dpp$admdb)
     
-    d1 <- d1[dpp$period[1] <= d1$pdate & d1$pdate <= dpp$period[2], ]
+   # d1 <- d1[dpp$period[1] <= d1$pdate & d1$pdate <= dpp$period[2], ]
     d1 <- d1[order(d1$id, d1$pdate), ]
     #-- sort after first date
     

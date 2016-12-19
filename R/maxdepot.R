@@ -7,9 +7,17 @@
 ##' @param value a
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`maxdepot<-` <- function(dpp, ..., value) {
+`maxdepot<-` <- function(dpp, drug=NULL, value) {
 
-  dpp$maxdepot <- value
+  if (length(drug) > 0) {
+    j <- (1:length(dpp$drugs))[names(dpp$drugs) == drug]
+  } else 
+    j <- 1:length(dpp$drugs)
+  
+  for (jj in j)
+    dpp$drugs[[jj]]$$maxdepot <- value
+  
+#  dpp$maxdepot <- value
   
   return(dpp)
 }  

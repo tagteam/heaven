@@ -21,20 +21,35 @@
                   deparse(substitute(inddto)),
                   deparse(substitute(uddto)))
     
-    newdata        <- subset(value, select = varnames)
-    names(newdata) <- c("id", "inddto", "uddto")
+    varTF <- sapply(varnames, function(x) {
+      any(names(value) == x)
+    })
     
-    if (!inherits(newdata$inddto, "Date") | !inherits(newdata$uddto, "Date"))
-      stop("dates must be in Date format")
-    
-    if (add) {
-        dpp$admdb <- rbind(dpp$admdb, newdata)
+    if (any(!varTF)) {
+      cat("ERROR - the following specified columns cannot be found in data:")
+      cat("\n")
+      cat(paste(varnames[!varTF], collapse=", "))
+      cat("\n")
+      cat("\n")
+      cat('see help("admdb<-") for more details')
     } else {
-        dpp$admdb <- newdata
-    }
-    
-    dpp$admdb = dpp$admdb[order(dpp$admdb$id), ]
-    
-    return(dpp)
+      newdata        <- subset(data.frame(value), select = varnames)
+      names(newdata) <- c("id", "inddto", "uddto")
+      
+      if (!inherits(newdata$inddto, "Date") | !inherits(newdata$uddto, "Date")) {
+        cat("ERROR: Dates must be in date format. Use as.Date()")
+      } else {
+        
+        if (add) {
+          dpp$admdb <- rbind(dpp$admdb, newdata)
+        } else {
+          dpp$admdb <- newdata
+        }
+        
+        dpp$admdb = dpp$admdb[order(dpp$admdb$id), ]
+        
+        return(dpp)
+      }
+  }
 }  
 

@@ -154,7 +154,7 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
       (u[k-1]*(1-w[k-1]))*(vmax*dmax[jk[k]] + vmin*dmin[jk[k]] + (1-vmax)*(1-vmin)*ddef[jk[k]]);
     
     if (k > 0)
-      R[k] = max(NumericVector::create(0, u[k] * (D[k-1] + R[k-1] - X[k-1]*(Enum[k-1] - T[k-1]))));
+      R[k] = max(NumericVector::create(0, u[k-1] * (D[k-1] + R[k-1] - X[k-1]*(Enum[k-1] - T[k-1] - DH[k-1]))));
     
     if (R[k] > maxdepot)
       R[k] = maxdepot;
@@ -253,9 +253,9 @@ Rcpp::DataFrame innerprocess(Rcpp::DataFrame dat,
     }
     
     outdata = Rcpp::DataFrame::create(Rcpp::Named("id")         = id1,
-                                       Rcpp::Named("outdose")   = X1,
-                                       Rcpp::Named("startdate") = B1,
-                                       Rcpp::Named("enddate")   = E1);
+                                       Rcpp::Named("X")   = X1,
+                                       Rcpp::Named("B") = B1,
+                                       Rcpp::Named("E")   = E1);
   }
 
   return(outdata);
