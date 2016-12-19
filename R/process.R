@@ -6,6 +6,9 @@
 ##' @param id a 
 ##' @param trace a
 ##' @author Helene Charlotte Rytgaard
+##' @examples
+##' data(samplePPIData)
+##' 
 ##' @export
 process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = TRUE, keep_data = FALSE) {
     
