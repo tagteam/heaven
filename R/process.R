@@ -9,7 +9,7 @@
 ##' @param keep_data If TRUE, the input data is saved in the object as well. This can can be used for plotting. 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = FALSE, keep_data = FALSE) {
+process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = TRUE, keep_data = FALSE) {
   
   #  dpp1 <- preprocess(dpp, id = id, trace = trace)
     
