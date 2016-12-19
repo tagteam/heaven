@@ -13,8 +13,8 @@
   } else 
     j <- 1:length(dpp$drugs)
   
-  for (j in 1:length(j)) 
-    dpp$drugs[[j]]$period <- value
+  for (jj in j)
+    dpp$drugs[[jj]]$period <- value
   
   return(dpp)
 }  

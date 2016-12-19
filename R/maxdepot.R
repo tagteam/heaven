@@ -14,8 +14,8 @@
   } else 
     j <- 1:length(dpp$drugs)
   
-  for (j in 1:length(j)) 
-    dpp$drugs[[j]]$maxdepot <- value
+  for (jj in j)
+    dpp$drugs[[jj]]$$maxdepot <- value
   
 #  dpp$maxdepot <- value
   
