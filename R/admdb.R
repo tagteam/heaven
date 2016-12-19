@@ -1,13 +1,20 @@
 ##' Update date database
 ##' 
 ##' Update database
-##' @title Update database
-##' @param dpp a 
-##' @param id a
-##' @param inddto a
-##' @param uddto a
-##' @param add a
-##' @param value a
+##' @title Update admission dates database
+##' @param dpp Data preprocessing object
+##' @param id The name of the column containing the id numbers (default is pnr)
+##' @param inddto The name of the column containing the admission start date (default is inddto)
+##' @param uddto The name of the column containing the admission end date (default is uddto)
+##' @param add Logical value, per default set to FALSE which means that already existing data in the preprocessing object will be overwritten. 
+##' @param value The data set to be loaded to the object.
+##' @usage 
+##' 
+##' admdata <- simAdmissionData(10)
+##' 
+##' d <- dpp()
+##' admdb(d) <- admdata
+##' 
 ##' @author Helene Charlotte Rytgaard
 ##' @export  
 `admdb<-` <- function(dpp,

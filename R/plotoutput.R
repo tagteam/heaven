@@ -1,10 +1,37 @@
 ##' Function to plot output etc
 ##' 
 ##' Function to plot output etc
-##' @title Update database
-##' @param dpp a
-##' @param id a
-##' @param trace a
+##' @title Plot output of process()
+##' @param out The object outputted from process()
+##' @param drug If specified, only the values for these drugs are plotted. 
+##' @param id If specified, only the values for these ids are plotted.
+##' @param idmax The maximum number of individuals to plot in same window. 
+##' @param trace If TRUE, more messages are printed to the user. 
+##' @param fix_x If TRUE, the x axis is fixed for all considered individuals. Default is FALSE. 
+##' @param normalize If TRUE, the values for the drugs are normalized to the same scale. 
+##' @usage 
+##' 
+##' drugdata <- simPrescriptionData(10)
+##' admdata <- simAdmissionData(10)
+##' 
+##' d <- dpp()
+##' 
+##' drug(d, "treatment1") <- atc("A12B")
+##' drug(d, "treatment1") <- pack(c(750, 75), 
+##'                               min = c(250, 25), 
+##'                               max = c(1000, 100),
+##'                               def = c(750, 100))
+##' 
+##' pwindow(d, drug="treatment2") <- 2
+##' period(d, drug = "treatment1") <- as.Date(c("1997-01-01", "2012-12-31"))
+##' maxdepot(d, drug="treatment1") <- 500
+##' 
+##' out <- process(d, out_data = FALSE)
+##' plot(out)
+##' 
+##' out <- process(d, out_data = TRUE)
+##' plot(out)
+##' 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 plot.dppout <- function(out, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FALSE, normalize=FALSE) {

@@ -2,23 +2,25 @@
 % Please edit documentation in R/admdb.R
 \name{admdb<-}
 \alias{admdb<-}
-\title{Update database}
+\title{Update admission dates database}
 \usage{
-admdb(dpp, id = pnr, inddto = inddto, uddto = uddto, add = FALSE) <-
-  value
+admdata <- simAdmissionData(10)
+
+d <- dpp()
+admdb(d) <- admdata
 }
 \arguments{
-\item{dpp}{a}
+\item{dpp}{Data preprocessing object}
 
-\item{id}{a}
+\item{id}{The name of the column containing the id numbers (default is pnr)}
 
-\item{inddto}{a}
+\item{inddto}{The name of the column containing the admission start date (default is inddto)}
 
-\item{uddto}{a}
+\item{uddto}{The name of the column containing the admission end date (default is uddto)}
 
-\item{add}{a}
+\item{add}{Logical value, per default set to FALSE which means that already existing data in the preprocessing object will be overwritten.}
 
-\item{value}{a}
+\item{value}{The data set to be loaded to the object.}
 }
 \description{
 Update date database
