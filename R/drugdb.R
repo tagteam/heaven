@@ -27,7 +27,8 @@
                        strength = strnum,
                        npack    = apk,
                        ppp      = packsize,
-                       add = FALSE, value) {
+                       add = FALSE,
+                       value) {
     
     varnames <- c(deparse(substitute(id)),
                   deparse(substitute(atc)),
@@ -36,34 +37,30 @@
                   deparse(substitute(npack)), deparse(substitute(ppp)))
 
     varTF <- sapply(varnames, function(x) {
-      any(names(value) == x)
+        any(names(value) == x)
     })
     
     if (any(!varTF)) {
-      cat("ERROR - the following specified columns cannot be found in data:")
-      cat("\n")
-      cat(paste(varnames[!varTF], collapse=", "))
-      cat("\n")
-      cat("\n")
-      cat('see help("drugdb<-") for more details')
+        cat("ERROR - the following specified columns cannot be found in data:")
+        cat("\n")
+        cat(paste(varnames[!varTF], collapse=", "))
+        cat("\n")
+        cat("\n")
+        cat('see help("drugdb<-") for more details')
     } else {  
-      newdata        <- subset(value, select = varnames)
-      names(newdata) <- c("id", "atc", "pdate", "strength", "npack", "ppp")
-      
-      if (!inherits(newdata$pdate, "Date")) {
-        cat("ERROR: Dates must be in date format. Use as.Date()")
-      } else {
-      
-        if (add) {
-          dpp$drugdb <- rbind(dpp$drugdb, newdata)
+        newdata <- subset(value, select = varnames)
+        setnames(newdata,c("id", "atc", "pdate", "strength", "npack", "ppp"))
+        if (!inherits(newdata$pdate, "Date")) {
+            cat("ERROR: Dates must be in date format. Use as.Date()")
         } else {
-          dpp$drugdb <- newdata
+            if (add) {
+                dpp$drugdb <- rbindlist(list(dpp$drugdb, newdata),use.names=TRUE)
+            } else {
+                dpp$drugdb <- newdata
+            }
+            setkey(dpp$drugdb,id,pdate)
+            return(dpp)
         }
-        
-        dpp$drugdb = dpp$drugdb[order(dpp$drugdb$id, dpp$drugdb$pdate), ]
-        
-        return(dpp)
-      }
     }
 }
 

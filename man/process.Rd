@@ -23,6 +23,26 @@ process(dpp, treatments = NULL, id = NULL, trace = FALSE,
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.
 }
+\examples{
+set.seed(05021992)
+N=2
+da=heaven:::simPrescriptionData(N)
+a=heaven:::simAdmissionData(N)
+library(heaven)
+d=dpp()
+drugdb(d) <- da
+admdb(d) <- a
+drug(d, "drug1") <- atc("A07")
+drug(d, "drug1") <- pack(c(200, 400, 500),
+                         min = c(100, 200, 250),
+                         max = c(300, 800, 1000),
+                         def = c(200, 400, 500))
+d
+maxdepot(d) <- 4000
+pwindow(d) <- 2
+period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
+system.time(pd <- process(d,out_data=TRUE))
+}
 \author{
 Helene Charlotte Rytgaard
 }

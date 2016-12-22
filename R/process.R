@@ -9,24 +9,39 @@
 ##' @param keep_data If TRUE, the input data is saved in the object as well. This can can be used for plotting. 
 ##' @author Helene Charlotte Rytgaard
 ##' @examples
-##' data(samplePPIData)
-##' 
+##' set.seed(05021992)
+##' N=2
+##' da=heaven:::simPrescriptionData(N)
+##' a=heaven:::simAdmissionData(N)
+##' library(heaven)
+##' d=dpp()
+##' drugdb(d) <- da
+##' admdb(d) <- a
+##' drug(d, "drug1") <- atc("A07")
+##' drug(d, "drug1") <- pack(c(200, 400, 500),
+##'                          min = c(100, 200, 250),
+##'                          max = c(300, 800, 1000),
+##'                          def = c(200, 400, 500))
+##' d
+##' maxdepot(d) <- 4000
+##' pwindow(d) <- 2
+##' period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
+##' system.time(pd <- process(d,out_data=TRUE))
 ##' @export
 process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = FALSE, keep_data = FALSE) {
   
-  #  dpp1 <- preprocess(dpp, id = id, trace = trace)
+    #  dpp1 <- preprocess(dpp, id = id, trace = trace)
     
     if (length(treatments) == 0) 
       treatments <- names(dpp$drugs)
     
     ##--- relevant id's
     if (length(id) == 0) {
-      idunique <- unique(dpp$drugdb$id)
+        idunique <- unique(dpp$drugdb$id)
     } else 
-      idunique <- unique(id[id %in% dpp$drugdb$id])
+        idunique <- unique(id[id %in% dpp$drugdb$id])
     
     treatfun <- function(treatname) {
-
       j            <- (1:length(dpp$drugs))[names(dpp$drugs) == treatname]
       atcs         <- unlist(dpp$drugs[[j]]$atc)
       doses        <- dpp$drugs[[j]]$doses
@@ -51,48 +66,71 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data =
       }
       
       ##--- only look at relevant dates 
-      drugdb <- drugdb[drugdb$pdate <= period[2] & drugdb$pdate >= period[1], ]
-      dpp1   <- drugdb[drugdb$atc %in% atcs, ]
+      ## drugdb <- drugdb[pdate <= period[2] & pdate >= period[1], ]
+      dpp1   <- drugdb[atc %in% atcs & pdate <= period[2] & pdate >= period[1], ]
 
       dosesmissing <- !(dpp1$strength %in% doses$value)
       
       baddata <- 0 
       
       if (any(dpp1$pdate < 0)) {
-        if (trace) print(cat("Warning - non-valid prescription - negative date specified"))
-        baddata <- 1
+          if (trace) print(cat("Warning - non-valid prescription - negative date specified"))
+          baddata <- 1
       } 
       if (any(dpp1$npack < 0.0001)) {
-        if (trace) print(cat("Warning - non-valid prescription - number of packages not valid"))
-        baddata <- 1
+          if (trace) print(cat("Warning - non-valid prescription - number of packages not valid"))
+          baddata <- 1
       } 
       if (any(dpp1$ppp < 0.5)) {
-        if (trace) print(cat("Warning - non-valid prescription - pills per package not valid"))
-        baddata <- 1
+          if (trace) print(cat("Warning - non-valid prescription - pills per package not valid"))
+          baddata <- 1
       } 
       if (any(dosesmissing)) {
-        if (trace) print(cat("Warning - not all doses are defined for treatment named", treatname))
-        if (trace) print(cat("Missing:", paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
-        baddata <- 1
+          if (trace) print(cat("Warning - not all doses are defined for treatment named", treatname))
+          if (trace) print(cat("Missing:", paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
+          baddata <- 1
       }
       
       if (baddata) {
-        print(cat("Computations for treatment named", treatname, "will terminate", "\n"))
+          print(cat("Computations for treatment named", treatname, "will terminate", "\n"))
       } else if (length(doses) > 0) {
-        out <- do.call("rbind", lapply(1:length(idunique), function(i) {
-          dat    <- dpp1[dpp1$id == idunique[i], ]
-          admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
-          dat <- dat[order(dat$pdate), ]
-          if (dim(dat)[1] > 0)
-            innerprocess(dat, admdat, doses, treatname, N, maxdepot, trace, out_data) 
-        }))
-        if (keep_data)
-          attr(out, "drugdb") <- dpp1
-        attr(out, "period") <- period
-        return(out)
+          if (length(id) == 0) {
+              dpp1 <- dpp1[id %in% idunique]
+              admdat <- dpp$admdb[id %in% idunique]
+          }else{
+              admdat <- dpp$admdb
+          }
+          innerprocess(dat=dpp1,
+                       admdat=admdat,
+                       doses=doses,
+                       idunique=idunique,
+                       treatname=treatname,
+                       N=N,
+                       maxdepot=maxdepot,
+                       trace=trace,
+                       out=out_data)
+          browser()
+          out <- do.call("rbind", lapply(1:length(idunique), function(i) {
+              dat    <- dpp1[dpp1$id == idunique[i], ]
+              admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
+              ## dat <- dat[order(dat$pdate), ]
+              if (dim(dat)[1] > 0)
+                  innerprocess(dat,
+                               admdat,
+                               doses,
+                               idunique,
+                               treatname,
+                               N,
+                               maxdepot,
+                               trace,
+                               out_data) 
+          }))
+          if (keep_data)
+              attr(out, "drugdb") <- dpp1
+          attr(out, "period") <- period
+          return(out)
       }
     }
-    
     out <- lapply(treatments, treatfun)
 
     outlist <- structure(out, 
@@ -104,11 +142,11 @@ process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data =
     if (keep_data) {
       dpp1  <- lapply(out, function(x) attr(x, "drugdb"))
       names(dpp1) <- treatments
-    #  treat <- t(data.frame(lapply(1:length(d$drugs), function(i) 
-    #    sapply(d$drugs[[i]]$atc, function(x)
-    #      c(x, names(d$drugs)[i])))))
-    #  dpp1$treatment <- sapply(dpp1$atc, function(x) treat[treat[, 1] == x, 2])
-    #  attr(outlist, "drugdb") <- dpp1
+      #  treat <- t(data.frame(lapply(1:length(d$drugs), function(i) 
+      #    sapply(d$drugs[[i]]$atc, function(x)
+      #      c(x, names(d$drugs)[i])))))
+      #  dpp1$treatment <- sapply(dpp1$atc, function(x) treat[treat[, 1] == x, 2])
+      #  attr(outlist, "drugdb") <- dpp1
       outlist$drugdb <- dpp1
     }
     

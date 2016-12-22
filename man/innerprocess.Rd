@@ -4,7 +4,7 @@
 \alias{innerprocess}
 \title{Inner process function.}
 \usage{
-innerprocess(dat, admdat, doses, treatname, N, maxdepot, trace, out)
+innerprocess(dat, admdat, doses, idunique, treatname, N, maxdepot, trace, out)
 }
 \author{
 Helene Charlotte Rytgaard

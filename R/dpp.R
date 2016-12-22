@@ -113,7 +113,7 @@ print.dpp <- function(dpp) {
   
   if (ready) {
     cat("-----------------", "\n")
-    cat('Use function "process" to estimate prescription lengths and average doses')
+    cat('Use function "process" to estimate prescription lengths and average doses\n')
   }
   
 } 
