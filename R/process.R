@@ -5,7 +5,8 @@
 ##' @param treatments If specified, calcations will only be performed for these treatments. 
 ##' @param id If specified, calculations will only be performed for these individuals.
 ##' @param trace If TRUE, messages are outputted for the user. 
-##' @param out_data If TRUE, all data is outputted, and this can be used for plotting. This should only be used for debugging or similar. 
+##' @param collapse Logical. If \code{TRUE}, collapse contiguous exposure periods
+##'        with same computed exposure strength to one and add periods with zero exposure.
 ##' @param keep_data If TRUE, the input data is saved in the object as well. This can can be used for plotting. 
 ##' @author Helene Charlotte Rytgaard
 ##' @examples
@@ -26,131 +27,81 @@
 ##' maxdepot(d) <- 4000
 ##' pwindow(d) <- 2
 ##' period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
-##' system.time(pd <- process(d,out_data=TRUE))
+##' process(d,collapse=TRUE) <- "drug1"
 ##' @export
-process <- function(dpp, treatments = NULL, id = NULL, trace = FALSE, out_data = FALSE, keep_data = FALSE) {
-  
-    #  dpp1 <- preprocess(dpp, id = id, trace = trace)
+'process<-' <- function(dpp,
+                        treatments = NULL,
+                        id = NULL,
+                        trace = FALSE,
+                        collapse = TRUE,value){
     
-    if (length(treatments) == 0) 
-      treatments <- names(dpp$drugs)
-    
-    ##--- relevant id's
-    if (length(id) == 0) {
-        idunique <- unique(dpp$drugdb$id)
-    } else 
-        idunique <- unique(id[id %in% dpp$drugdb$id])
-    
-    treatfun <- function(treatname) {
-      j            <- (1:length(dpp$drugs))[names(dpp$drugs) == treatname]
-      atcs         <- unlist(dpp$drugs[[j]]$atc)
-      doses        <- dpp$drugs[[j]]$doses
-      maxdepot     <- dpp$drugs[[j]]$maxdepot
-      period       <- dpp$drugs[[j]]$period
-      N            <- dpp$drugs[[j]]$N
-      
-      if (length(maxdepot) == 0)
-        maxdepot = 10
-      if (length(period) == 0)
-        period   = c(1, 1e10)
-      if (length(N) == 0)
-        N       = 2
-      
-      ##--- preprocesssing ---##
-      if (length(id) > 0) {
-        drugdb <- dpp$drugdb[id %in% id, ]
-        admdb  <- dpp$admdb[id %in% id, ]
-      } else {
-        drugdb <- dpp$drugdb
-        admdb  <- dpp$admdb
-      }
-      
-      ##--- only look at relevant dates 
-      ## drugdb <- drugdb[pdate <= period[2] & pdate >= period[1], ]
-      dpp1   <- drugdb[atc %in% atcs & pdate <= period[2] & pdate >= period[1], ]
-
-      dosesmissing <- !(dpp1$strength %in% doses$value)
-      
-      baddata <- 0 
-      
-      if (any(dpp1$pdate < 0)) {
-          if (trace) print(cat("Warning - non-valid prescription - negative date specified"))
-          baddata <- 1
-      } 
-      if (any(dpp1$npack < 0.0001)) {
-          if (trace) print(cat("Warning - non-valid prescription - number of packages not valid"))
-          baddata <- 1
-      } 
-      if (any(dpp1$ppp < 0.5)) {
-          if (trace) print(cat("Warning - non-valid prescription - pills per package not valid"))
-          baddata <- 1
-      } 
-      if (any(dosesmissing)) {
-          if (trace) print(cat("Warning - not all doses are defined for treatment named", treatname))
-          if (trace) print(cat("Missing:", paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
-          baddata <- 1
-      }
-      
-      if (baddata) {
-          print(cat("Computations for treatment named", treatname, "will terminate", "\n"))
-      } else if (length(doses) > 0) {
-          if (length(id) == 0) {
-              dpp1 <- dpp1[id %in% idunique]
-              admdat <- dpp$admdb[id %in% idunique]
-          }else{
-              admdat <- dpp$admdb
-          }
-          innerprocess(dat=dpp1,
-                       admdat=admdat,
-                       doses=doses,
-                       idunique=idunique,
-                       treatname=treatname,
-                       N=N,
-                       maxdepot=maxdepot,
-                       trace=trace,
-                       out=out_data)
-          browser()
-          out <- do.call("rbind", lapply(1:length(idunique), function(i) {
-              dat    <- dpp1[dpp1$id == idunique[i], ]
-              admdat <- dpp$admdb[dpp$admdb$id == idunique[i], ]
-              ## dat <- dat[order(dat$pdate), ]
-              if (dim(dat)[1] > 0)
-                  innerprocess(dat,
-                               admdat,
-                               doses,
-                               idunique,
-                               treatname,
-                               N,
-                               maxdepot,
-                               trace,
-                               out_data) 
-          }))
-          if (keep_data)
-              attr(out, "drugdb") <- dpp1
-          attr(out, "period") <- period
-          return(out)
-      }
+    if (length(treatments) == 0) treatments <- names(dpp$drugs)
+    for (treatname in treatments){ 
+        ## treatfun <- function(treatname) {
+        j            <- (1:length(dpp$drugs))[names(dpp$drugs) == treatname]
+        atcs         <- unlist(dpp$drugs[[j]]$atc)
+        doses        <- dpp$drugs[[j]]$doses
+        maxdepot     <- dpp$drugs[[j]]$maxdepot
+        period       <- dpp$drugs[[j]]$period
+        N            <- dpp$drugs[[j]]$N
+        dpp1   <- dpp$drugdb[atc %in% atcs & pdate <= period[2] & pdate >= period[1], ]
+        ##--- unique id's
+        if (length(id) == 0) {
+            idunique <- unique(dpp1$id)
+        } else 
+            idunique <- unique(id[id %in% dpp1$id])
+        dosesmissing <- !(dpp1$strength %in% doses$value)
+        baddata <- ""
+        if (length(N) == 0) N = 2
+        if (length(maxdepot) == 0) baddata <- paste(baddata, " : max depot missing\n")
+        if (length(period) == 0) baddata <- paste(baddata, " : period missing\n")
+        if (length(N) == 0) baddata <- paste(baddata, " : prescription window missing\n")
+        if (any(dpp1$pdate < 0)) {
+            warning("Invalid prescription data: negative dates found")
+            baddata <- paste(baddata, " : negative values found in prescription dates\n")
+        } 
+        if (length(idunique) == 0) {
+            ## warning("No individuals used these drugs in the period:",paste(atcs,collapse=""),paste(period,collapse=" - "))
+            baddata <- paste(baddata, paste("No individuals used ",paste(atcs,collapse="")))
+        }
+        if (any(dpp1$npack < 0.0001)) {
+            ## warning("Invalid prescription data - number of packages < 0.0001")
+            baddata <- paste(baddata, "Invalid prescription data - number of packages < 0.0001\n")
+        } 
+        if (any(dpp1$ppp < 0.5)) {
+            ## warning("Invalid prescription data - pills per package < 0.5")
+            baddata <- paste(baddata, "Invalid prescription data - pills per package < 0.5\n")
+        }
+        if (any(dosesmissing)) {
+            ## warning(paste("Missing doses for ", treatname ,paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
+            baddata <- paste(baddata, paste(paste(" : Missing doses for ",treatname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
+        }
+        if (length(doses)<=0) {
+            ## warning(paste("No doses specified for ", treatname ,paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
+            baddata <- paste(baddata, paste(paste(" : No doses specified for ",treatname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
+        }
+        if (baddata!="") {
+            cat("Bad data for treatment ", treatname, "(will terminate):\n",baddata,"\n")
+        } else {
+            if (length(id) == 0) {
+                dpp1 <- dpp1[id %in% idunique]
+                admdat <- dpp$admdb[id %in% idunique]
+            }else{
+                admdat <- dpp$admdb
+            }
+            ## testlist3 <- list(dat=dpp1,admdat=admdat,doses=doses,idunique=idunique,treatname=treatname,N=N,maxdepot=maxdepot,collapse=collapse)
+            ## save(testlist3,file="~/tmp/testlist3.rda")
+            out <- rbindlist(innerprocess(dat=dpp1,
+                                          admdat=admdat,
+                                          doses=doses,
+                                          idunique=idunique,
+                                          treatname=treatname,
+                                          N=N,
+                                          maxdepot=maxdepot,
+                                          collapse=collapse))
+            dpp$processed[[treatname]] <- out
+        }
     }
-    out <- lapply(treatments, treatfun)
-
-    outlist <- structure(out, 
-                         out_data = out_data,
-                         period   = lapply(out, function(x) attr(x, "period")),
-                         class    = "dppout")
-    names(outlist) <- treatments
-
-    if (keep_data) {
-      dpp1  <- lapply(out, function(x) attr(x, "drugdb"))
-      names(dpp1) <- treatments
-      #  treat <- t(data.frame(lapply(1:length(d$drugs), function(i) 
-      #    sapply(d$drugs[[i]]$atc, function(x)
-      #      c(x, names(d$drugs)[i])))))
-      #  dpp1$treatment <- sapply(dpp1$atc, function(x) treat[treat[, 1] == x, 2])
-      #  attr(outlist, "drugdb") <- dpp1
-      outlist$drugdb <- dpp1
-    }
-    
-    return(outlist)
+    dpp
 }
-
-
+  

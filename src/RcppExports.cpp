@@ -22,8 +22,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // innerprocess
-Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, Rcpp::IntegerVector idunique, std::string treatname, double N, double maxdepot, bool trace, bool out);
-RcppExport SEXP heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP treatnameSEXP, SEXP NSEXP, SEXP maxdepotSEXP, SEXP traceSEXP, SEXP outSEXP) {
+Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, Rcpp::IntegerVector idunique, std::string treatname, double N, double maxdepot, bool collapse);
+RcppExport SEXP heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP treatnameSEXP, SEXP NSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,9 +34,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type treatname(treatnameSEXP);
     Rcpp::traits::input_parameter< double >::type N(NSEXP);
     Rcpp::traits::input_parameter< double >::type maxdepot(maxdepotSEXP);
-    Rcpp::traits::input_parameter< bool >::type trace(traceSEXP);
-    Rcpp::traits::input_parameter< bool >::type out(outSEXP);
-    rcpp_result_gen = Rcpp::wrap(innerprocess(dat, admdat, doses, idunique, treatname, N, maxdepot, trace, out));
+    Rcpp::traits::input_parameter< bool >::type collapse(collapseSEXP);
+    rcpp_result_gen = Rcpp::wrap(innerprocess(dat, admdat, doses, idunique, treatname, N, maxdepot, collapse));
     return rcpp_result_gen;
 END_RCPP
 }

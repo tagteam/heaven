@@ -1,0 +1,439 @@
+* Introduction
+
+The most important philosophy of =heaven= is to change objects by
+reference in order to avoid copying large amounts of data around. This
+vignette aims to gently help noobs onto beginner level.
+
+** Load library
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+begin_src R :results output :exports both :session *R* :cache yes 
+library(heaven)
+#+end_src
+
+#+RESULTS[<2016-12-29 19:04:12> 7e3cf018f0688e78f0f5e75a98fa5c8bfd2106e5]:
+: Loading required package: data.table
+: data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
+: The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
+: Loading required package: ggplot2
+: Loading required package: gridExtra
+: Loading required package: scales
+: 
+: LOL: This is heaven! Version 0.0.3
+: A good place to get started is vignette('user-heaven').
+
+
+** Sample data
+
+*** Drug claims data 
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+BEGIN_SRC R  :results output :exports code  :session *R* :cache yes 
+set.seed(05021992)
+N=5
+lmdb <- simPrescriptionData(N)
+lmdb
+#+END_SRC
+
+#+RESULTS[<2016-12-29 19:04:12> 8002bcc378d88ec9907289371bcf0e41cc04d2ee]:
+#+begin_example
+    pnr  atc       eksd strnum packsize apk
+ 1:   1  A07 1995-01-01    400       30   2
+ 2:   1  A07 1995-01-01    200       30   3
+ 3:   1  A07 1996-04-20    200       60   2
+ 4:   1  A07 1997-09-30    500      100   2
+ 5:   1  A07 1997-11-12    500       60   3
+ 6:   1  A07 1998-03-09    400       30   2
+ 7:   1 A12B 1997-08-01    750      500   1
+ 8:   1 A12B 1998-02-10    750      250   3
+ 9:   2  A07 1997-01-15    500       30   3
+10:   2  A07 1997-03-06    200       30   2
+11:   2 A12B 1996-05-12     75      500   3
+12:   2 A12B 1996-11-19     75      250   1
+13:   2 A12B 1998-06-13    750      100   3
+14:   2 A12B 1999-01-05     75      100   2
+15:   3  A07 1997-04-06    400       60   3
+16:   3  A07 1997-05-22    500      100   3
+17:   3  A07 1997-05-24    200       60   3
+18:   3  A07 1997-08-18    500      100   2
+19:   3  A07 1997-11-01    200      100   3
+20:   3  A07 1998-03-03    400       60   3
+21:   3  A07 1998-09-17    500       60   3
+22:   3  A07 1998-12-04    500      100   2
+23:   3  A07 1999-04-20    500       60   1
+24:   3 A12B 1995-06-21     75      100   2
+25:   3 A12B 1996-07-19    750      500   2
+26:   3 A12B 1996-07-20    750      250   3
+27:   3 A12B 1996-08-05     75      250   1
+28:   3 A12B 1997-01-04    750      250   1
+29:   3 A12B 1997-01-25     75      100   2
+30:   3 A12B 1997-07-27    750      250   1
+31:   3 A12B 1997-09-25     75      100   2
+32:   3 A12B 1999-04-15     75      100   1
+33:   4  A07 1995-01-01    400      100   3
+34:   4  A07 1995-08-02    200       30   3
+35:   4  A07 1997-12-24    200      300   2
+36:   4  A07 1998-02-20    400      300   3
+37:   4  A07 1998-03-26    200      100   1
+38:   4  A07 1999-05-19    200       30   3
+39:   4  A07 1999-07-24    400      100   1
+40:   4  A07 1999-08-18    400      100   3
+41:   4  A07 1999-08-22    200      100   2
+42:   4  A07 1999-12-28    400      100   2
+43:   4 A12B 1995-01-01    750      500   1
+44:   4 A12B 1995-01-28     75      500   3
+45:   4 A12B 1996-04-29     75      100   1
+46:   4 A12B 1997-09-11     75      250   3
+47:   4 A12B 1997-12-20    750      250   1
+48:   4 A12B 1998-08-25    750      250   3
+49:   5  A07 1995-03-27    400      300   3
+50:   5  A07 1997-02-11    400       30   2
+51:   5  A07 1998-11-10    200      100   1
+52:   5  A07 1999-03-07    500       60   3
+53:   5  A07 1999-06-04    400       30   3
+54:   5  A07 1999-10-16    200       60   2
+55:   5 A12B 1995-12-03    750      250   3
+56:   5 A12B 1999-03-18    750      500   2
+    pnr  atc       eksd strnum packsize apk
+#+end_example
+
+*** Hospital admission data
+
+#+BEGIN_SRC R  :results output :exports code  :session *R* :cache yes 
+hospdb <- simAdmissionData(N)
+hospdb
+#+END_SRC
+
+#+RESULTS[<2016-12-29 19:04:12> b8f33c3b11a8876cfc615beba0e059562e0a370a]:
+:    pnr     inddto      uddto
+: 1:   1 2011-02-27 2011-04-12
+: 2:   2 2000-04-30 2000-05-12
+: 3:   2 2004-01-13 2004-02-10
+: 4:   3 2004-07-20 2004-08-11
+: 5:   3 2013-04-22 2013-05-18
+: 6:   3 2014-10-29 2014-12-11
+: 7:   4 2014-03-04 2014-03-30
+: 8:   5 2010-07-12 2010-08-23
+
+* Medicin macro
+** A talkative preprocessing object
+*** Empty object
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+BEGIN_SRC R  :results output :exports both  :session *R* :cache yes 
+d <- dpp()
+d
+#+END_SRC
+
+#+RESULTS[<2016-12-29 19:04:12> 59d241281ce7157218626fc379a9386ae3c5685a]:
+: Data preprocessing structure 
+: ---------------------------- 
+: 
+: NOTE: No treatments have been specified yet
+: NOTE: Drug data still missing, add as follows:
+: drugdb(object) <- claim.data
+: NOTE: Admission dates data still missing, add as follows:
+: admdb(object) <- hospital.data
+
+*** Adding the drug claims data base
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+begin_src R :results output :exports both :session *R* :cache yes 
+drugdb(d) <- lmdb
+d
+#+end_src
+
+#+RESULTS[<2016-12-29 19:04:12> b6ce5b50fda4122e6f7814de222465fe70c719bc]:
+: Data preprocessing structure 
+: ---------------------------- 
+: 
+: NOTE: No treatments have been specified yet
+: NOTE: Admission dates data still missing, add as follows:
+: admdb(object) <- hospital.data
+
+*** Adding the hospital admission data base
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+begin_src R :results output :exports both :cache yes :session *R*
+admdb(d) <- hospdb
+d
+#+end_src
+
+#+RESULTS[<2016-12-29 19:04:12> cc3ac44133e8b5f9d4da7d4df413d2ae154fc5b4]:
+: Data preprocessing structure 
+: ---------------------------- 
+: 
+: NOTE: No treatments have been specified yet
+
+*** Specifying the drugs
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+begin_src R :results output  :exports both :session *R* :cache yes 
+drug(d, "Diafoxamin") <- atc("A07")
+drug(d, "Diafoxamin") <- pack(c(200, 400, 500),
+                              min = c(100, 200, 250),
+                              max = c(300, 800, 1000),
+                              def = c(200, 400, 500))
+
+drug(d, "Kalium") <- atc("A12B")
+drug(d, "Kalium") <- pack(c(75,750),
+                          min = c(75,750),
+                          max = c(75,750),
+                          def = c(75,750))
+d
+#+end_src
+
+#+RESULTS[<2016-12-29 19:04:12> 4ad6c2846ab30a76d0522c1fb7b3ab89da267ef2]:
+#+begin_example
+Data preprocessing structure 
+---------------------------- 
+
+Registered the following treatment(s): 
+ Diafoxamin: A07 
+ Kalium: A12B 
+
+Dose values to be used in calculations: 
+             value min  max def
+Diafoxamin.1   200 100  300 200
+Diafoxamin.2   400 200  800 400
+Diafoxamin.3   500 250 1000 500
+Kalium.1        75  75   75  75
+Kalium.2       750 750  750 750
+
+NOTE: Use "pwindow<-" to specify N
+NOTE: Use "maxdepot<-" to specify maximum depot from one prescription to the next
+NOTE: Use "period<-" to specify relevant period of time
+----------------- 
+You many now use the function 'process<-' to estimate prescription lengths
+and average doses of drugs:
+Diafoxamin
+Kalium
+#+end_example
+
+*** Fine-tuning parameters (maxdepot, period, window)
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}    
+#+begin_src R :results output  :exports both :session *R* :cache yes 
+maxdepot(d) <- 4000
+pwindow(d) <- 2
+period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
+d
+#+END_SRC
+
+#+RESULTS[<2016-12-29 19:04:12> 4bfdb0fe5c1f6acfc9dd8968af0d117be09133e4]:
+#+begin_example
+Data preprocessing structure 
+---------------------------- 
+
+Registered the following treatment(s): 
+ Diafoxamin: A07 
+ Kalium: A12B 
+
+Dose values to be used in calculations: 
+             value min  max def
+Diafoxamin.1   200 100  300 200
+Diafoxamin.2   400 200  800 400
+Diafoxamin.3   500 250 1000 500
+Kalium.1        75  75   75  75
+Kalium.2       750 750  750 750
+
+
+           N maxdepot period_start period_end
+Diafoxamin 2     4000   1997-01-01 2012-12-31
+Kalium     2     4000   1997-01-01 2012-12-31
+
+----------------- 
+You many now use the function 'process<-' to estimate prescription lengths
+and average doses of drugs:
+Diafoxamin
+Kalium
+#+end_example
+
+** Processing the object
+
+*** First Diafoxamin
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+BEGIN_SRC R :exports both :results output :session *R* :cache yes 
+process(d) <- "Diafoxamin"
+d
+#+END_SRC
+
+#+RESULTS[<2016-12-29 19:04:12> 50ea7ad8cc896354ee5c369ebb9e8775638a0e37]:
+#+begin_example
+Data preprocessing structure 
+---------------------------- 
+
+Registered the following treatment(s): 
+ Diafoxamin: A07 
+ Kalium: A12B 
+
+Dose values to be used in calculations: 
+             value min  max def
+Diafoxamin.1   200 100  300 200
+Diafoxamin.2   400 200  800 400
+Diafoxamin.3   500 250 1000 500
+Kalium.1        75  75   75  75
+Kalium.2       750 750  750 750
+
+
+           N maxdepot period_start period_end
+Diafoxamin 2     4000   1997-01-01 2012-12-31
+Kalium     2     4000   1997-01-01 2012-12-31
+
+Processed drugs 
+--------------- 
+
+Diafoxamin:
+    id    X          B          E
+ 1:  1  500 1997-09-30 1997-11-11
+ 2:  1    0 1998-02-14 1998-03-08
+ 3:  1 1000 1997-11-12 1998-02-13
+ 4:  1  800 1998-03-09 1998-04-08
+ 5:  2  500 1997-01-15 1997-03-05
+ 6:  2  300 1997-03-06 1997-04-27
+ 7:  3  400 1997-04-06 1997-05-21
+ 8:  3 1000 1997-05-22 1997-05-23
+ 9:  3  300 1997-05-24 1997-08-17
+10:  3 1000 1997-08-18 1997-10-31
+11:  3  300 1997-11-01 1998-03-02
+12:  3    0 1998-06-06 1998-09-16
+13:  3  800 1998-03-03 1998-06-05
+14:  3  500 1998-09-17 1998-12-03
+15:  3    0 1999-03-18 1999-04-19
+16:  3 1000 1998-12-04 1999-03-17
+17:  3 1000 1999-04-20 1999-05-20
+18:  4  200 1997-12-24 1998-02-19
+19:  4  800 1998-02-20 1998-03-25
+20:  4    0 1998-06-14 1999-05-18
+21:  4  300 1998-03-26 1998-06-13
+22:  4  200 1999-05-19 1999-07-23
+23:  4  400 1999-07-24 1999-08-17
+24:  4  800 1999-08-18 1999-08-21
+25:  4  300 1999-08-22 1999-12-27
+26:  4  800 1999-12-28 2000-04-10
+27:  5    0 1997-04-12 1998-11-09
+28:  5  400 1997-02-11 1997-04-11
+29:  5    0 1999-02-18 1999-03-06
+30:  5  200 1998-11-10 1999-02-17
+31:  5  250 1999-03-07 1999-06-03
+32:  5    0 1999-09-12 1999-10-15
+33:  5  400 1999-06-04 1999-09-11
+34:  5  300 1999-10-16 2000-01-04
+    id    X          B          E
+
+Kalium:
+    id   X          B          E
+ 1:  1 750 1997-08-01 2000-03-05
+ 2:  2 750 1998-06-13 1999-01-04
+ 3:  2  75 1999-01-05 1999-09-14
+ 4:  3 750 1997-01-04 1997-01-24
+ 5:  3  75 1997-01-25 1997-07-26
+ 6:  3 750 1997-07-27 1997-09-24
+ 7:  3   0 1998-06-05 1999-04-14
+ 8:  3  75 1997-09-25 1998-06-04
+ 9:  3  75 1999-04-15 1999-07-23
+10:  4  75 1997-09-11 1997-12-19
+11:  4 750 1997-12-20 2000-09-17
+12:  5 750 1999-03-18 2001-12-11
+#+end_example
+
+*** Now process Kalium
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={library,set,data,min,max,c,as}
+#+BEGIN_SRC R :exports both :results output :session *R* :cache yes 
+process(d) <- "Kalium"
+d
+#+END_SRC
+
+#+RESULTS[<2016-12-29 19:04:12> e69d2ee6526ae446a133ad822dc0df20cf2f3f0e]:
+#+begin_example
+Data preprocessing structure 
+---------------------------- 
+
+Registered the following treatment(s): 
+ Diafoxamin: A07 
+ Kalium: A12B 
+
+Dose values to be used in calculations: 
+             value min  max def
+Diafoxamin.1   200 100  300 200
+Diafoxamin.2   400 200  800 400
+Diafoxamin.3   500 250 1000 500
+Kalium.1        75  75   75  75
+Kalium.2       750 750  750 750
+
+
+           N maxdepot period_start period_end
+Diafoxamin 2     4000   1997-01-01 2012-12-31
+Kalium     2     4000   1997-01-01 2012-12-31
+
+Processed drugs 
+--------------- 
+
+Diafoxamin:
+    id    X          B          E
+ 1:  1  500 1997-09-30 1997-11-11
+ 2:  1    0 1998-02-14 1998-03-08
+ 3:  1 1000 1997-11-12 1998-02-13
+ 4:  1  800 1998-03-09 1998-04-08
+ 5:  2  500 1997-01-15 1997-03-05
+ 6:  2  300 1997-03-06 1997-04-27
+ 7:  3  400 1997-04-06 1997-05-21
+ 8:  3 1000 1997-05-22 1997-05-23
+ 9:  3  300 1997-05-24 1997-08-17
+10:  3 1000 1997-08-18 1997-10-31
+11:  3  300 1997-11-01 1998-03-02
+12:  3    0 1998-06-06 1998-09-16
+13:  3  800 1998-03-03 1998-06-05
+14:  3  500 1998-09-17 1998-12-03
+15:  3    0 1999-03-18 1999-04-19
+16:  3 1000 1998-12-04 1999-03-17
+17:  3 1000 1999-04-20 1999-05-20
+18:  4  200 1997-12-24 1998-02-19
+19:  4  800 1998-02-20 1998-03-25
+20:  4    0 1998-06-14 1999-05-18
+21:  4  300 1998-03-26 1998-06-13
+22:  4  200 1999-05-19 1999-07-23
+23:  4  400 1999-07-24 1999-08-17
+24:  4  800 1999-08-18 1999-08-21
+25:  4  300 1999-08-22 1999-12-27
+26:  4  800 1999-12-28 2000-04-10
+27:  5    0 1997-04-12 1998-11-09
+28:  5  400 1997-02-11 1997-04-11
+29:  5    0 1999-02-18 1999-03-06
+30:  5  200 1998-11-10 1999-02-17
+31:  5  250 1999-03-07 1999-06-03
+32:  5    0 1999-09-12 1999-10-15
+33:  5  400 1999-06-04 1999-09-11
+34:  5  300 1999-10-16 2000-01-04
+    id    X          B          E
+
+Kalium:
+    id   X          B          E
+ 1:  1 750 1997-08-01 2000-03-05
+ 2:  2 750 1998-06-13 1999-01-04
+ 3:  2  75 1999-01-05 1999-09-14
+ 4:  3 750 1997-01-04 1997-01-24
+ 5:  3  75 1997-01-25 1997-07-26
+ 6:  3 750 1997-07-27 1997-09-24
+ 7:  3   0 1998-06-05 1999-04-14
+ 8:  3  75 1997-09-25 1998-06-04
+ 9:  3  75 1999-04-15 1999-07-23
+10:  4  75 1997-09-11 1997-12-19
+11:  4 750 1997-12-20 2000-09-17
+12:  5 750 1999-03-18 2001-12-11
+#+end_example
+
+* HEADER :noexport:
+
+#+TITLE: User heaven
+#+Author: Helene Charlotte Rytgaard & Thomas Alexander Gerds 
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc author:t
+#+LaTeX_CLASS: org-article
+#+LaTeX_HEADER:\usepackage{authblk}
+#+LaTeX_HEADER:\author{Thomas Alexander Gerds}
+# #+LaTeX_HEADER:\affil{Department of Biostatistics, University of Copenhagen, Copenhagen, Denmark}
+#+PROPERTY: header-args session *R*
+#+PROPERTY: header-args cache yes

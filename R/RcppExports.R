@@ -8,8 +8,8 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @title Inner process function.
 #' @author Helene Charlotte Rytgaard
 #' @export
-innerprocess <- function(dat, admdat, doses, idunique, treatname, N, maxdepot, trace, out) {
-    .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, treatname, N, maxdepot, trace, out)
+innerprocess <- function(dat, admdat, doses, idunique, treatname, N, maxdepot, collapse) {
+    .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, treatname, N, maxdepot, collapse)
 }
 
 timesTwo <- function(x) {
