@@ -27,4 +27,3 @@ period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
 \author{
 Helene Charlotte Rytgaard
 }
-

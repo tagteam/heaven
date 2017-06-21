@@ -27,4 +27,3 @@ maxdepot(d, drug="treatment1") <- 1000
 \author{
 Helene Charlotte Rytgaard
 }
-

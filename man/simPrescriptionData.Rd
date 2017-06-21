@@ -52,4 +52,3 @@ simPrescriptionData(2)
 \author{
 Helene Charlotte Rytgaard \email{hely@sund.ku.dk}, Thomas Alexander Gerds \email{tag@biostat.ku.dk}
 }
-

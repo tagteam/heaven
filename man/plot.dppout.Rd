@@ -49,4 +49,3 @@ Function to plot output etc
 \author{
 Helene Charlotte Rytgaard
 }
-

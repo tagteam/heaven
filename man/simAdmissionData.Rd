@@ -28,4 +28,3 @@ simAdmissionData(2)
 \author{
 Helene Charlotte Rytgaard \email{hely@sund.ku.dk}
 }
-

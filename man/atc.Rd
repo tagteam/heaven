@@ -13,4 +13,3 @@ drug(d, "treatment1") <- atc("A12B")
 \author{
 Helene Charlotte Rytgaard
 }
-
