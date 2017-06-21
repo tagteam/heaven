@@ -16,13 +16,15 @@ getAdmLimits3 <- function(dt,personid,inddto,uddto){
   if (!is.data.table(dt)) stop("Error: Data is not data.table")
   # Makes hard copy
   wdt2=copy(dt)
-  
   # A different name for the variables: XoXoXo
   setnames(wdt2,uddto,'uddtoXoXoXo')
   setnames(wdt2,inddto,'inddtoXoXoXo')
   setnames(wdt2,personid,'personidXoXoXo')
-  ## Copy rows with NA in inddto or uddto, into dataframe wdterror
+  ## Copy rows with NA in inddto or uddto, into dataframe wdterror and change names back
   wdterror=copy(wdt2[is.na(inddtoXoXoXo)|is.na(uddtoXoXoXo)|inddtoXoXoXo>uddtoXoXoXo])
+  setnames(wdterror,'uddtoXoXoXo',uddto)
+  setnames(wdterror,'inddtoXoXoXo',inddto)
+  setnames(wdterror,'personidXoXoXo',personid)
   ## Removes rows with inddto after uddto and NA in inddto or/and uddto
   wdt2 <- wdt2[inddtoXoXoXo<=uddtoXoXoXo]
   ##Converts Date to integer
