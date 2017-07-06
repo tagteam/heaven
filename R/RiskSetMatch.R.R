@@ -10,13 +10,29 @@
 #' @param caseIndex - Date variable defining the date where a case becomes a case
 #' @param controlIndex - date variable defining the control data that needs to be larger chan caseIndex
 #' 
+#' \bold{Details}
+#' The function does exact matching and keep 2 dates apart.
+#' Because the matching is exact all matching variables must be integer or character. Make sure that
+#' sufficient rounding is done on continuous variables to ensure a decent number of controls for each case.
+#' For example it may be difficult to find controls for very high age cases and age should often be rounded 
+#' by 2,3 og 5 years.
 #' 
+#' For many purposes controls should be reused and cases allowed to be controls prior to being cases. The function
+#' provides some statistics where You should make sure that reuse of cases/controls is not extreme - which may 
+#' cause bias.
+#' 
+#' With small samples the function is fast.  With extreme number of cases the calculation time can be many hours.
+#' 
+#' The function can be used for standard matching without the caseIndex/controlIndex, but other packages
+#' such as MatchIt should preferably be used in these cases.
 #'
-#' @return data.table with cases and controls. A new variable "caseid" links controls to cases
+#' @return data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
+#' the original dataset are preserved unchanged.
 #' @export
 #'
 #' @examples
-MatchExact <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,controlIndex=NULL){
+#' 
+RiskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,controlIndex=NULL){
   #ptid - pnr i DST id
   #event 0/1 distinguishes cases from controls
   #terms c(1,2,3) - list of vairables to match by
