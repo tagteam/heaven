@@ -39,6 +39,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Matcher
+CharacterMatrix Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, CharacterVector controls, CharacterVector cases, int NoIndex);
+RcppExport SEXP heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NoIndexSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type Ncontrols(NcontrolsSEXP);
+    Rcpp::traits::input_parameter< int >::type Tcontrols(TcontrolsSEXP);
+    Rcpp::traits::input_parameter< int >::type Ncases(NcasesSEXP);
+    Rcpp::traits::input_parameter< int >::type reuseControls(reuseControlsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type controlIndex(controlIndexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type caseIndex(caseIndexSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type controls(controlsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type cases(casesSEXP);
+    Rcpp::traits::input_parameter< int >::type NoIndex(NoIndexSEXP);
+    rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex));
+    return rcpp_result_gen;
+END_RCPP
+}
 // timesTwo
 NumericVector timesTwo(NumericVector x);
 RcppExport SEXP heaven_timesTwo(SEXP xSEXP) {
@@ -54,6 +73,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"heaven_daysnonhosp", (DL_FUNC) &heaven_daysnonhosp, 5},
     {"heaven_innerprocess", (DL_FUNC) &heaven_innerprocess, 8},
+    {"heaven_Matcher", (DL_FUNC) &heaven_Matcher, 9},
     {"heaven_timesTwo", (DL_FUNC) &heaven_timesTwo, 1},
     {NULL, NULL, 0}
 };
