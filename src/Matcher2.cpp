@@ -1,16 +1,19 @@
-#include <Rcpp.h>
-#include <iostream>
-#include <vector>
 
+#include <Rcpp.h>
+#include <vector>
 using namespace Rcpp;
 
+//' @title Matcher
+//' @author Christian Torp-Pedersen
+//' @export
 // [[Rcpp::export]]
+
 
 CharacterMatrix Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls,  
                         IntegerVector controlIndex, IntegerVector caseIndex,
-                        CharacterVector controls, CharacterVector cases){
+                        CharacterVector controls, CharacterVector cases,int NoIndex){
   // Ncontrols - desired number of controls
-  // Tcontrols - total number of controls
+  // Tcontrols - totral number of controls
   // Ncases - total number of cases
   // reuseControls  - pseudological 0/1
   // controlIndex - controls id   caseIndex - case id - usedControls - have been used?
@@ -28,6 +31,8 @@ CharacterMatrix Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseContr
     ii=1;
     while (ii<=Ncontrols){
       //Is control eligible - variable
+      if (NoIndex==1) IsCoEl=controlCounter<Tcontrols;
+      else  
       IsCoEl=  controlCounter<Tcontrols && (controlIndex[controlCounter]==NA || caseIndex[i]==NA || 
                caseIndex[i]<controlIndex[controlCounter]);
       if ((usedControls[controlCounter]==0 && IsCoEl) || (haveTried[controlCounter]==0 && IsCoEl)) { //foundOne

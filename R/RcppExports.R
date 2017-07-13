@@ -12,6 +12,13 @@ innerprocess <- function(dat, admdat, doses, idunique, treatname, N, maxdepot, c
     .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, treatname, N, maxdepot, collapse)
 }
 
+#' @title Matcher
+#' @author Christian Torp-Pedersen
+#' @export
+Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
+    .Call('heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
+}
+
 timesTwo <- function(x) {
     .Call('heaven_timesTwo', PACKAGE = 'heaven', x)
 }
