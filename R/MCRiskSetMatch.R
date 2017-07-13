@@ -35,9 +35,9 @@
 #' The function can be used for standard matching without the caseIndex/controlIndex, but other packages
 #' such as MatchIt should preferably be used in these cases.
 #'
-#' @return data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
-#' the original dataset are preserved unchanged. The final dataset includes all original cases but only the controls 
-#' that were selected.
+#' @return data.table with cases and controls. A new variable "caseid" links controls to cases. Further the value of caseIndex
+#' is added to controls.  Other variables in the original dataset are preserved unchanged. 
+#' The final dataset includes all original cases but only the controls that were selected.
 #' @export
 #'
 #' @examples
@@ -96,15 +96,12 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
   if (NoIndex) noindex <- 1L else noindex <- 0L # Noindex for Rcpp
   CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
   print(CLUST)
-browser()
-  
   clusterExport(CLUST, c("Matcher"))#,"NreuseControls","noindex","reuseCases","NoIndex"),envir=environment())
   clusterEvalQ(CLUST, library(data.table))
   clusterEvalQ(CLUST, library(heaven))
   # Select controls - rbind of each split-member that selects controls
   selected.controls <- do.call(rbind,parallel::parLapply(CLUST,split.alldata,function(controls){
     # Setnames because data.table called from functio
-print(controls)    
     if (!NoIndex) setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
     else setnames(controls,c(".ptid",".event",".cterms"))
     setkey(controls,.event,.ptid)
@@ -130,7 +127,7 @@ print(controls)
       controlIndex <- 0L
       caseIndex <- 0L
     }
-    Output <- data.table(Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
+    Output <- data.table(heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
               controlIndex, caseIndex, CONTROLS, CASES,noindex))    
     Output
   })) # end function and do.call
@@ -139,7 +136,6 @@ print(controls)
     parallel::stopCluster(CLUST)
     parallelCluster <- c()
   }
-#browser()  
   setnames(selected.controls,c(".ptid","caseid"))
   selected.controls[,.event:=0]
   setkey(alldata,.event)
@@ -171,5 +167,7 @@ print(controls)
   FINAL <- merge(FINAL,dat,by=ptid)
   FINAL[,c(".case","cterms"):=NULL] # remove cterms - aggregated terms
   setkeyv(FINAL,c("caseid",event))
+  # set caseid for controls
+  if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
   FINAL 
 }
