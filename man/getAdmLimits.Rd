@@ -40,4 +40,3 @@ newpop[grepl('I21',diag)|substr(diag,1,3)=='410',.(AMIdto=min(inddto),first.ind=
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>
 }
-

@@ -30,4 +30,3 @@ print(print(newpop))
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>
 }
-

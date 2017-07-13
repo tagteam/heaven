@@ -23,4 +23,3 @@ drug(d, "treatment1") <- pack(c(750, 75),
 \author{
 Helene Charlotte Rytgaard
 }
-

@@ -31,4 +31,3 @@ Function to plot dates etc
 \author{
 Helene Charlotte Rytgaard
 }
-

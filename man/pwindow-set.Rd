@@ -27,4 +27,3 @@ pwindow(d, drug="treatment1") <- 3
 \author{
 Helene Charlotte Rytgaard
 }
-

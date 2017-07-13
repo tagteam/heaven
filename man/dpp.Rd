@@ -15,4 +15,3 @@ Create data preprocessing object (dpp)
 \author{
 Helene Charlotte Rytgaard
 }
-

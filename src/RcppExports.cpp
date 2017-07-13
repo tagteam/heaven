@@ -50,3 +50,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"heaven_daysnonhosp", (DL_FUNC) &heaven_daysnonhosp, 5},
+    {"heaven_innerprocess", (DL_FUNC) &heaven_innerprocess, 8},
+    {"heaven_timesTwo", (DL_FUNC) &heaven_timesTwo, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_heaven(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}

@@ -9,4 +9,3 @@ innerprocess(dat, admdat, doses, idunique, treatname, N, maxdepot, collapse)
 \author{
 Helene Charlotte Rytgaard
 }
-

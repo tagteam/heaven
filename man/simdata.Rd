@@ -24,4 +24,3 @@ Update database
 \author{
 Helene Charlotte Rytgaard
 }
-

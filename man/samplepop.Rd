@@ -22,4 +22,3 @@ data(samplepop)
 
 }
 \keyword{datasets}
-
