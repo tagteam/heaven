@@ -1,4 +1,20 @@
-halal <- function(dat,disease=NULL,p.in=NULL,p.out=NULL,first.pnr=FALSE,pat=NULL,diags=NULL,prefix=''){
+## @title Extraction of diseases by diagnoses   
+## @param dat Raw data with diagnoses, needs specific variables: diag, pnr, inddto, and pattype
+## @param disease pre-specified name of disease after HALAL definitions, as characterstring. Can be one or more of: "af",
+##              "rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
+##              "bleeding_without_hemstroke","cardiomyopathy", "hf", "lung_edema", "HF", "ihd","ap","ami","perart",
+##              "cancer","chronic_kidney_disease","copd","liver_disease","alcohol".   
+## @param inclusions Characterstring, where other diagnoses can be included.
+## @param exclusions Characterstring, specifying diagnoses to be omitted - if desired.
+## @param first.pnr Specifies if only the first record of each patient should be output
+## @param p.in Date of period start
+## @param p.out Date of period end
+## @param pat Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.
+## @param prefix character string of prefix name for the resulting date variable of disease.
+## @author Regitze Kuhr Skals
+
+halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
+                  first.pnr=FALSE,pat=NULL,prefix='',entryvar='inddto',id='pnr',outvar='uddto',codevar='diag',patvar='pattype',record.id='recnum'){
   
   # HALAL definition of diseases
   
@@ -25,35 +41,46 @@ halal <- function(dat,disease=NULL,p.in=NULL,p.out=NULL,first.pnr=FALSE,pat=NULL
                      
                      alcohol=c('F10','K70','E52','T51','K860','E244','G312','I426','O354','Z714','Z721','G621','G721','K292','L278A'))
   
-  ##  Make into data.table and change all variables to lower case
+  ##  Make into data.table and change relevant variable names
   d <- as.data.table(dat)
-  var.names <- tolower(colnames(d)) 
-  colnames(d) <- var.names 
+
+  setnames(d,codevar,'diag')
+  setnames(d,id,'pnr')
+  setnames(d,entryvar,'inddto')
+  setnames(d,outvar,'uddto')
+  setnames(d,patvar,'pattype')
+  setnames(d,record.id,'recnum')
+  
+  if(class(p.in)!='Date'){
+    stop('p.in is not a date')    
+  }
+  
+  if(class(p.out)!='Date'){
+    stop('p.out is not a date')    
+  }
   
   ## Substraction of diagnoses
-  if(!is.null(diags)){
-    diags_for_substraction <- diags
-  }else{
+  if(!is.null(disease)){
     diags_for_substraction <- unlist(halal_defs[disease])
+    if(!is.null(inclusions)){
+      diags_for_substraction <- c(diags_for_substraction,inclusions)
+    }
   }
-  #a1=proc.time()[3]
-    setkey(d,diag) #Sort by key
-    browser()
-    icdcodes <- d[.(unique(diag)),.(diag),mult="first"] #unique diagnosis
-    icdcodes <- icdcodes[unlist(lapply(paste('^D',diags_for_substraction,sep=''),grep,diag))] #the unique diagnosis of interest
-    out <- d[icdcodes,nomatch = 0L] #Patients with unique diagnosis of interest
-  
-  #a2=proc.time()[3]
-  #print(a2-a1)
-  #b1=proc.time()[3]
-   # out2=d[grep(paste0("^D?",paste0(diags_for_substraction,collapse="|")),diag)]
-    #b2=proc.time()[3]
-    #print(b2-b1)
-    #browser()
-    all.equal(out,out2)
+  else{
+    diags_for_substraction <- inclusions
+  }
+
+  setkey(d,diag) #Sort by key
+  icdcodes <- d[.(unique(diag)),.(diag),mult="first"] #unique diagnosis
+  icdcodes <- icdcodes[unlist(lapply(paste('^D?',diags_for_substraction,sep=''),grep,diag))] #the unique diagnosis of interest
+  if(!is.null(exclusions)){
+    ex.diag <- grep(paste(paste('^D?',exclusions,sep=''),collapse='|'),icdcodes$diag)
+    icdcodes <- icdcodes[-ex.diag]
+  }
+  out <- d[icdcodes,nomatch = 0L] #Patients with unique diagnosis of interest
+
+  #Restrict diagnoses to specific period in time
   if(!is.null(p.in)&!is.null(p.out)){
-    #Restrict diagnoses to specific period in time
-    
     out <- out[p.in<inddto&inddto<p.out]
   }
   
@@ -70,10 +97,15 @@ halal <- function(dat,disease=NULL,p.in=NULL,p.out=NULL,first.pnr=FALSE,pat=NULL
   }
   
   
-  date_name <- paste(prefix,'inddto',sep='_')
+  date_name <- paste(prefix,'date',sep='_')
   
-  out <- out[,.(pnr,recnum,inddto,diag)]
+  out <- out[,.(pnr,recnum,inddto,diag,pattype)]
+  
   setnames(out,'inddto',date_name)
+  setnames(out,'diag',codevar)
+  setnames(out,'pnr',id)
+  setnames(out,'pattype',patvar)
+  setnames(out,'recnum',record.id)
   
-  return(list(data=out,diagnoses=diags_for_substraction))
+  return(list(data=out,diagnoses=diags_for_substraction,unique.icd=icdcodes$diag))
 }
