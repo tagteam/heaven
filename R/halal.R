@@ -1,16 +1,16 @@
 #' @title Extraction of diseases by diagnoses   
 #' @param dat Data with diagnoses.
 #' @param disease Characterstring containing pre-specified name of disease after HALAL definitions. Can be one or more of: "af",
-#              "rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
-#              "bleeding_without_hemstroke","cardiomyopathy", "hf", "lung_edema", "HF", "ihd","ap","ami","perart",
-#              "cancer","chronic_kidney_disease","copd","liver_disease","alcohol".   
+#'              "rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
+#'              "bleeding_without_hemstroke","cardiomyopathy", "hf", "lung_edema", "HF", "ihd","ap","ami","perart",
+#'              "cancer","chronic_kidney_disease","copd","liver_disease","alcohol".   
 #' @param inclusions Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.
 #' @param exclusions Characterstring, specifying diagnoses to be omitted.
 #' @param first.pnr Logical. Specifies if only the first record of each patient should be output.
-#' @param p.in Date of period start
-#' @param p.out Date of period end
+#' @param p.in Date of period start.
+#' @param p.out Date of period end.
 #' @param pat Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.
-#' @param prefix character string of prefix name for the resulting date variable of disease.
+#' @param prefix Character string of prefix name for the resulting date variable of disease.
 #' @param entryvar Name of the variable in data that contains the entrydate of diagnosis.
 #' @param outvar Name of the variable in data that contains the exitdate of diagnosis.
 #' @param id Name of the variable in data that contains patient id.
@@ -57,11 +57,11 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   setnames(d,patvar,'pattype')
   setnames(d,record.id,'recnum')
   
-  if(class(p.in)!='Date'){
+  if(!is.null(p.in)&class(p.in)!='Date'){
     stop('p.in is not a date')    
   }
   
-  if(class(p.out)!='Date'){
+  if(!is.null(p.out)&class(p.out)!='Date'){
     stop('p.out is not a date')    
   }
   
@@ -88,6 +88,14 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   #Restrict diagnoses to specific period in time
   if(!is.null(p.in)&!is.null(p.out)){
     out <- out[p.in<inddto&inddto<p.out]
+  }
+  
+  if(!is.null(p.in)&is.null(p.out)){
+    out <- out[p.in<inddto]
+  }
+  
+  if(is.null(p.in)&!is.null(p.out)){
+    out <- out[inddto<p.out]
   }
   
   #Restrict to specific type of patient (pattype)
