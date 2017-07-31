@@ -1,11 +1,11 @@
-library(data.table)
-dat <- data.table(id=c("A","A","B","B","C","C","D","D"),
-                 start=c(0,100,0,100,0,100,0,100),
-                 end=c(100,200,100,200,100,200,100,200),
-                 event=c(0,1,0,0,0,1,0,1))
+#library(data.table)
+#dat <- data.table(id=c("A","A","B","B","C","C","D","D"),
+#                 start=c(0,100,0,100,0,100,0,100),
+#                 end=c(100,200,100,200,100,200,100,200),
+#                 event=c(0,1,0,0,0,1,0,1))
 
-split <- data.table (id=c("A","B","C","D"),date1=c(0,50,150,300),date2=c(25,75,175,325),date3=c(30,30,30,30),
-                     date4=c(0,1,0,1))
+#split <- data.table (id=c("A","B","C","D"),date1=c(0,50,150,300),date2=c(25,75,175,325),date3=c(30,30,30,30),
+#                     date4=c(0,1,0,1))
 #dat2 <- dat[,cbind(rownum=1:1000,.SD),by=1:nrow(dat)]
 
 #split2 <- function(.pnr,.in,.out,.dato,.dead){# 4 vectors
@@ -78,10 +78,10 @@ twoSplit <- function(indat # inddato with id/in/out/event - and possibly other v
 
 
 
-temp <- twoSplit(dat # inddato with id/in/out/event
-        ,split # Data with id and dates
-        ,c("id","start","end","event") #names of id/in/out/event - in that order
-        ,c("date1","date2","date3","date4")) #Nmes var date-vars to split by
+#temp <- twoSplit(dat # inddato with id/in/out/event
+#        ,split # Data with id and dates
+#        ,c("id","start","end","event") #names of id/in/out/event - in that order
+#        ,c("date1","date2","date3","date4")) #Nmes var date-vars to split by
 
 
 
