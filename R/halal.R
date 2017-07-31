@@ -17,6 +17,10 @@
 #' @param codevar Name of the variable in data that contains diagnoses.
 #' @param patvar Name of the variable in data that contains the type of patient.
 #' @param record.id Name of the variable in data that contains the record number for each patient.
+#' @details Extracts specific selected or predefined diagnoses. If specified by first.pnr only the first occurrence of the diagnoses are extracted.
+#' Diagnoses in a specific period of time can also be extracted by p.in and p.out.
+#' @value halal() returns a list of three elements. The first one is the extracted data. The second element contains the diagnoses specified, 
+#' either the input to disease, inclusion or both. The third element contains every unique diagnosis extracted. 
 #' @author Regitze Kuhr Skals
 
 halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
@@ -47,9 +51,11 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
                      
                      alcohol=c('F10','K70','E52','T51','K860','E244','G312','I426','O354','Z714','Z721','G621','G721','K292','L278A'))
   
-  ##  Make into data.table and change relevant variable names
+  ##  Make into data.table and change relevant variable namesto lower case
   d <- as.data.table(dat)
-
+  var.names <- tolower(colnames(d)) 
+  colnames(d) <- var.names 
+  
   setnames(d,codevar,'diag')
   setnames(d,id,'pnr')
   setnames(d,entryvar,'inddto')
