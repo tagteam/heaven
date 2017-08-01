@@ -27,6 +27,7 @@ dt is a data table with the following fields: inddto, uddto, pattype
 if e.g. inddto has a different name, then the function call should include 'inddto="newname"'
 }
 \examples{
+\dontrun{
 data(samplediag)
 ## take a copy to preserve the object samplepop
 pop=copy(samplediag)
@@ -36,6 +37,7 @@ print(print(newpop))
 #As an example - get first AMI admission with limits
 setkey(newpop,pnr,admnum)
 newpop[grepl('I21',diag)|substr(diag,1,3)=='410',.(AMIdto=min(inddto),first.ind=min(first.inddto),last.ud=min(last.uddto)),by=list(pnr,admnum)][]
+}
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

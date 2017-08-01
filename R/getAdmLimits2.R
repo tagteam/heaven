@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds 
 ## created: Aug  4 2016 (19:43) 
 ## Version: 
-## last-updated: Aug  4 2016 (22:07) 
+## last-updated: Aug  1 2017 (15:52) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 12
+##     Update #: 15
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -21,16 +21,8 @@
 ##' @param dt data.table which provides variables: pnr, recno, inddto, uddto, pattype
 ##' @return nothing. but input data.table is modified such that all intermediate admission records are removed. This means that overlapping admission
 ##' intervals in the input data are combined into one admission.
-##' @examples
-##' data(samplepop)
-##' ## take a copy to preserve the object samplepop 
-##' pop=copy(samplepop)
-##' setDT(pop)
-##' newpop=getAdmLimits(pop)
-##' print(print(newpop))
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
-
 getAdmLimits2 <- function(dt2){
     stopifnot(is.data.table(dt2))
     wdt2=copy(dt2)

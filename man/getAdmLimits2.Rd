@@ -19,14 +19,6 @@ R-version of the sas code from hell.
 \details{
 For now pattype is ignored.
 }
-\examples{
-data(samplepop)
-## take a copy to preserve the object samplepop 
-pop=copy(samplepop)
-setDT(pop)
-newpop=getAdmLimits(pop)
-print(print(newpop))
-}
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>
 }

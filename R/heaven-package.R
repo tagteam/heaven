@@ -1,21 +1,22 @@
-#' samplepop
+#' sample data for examples
 #' 
-#' sample data to test R versions of code from hell
+#' a sample data frame used to illustrate some functionality
 #' 
-#' @name samplepop
+#' @name samplePPIData
 #' @docType data
-#' @format A data frame with 32 observations on the following 5 variables.
+#' @format This data frame contains 12 observations from one subject:
 #' \describe{
-#' \item{pnr}{patient id}
-#' \item{recno}{record number}
-#' \item{inddto}{hospital admission first date}
-#' \item{uddto}{hospital admission last date}
-#' \item{pattype}{type of admission}
-#' }
+#' \item{pnr}{pnr number}
+#' \item{eksd}{date of purchase}
+#' \item{packsize}{package size}
+#' \item{strnum}{strnum}
+#' \item{apk}{apk}
+#' \item{atc}{atc code}
+#'} 
 #' @keywords datasets
 ##' @examples
 ##' 
-##' data(samplepop)
+##' data(samplePPIData)
 #'
 
 #' 

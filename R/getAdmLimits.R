@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Nov  1 2016 (12:34) 
+## last-updated: Aug  1 2017 (15:48) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 15
+##     Update #: 16
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -28,6 +28,7 @@
 ##' @return
 ##' The same data.table as for input but with 3 new variables first.inddto, last.uddto and admnum (admission number)
 ##' @examples
+##' \dontrun{
 ##' data(samplediag)
 ##' ## take a copy to preserve the object samplepop
 ##' pop=copy(samplediag)
@@ -37,6 +38,7 @@
 ##' #As an example - get first AMI admission with limits
 ##' setkey(newpop,pnr,admnum)
 ##' newpop[grepl('I21',diag)|substr(diag,1,3)=='410',.(AMIdto=min(inddto),first.ind=min(first.inddto),last.ud=min(last.uddto)),by=list(pnr,admnum)][]
+##' }
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 getAdmLimits <- function(dt,admtype=0,pnr="pnr",inddto="inddto",uddto="uddto",pattype="pattype"){
