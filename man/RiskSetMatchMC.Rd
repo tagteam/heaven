@@ -55,9 +55,9 @@ The function can be used for standard matching without the caseIndex/controlInde
 such as MatchIt should preferably be used in these cases.}
 }
 \value{
-data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
-the original dataset are preserved unchanged. The final dataset includes all original cases but only the controls 
-that were selected.
+data.table with cases and controls. A new variable "caseid" links controls to cases. Further the value of caseIndex
+is added to controls.  Other variables in the original dataset are preserved unchanged. 
+The final dataset includes all original cases but only the controls that were selected.
 }
 \description{
 RiskSetMatch - Risk set matching

@@ -1,13 +1,11 @@
+// [[Rcpp::depends(RcppArmadillo)]]
 #include <Rcpp.h>
-
 using namespace Rcpp;
-
 //' @title Split2
 //' @author Christian Torp-Pedersen
 //' @export
 // [[Rcpp::export]]
-
-DataFrame split2 (CharacterVector pnr, //ID
+Rcpp::DataFrame split2 (CharacterVector pnr, //ID
                   IntegerVector   inn,  //Start intervals
                   IntegerVector   out, //End intervals
                   IntegerVector   dato, // Split dates - NA interpreted as zero
@@ -19,7 +17,7 @@ DataFrame split2 (CharacterVector pnr, //ID
   Rcpp::DataFrame OUT; // result!
   
   dim=pnr.size();
-    
+ 
   for(int i=0; i<dim; i++ ){
     if (dato(i)<=inn(i)){
       Opnr.push_back(pnr(i));
@@ -52,7 +50,6 @@ DataFrame split2 (CharacterVector pnr, //ID
   OUT=DataFrame::create(_["pnr"]=Opnr, _["inn"]=Oin, _["out"]=Oout, _["dato"]=Odato, _["dead"]=Odead );
   return(OUT);
 }
-
 
 
 

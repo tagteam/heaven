@@ -24,9 +24,10 @@ Simulate prescription data
 Simulate prescription data alike the Danish medical registry
 
 
-https://www.whocc.no/atc_ddd_index/
+
 http://www.medicinpriser.dk/
 http://pro.medicin.dk/
+https://www.whocc.no/atc_ddd_index/
 
 A07: strength 200, number of pills 30
      strength 400, number of pills 100

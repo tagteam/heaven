@@ -43,6 +43,10 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
 
 \item{record.id}{Name of the variable in data that contains the record number for each patient.}
 }
+\details{
+Extracts specific selected or predefined diagnoses. If specified by first.pnr only the first occurrence of the diagnoses are extracted.
+Diagnoses in a specific period of time can also be extracted by p.in and p.out.
+}
 \author{
 Regitze Kuhr Skals
 }
