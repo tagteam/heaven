@@ -159,5 +159,7 @@ RiskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
   FINAL <- merge(FINAL,dat,by=ptid)
   FINAL[,c(".case","cterms"):=NULL] # remove cterms - aggregated terms
   setkeyv(FINAL,c("caseid",event))
+  #Add relevant caseid to controls
+  if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
   FINAL 
 }
