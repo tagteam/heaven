@@ -4,22 +4,27 @@
 \alias{drug<-}
 \title{Add new drug}
 \usage{
+drug(dpp, drugname, add = FALSE) <- value
+}
+\arguments{
+\item{dpp}{Data preprocessing object}
+
+\item{drugname}{The name (in quotes) of the drug to update the value for.}
+
+\item{add}{Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.}
+}
+\description{
+Update preprocessing object with new drug.
+}
+\examples{
+
 d <- dpp()
 drug(d, "treatment1") <- atc("A12B")
 drug(d, "treatment1") <- pack(c(750, 75), 
                               min = c(250, 25),
                               max = c(1000, 100),
                               def = c(750, 100))
-}
-\arguments{
-\item{dpp}{Data preprocessing object}
 
-\item{add}{Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.}
-
-\item{name}{The name (in quotes) of the drug to update the value for.}
-}
-\description{
-Update preprocessing object with new drug.
 }
 \author{
 Helene Charlotte Rytgaard

@@ -4,21 +4,24 @@
 \alias{admdb<-}
 \title{Update admission dates database}
 \usage{
-admdata <- simAdmissionData(10)
-
-d <- dpp()
-admdb(d) <- admdata
+admdb(dpp, id = pnr, inddto = inddto, uddto = uddto,
+  add = FALSE) <- value
 }
 \arguments{
 \item{dpp}{Data preprocessing object}
 
-\item{id}{The name of the column containing the id numbers (default is pnr)}
+\item{id}{The name of the column containing the id numbers
+(default is pnr)}
 
-\item{inddto}{The name of the column containing the admission start date (default is inddto)}
+\item{inddto}{The name of the column containing the admission
+start date (default is inddto)}
 
-\item{uddto}{The name of the column containing the admission end date (default is uddto)}
+\item{uddto}{The name of the column containing the admission end
+date (default is uddto)}
 
-\item{add}{Logical value, per default set to FALSE which means that already existing data in the preprocessing object will be overwritten.}
+\item{add}{Logical value, per default set to FALSE which means
+that already existing data in the preprocessing object will be
+overwritten.}
 
 \item{value}{The data set to be loaded to the object.}
 }
@@ -27,6 +30,14 @@ Update date database
 }
 \details{
 Update database
+}
+\examples{
+
+admdata <- simAdmissionData(10)
+
+d <- dpp()
+admdb(d) <- admdata
+
 }
 \author{
 Helene Charlotte Rytgaard

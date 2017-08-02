@@ -41,6 +41,7 @@
 #' @export
 #'
 #' @examples
+#' require(data.table)
 #' event <- c(rep(0,20),rep(1,5)) 
 #' ptid <- 1:25
 #' sex <- c(rep("fem",10),rep("mal",10),"fem","fem",rep("mal",3))
@@ -66,9 +67,6 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
     #reuseControls - T or F or NULL
     #caseIndex - Integer or date, date where controls must be prior
     #controlIndex - Index date for controls
-    require(data.table)
-    require(parallel)
-    require(heaven)
     options(warn=-1)
     # Check data.table
     if (!is.data.table(dat)) stop("data not data.table")
@@ -96,9 +94,9 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
     if (NoIndex) noindex <- 1L else noindex <- 0L # Noindex for Rcpp
     CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
     print(CLUST)
-    clusterExport(CLUST, c("Matcher"))#,"NreuseControls","noindex","reuseCases","NoIndex"),envir=environment())
-    clusterEvalQ(CLUST, library(data.table))
-    clusterEvalQ(CLUST, library(heaven))
+    parallel::clusterExport(CLUST, c("Matcher"))#,"NreuseControls","noindex","reuseCases","NoIndex"),envir=environment())
+    parallel::clusterEvalQ(CLUST, library(data.table))
+    parallel::clusterEvalQ(CLUST, library(heaven))
     # Select controls - rbind of each split-member that selects controls
     selected.controls <- do.call(rbind,parallel::parLapply(CLUST,split.alldata,function(controls){
         # Setnames because data.table called from functio

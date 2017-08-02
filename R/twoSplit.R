@@ -16,8 +16,6 @@ twoSplit <- function(indat # inddato with id/in/out/event - and possibly other v
                     ,splitvars #Nmes var date-vars to split by
                      ){
     ## browser()  
-    require(data.table)
-    require(zoo)
     copyindat <- copy(indat)
     #Tests of data
     if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")

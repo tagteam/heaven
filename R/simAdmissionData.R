@@ -1,11 +1,12 @@
 ##' Simulate admission data
 ##' 
 ##' Simulate admission data alike the Danish medical registry
-##' @title Admission data simulation function 
+##' @title Admission data simulation function
 ##' @param n Number of patients
 ##' @param m Maximal number of admission dates per patient
+##' @param startDate starting date
 ##' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}
-##' @details 
+##' @details
 ##' 
 ##' @examples
 ##' 
@@ -17,8 +18,7 @@
 ##' @export
 simAdmissionData <- function(n,
                              m = 5,
-                             startDate = "1995-01-01", 
-                             longformat = TRUE){
+                             startDate = "1995-01-01"){
    startDate <- as.Date(startDate)
     out <- rbindlist(lapply(1:n,function(i){
         M = sample(1:m,size=1)

@@ -20,6 +20,8 @@
 ##' @param ... not used
 ##' @examples
 ##' library(survival)
+##' library(prodlim)
+##' library(data.table)
 ##' data(pbc)
 ##' d <- na.omit(pbc[,c("time","status","trt","age","sex")])
 ##' d$agegroup <- cut(d$age,breaks=c(0,40,50,60,100))
@@ -36,7 +38,7 @@ standardize.prodlim <- function(object,
                                 weights,
                                 ...){
     X <- data.table(object$X)
-    setkeyv(X,var1,var2)
+    data.table::setkeyv(X,c(var1,var2))
     stopifnot(NCOL(X)==2)
     if (missing(weights)){
         weights <- prop.table(table(data[[var2]]))
@@ -47,7 +49,7 @@ standardize.prodlim <- function(object,
     colnames(worktable) <- paste0("risk",times)
     rrr <- strsplit(rownames(worktable),", ")
     worktable <- data.frame(worktable,row.names=NULL)
-    setDT(worktable)
+    data.table::setDT(worktable)
     v1 <- sapply(rrr,function(r){sapply(strsplit(r[[1]],"="),function(u)u[[2]])})
     v2 <- sapply(rrr,function(r){sapply(strsplit(r[[2]],"="),function(u)u[[2]])})
     worktable <- cbind(v1,v2,worktable)

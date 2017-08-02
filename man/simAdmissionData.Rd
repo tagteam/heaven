@@ -4,12 +4,14 @@
 \alias{simAdmissionData}
 \title{Admission data simulation function}
 \usage{
-simAdmissionData(n, m = 5, startDate = "1995-01-01", longformat = TRUE)
+simAdmissionData(n, m = 5, startDate = "1995-01-01")
 }
 \arguments{
 \item{n}{Number of patients}
 
 \item{m}{Maximal number of admission dates per patient}
+
+\item{startDate}{starting date}
 }
 \description{
 Simulate admission data

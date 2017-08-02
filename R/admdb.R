@@ -3,12 +3,17 @@
 ##' Update database
 ##' @title Update admission dates database
 ##' @param dpp Data preprocessing object
-##' @param id The name of the column containing the id numbers (default is pnr)
-##' @param inddto The name of the column containing the admission start date (default is inddto)
-##' @param uddto The name of the column containing the admission end date (default is uddto)
-##' @param add Logical value, per default set to FALSE which means that already existing data in the preprocessing object will be overwritten. 
+##' @param id The name of the column containing the id numbers
+##'     (default is pnr)
+##' @param inddto The name of the column containing the admission
+##'     start date (default is inddto)
+##' @param uddto The name of the column containing the admission end
+##'     date (default is uddto)
+##' @param add Logical value, per default set to FALSE which means
+##'     that already existing data in the preprocessing object will be
+##'     overwritten.
 ##' @param value The data set to be loaded to the object.
-##' @usage 
+##' @examples
 ##' 
 ##' admdata <- simAdmissionData(10)
 ##' 

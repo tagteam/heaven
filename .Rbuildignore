@@ -1,3 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 sas/
+worg/
+user-heaven*
+auto/

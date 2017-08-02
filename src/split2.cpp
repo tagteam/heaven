@@ -1,6 +1,8 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <Rcpp.h>
 using namespace Rcpp;
+
+//' @description Split2
 //' @title Split2
 //' @author Christian Torp-Pedersen
 //' @export

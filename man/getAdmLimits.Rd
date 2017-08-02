@@ -8,11 +8,23 @@ getAdmLimits(dt, admtype = 0, pnr = "pnr", inddto = "inddto",
   uddto = "uddto", pattype = "pattype")
 }
 \arguments{
-\item{dt}{data.table which provides variables: pnr, recno, inddto, uddto, pattype. The function assumes these variable names that can be changed
-with the function call when appropriate}
+\item{dt}{data.table which provides variables: pnr, recno, inddto,
+uddto, pattype. The function assumes these variable names that
+can be changed with the function call when appropriate}
+
+\item{admtype}{Type of admission to be included: inpatient/outpatient.}
+
+\item{pnr}{Name of pnr variable (default is \code{pnr}).}
+
+\item{inddto}{Name of admission date variable (default is \code{inddto}).}
+
+\item{uddto}{Name of discharge date variable (default is \code{uddto}).}
+
+\item{pattype}{Name of pattype variable (default is \code{pattype}).}
 }
 \value{
-The same data.table as for input but with 3 new variables first.inddto, last.uddto and admnum (admission number)
+The same data.table as for input but with 3 new variables
+    first.inddto, last.uddto and admnum (admission number)
 }
 \description{
 Adds first admission date and last discharge date to a sequence of admissions with diagnoses. The expected input data.table is the current standard
@@ -22,9 +34,9 @@ for all diagnoses and the examples show how e.g. the first infarction and the as
 \details{
 For now pattype is ignored.
 
-
-dt is a data table with the following fields: inddto, uddto, pattype
-if e.g. inddto has a different name, then the function call should include 'inddto="newname"'
+dt is a data table with the following fields: inddto,
+    uddto, pattype if e.g. inddto has a different name, then the
+    function call should include 'inddto="newname"'
 }
 \examples{
 \dontrun{

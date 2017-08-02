@@ -3,12 +3,11 @@
 #include <vector>
 using namespace Rcpp;
 
+//' @description Fast matcher
 //' @title Matcher
 //' @author Christian Torp-Pedersen
 //' @export
 // [[Rcpp::export]]
-
-
 CharacterMatrix Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls,  
                         IntegerVector controlIndex, IntegerVector caseIndex,
                         CharacterVector controls, CharacterVector cases,int NoIndex){

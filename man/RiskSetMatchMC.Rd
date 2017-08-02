@@ -63,6 +63,7 @@ The final dataset includes all original cases but only the controls that were se
 RiskSetMatch - Risk set matching
 }
 \examples{
+require(data.table)
 event <- c(rep(0,20),rep(1,5)) 
 ptid <- 1:25
 sex <- c(rep("fem",10),rep("mal",10),"fem","fem",rep("mal",3))

@@ -4,12 +4,7 @@
 \alias{pack}
 \title{Add atc codes to object.}
 \usage{
-d <- dpp()
-drug(d, "treatment1") <- atc("A12B")
-drug(d, "treatment1") <- pack(c(750, 75), 
-                              min = c(250, 25),
-                              max = c(1000, 100),
-                              def = c(750, 100))
+pack(value, min, max, def)
 }
 \arguments{
 \item{value}{The dose sizes corresponding to those found in data. Note that the same value should never be repeated.}
@@ -19,6 +14,19 @@ drug(d, "treatment1") <- pack(c(750, 75),
 \item{max}{The corresponding maximal doses (same order as 'value').}
 
 \item{def}{The corresponding default doses (same order as 'value').}
+}
+\description{
+Add atc codes to object.
+}
+\examples{
+
+d <- dpp()
+drug(d, "treatment1") <- atc("A12B")
+drug(d, "treatment1") <- pack(c(750, 75), 
+                              min = c(250, 25),
+                              max = c(1000, 100),
+                              def = c(750, 100))
+
 }
 \author{
 Helene Charlotte Rytgaard

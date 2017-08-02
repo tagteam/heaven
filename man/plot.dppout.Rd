@@ -4,11 +4,44 @@
 \alias{plot.dppout}
 \title{Plot output of process()}
 \usage{
+\method{plot}{dppout}(x, drug = NULL, id = NULL, idmax = 9,
+  trace = FALSE, fix_x = FALSE, normalize = FALSE, ...)
+}
+\arguments{
+\item{x}{The object outputted from process()}
+
+\item{drug}{If specified, only the values for these drugs are
+plotted.}
+
+\item{id}{If specified, only the values for these ids are plotted.}
+
+\item{idmax}{The maximum number of individuals to plot in same
+window.}
+
+\item{trace}{If TRUE, more messages are printed to the user.}
+
+\item{fix_x}{If TRUE, the x axis is fixed for all considered
+individuals. Default is FALSE.}
+
+\item{normalize}{If TRUE, the values for the drugs are normalized
+to the same scale.}
+
+\item{...}{not used}
+}
+\description{
+Function to plot output etc
+}
+\details{
+Function to plot output etc
+}
+\examples{
+library(ggplot2)
 drugdata <- simPrescriptionData(10)
 admdata <- simAdmissionData(10)
 
 d <- dpp()
-
+drugdb(d) <- drugdata
+admdb(d) <- admdata
 drug(d, "treatment1") <- atc("A12B")
 drug(d, "treatment1") <- pack(c(750, 75), 
                               min = c(250, 25), 
@@ -19,32 +52,12 @@ pwindow(d, drug="treatment2") <- 2
 period(d, drug = "treatment1") <- as.Date(c("1997-01-01", "2012-12-31"))
 maxdepot(d, drug="treatment1") <- 500
 
-out <- process(d, out_data = FALSE)
+out <- process(d)
 plot(out)
 
-out <- process(d, out_data = TRUE)
+out <- process(d)
 plot(out)
-}
-\arguments{
-\item{out}{The object outputted from process()}
 
-\item{drug}{If specified, only the values for these drugs are plotted.}
-
-\item{id}{If specified, only the values for these ids are plotted.}
-
-\item{idmax}{The maximum number of individuals to plot in same window.}
-
-\item{trace}{If TRUE, more messages are printed to the user.}
-
-\item{fix_x}{If TRUE, the x axis is fixed for all considered individuals. Default is FALSE.}
-
-\item{normalize}{If TRUE, the values for the drugs are normalized to the same scale.}
-}
-\description{
-Function to plot output etc
-}
-\details{
-Function to plot output etc
 }
 \author{
 Helene Charlotte Rytgaard

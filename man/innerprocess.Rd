@@ -2,9 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{innerprocess}
 \alias{innerprocess}
-\title{Inner process function.}
+\title{The heart of the medicin macro}
 \usage{
-innerprocess(dat, admdat, doses, idunique, treatname, N, maxdepot, collapse)
+innerprocess(dat, admdat, doses, idunique, drug, N, maxdepot, collapse)
+}
+\arguments{
+\item{dat}{data set}
+
+\item{admdat}{admission data}
+
+\item{doses}{doses}
+
+\item{idunique}{unique subject ids}
+
+\item{drug}{name of drug variable}
+
+\item{N}{sample size}
+
+\item{maxdepot}{see medicine macro}
+
+\item{collapse}{If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.}
+}
+\description{
+Inner process of medicin macro
 }
 \author{
 Helene Charlotte Rytgaard

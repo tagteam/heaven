@@ -1,13 +1,15 @@
 ##' Processing function, to perform calculations according to the data and variables specified in preprocessing object. 
 ##' 
-##' @title Process to estimate prescription lengths and averages 
+##' @title Process to estimate prescription lengths and averages
 ##' @param dpp Data preprocessing object
-##' @param treatments If specified, calcations will only be performed for these treatments. 
-##' @param id If specified, calculations will only be performed for these individuals.
-##' @param trace If TRUE, messages are outputted for the user. 
-##' @param collapse Logical. If \code{TRUE}, collapse contiguous exposure periods
-##'        with same computed exposure strength to one and add periods with zero exposure.
-##' @param keep_data If TRUE, the input data is saved in the object as well. This can can be used for plotting. 
+##' @param treatments If specified, calcations will only be performed
+##'     for these treatments.
+##' @param id If specified, calculations will only be performed for
+##'     these individuals.
+##' @param trace If TRUE, messages are outputted for the user.
+##' @param collapse Logical. If \code{TRUE}, collapse contiguous
+##'     exposure periods with same computed exposure strength to one
+##'     and add periods with zero exposure.
 ##' @author Helene Charlotte Rytgaard
 ##' @examples
 ##' set.seed(05021992)
@@ -27,13 +29,13 @@
 ##' maxdepot(d) <- 4000
 ##' pwindow(d) <- 2
 ##' period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
-##' process(d,collapse=TRUE) <- "drug1"
+##' process(d)
 ##' @export
-'process<-' <- function(dpp,
+'process' <- function(dpp,
                         treatments = NULL,
                         id = NULL,
                         trace = FALSE,
-                        collapse = TRUE,value){
+                        collapse = TRUE){
     
     if (length(treatments) == 0) treatments <- names(dpp$drugs)
     for (treatname in treatments){ 
@@ -44,6 +46,7 @@
         maxdepot     <- dpp$drugs[[j]]$maxdepot
         period       <- dpp$drugs[[j]]$period
         N            <- dpp$drugs[[j]]$N
+        if (is.null(dpp$drugdb)) stop("No drug purchase data in object")
         dpp1   <- dpp$drugdb[atc %in% atcs & pdate <= period[2] & pdate >= period[1], ]
         ##--- unique id's
         if (length(id) == 0) {

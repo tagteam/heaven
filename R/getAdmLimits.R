@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Aug  1 2017 (15:48) 
+## last-updated: Aug  2 2017 (18:36) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 16
+##     Update #: 18
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -20,13 +20,19 @@
 ##'
 ##' For now pattype is ignored.
 ##' @title Thomas's first R-version of the sas code from hell
-##' @param dt data.table which provides variables: pnr, recno, inddto, uddto, pattype. The function assumes these variable names that can be changed
-##' with the function call when appropriate
-##' @details
-##' dt is a data table with the following fields: inddto, uddto, pattype
-##' if e.g. inddto has a different name, then the function call should include 'inddto="newname"'
-##' @return
-##' The same data.table as for input but with 3 new variables first.inddto, last.uddto and admnum (admission number)
+##' @param dt data.table which provides variables: pnr, recno, inddto,
+##'     uddto, pattype. The function assumes these variable names that
+##'     can be changed with the function call when appropriate
+##' @param admtype Type of admission to be included: inpatient/outpatient.
+##' @param pnr Name of pnr variable (default is \code{pnr}).
+##' @param inddto  Name of admission date variable (default is \code{inddto}).
+##' @param uddto Name of discharge date variable (default is \code{uddto}).
+##' @param pattype Name of pattype variable (default is \code{pattype}).
+##' @details dt is a data table with the following fields: inddto,
+##'     uddto, pattype if e.g. inddto has a different name, then the
+##'     function call should include 'inddto="newname"'
+##' @return The same data.table as for input but with 3 new variables
+##'     first.inddto, last.uddto and admnum (admission number)
 ##' @examples
 ##' \dontrun{
 ##' data(samplediag)
@@ -41,7 +47,12 @@
 ##' }
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
-getAdmLimits <- function(dt,admtype=0,pnr="pnr",inddto="inddto",uddto="uddto",pattype="pattype"){
+getAdmLimits <- function(dt,
+                         admtype=0,
+                         pnr="pnr",
+                         inddto="inddto",
+                         uddto="uddto",
+                         pattype="pattype"){
     stopifnot(is.data.table(dt))
     ## Select relevant pattype values
     wdt <- dt[pattype %in% admtype]

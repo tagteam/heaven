@@ -56,12 +56,14 @@ that were selected.
 RiskSetMatch - Risk set matching
 }
 \examples{
+require(data.table)
 event <- c(rep(0,20),rep(1,5)) 
 ptid <- 1:25
 sex <- c(rep("fem",10),rep("mal",10),"fem","fem",rep("mal",3))
 age <- c(rep(c(70,80),10),70,80,70,70,80)
 caseIndex <- c(seq(10,28,2),seq(5,25,5))
 controlIndex <- caseIndex
+library(data.table)
 dat <- data.table(ptid,event,sex,age,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
 out <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,NoIndex=TRUE)

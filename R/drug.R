@@ -2,9 +2,9 @@
 ##'
 ##' @title Add new drug
 ##' @param dpp Data preprocessing object
-##' @param name The name (in quotes) of the drug to update the value for. 
+##' @param drugname The name (in quotes) of the drug to update the value for. 
 ##' @param add Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.   
-##' @usage
+##' @examples
 ##' 
 ##' d <- dpp()
 ##' drug(d, "treatment1") <- atc("A12B")
@@ -15,7 +15,7 @@
 ##' 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drug<-` <- function(dpp, drugname, add = FALSE, value) {
+`drug<-` <- function(dpp, drugname, add = FALSE) {
   
   i <- (1:length(dpp$drugs))[names(dpp$drugs) == drugname]
 
@@ -26,7 +26,7 @@
 
 ##' @title Add atc codes to object. 
 ##' @param atc Quoted atc codes, a vector if multiple values.  
-##' @usage
+##' @examples
 ##' 
 ##' d <- dpp()
 ##' drug(d, "treatment1") <- atc("A12B")
@@ -52,12 +52,14 @@ atc <- function(atc) {
   return(f)
 }  
 
-##' @title Add atc codes to object. 
+##' @title Add atc codes to object.
+##'
+##' @description Add atc codes to object.
 ##' @param value The dose sizes corresponding to those found in data. Note that the same value should never be repeated.  
 ##' @param min The corresponding minimal doses (same order as 'value').
 ##' @param max The corresponding maximal doses (same order as 'value'). 
 ##' @param def The corresponding default doses (same order as 'value'). 
-##' @usage
+##' @examples
 ##' 
 ##' d <- dpp()
 ##' drug(d, "treatment1") <- atc("A12B")

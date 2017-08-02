@@ -4,20 +4,14 @@
 \alias{plot.dpp}
 \title{Plot function for data preprocessing object}
 \usage{
-drugdata <- simPrescriptionData(10)
-admdata <- simAdmissionData(10)
-
-d <- dpp()
-
-drugdb(d) <- drugdata
-admdb(d) <- admdata
-
-plot(d)
+\method{plot}{dpp}(x, drug = NULL, ...)
 }
 \arguments{
-\item{dpp}{Data preprocessing object}
+\item{x}{Data preprocessing object obtained with \code{dpp}}
 
 \item{drug}{If specified, only data for this object is plotted.}
+
+\item{...}{not used}
 }
 \value{
 A plot is returned, nothing is changed about the preprocessing object.
@@ -27,6 +21,19 @@ Function to plot dates etc
 }
 \details{
 Function to plot dates etc
+}
+\examples{
+library(ggplot2)
+drugdata <- simPrescriptionData(10)
+admdata <- simAdmissionData(10)
+
+d <- dpp()
+
+drugdb(d) <- drugdata
+admdb(d) <- admdata
+
+plot(d)
+
 }
 \author{
 Helene Charlotte Rytgaard

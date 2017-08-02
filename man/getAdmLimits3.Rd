@@ -21,6 +21,3 @@ list containing dataset with admission dates add to data and dataset containing 
 \description{
 Removes row errors and returns data with add admission time
 }
-\examples{
-newpop <- getAdmLimits3(mydata,'Pnr','Entrydate','Outdate')
-}

@@ -4,7 +4,16 @@
 using namespace Rcpp;
 using namespace arma;
 
-//' @title Inner process function.
+//' @description Inner process of medicin macro
+//' @title The heart of the medicin macro
+//' @param dat data set
+//' @param admdat admission data
+//' @param doses doses
+//' @param idunique unique subject ids
+//' @param drug name of drug variable
+//' @param N sample size
+//' @param maxdepot see medicine macro
+//' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
 //' @author Helene Charlotte Rytgaard
 //' @export
 // [[Rcpp::export]]
@@ -12,7 +21,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
 			Rcpp::DataFrame admdat,
 			Rcpp::List doses, 
 			Rcpp::IntegerVector idunique,
-			std::string treatname,
+			std::string drug,
 			double N, 
 			double maxdepot,
 			bool collapse

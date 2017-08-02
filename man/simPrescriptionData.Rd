@@ -13,9 +13,13 @@ simPrescriptionData(n, m = 10, packages = list(A07 = list(c(200, 30), c(400,
 
 \item{m}{Maximal number of prescription dates per patient}
 
-\item{packages}{Named list of association lists. The names of the list are ATC codes.}
+\item{packages}{Named list of association lists. The names of the
+list are ATC codes.}
 
-\item{max.packages}{Integer. How many packages do we want as maximal on one day.}
+\item{max.packages}{Integer. How many packages do we want as
+maximal on one day.}
+
+\item{startDate}{start date}
 }
 \description{
 Simulate prescription data
@@ -51,5 +55,6 @@ simPrescriptionData(2)
 
 }
 \author{
-Helene Charlotte Rytgaard \email{hely@sund.ku.dk}, Thomas Alexander Gerds \email{tag@biostat.ku.dk}
+Helene Charlotte Rytgaard \email{hely@sund.ku.dk}, Thomas
+    Alexander Gerds \email{tag@biostat.ku.dk}
 }

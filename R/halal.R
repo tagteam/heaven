@@ -1,4 +1,5 @@
-#' @title Extraction of diseases by diagnoses   
+#' @title Extraction of diseases by diagnoses
+#' @description Filtering of LPR registry data according to a given set of diseases
 #' @param dat Data with diagnoses.
 #' @param disease Characterstring containing pre-specified name of disease after HALAL definitions. Can be one or more of: "af",
 #'              "rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
