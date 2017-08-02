@@ -12,6 +12,8 @@ drug(dpp, drugname, add = FALSE) <- value
 \item{drugname}{The name (in quotes) of the drug to update the value for.}
 
 \item{add}{Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.}
+
+\item{value}{not used}
 }
 \description{
 Update preprocessing object with new drug.

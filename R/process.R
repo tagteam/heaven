@@ -38,9 +38,9 @@
                         collapse = TRUE){
     
     if (length(treatments) == 0) treatments <- names(dpp$drugs)
-    for (treatname in treatments){ 
-        ## treatfun <- function(treatname) {
-        j            <- (1:length(dpp$drugs))[names(dpp$drugs) == treatname]
+    for (drugname in treatments){ 
+        ## treatfun <- function(drugname) {
+        j            <- (1:length(dpp$drugs))[names(dpp$drugs) == drugname]
         atcs         <- unlist(dpp$drugs[[j]]$atc)
         doses        <- dpp$drugs[[j]]$doses
         maxdepot     <- dpp$drugs[[j]]$maxdepot
@@ -76,15 +76,15 @@
             baddata <- paste(baddata, "Invalid prescription data - pills per package < 0.5\n")
         }
         if (any(dosesmissing)) {
-            ## warning(paste("Missing doses for ", treatname ,paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
-            baddata <- paste(baddata, paste(paste(" : Missing doses for ",treatname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
+            ## warning(paste("Missing doses for ", drugname ,paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
+            baddata <- paste(baddata, paste(paste(" : Missing doses for ",drugname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
         }
         if (length(doses)<=0) {
-            ## warning(paste("No doses specified for ", treatname ,paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
-            baddata <- paste(baddata, paste(paste(" : No doses specified for ",treatname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
+            ## warning(paste("No doses specified for ", drugname ,paste(unique(dpp1$strength[dosesmissing]), collapse=", ")))
+            baddata <- paste(baddata, paste(paste(" : No doses specified for ",drugname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
         }
         if (baddata!="") {
-            cat("Bad data for treatment ", treatname, "(will terminate):\n",baddata,"\n")
+            cat("Bad data for treatment ", drugname, "(will terminate):\n",baddata,"\n")
         } else {
             if (length(id) == 0) {
                 dpp1 <- dpp1[id %in% idunique]
@@ -92,17 +92,16 @@
             }else{
                 admdat <- dpp$admdb
             }
-            ## testlist3 <- list(dat=dpp1,admdat=admdat,doses=doses,idunique=idunique,treatname=treatname,N=N,maxdepot=maxdepot,collapse=collapse)
             ## save(testlist3,file="~/tmp/testlist3.rda")
             out <- rbindlist(innerprocess(dat=dpp1,
                                           admdat=admdat,
                                           doses=doses,
                                           idunique=idunique,
-                                          treatname=treatname,
+                                          ## drugname=drugname,
                                           N=N,
                                           maxdepot=maxdepot,
                                           collapse=collapse))
-            dpp$processed[[treatname]] <- out
+            dpp$processed[[drugname]] <- out
         }
     }
     dpp

@@ -9,6 +9,9 @@ atc(atc)
 \arguments{
 \item{atc}{Quoted atc codes, a vector if multiple values.}
 }
+\description{
+Add atc codes to object.
+}
 \examples{
 
 d <- dpp()

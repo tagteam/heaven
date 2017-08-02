@@ -4,7 +4,8 @@ Title: Data Preparation Routines for Medical Registry Data
 Version: 2017.08.02
 Author: Helene Charlotte Rytgaard, Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter Enemark Lund, Thomas Alexander Gerds
 Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
-Description: Fast and furious implementations of often used data preparation steps adapted to Danish registry studies
+Description: Fast and furious implementations of often used data preparation steps.
+             These functions are adapted to Danish registry data.
 Depends:
     R (>= 2.9.0),
 Imports:
@@ -16,12 +17,12 @@ Imports:
     foreach,
     utils,
     Rcpp
+LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     survival,
-    prodlim
-LinkingTo: Rcpp, RcppArmadillo
+    prodlim,
+    knitr,
+    rmarkdown
 License: GPL (>= 3)
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown
 VignetteBuilder: knitr

@@ -3,7 +3,8 @@
 ##' @title Add new drug
 ##' @param dpp Data preprocessing object
 ##' @param drugname The name (in quotes) of the drug to update the value for. 
-##' @param add Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.   
+##' @param add Logical variable. Per default set to FALSE. If TRUE, and drug with name already exists, then this is not overwritten, and the new values are simply added.
+##' @param value not used
 ##' @examples
 ##' 
 ##' d <- dpp()
@@ -15,7 +16,7 @@
 ##' 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`drug<-` <- function(dpp, drugname, add = FALSE) {
+`drug<-` <- function(dpp, drugname, add = FALSE, value) {
   
   i <- (1:length(dpp$drugs))[names(dpp$drugs) == drugname]
 
@@ -24,6 +25,8 @@
   return(dpp)
 }  
 
+
+##' @description Add atc codes to object. 
 ##' @title Add atc codes to object. 
 ##' @param atc Quoted atc codes, a vector if multiple values.  
 ##' @examples

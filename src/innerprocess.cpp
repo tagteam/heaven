@@ -10,7 +10,6 @@ using namespace arma;
 //' @param admdat admission data
 //' @param doses doses
 //' @param idunique unique subject ids
-//' @param drug name of drug variable
 //' @param N sample size
 //' @param maxdepot see medicine macro
 //' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
@@ -21,7 +20,6 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
 			Rcpp::DataFrame admdat,
 			Rcpp::List doses, 
 			Rcpp::IntegerVector idunique,
-			std::string drug,
 			double N, 
 			double maxdepot,
 			bool collapse

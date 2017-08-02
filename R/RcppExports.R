@@ -11,14 +11,13 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @param admdat admission data
 #' @param doses doses
 #' @param idunique unique subject ids
-#' @param drug name of drug variable
 #' @param N sample size
 #' @param maxdepot see medicine macro
 #' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
 #' @author Helene Charlotte Rytgaard
 #' @export
-innerprocess <- function(dat, admdat, doses, idunique, drug, N, maxdepot, collapse) {
-    .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, drug, N, maxdepot, collapse)
+innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
+    .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
 }
 
 #' @description Fast matcher

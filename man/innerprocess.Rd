@@ -4,7 +4,7 @@
 \alias{innerprocess}
 \title{The heart of the medicin macro}
 \usage{
-innerprocess(dat, admdat, doses, idunique, drug, N, maxdepot, collapse)
+innerprocess(dat, admdat, doses, idunique, N, maxdepot, collapse)
 }
 \arguments{
 \item{dat}{data set}
@@ -14,8 +14,6 @@ innerprocess(dat, admdat, doses, idunique, drug, N, maxdepot, collapse)
 \item{doses}{doses}
 
 \item{idunique}{unique subject ids}
-
-\item{drug}{name of drug variable}
 
 \item{N}{sample size}
 
