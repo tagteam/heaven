@@ -8,18 +8,18 @@
 */
 
 /* .Call calls */
-extern SEXP heaven_daysnonhosp(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP heaven_innerprocess(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP heaven_Matcher(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP heaven_split2(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP heaven_timesTwo(SEXP);
+extern SEXP _heaven_daysnonhosp(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _heaven_innerprocess(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _heaven_Matcher(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _heaven_split2(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _heaven_timesTwo(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"heaven_daysnonhosp",  (DL_FUNC) &heaven_daysnonhosp,  5},
-    {"heaven_innerprocess", (DL_FUNC) &heaven_innerprocess, 7},
-    {"heaven_Matcher",      (DL_FUNC) &heaven_Matcher,      9},
-    {"heaven_split2",       (DL_FUNC) &heaven_split2,       5},
-    {"heaven_timesTwo",     (DL_FUNC) &heaven_timesTwo,     1},
+    {"_heaven_daysnonhosp",  (DL_FUNC) &_heaven_daysnonhosp,  5},
+    {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
+    {"_heaven_Matcher",      (DL_FUNC) &_heaven_Matcher,      9},
+    {"_heaven_split2",       (DL_FUNC) &_heaven_split2,       5},
+    {"_heaven_timesTwo",     (DL_FUNC) &_heaven_timesTwo,     1},
     {NULL, NULL, 0}
 };
 

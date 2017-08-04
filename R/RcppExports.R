@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
-    .Call('heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
+    .Call('_heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
 }
 
 #' @description Inner process of medicin macro
@@ -17,7 +17,7 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @author Helene Charlotte Rytgaard
 #' @export
 innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
-    .Call('heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
+    .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
 }
 
 #' @description Fast matcher
@@ -25,7 +25,7 @@ innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
 #' @author Christian Torp-Pedersen
 #' @export
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
-    .Call('heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
+    .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
 
 #' @description Split2
@@ -33,10 +33,10 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
 #' @author Christian Torp-Pedersen
 #' @export
 split2 <- function(pnr, inn, out, dato, dead) {
-    .Call('heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
+    .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
 
 timesTwo <- function(x) {
-    .Call('heaven_timesTwo', PACKAGE = 'heaven', x)
+    .Call('_heaven_timesTwo', PACKAGE = 'heaven', x)
 }
 
