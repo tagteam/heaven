@@ -208,11 +208,14 @@ org(ex$exdrug[, names(ex$exdrug) %in% c("B", "DH", "H")])
 
 
 #+BEGIN_SRC R :results graphics :file "./drug-fig-1.pdf" :exports none  :session *R* :width 6 :height 2 :cache yes
+if (system("echo $USER",intern=TRUE)!="tag")
+    setwd("~/research/Software/medicin-macro/heaven/worg")
+else
+    setwd("~/research/SoftWare/heaven/worg")
 library(heaven)
 T <- as.Date(c(rep("2012-05-08", 3), "2012-08-11", rep("2013-03-15", 2), "2013-05-05",
                "2013-05-25", rep("2013-10-01", 2), "2013-12-28"))
-setwd("/home/helene/research/Software/medicin-macro/heaven/worg")
-exdata <- data.frame(pnr = rep(1, length(T)), 
+exdata <- data.table(pnr = rep(1, length(T)), 
                      eksd = T,
                      atc = rep("A07", length(T)), 
                      packsize = c(1, 1, 1, 1, 1, 2, 1, 3, 2, 1, 1),
@@ -222,20 +225,19 @@ d <- dpp()
 drugdb(d) <- exdata
 drug(d, "exdrug") <- atc(c("A07", "A12B"))
 drug(d, "exdrug") <- pack(c(50, 80), 
-                        min = c(25, 20),
-                        max = c(100, 100), 
-                        def = c(50, 60))
+                          min = c(25, 20),
+                          max = c(100, 100), 
+                          def = c(50, 60))
 
-admdb <- data.frame(id = rep(1, 2),
+admdb <- data.table(id = rep(1, 2),
                     inddto = as.Date(c("2012-06-11", "2013-01-03")),
                     uddto  = as.Date(c("2012-06-28", "2013-01-18")))
 admdb(d, id = id) <- admdb
 plot(d)
 #+END_SRC
 
-#+RESULTS[<2016-12-07 16:10:35> d41a449471ead5302db07e75befbb1017c1f8f0c]:
+#+RESULTS[<2017-01-23 21:06:43> 825811769d599d2a34c0694977eeab1bee85d97f]:
 [[file:./drug-fig-1.pdf]]
-
 
 
 
@@ -671,7 +673,7 @@ org(ex1$exdrug)
 
 
 
-*  User interface
+* User interface
 
 In the following, we show how to use the implemented
 \verb+R+-interface.  Firstly, the package is loaded and an empty object

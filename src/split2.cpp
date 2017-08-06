@@ -1,12 +1,14 @@
+// [[Rcpp::depends(RcppArmadillo)]]
 #include <Rcpp.h>
 #include <vector>
 #include <string>
 
 using namespace Rcpp;
 
+//' @description Split2
 //' @title Split2
 //' @author Christian Torp-Pedersen
-//' @export
+
 // [[Rcpp::export]]
 
 DataFrame split2 (std::vector<int> pnr, //ID
@@ -59,6 +61,8 @@ DataFrame split2 (std::vector<int> pnr, //ID
   OUT=DataFrame::create(_["pnrnum"]=Opnr, _["inn"]=Oin, _["out"]=Oout, _["dato"]=Odato, _["dead"]=Odead );
   return(OUT);
 }
+
+
 
 //*** R
 //pnr <- c("A","A","B","B") #ID

@@ -63,6 +63,7 @@
 #' @export
 #'
 #' @examples
+#' require(data.table)
 #' event <- c(rep(0,20),rep(1,5)) 
 #' ptid <- 1:25
 #' sex <- c(rep("fem",10),rep("mal",10),"fem","fem",rep("mal",3))
@@ -78,77 +79,27 @@
 #' out3 <- RiskSetMatchMC("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
 #'          ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
 RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
-                         controlIndex=NULL, NoIndex=FALSE,cores=10){
-  #ptid - pnr i DST id
-  #event 0/1 distinguishes cases from controls
-  #terms c(1,2,3) - list of vairables to match by
-  #dat - dataset with all variables
-  #Ncontrols - number of controls to provide
-  #reuseCases - T og F or NULL - can a case be a control prior to being a case?
-  #reuseControls - T or F or NULL
-  #caseIndex - Integer or date, date where controls must be prior
-  #controlIndex - Index date for controls
-  require(data.table)
-  require(parallel)
-  require(heaven)
-  options(warn=-1)
-  # Check data.table
-  if (!is.data.table(dat)) stop("data not data.table")
-  # combine matching variables to single term - cterms
-  dat[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
-  # Select relevant part of table for matching
-  if (!NoIndex){
-    alldata <- dat[,.SD,.SDcols=c(ptid,caseIndex,controlIndex,event,"cterms") ]
-    setnames(alldata,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
-  }
-  else{
-    alldata <- dat[,.SD,.SDcols=c(ptid,event,"cterms") ]
-    setnames(alldata,c(".ptid",".event",".cterms"))
-  }
-  #Checking variables (partially)
-  numbers <- table(alldata[,.event])
-  cat ("Numbers of controls and cases","\n")
-  print(numbers)
-  if  ((names(numbers)==c("0","1")) !=c(T,T)) stop (" Event not 0 or 1 ")
-  # prepare to split and split
-  setkey(alldata,.cterms)
-  split.alldata <- split(alldata,by=".cterms")
-  #Prepare multicore
-  NreuseControls<-as.numeric(reuseControls) # Integerlogic for Rcpp
-  if (NoIndex) noindex <- 1L else noindex <- 0L # Noindex for Rcpp
-  CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
-  print(CLUST)
-  clusterExport(CLUST, c("Matcher"))#,"NreuseControls","noindex","reuseCases","NoIndex"),envir=environment())
-  clusterEvalQ(CLUST, library(data.table))
-  clusterEvalQ(CLUST, library(heaven))
-  # Select controls - rbind of each split-member that selects controls
-  selected.controls <- do.call(rbind,parallel::parLapply(CLUST,split.alldata,function(controls){
-    # Setnames because data.table called from functio
-    if (!NoIndex) setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
-    else setnames(controls,c(".ptid",".event",".cterms"))
-    setkey(controls,.event,.ptid)
-    # Define cases in particular match-group
-    cases <- controls[.event==1]
-    setkey(cases,.ptid)
-    # If cases cannot become controls they are removed from controls
-    if (!reuseCases) controls <- controls[.event==0]
-    #find lengths of controls and cases
-    Tcontrols<-dim(controls)[1]
-    Ncases<-dim(cases)[1]
-    # sort controls by random number - so that they can be selected sequentially
-    set.seed(17)
-    controls[,random:=runif(.N,1,Ncontrols*10)]
-    setkey(controls,random)
-    # vectors for Rcpp
-    CONTROLS <- controls[,.ptid]
-    CASES <- cases[,.ptid]
-    if(!NoIndex){
-      controlIndex <- controls[,.controlIndex]
-      caseIndex <- cases[,.caseIndex]
-    } else {
-      controlIndex <- 0L
-      caseIndex <- 0L
+                           controlIndex=NULL, NoIndex=FALSE,cores=10){
+    #ptid - pnr i DST id
+    #event 0/1 distinguishes cases from controls
+    #terms c(1,2,3) - list of vairables to match by
+    #dat - dataset with all variables
+    #Ncontrols - number of controls to provide
+    #reuseCases - T og F or NULL - can a case be a control prior to being a case?
+    #reuseControls - T or F or NULL
+    #caseIndex - Integer or date, date where controls must be prior
+    #controlIndex - Index date for controls
+    options(warn=-1)
+    # Check data.table
+    if (!is.data.table(dat)) stop("data not data.table")
+    # combine matching variables to single term - cterms
+    dat[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
+    # Select relevant part of table for matching
+    if (!NoIndex){
+        alldata <- dat[,.SD,.SDcols=c(ptid,caseIndex,controlIndex,event,"cterms") ]
+        setnames(alldata,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
     }
+<<<<<<< HEAD
     Output <- heaven:::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
               controlIndex, caseIndex, CONTROLS, CASES,noindex)
     setDT(Output)
@@ -156,41 +107,97 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
   })) # end function and do.call
   #Close cluster
   if(!is.null(parallelCluster)) {
+=======
+    else{
+        alldata <- dat[,.SD,.SDcols=c(ptid,event,"cterms") ]
+        setnames(alldata,c(".ptid",".event",".cterms"))
+    }
+    #Checking variables (partially)
+    numbers <- table(alldata[,.event])
+    cat ("Numbers of controls and cases","\n")
+    print(numbers)
+    if  ((names(numbers)==c("0","1")) !=c(T,T)) stop (" Event not 0 or 1 ")
+    # prepare to split and split
+    setkey(alldata,.cterms)
+    split.alldata <- split(alldata,by=".cterms")
+    #Prepare multicore
+    NreuseControls<-as.numeric(reuseControls) # Integerlogic for Rcpp
+    if (NoIndex) noindex <- 1L else noindex <- 0L # Noindex for Rcpp
+    CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
+    print(CLUST)
+    parallel::clusterExport(CLUST, c("Matcher"))#,"NreuseControls","noindex","reuseCases","NoIndex"),envir=environment())
+    parallel::clusterEvalQ(CLUST, library(data.table))
+    parallel::clusterEvalQ(CLUST, library(heaven))
+    # Select controls - rbind of each split-member that selects controls
+    selected.controls <- do.call(rbind,parallel::parLapply(CLUST,split.alldata,function(controls){
+        # Setnames because data.table called from functio
+        if (!NoIndex) setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
+        else setnames(controls,c(".ptid",".event",".cterms"))
+        setkey(controls,.event,.ptid)
+        # Define cases in particular match-group
+        cases <- controls[.event==1]
+        setkey(cases,.ptid)
+        # If cases cannot become controls they are removed from controls
+        if (!reuseCases) controls <- controls[.event==0]
+        #find lengths of controls and cases
+        Tcontrols<-dim(controls)[1]
+        Ncases<-dim(cases)[1]
+        # sort controls by random number - so that they can be selected sequentially
+        set.seed(17)
+        controls[,random:=runif(.N,1,Ncontrols*10)]
+        setkey(controls,random)
+        # vectors for Rcpp
+        CONTROLS <- controls[,.ptid]
+        CASES <- cases[,.ptid]
+        if(!NoIndex){
+            controlIndex <- controls[,.controlIndex]
+            caseIndex <- cases[,.caseIndex]
+        } else {
+            controlIndex <- 0L
+            caseIndex <- 0L
+        }
+        Output <- data.table(heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
+                                             controlIndex, caseIndex, CONTROLS, CASES,noindex))    
+        Output
+    })) # end function and do.call
+    #Close cluster
+    ## if(!is.null(parallelCluster)) {
+>>>>>>> 789b2eb9fa50d78a4ce0026e14780c7124f8f503
     parallel::stopCluster(CLUST)
-    parallelCluster <- c()
-  }
-  setnames(selected.controls,c(".ptid","caseid"))
-  selected.controls[,.event:=0]
-  setkey(alldata,.event)
-  cases <- alldata[.event==1]
-  cases[,caseid:=.ptid]
-  # Create final dataset with cases and controls
-  FINAL <- rbind(cases[,.(.ptid,caseid,.event)],selected.controls[,.(.ptid,caseid,.event)])
-  setkey(FINAL)
-  ## Report matching success
-  control<-FINAL[,.N,by=caseid]
-  control<-as.vector(control[,N]-1)
-  cat("\n","Table of control numbers for cases","\n")
-  print(table(control))
-  ## Report on reusing controls
-  report<-FINAL[.event==0,.N,by=".ptid"]
-  report<-with(report,table(N))
-  cat("Table of use/reuse controls","\n")
-  print(report)
-  ## Report of using/reusing cases as controls
-  caselist <- cases[,.ptid]
-  report <- FINAL[caselist,.N,by=".ptid"]
-  report <- with(report,table(N))
-  cat("Table of use/reuse of cases\n")
-  print(report)
-  #output
-  setnames(FINAL,".ptid",ptid) #give the proper ptid back
-  # Ensure that original ptid is character
-  dat[,ptid:=as.character(ptid)]
-  FINAL <- merge(FINAL,dat,by=ptid)
-  FINAL[,c(".case","cterms"):=NULL] # remove cterms - aggregated terms
-  setkeyv(FINAL,c("caseid",event))
-  # set caseid for controls
-  if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
-  FINAL 
+    ## parallelCluster <- c()
+    ## }
+    setnames(selected.controls,c(".ptid","caseid"))
+    selected.controls[,.event:=0]
+    setkey(alldata,.event)
+    cases <- alldata[.event==1]
+    cases[,caseid:=.ptid]
+    # Create final dataset with cases and controls
+    FINAL <- rbind(cases[,.(.ptid,caseid,.event)],selected.controls[,.(.ptid,caseid,.event)])
+    setkey(FINAL)
+    ## Report matching success
+    control<-FINAL[,.N,by=caseid]
+    control<-as.vector(control[,N]-1)
+    cat("\n","Table of control numbers for cases","\n")
+    print(table(control))
+    ## Report on reusing controls
+    report<-FINAL[.event==0,.N,by=".ptid"]
+    report<-with(report,table(N))
+    cat("Table of use/reuse controls","\n")
+    print(report)
+    ## Report of using/reusing cases as controls
+    caselist <- cases[,.ptid]
+    report <- FINAL[caselist,.N,by=".ptid"]
+    report <- with(report,table(N))
+    cat("Table of use/reuse of cases\n")
+    print(report)
+    #output
+    setnames(FINAL,".ptid",ptid) #give the proper ptid back
+    # Ensure that original ptid is character
+    dat[,ptid:=as.character(ptid)]
+    FINAL <- merge(FINAL,dat,by=ptid)
+    FINAL[,c(".case","cterms"):=NULL] # remove cterms - aggregated terms
+    setkeyv(FINAL,c("caseid",event))
+    # set caseid for controls
+    if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
+    FINAL 
 }

@@ -4,11 +4,19 @@
 \alias{atc}
 \title{Add atc codes to object.}
 \usage{
-d <- dpp()
-drug(d, "treatment1") <- atc("A12B")
+atc(atc)
 }
 \arguments{
 \item{atc}{Quoted atc codes, a vector if multiple values.}
+}
+\description{
+Add atc codes to object.
+}
+\examples{
+
+d <- dpp()
+drug(d, "treatment1") <- atc("A12B")
+
 }
 \author{
 Helene Charlotte Rytgaard

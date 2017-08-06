@@ -7,6 +7,9 @@
 Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex,
   controls, cases, NoIndex)
 }
+\description{
+Fast matcher
+}
 \author{
 Christian Torp-Pedersen
 }

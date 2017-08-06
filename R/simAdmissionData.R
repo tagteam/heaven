@@ -1,36 +1,39 @@
 ##' Simulate admission data
 ##' 
 ##' Simulate admission data alike the Danish medical registry
-##' @title Admission data simulation function 
+##' @title Admission data simulation function
 ##' @param n Number of patients
 ##' @param m Maximal number of admission dates per patient
-##' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}
-##' @details 
+##' @param diagnoses List of diagnoses. Defaults to all possible ICD10 codes: http://www.icd10data.com/ICD10CM/Codes
+##' @param startDate starting date
+##' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas Alexander Gerds \email{tag@@biostat.ku.dk}
 ##' 
 ##' @examples
-##' 
+##' ## a single subject
 ##' set.seed(1)
 ##' simAdmissionData(1)
-##' set.seed(2)
-##' simAdmissionData(2)
+##' ## 7 subjects
+##' set.seed(28)
+##' simAdmissionData(7)
 ##' 
 ##' @export
 simAdmissionData <- function(n,
                              m = 5,
-                             startDate = "1995-01-01", 
-                             longformat = TRUE){
-   startDate <- as.Date(startDate)
-    out <- rbindlist(lapply(1:n,function(i){
+                             diagnoses=paste0(toupper(letters),rep(0:99,length(letters))),
+                             startDate = "1995-01-01"){
+    startDate <- as.Date(startDate)
+    out <- data.table::rbindlist(lapply(1:n,function(i){
         M = sample(1:m,size=1)
         ind <- startDate + runif(M,0,20*365.25)
         udd <- pmin(ind + runif(M,0,45), startDate + 20*365.25)
-        dat.i = data.table(pnr=i,
+        dat.i = data.table::data.table(pnr=i,
                            inddto = ind,
-                           uddto  = udd)
+                           uddto  = udd,
+                           diag = sample(diagnoses,size=M))
         dat.i
     }))
-    setkey(out, pnr, inddto)
-    setcolorder(out,c("pnr","inddto","uddto"))
+    data.table::setkey(out, pnr, inddto)
+    data.table::setcolorder(out,c("pnr","inddto","uddto","diag"))
     out
 }
 

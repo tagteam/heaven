@@ -10,25 +10,50 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
   codevar = "diag", patvar = "pattype", record.id = "recnum")
 }
 \arguments{
-\item{dat}{Raw data with diagnoses, needs specific variables: diag, pnr, inddto, and pattype}
+\item{dat}{Data with diagnoses.}
 
-\item{disease}{pre-specified name of disease after HALAL definitions, as characterstring. Can be one or more of: "af",}
+\item{disease}{Characterstring containing pre-specified name of disease after HALAL definitions. Can be one or more of: "af",
+"rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
+"bleeding_without_hemstroke","cardiomyopathy", "hf", "lung_edema", "HF", "ihd","ap","ami","perart",
+"cancer","chronic_kidney_disease","copd","liver_disease","alcohol".}
 
-\item{inclusions}{Characterstring, where other diagnoses can be included.}
+\item{inclusions}{Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.}
 
-\item{exclusions}{Characterstring, specifying diagnoses to be omitted - if desired.}
+\item{exclusions}{Characterstring, specifying diagnoses to be omitted.}
 
-\item{p.in}{Date of period start}
+\item{p.in}{Date of period start.}
 
-\item{p.out}{Date of period end}
+\item{p.out}{Date of period end.}
 
-\item{first.pnr}{Specifies if only the first record of each patient should be output}
+\item{first.pnr}{Logical. Specifies if only the first record of each patient should be output.}
 
 \item{pat}{Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.}
 
-\item{prefix}{character string of prefix name for the resulting date variable of disease.}
+\item{prefix}{Character string of prefix name for the resulting date variable of disease.}
+
+\item{entryvar}{Name of the variable in data that contains the entrydate of diagnosis.}
+
+\item{id}{Name of the variable in data that contains patient id.}
+
+\item{outvar}{Name of the variable in data that contains the exitdate of diagnosis.}
+
+\item{codevar}{Name of the variable in data that contains diagnoses.}
+
+\item{patvar}{Name of the variable in data that contains the type of patient.}
+
+\item{record.id}{Name of the variable in data that contains the record number for each patient.}
+}
+\value{
+A list of three elements. The first one is the extracted data. The second element contains the diagnoses specified, 
+either the input to disease, inclusion or both. The third element contains every unique diagnosis extracted.
+}
+\description{
+Filtering of LPR registry data according to a given set of diseases
+}
+\details{
+Extracts specific selected or predefined diagnoses. If specified by first.pnr only the first occurrence of the diagnoses are extracted.
+Diagnoses in a specific period of time can also be extracted by p.in and p.out.
 }
 \author{
 Regitze Kuhr Skals
 }
-

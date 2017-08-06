@@ -1,21 +1,22 @@
-#' samplepop
+#' Sample drug purchase data for illustration
 #' 
-#' sample data to test R versions of code from hell
+#' a sample data frame used to illustrate some functionality
 #' 
-#' @name samplepop
+#' @name sampleDrugData
 #' @docType data
-#' @format A data frame with 32 observations on the following 5 variables.
+#' @format This data frame contains 12 observations from one subject:
 #' \describe{
-#' \item{pnr}{patient id}
-#' \item{recno}{record number}
-#' \item{inddto}{hospital admission first date}
-#' \item{uddto}{hospital admission last date}
-#' \item{pattype}{type of admission}
-#' }
+#' \item{pnr}{pnr number}
+#' \item{eksd}{date of purchase}
+#' \item{packsize}{package size}
+#' \item{strnum}{strnum}
+#' \item{apk}{apk}
+#' \item{atc}{atc code}
+#'} 
 #' @keywords datasets
 ##' @examples
 ##' 
-##' data(samplepop)
+##' data(sampleDrugData)
 #'
 
 #' 
@@ -25,4 +26,8 @@
 #' @importFrom Rcpp sourceCpp evalCpp
 #' @importFrom data.table data.table ":=" setnames setorder setcolorder setkey rbindlist
 #' @importFrom foreach "%dopar%" foreach
+#' @importFrom grDevices colorRampPalette topo.colors
+#' @importFrom graphics points title
+#' @importFrom stats D predict qnorm rbinom rnorm runif
+#' @importFrom utils packageVersion setTxtProgressBar tail txtProgressBar
 NULL

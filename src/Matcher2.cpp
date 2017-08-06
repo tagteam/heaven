@@ -5,6 +5,13 @@
 using namespace Rcpp;
 
 
+
+
+
+//' @description Fast matcher
+//' @title Matcher
+//' @author Christian Torp-Pedersen
+
 // [[Rcpp::export]]
 
 
@@ -17,7 +24,7 @@ List Matcher(int Ncontrols, // Desired number of controls
              std::vector<std::string> controls, // controls ID
              std::vector<std::string> cases, // cases ID
              int NoIndex){ // Ignore index if 1 - match without regard to risk-set - essentially simple match 
-
+  
   int ii; // while counter - number of selected controls
   int controlCounter=0;// Sequencer through list of controls - controlIndex
   bool IsCoEl;  // preliminary test of selectability
@@ -95,35 +102,30 @@ List Matcher(int Ncontrols, // Desired number of controls
       if (controlCounter>=Tcontrols) break; // No available controls for case  
     } // end while
   }// End loop for each case  
-//  std::vector<std::string>  out[selectedCases.size()][2];  
-//  if (selectedControls.size()>=1)
-//    { out(_,1)=selectedCases; 
-//      out(_,0)=selectedControls;
-//    }
 return List::create(Named("selectedCases") = selectedCases,
                     Named("selectedControls") = selectedControls);
 }  
 
-/*** R
+//*** R
 
-Ncontrols <- 3 # desired number of controls
-Tcontrols <- 20 # total number of controls
-Ncases <- 5 #Total number of cases
-reuseControls <- 1 # 0 do not, 1 do reuse
-controlIndex <- c(rep(0,5),rep(5,5),rep(10,5),rep(15,5)) #control dates
-caseIndex <- c(0,4,9,14,10) # case dates
-controls <- c(paste0('A',1:5),paste0('B',1:5),paste0('C',1:5),paste0('D',1:5)) #control ids
-cases <- LETTERS[1:5] #case ids
-NoIndex <- 0
+//Ncontrols <- 3 # desired number of controls
+//Tcontrols <- 20 # total number of controls
+//Ncases <- 5 #Total number of cases
+//reuseControls <- 1 # 0 do not, 1 do reuse
+//controlIndex <- c(rep(0,5),rep(5,5),rep(10,5),rep(15,5)) #control dates
+//caseIndex <- c(0,4,9,14,10) # case dates
+//controls <- c(paste0('A',1:5),paste0('B',1:5),paste0('C',1:5),paste0('D',1:5)) #control ids
+//cases <- LETTERS[1:5] #case ids
+//NoIndex <- 0
 
- temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,  
-                        controlIndex, caseIndex,
-                         controls,  cases,NoIndex)
- 
-  setDT(temp)[]
+// temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,  
+//                        controlIndex, caseIndex,
+//                         controls,  cases,NoIndex)
+// 
+//  setDT(temp)[]
 
 
-  */
+//  */
   
  
  

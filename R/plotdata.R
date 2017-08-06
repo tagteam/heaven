@@ -2,10 +2,11 @@
 ##' 
 ##' Function to plot dates etc
 ##' @title Plot function for data preprocessing object
-##' @param dpp Data preprocessing object
-##' @param drug If specified, only data for this object is plotted. 
-##' @usage 
-##' 
+##' @param x Data preprocessing object obtained with \code{dpp}
+##' @param drug If specified, only data for this object is plotted.
+##' @param ... not used
+##' @examples
+##' library(ggplot2)
 ##' drugdata <- simPrescriptionData(10)
 ##' admdata <- simAdmissionData(10)
 ##' 
@@ -19,26 +20,26 @@
 ##' @return A plot is returned, nothing is changed about the preprocessing object. 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-plot.dpp <- function(dpp, drug=NULL) {
+plot.dpp <- function(x, drug=NULL,...) {
   
   if (length(drug) == 0) {
-    j <- (1:length(dpp$drugs))
+    j <- (1:length(x$drugs))
   } else
-    j <- (1:length(dpp$drugs))[names(dpp$drugs) == drug]
+    j <- (1:length(x$drugs))[names(x$drugs) == drug]
   
   if (j[length(j)] > 0) {
-    atc <- unlist(sapply(j, function(j) dpp$drugs[[j]]$atc))
+    atc <- unlist(sapply(j, function(j) x$drugs[[j]]$atc))
   } else 
-    atc <- unique(dpp$drugdb$atc)
+    atc <- unique(x$drugdb$atc)
   
   if (length(j) == 0) {
     print(paste("no drug named", drug, "in specified input"))
   } else {
-    d1 <- data.frame(dpp$drugdb)
+    d1 <- data.frame(x$drugdb)
     d1 <- d1[d1$atc %in% atc, ]
-    a1 <- data.frame(dpp$admdb)
+    a1 <- data.frame(x$admdb)
     
-   # d1 <- d1[dpp$period[1] <= d1$pdate & d1$pdate <= dpp$period[2], ]
+   # d1 <- d1[x$period[1] <= d1$pdate & d1$pdate <= x$period[2], ]
     d1 <- d1[order(d1$id, d1$pdate), ]
     #-- sort after first date
     
@@ -69,13 +70,13 @@ plot.dpp <- function(dpp, drug=NULL) {
     } else 
       title <- "prescription dates"
     
-    ggplot(data = d1, aes(x = pdate, y = idorder)) + geom_point(size = 1.1, aes(col = atc)) + 
-      geom_segment(data = a1, aes(x = inddto,  xend = uddto,
-                                  y = idorder, yend = idorder, col = "admission periods")) + 
-      xlab("time") + ylab("individual") +
-      guides(color = guide_legend(override.aes = list(shape=c(rep(16, natc), NA), 
-                                                      linetype=c(rep(0, natc), 1)))) + 
-      scale_color_manual("", values = c(col, "red")) + theme_bw() +
-      theme(legend.position = "bottom")
+    ggplot2::ggplot(data = d1, ggplot2::aes(x = pdate, y = idorder)) + geom_point(size = 1.1, aes(col = atc)) + 
+        ggplot2::geom_segment(data = a1,ggplot2::aes(x = inddto,  xend = uddto,
+                                    y = idorder, yend = idorder, col = "admission periods")) + 
+        ggplot2::xlab("time") + ggplot2::ylab("individual") +
+        ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(shape=c(rep(16, natc), NA), 
+                                                        linetype=c(rep(0, natc), 1)))) + 
+        ggplot2::scale_color_manual("", values = c(col, "red")) + ggplot2::theme_bw() +
+        ggplot2::theme(legend.position = "bottom")
   }
 } 

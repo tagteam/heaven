@@ -13,9 +13,12 @@ simPrescriptionData(n, m = 10, packages = list(A07 = list(c(200, 30), c(400,
 
 \item{m}{Maximal number of prescription dates per patient}
 
-\item{packages}{Named list of association lists. The names of the list are ATC codes.}
+\item{packages}{Named list of association lists. The names of the
+list are ATC codes, the value associates strengths of one unit and package sizes.}
 
-\item{max.packages}{Integer. How many packages do we want as maximal on one day.}
+\item{max.packages}{Integer. Upper bound for number of packages purchased on a single date}
+
+\item{startDate}{start date}
 }
 \description{
 Simulate prescription data
@@ -27,6 +30,7 @@ Simulate prescription data alike the Danish medical registry
 
 http://www.medicinpriser.dk/
 http://pro.medicin.dk/
+https://www.whocc.no/atc_ddd_index/
 
 A07: strength 200, number of pills 30
      strength 400, number of pills 100
@@ -36,19 +40,22 @@ A12: strength 750, number of pills 100
      strength 750, number of pills 250
      etc
 
-Association list to be used as package argument 
+# The association list which is used as the default value
+# for the \code{package} argument:
 
 \code{list("A07"=list(c(200,30),c(400,100),c(400,300),c(500,60)),
       "A12B"=list(c(750,100),c(750,250),c(75,500)))}
 }
 \examples{
-
+## a single subject
 set.seed(1)
 simPrescriptionData(1)
-set.seed(2)
-simPrescriptionData(2)
+## 7 subjects
+set.seed(29)
+simPrescriptionData(7)
 
 }
 \author{
-Helene Charlotte Rytgaard \email{hely@sund.ku.dk}, Thomas Alexander Gerds \email{tag@biostat.ku.dk}
+Helene Charlotte Rytgaard \email{hely@sund.ku.dk}, Thomas
+    Alexander Gerds \email{tag@biostat.ku.dk}
 }
