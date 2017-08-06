@@ -36,7 +36,3 @@ split2 <- function(pnr, inn, out, dato, dead) {
     .Call('heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
 
-timesTwo <- function(x) {
-    .Call('heaven_timesTwo', PACKAGE = 'heaven', x)
-}
-
