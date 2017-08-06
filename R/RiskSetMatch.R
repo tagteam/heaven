@@ -109,6 +109,7 @@ RiskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
   progress <- 0;
   # Select controls - rbind of each split-member that selects controls
   selected.controls <- do.call(rbind,lapply(split.alldata,function(controls){
+#browser()    
     # Setnames because data.table called from function
     if (!NoIndex) setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
     else setnames(controls,c(".ptid",".event",".cterms"))
@@ -126,8 +127,8 @@ RiskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
     controls[,random:=runif(.N,1,Ncontrols*10)]
     setkey(controls,random)
     # vectors for Rcpp
-    CONTROLS <- controls[,.ptid]
-    CASES <- cases[,.ptid]
+    CONTROLS <- as.character(controls[,.ptid])
+    CASES <- as.character(cases[,.ptid])
     NreuseControls<-as.numeric(reuseControls) # Integerlogic for Rcpp
     if(!NoIndex){
       controlIndex <- controls[,.controlIndex]
@@ -136,7 +137,7 @@ RiskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
       controlIndex <- 0L
       caseIndex <- 0L
     }
-    Output <- Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
+    Output <- heaven:::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
               controlIndex, caseIndex, CONTROLS, CASES,noindex)
     setDT(Output)
     progress <<- progress+1/totalprogress

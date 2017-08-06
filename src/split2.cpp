@@ -9,13 +9,13 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 
-DataFrame split2 (std::vector<std::string> pnr, //ID
+DataFrame split2 (std::vector<int> pnr, //ID
                   IntegerVector   inn,  //Start intervals
                   IntegerVector   out, //End intervals
                   IntegerVector   dato, // Split dates - NA interpreted as zero
                   IntegerVector   dead // Event at end of interval 0/1
 ){
-  std::vector<std::string> Opnr; //ID output
+  std::vector<int> Opnr; //ID output
   std::vector<int> Oin, Oout, Odato, Odead; // Output: in/out/split date, event
   int dim;
   Rcpp::DataFrame OUT; // result!
@@ -56,12 +56,9 @@ DataFrame split2 (std::vector<std::string> pnr, //ID
         }
     
   }
-  OUT=DataFrame::create(_["pnr"]=Opnr, _["inn"]=Oin, _["out"]=Oout, _["dato"]=Odato, _["dead"]=Odead );
+  OUT=DataFrame::create(_["pnrnum"]=Opnr, _["inn"]=Oin, _["out"]=Oout, _["dato"]=Odato, _["dead"]=Odead );
   return(OUT);
 }
-
-
-
 
 //*** R
 //pnr <- c("A","A","B","B") #ID

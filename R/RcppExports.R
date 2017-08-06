@@ -12,9 +12,6 @@ innerprocess <- function(dat, admdat, doses, idunique, treatname, N, maxdepot, c
     .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, treatname, N, maxdepot, collapse)
 }
 
-#' @title Matcher
-#' @author Christian Torp-Pedersen
-#' @export
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
@@ -24,10 +21,6 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
 #' @export
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
-}
-
-modifyDataFrame <- function(names) {
-    .Call('_heaven_modifyDataFrame', PACKAGE = 'heaven', names)
 }
 
 timesTwo <- function(x) {

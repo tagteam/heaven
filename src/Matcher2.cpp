@@ -4,9 +4,7 @@
 #include <string>
 using namespace Rcpp;
 
-//' @title Matcher
-//' @author Christian Torp-Pedersen
-//' @export
+
 // [[Rcpp::export]]
 
 

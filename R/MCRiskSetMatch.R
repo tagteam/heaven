@@ -149,7 +149,7 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
       controlIndex <- 0L
       caseIndex <- 0L
     }
-    Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
+    Output <- heaven:::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
               controlIndex, caseIndex, CONTROLS, CASES,noindex)
     setDT(Output)
     Output
