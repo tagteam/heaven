@@ -21,6 +21,8 @@ simPop <- function(n,min.age=20,max.age=90,sex=.5,mortality=.05){
                                   sex=factor(rbinom(n,1,sex),levels=0:1,labels=c("female","male")),
                                   birthdate=Sys.Date()-365.25*runif(n,min.age,max.age),status=rbinom(n,1,mortality))
     pop[,doddate:=Sys.Date()]
-    pop[status==1,doddate:=runif(sum(status==1),max(birthdate[status==1],as.Date("01-01-1995")),Sys.Date())]
+    pop[status==1,doddate:=runif(sum(status==1),
+                                 max(birthdate[status==1],as.Date("1995-01-01")),
+                                 Sys.Date())]
     data.table::rbindlist(list(NULL,pop))
 }
