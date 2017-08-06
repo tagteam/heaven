@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // daysnonhosp
 Rcpp::NumericVector daysnonhosp(Rcpp::NumericVector id, Rcpp::NumericVector pdate, Rcpp::NumericVector iddates, Rcpp::NumericVector inddto, Rcpp::NumericVector uddto);
-RcppExport SEXP _heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
+RcppExport SEXP heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,7 @@ END_RCPP
 }
 // innerprocess
 Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, Rcpp::IntegerVector idunique, double N, double maxdepot, bool collapse);
-RcppExport SEXP _heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP NSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
+RcppExport SEXP heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP NSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // Matcher
 CharacterMatrix Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, CharacterVector controls, CharacterVector cases, int NoIndex);
-RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NoIndexSEXP) {
+RcppExport SEXP heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NoIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -59,7 +59,7 @@ END_RCPP
 }
 // split2
 Rcpp::DataFrame split2(CharacterVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dato, IntegerVector dead);
-RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP datoSEXP, SEXP deadSEXP) {
+RcppExport SEXP heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP datoSEXP, SEXP deadSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,7 +74,7 @@ END_RCPP
 }
 // timesTwo
 NumericVector timesTwo(NumericVector x);
-RcppExport SEXP _heaven_timesTwo(SEXP xSEXP) {
+RcppExport SEXP heaven_timesTwo(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -82,4 +82,18 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(timesTwo(x));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"heaven_daysnonhosp", (DL_FUNC) &heaven_daysnonhosp, 5},
+    {"heaven_innerprocess", (DL_FUNC) &heaven_innerprocess, 7},
+    {"heaven_Matcher", (DL_FUNC) &heaven_Matcher, 9},
+    {"heaven_split2", (DL_FUNC) &heaven_split2, 5},
+    {"heaven_timesTwo", (DL_FUNC) &heaven_timesTwo, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_heaven(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

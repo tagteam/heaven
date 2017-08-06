@@ -4,12 +4,15 @@
 \alias{simAdmissionData}
 \title{Admission data simulation function}
 \usage{
-simAdmissionData(n, m = 5, startDate = "1995-01-01")
+simAdmissionData(n, m = 5, diagnoses = paste0(toupper(letters), rep(0:99,
+  length(letters))), startDate = "1995-01-01")
 }
 \arguments{
 \item{n}{Number of patients}
 
 \item{m}{Maximal number of admission dates per patient}
+
+\item{diagnoses}{List of diagnoses. Defaults to all possible ICD10 codes: http://www.icd10data.com/ICD10CM/Codes}
 
 \item{startDate}{starting date}
 }
@@ -20,13 +23,14 @@ Simulate admission data
 Simulate admission data alike the Danish medical registry
 }
 \examples{
-
+## a single subject
 set.seed(1)
 simAdmissionData(1)
-set.seed(2)
-simAdmissionData(2)
+## 7 subjects
+set.seed(28)
+simAdmissionData(7)
 
 }
 \author{
-Helene Charlotte Rytgaard \email{hely@sund.ku.dk}
+Helene Charlotte Rytgaard \email{hely@sund.ku.dk}, Thomas Alexander Gerds \email{tag@biostat.ku.dk}
 }

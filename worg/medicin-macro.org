@@ -673,7 +673,7 @@ org(ex1$exdrug)
 
 
 
-*  User interface
+* User interface
 
 In the following, we show how to use the implemented
 \verb+R+-interface.  Firstly, the package is loaded and an empty object
