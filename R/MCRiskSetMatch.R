@@ -1,4 +1,22 @@
-#' RiskSetMatch - Risk set matching 
+#' @title MCRiskSetMatch - Risk set matching, multicore
+#' 
+#' @description
+#' Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
+#' controls with event later than the case are accepted.  The current program is based on exact matching and allows 
+#' the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
+#' reuse controls and to allow cases to be controls prior to being a case.
+#' 
+#' This function produces identical results to "RiskSetMatch" but is able to use multiple cores and thus has an
+#' option to include a variable to define number of cores (default 10)
+#' 
+#' 
+#' @usage
+#' RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
+#'         controlIndex=NULL, NoIndex=FALSE, cores=10)
+#' 
+#' @author Christian Torp-Pedersen
+#' 
+
 #'
 #' @param ptid - Personal ID variable defining participant
 #' @param event - Defines cases/controls MUST be 0/1
@@ -7,8 +25,12 @@
 #' @param Ncontrols - Number of controls soucht for each case
 #' @param reuseCases - T/F If T a case can be a control prior to being a case
 #' @param reuseControls - T/F If T a control can be reused for several cases
-#' @param caseIndex - Date variable defining the date where a case becomes a case
-#' @param controlIndex - date variable defining the control data that needs to be larger chan caseIndex
+#' @param caseIndex - Date variable defining the date where a case becomes a case. This could typicalle be the
+#' date where e.g. a cancer develops and follow up starts - og in a case-control design the date where the event
+#' of interest occurs.
+#' @param controlIndex - date variable defining the control data that needs to be larger chan caseIndex.  For a cohort
+#' design this could typically be the date where a control dies or is censored - and for a case-control design be a date
+#' that is prior to a case date for that individual.
 #' @param NoIndex - if TRUE caseIndex/controlIndex are ignosed
 #' @param cores - Number of cores to use. Defaults to max of available and 10
 #' 
@@ -127,8 +149,9 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
       controlIndex <- 0L
       caseIndex <- 0L
     }
-    Output <- data.table(heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-              controlIndex, caseIndex, CONTROLS, CASES,noindex))    
+    Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
+              controlIndex, caseIndex, CONTROLS, CASES,noindex)
+    setDT(Output)
     Output
   })) # end function and do.call
   #Close cluster

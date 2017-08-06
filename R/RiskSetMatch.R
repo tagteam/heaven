@@ -1,5 +1,19 @@
-#' RiskSetMatch - Risk set matching 
-#'
+#' @title RiskSetMatch - Risk set matching
+#' 
+#' @description #' 
+#' Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
+#' controls with event later than the case are accepted.  The current program is based on exact matching and allows 
+#' the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
+#' reuse controls and to allow cases to be controls prior to being a case.
+#' 
+#' 
+#' @usage
+#' RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
+#'         controlIndex=NULL, NoIndex=FALSE)
+#' 
+#' @author Christian Torp-Pedersen
+#' 
+#' @arguments
 #' @param ptid - Personal ID variable defining participant
 #' @param event - Defines cases/controls MUST be 0/1
 #' @param terms - c(.....) the variables that should be matched by
@@ -11,8 +25,8 @@
 #' @param controlIndex - date variable defining the control data that needs to be larger chan caseIndex
 #' @param NoIndex - if TRUE caseIndex/controlIndex are ignosed
 #' 
-#' \bold{Details}
-#' The function does exact matching and keep 2 dates apart.
+#' @details 
+#' The function does exact matching and keep 2 dates (indices) apart.
 #' Because the matching is exact all matching variables must be integer or character. Make sure that
 #' sufficient rounding is done on continuous variables to ensure a decent number of controls for each case.
 #' For example it may be difficult to find controls for very high age cases and age should often be rounded 
@@ -32,6 +46,9 @@
 #' @return data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
 #' the original dataset are preserved unchanged. The final dataset includes all original cases but only the controls 
 #' that were selected.
+#' 
+#' @seealso MCRiskSetMatch, Matchit
+#' 
 #' @export
 #'
 #' @examples
@@ -119,8 +136,9 @@ RiskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
       controlIndex <- 0L
       caseIndex <- 0L
     }
-    Output <- data.table(Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-              controlIndex, caseIndex, CONTROLS, CASES,noindex))    
+    Output <- Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
+              controlIndex, caseIndex, CONTROLS, CASES,noindex)
+    setDT(Output)
     progress <<- progress+1/totalprogress
     #Progress bar
       setTxtProgressBar(pb,progress)
