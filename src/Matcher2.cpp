@@ -11,6 +11,7 @@ using namespace Rcpp;
 //' @description Fast matcher
 //' @title Matcher
 //' @author Christian Torp-Pedersen
+//' @export
 
 // [[Rcpp::export]]
 

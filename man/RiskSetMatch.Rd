@@ -5,7 +5,7 @@
 \title{RiskSetMatch - Risk set matching}
 \usage{
 RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
-        controlIndex=NULL, NoIndex=FALSE)
+        controlIndex=NULL, NoIndex=FALSE,cores=1)
 }
 \arguments{
 \item{ptid}{- Personal ID variable defining participant}
@@ -16,22 +16,27 @@ RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE
 
 \item{dat}{- The single dataset with all information - must be data.table}
 
-\item{Ncontrols}{- Number of controls soucht for each case}
+\item{Ncontrols}{- Number of controls sought for each case}
 
 \item{reuseCases}{- T/F If T a case can be a control prior to being a case}
 
 \item{reuseControls}{- T/F If T a control can be reused for several cases}
 
-\item{caseIndex}{- Date variable defining the date where a case becomes a case}
+\item{caseIndex}{- Date variable defining the date where a case becomes a case. For a case control study thi
+would be the date of event of interest, for a cohort study the date where a case enters an analysis}
 
-\item{controlIndex}{- date variable defining the control data that needs to be larger chan caseIndex}
+\item{controlIndex}{- date variable defining the control data that needs to be larger chan caseIndex. For a
+case control study this would be the date where a control has the event of interest or is censored.  For a
+cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.}
 
 \item{NoIndex}{- if TRUE caseIndex/controlIndex are ignosed}
+
+\item{cores}{- number of cores to use, default is one}
 }
 \value{
-data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
-the original dataset are preserved unchanged. The final dataset includes all original cases but only the controls 
-that were selected.
+data.table with cases and controls. A new variable "caseid" links controls to cases.  This variable name
+is fixed and should not be used for other purposes.   Other variables in the original dataset are preserved 
+unchanged. The final dataset includes all original cases but only the controls that were selected.
 }
 \description{
 #' 
@@ -47,9 +52,10 @@ sufficient rounding is done on continuous variables to ensure a decent number of
 For example it may be difficult to find controls for very high age cases and age should often be rounded 
 by 2,3 og 5 years - and further aggregating extreme ages.
 
-For many purposes controls should be reused and cases allowed to be controls prior to being cases. The function
-provides some statistics where You should make sure that reuse of cases/controls is not extreme - which may 
-cause bias.
+For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
+more relevant since the age of a control varies with time.
+
+For many purposes controls should be reused and cases allowed to be controls prior to being cases. 
 
 With small samples the function is fast.  With extreme number of cases the calculation time can be many hours.
 With long computations times please use the sister of this program RiskSetMatchMC where multiple cores can be 
@@ -57,6 +63,12 @@ applied
 
 The function can be used for standard matching without the caseIndex/controlIndex, but other packages
 such as MatchIt should preferably be used in these cases.
+
+It may appear tempting always to use multiple cores, but this emplies a costly overhead.  With extreme numbers
+of cases/controls it can save time. When a single core is used a progress shows progress of matching. There is
+no progress bar with multiple cores
+
+The function matchReport may be used to provide simple summaries of use of cases and controls
 }
 \examples{
 require(data.table)
@@ -75,9 +87,12 @@ out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",c
 # Risk set matching with reuse of cases (control prior to case) and reuse of controls
 out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
          ,reuseCases=TRUE,reuseControls=TRUE)
+# Same with 2 cores          
+out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
+         ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
 }
 \seealso{
-MCRiskSetMatch, Matchit
+matchReport Matchit
 }
 \author{
 Christian Torp-Pedersen
