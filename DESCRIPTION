@@ -21,6 +21,7 @@ LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     survival,
     prodlim,
+    riskRegression,
     knitr,
     rmarkdown
 License: GPL (>= 3)
