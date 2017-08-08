@@ -99,15 +99,6 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
         alldata <- dat[,.SD,.SDcols=c(ptid,caseIndex,controlIndex,event,"cterms") ]
         setnames(alldata,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
     }
-<<<<<<< HEAD
-    Output <- heaven:::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-              controlIndex, caseIndex, CONTROLS, CASES,noindex)
-    setDT(Output)
-    Output
-  })) # end function and do.call
-  #Close cluster
-  if(!is.null(parallelCluster)) {
-=======
     else{
         alldata <- dat[,.SD,.SDcols=c(ptid,event,"cterms") ]
         setnames(alldata,c(".ptid",".event",".cterms"))
@@ -162,7 +153,6 @@ RiskSetMatchMC <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuse
     })) # end function and do.call
     #Close cluster
     ## if(!is.null(parallelCluster)) {
->>>>>>> 789b2eb9fa50d78a4ce0026e14780c7124f8f503
     parallel::stopCluster(CLUST)
     ## parallelCluster <- c()
     ## }

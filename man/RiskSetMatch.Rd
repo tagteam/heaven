@@ -4,9 +4,8 @@
 \alias{RiskSetMatch}
 \title{RiskSetMatch - Risk set matching}
 \usage{
-RiskSetMatch(ptid, event, terms, dat, Ncontrols, reuseCases = FALSE,
-  reuseControls = FALSE, caseIndex = NULL, controlIndex = NULL,
-  NoIndex = FALSE)
+RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
+        controlIndex=NULL, NoIndex=FALSE)
 }
 \arguments{
 \item{ptid}{- Personal ID variable defining participant}
@@ -27,10 +26,22 @@ RiskSetMatch(ptid, event, terms, dat, Ncontrols, reuseCases = FALSE,
 
 \item{controlIndex}{- date variable defining the control data that needs to be larger chan caseIndex}
 
-\item{NoIndex}{- if TRUE caseIndex/controlIndex are ignosed
-
-\bold{Details}
-The function does exact matching and keep 2 dates apart.
+\item{NoIndex}{- if TRUE caseIndex/controlIndex are ignosed}
+}
+\value{
+data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
+the original dataset are preserved unchanged. The final dataset includes all original cases but only the controls 
+that were selected.
+}
+\description{
+#' 
+Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
+controls with event later than the case are accepted.  The current program is based on exact matching and allows 
+the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
+reuse controls and to allow cases to be controls prior to being a case.
+}
+\details{
+The function does exact matching and keep 2 dates (indices) apart.
 Because the matching is exact all matching variables must be integer or character. Make sure that
 sufficient rounding is done on continuous variables to ensure a decent number of controls for each case.
 For example it may be difficult to find controls for very high age cases and age should often be rounded 
@@ -45,15 +56,7 @@ With long computations times please use the sister of this program RiskSetMatchM
 applied
 
 The function can be used for standard matching without the caseIndex/controlIndex, but other packages
-such as MatchIt should preferably be used in these cases.}
-}
-\value{
-data.table with cases and controls. A new variable "caseid" links controls to cases.  Other variables in
-the original dataset are preserved unchanged. The final dataset includes all original cases but only the controls 
-that were selected.
-}
-\description{
-RiskSetMatch - Risk set matching
+such as MatchIt should preferably be used in these cases.
 }
 \examples{
 require(data.table)
@@ -72,4 +75,10 @@ out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",c
 # Risk set matching with reuse of cases (control prior to case) and reuse of controls
 out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
          ,reuseCases=TRUE,reuseControls=TRUE)
+}
+\seealso{
+MCRiskSetMatch, Matchit
+}
+\author{
+Christian Torp-Pedersen
 }
