@@ -2,11 +2,10 @@
 % Please edit documentation in R/MCRiskSetMatch.R
 \name{RiskSetMatchMC}
 \alias{RiskSetMatchMC}
-\title{RiskSetMatch - Risk set matching}
+\title{MCRiskSetMatch - Risk set matching, multicore}
 \usage{
-RiskSetMatchMC(ptid, event, terms, dat, Ncontrols, reuseCases = FALSE,
-  reuseControls = FALSE, caseIndex = NULL, controlIndex = NULL,
-  NoIndex = FALSE, cores = 10)
+RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
+        controlIndex=NULL, NoIndex=FALSE, cores=10)
 }
 \arguments{
 \item{ptid}{- Personal ID variable defining participant}
@@ -23,9 +22,13 @@ RiskSetMatchMC(ptid, event, terms, dat, Ncontrols, reuseCases = FALSE,
 
 \item{reuseControls}{- T/F If T a control can be reused for several cases}
 
-\item{caseIndex}{- Date variable defining the date where a case becomes a case}
+\item{caseIndex}{- Date variable defining the date where a case becomes a case. This could typicalle be the
+date where e.g. a cancer develops and follow up starts - og in a case-control design the date where the event
+of interest occurs.}
 
-\item{controlIndex}{- date variable defining the control data that needs to be larger chan caseIndex}
+\item{controlIndex}{- date variable defining the control data that needs to be larger chan caseIndex.  For a cohort
+design this could typically be the date where a control dies or is censored - and for a case-control design be a date
+that is prior to a case date for that individual.}
 
 \item{NoIndex}{- if TRUE caseIndex/controlIndex are ignosed}
 
@@ -60,7 +63,13 @@ is added to controls.  Other variables in the original dataset are preserved unc
 The final dataset includes all original cases but only the controls that were selected.
 }
 \description{
-RiskSetMatch - Risk set matching
+Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
+controls with event later than the case are accepted.  The current program is based on exact matching and allows 
+the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
+reuse controls and to allow cases to be controls prior to being a case.
+
+This function produces identical results to "RiskSetMatch" but is able to use multiple cores and thus has an
+option to include a variable to define number of cores (default 10)
 }
 \examples{
 require(data.table)
@@ -78,4 +87,7 @@ out2 <- RiskSetMatchMC("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex"
 # Risk set matching with reuse of cases (control prior to case) and reuse of controls
 out3 <- RiskSetMatchMC("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
          ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
+}
+\author{
+Christian Torp-Pedersen
 }
