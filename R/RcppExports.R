@@ -24,8 +24,6 @@ innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
 #' @title Matcher
 #' @author Christian Torp-Pedersen
 #' @export
-NULL
-
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
@@ -33,8 +31,6 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
 #' @description Split2
 #' @title Split2
 #' @author Christian Torp-Pedersen
-NULL
-
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }

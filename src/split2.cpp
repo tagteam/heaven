@@ -8,9 +8,7 @@ using namespace Rcpp;
 //' @description Split2
 //' @title Split2
 //' @author Christian Torp-Pedersen
-
 // [[Rcpp::export]]
-
 DataFrame split2 (std::vector<int> pnr, //ID
                   IntegerVector   inn,  //Start intervals
                   IntegerVector   out, //End intervals

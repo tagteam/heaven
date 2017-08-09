@@ -4,8 +4,8 @@
 \alias{plot.dppout}
 \title{Plot output of process()}
 \usage{
-\method{plot}{dppout}(x, drug = NULL, id = NULL, idmax = 9,
-  trace = FALSE, fix_x = FALSE, normalize = FALSE, ...)
+plot.dppout(x, drug = NULL, id = NULL, idmax = 9, trace = FALSE,
+  fix_x = FALSE, normalize = FALSE, ...)
 }
 \arguments{
 \item{x}{The object outputted from process()}

@@ -13,28 +13,27 @@
 #' 
 #' @author Christian Torp-Pedersen
 #' 
-#' @arguments
-#' @param ptid - Personal ID variable defining participant
-#' @param event - Defines cases/controls MUST be 0/1
-#' @param terms - c(.....) the variables that should be matched by
-#' @param dat - The single dataset with all information - must be data.table
-#' @param Ncontrols - Number of controls sought for each case
-#' @param reuseCases - T/F If T a case can be a control prior to being a case
-#' @param reuseControls - T/F If T a control can be reused for several cases
-#' @param caseIndex - Date variable defining the date where a case becomes a case. For a case control study thi
-#' would be the date of event of interest, for a cohort study the date where a case enters an analysis
-#' @param controlIndex - date variable defining the control data that needs to be larger chan caseIndex. For a
-#' case control study this would be the date where a control has the event of interest or is censored.  For a
-#' cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.
-#' @param NoIndex - if TRUE caseIndex/controlIndex are ignosed
-#' @param cores - number of cores to use, default is one
+#' @param ptid  Personal ID variable defining participant
+#' @param event Defines cases/controls MUST be 0/1
+#' @param terms c(.....) the variables that should be matched by
+#' @param dat The single dataset with all information - must be data.table
+#' @param Ncontrols  Number of controls sought for each case
+#' @param reuseCases T/F If T a case can be a control prior to being a case
+#' @param reuseControls T/F If T a control can be reused for several cases
+#' @param caseIndex Date variable defining the date where a case becomes a case. For a case control study thi
+#'        would be the date of event of interest, for a cohort study the date where a case enters an analysis
+#' @param controlIndex date variable defining the control data that needs to be larger chan caseIndex. For a
+#'        case control study this would be the date where a control has the event of interest or is censored.  For a
+#'        cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.
+#' @param NoIndex if TRUE caseIndex/controlIndex are ignosed
+#' @param cores number of cores to use, default is one
 #' 
 #' @details 
 #' The function does exact matching and keep 2 dates (indices) apart.
 #' Because the matching is exact all matching variables must be integer or character. Make sure that
 #' sufficient rounding is done on continuous variables to ensure a decent number of controls for each case.
 #' For example it may be difficult to find controls for very high age cases and age should often be rounded 
-#' by 2,3 og 5 years - and further aggregating extreme ages.
+#' by 2,3 og 5 years -- and further aggregating extreme ages.
 #' 
 #' For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
 #' more relevant since the age of a control varies with time.

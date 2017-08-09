@@ -6,16 +6,11 @@ using namespace Rcpp;
 
 
 
-
-
 //' @description Fast matcher
 //' @title Matcher
 //' @author Christian Torp-Pedersen
 //' @export
-
 // [[Rcpp::export]]
-
-
 List Matcher(int Ncontrols, // Desired number of controls
              int Tcontrols, // Total number of controls
              int Ncases,    // Total number of cases

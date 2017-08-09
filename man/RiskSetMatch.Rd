@@ -8,30 +8,30 @@ RiskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE
         controlIndex=NULL, NoIndex=FALSE,cores=1)
 }
 \arguments{
-\item{ptid}{- Personal ID variable defining participant}
+\item{ptid}{Personal ID variable defining participant}
 
-\item{event}{- Defines cases/controls MUST be 0/1}
+\item{event}{Defines cases/controls MUST be 0/1}
 
-\item{terms}{- c(.....) the variables that should be matched by}
+\item{terms}{c(.....) the variables that should be matched by}
 
-\item{dat}{- The single dataset with all information - must be data.table}
+\item{dat}{The single dataset with all information - must be data.table}
 
-\item{Ncontrols}{- Number of controls sought for each case}
+\item{Ncontrols}{Number of controls sought for each case}
 
-\item{reuseCases}{- T/F If T a case can be a control prior to being a case}
+\item{reuseCases}{T/F If T a case can be a control prior to being a case}
 
-\item{reuseControls}{- T/F If T a control can be reused for several cases}
+\item{reuseControls}{T/F If T a control can be reused for several cases}
 
-\item{caseIndex}{- Date variable defining the date where a case becomes a case. For a case control study thi
+\item{caseIndex}{Date variable defining the date where a case becomes a case. For a case control study thi
 would be the date of event of interest, for a cohort study the date where a case enters an analysis}
 
-\item{controlIndex}{- date variable defining the control data that needs to be larger chan caseIndex. For a
+\item{controlIndex}{date variable defining the control data that needs to be larger chan caseIndex. For a
 case control study this would be the date where a control has the event of interest or is censored.  For a
 cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.}
 
-\item{NoIndex}{- if TRUE caseIndex/controlIndex are ignosed}
+\item{NoIndex}{if TRUE caseIndex/controlIndex are ignosed}
 
-\item{cores}{- number of cores to use, default is one}
+\item{cores}{number of cores to use, default is one}
 }
 \value{
 data.table with cases and controls. A new variable "caseid" links controls to cases.  This variable name
@@ -50,7 +50,7 @@ The function does exact matching and keep 2 dates (indices) apart.
 Because the matching is exact all matching variables must be integer or character. Make sure that
 sufficient rounding is done on continuous variables to ensure a decent number of controls for each case.
 For example it may be difficult to find controls for very high age cases and age should often be rounded 
-by 2,3 og 5 years - and further aggregating extreme ages.
+by 2,3 og 5 years -- and further aggregating extreme ages.
 
 For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
 more relevant since the age of a control varies with time.
@@ -83,13 +83,17 @@ dat <- data.table(ptid,event,sex,age,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
 out <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,NoIndex=TRUE)
 # Risk set matching without reusing cases/controls - 3 cases get no controls
-out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex")
-# Risk set matching with reuse of cases (control prior to case) and reuse of controls
-out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
-         ,reuseCases=TRUE,reuseControls=TRUE)
+out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",
+  controlIndex="controlIndex")
+# Risk set matching with reuse of cases (control prior to case) and reuse of 
+  controls
+out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex=
+  "caseIndex",controlIndex="controlIndex"
+  ,reuseCases=TRUE,reuseControls=TRUE)
 # Same with 2 cores          
-out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
-         ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
+out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,
+  caseIndex="caseIndex",controlIndex="controlIndex"
+ ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
 }
 \seealso{
 matchReport Matchit
