@@ -83,13 +83,17 @@ dat <- data.table(ptid,event,sex,age,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
 out <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,NoIndex=TRUE)
 # Risk set matching without reusing cases/controls - 3 cases get no controls
-out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex")
-# Risk set matching with reuse of cases (control prior to case) and reuse of controls
-out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
-         ,reuseCases=TRUE,reuseControls=TRUE)
+out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",
+  controlIndex="controlIndex")
+# Risk set matching with reuse of cases (control prior to case) and reuse of 
+  controls
+out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex=
+  "caseIndex",controlIndex="controlIndex"
+  ,reuseCases=TRUE,reuseControls=TRUE)
 # Same with 2 cores          
-out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",controlIndex="controlIndex"
-         ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
+out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,
+  caseIndex="caseIndex",controlIndex="controlIndex"
+ ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
 }
 \seealso{
 matchReport Matchit
