@@ -23,6 +23,7 @@ innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
 #' @description Fast matcher
 #' @title Matcher
 #' @author Christian Torp-Pedersen
+#' @export
 NULL
 
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
