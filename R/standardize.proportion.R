@@ -1,3 +1,30 @@
+##' Standardize proportions and absolute risks to a given age distribution
+##'
+##' Standardize proportions and absolute risks to a given age distribution
+##' @title Standardize proportions and absolute risks to a given age distribution
+##' @param vars Name vector of categorical variables 
+##' @param agevar Name of categorical age variable
+##' @param byvar Name of categorical strata variable
+##' @param data Data set 
+##' @param ref For categorical variable that are not factors the level for which we calculate the standardized proportion
+##' @param formula Passed to prodlim for calculation of absolute risks
+##' @param cause In case of competing risks the cause of interest
+##' @param times The time point(s) for evaluation of absolute risks
+##' @param level Confidence level
+##' @param ... Not (yet) used
+##' @return Data table with standardized proportions and standardized absolute risks
+##' @seealso standardize.prodlim
+##' @examples
+##' library(riskRegression)
+##' set.seed(84)
+##' d <- riskRegression::sampleData(83)
+##' d[,X1:=factor(X1,levels=c("0","1"),labels=c("0","1"))]
+##' d[,X2:=factor(X2,levels=c("0","1"),labels=c("0","1"))]
+##' d[,agegroups:=cut(X6,c(-Inf,40,60,Inf))]
+##' standardize.proportion(vars=c("X1","X2"),agevar="agegroups",byvar="X4",data=d)
+##' 
+##' @export 
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 standardize.proportion <- function(vars,
                                    agevar,
                                    byvar,
