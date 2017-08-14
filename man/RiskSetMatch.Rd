@@ -57,43 +57,40 @@ more relevant since the age of a control varies with time.
 
 For many purposes controls should be reused and cases allowed to be controls prior to being cases. 
 
-With small samples the function is fast.  With extreme number of cases the calculation time can be many hours.
-With long computations times please use the sister of this program RiskSetMatchMC where multiple cores can be 
-applied
-
 The function can be used for standard matching without the caseIndex/controlIndex, but other packages
-such as MatchIt should preferably be used in these cases.
+such as MatchIt are more likely to be optimal for these cases.
 
-It may appear tempting always to use multiple cores, but this emplies a costly overhead.  With extreme numbers
-of cases/controls it can save time. When a single core is used a progress shows progress of matching. There is
+It may appear tempting always to use multiple cores, but this emplies a costly overhead because the function
+machinery has to be distributed to each defined "worker".  With very large numbers of cases and controls, multiple
+cores can save substantial time. When a single core is used a progress shows progress of matching. There is
 no progress bar with multiple cores
 
-The function matchReport may be used to provide simple summaries of use of cases and controls
+The function matchReport may afterwards be used to provide simple summaries of use of cases and controls
 }
 \examples{
 require(data.table)
-event <- c(rep(0,20),rep(1,5)) 
-ptid <- 1:25
-sex <- c(rep("fem",10),rep("mal",10),"fem","fem",rep("mal",3))
-age <- c(rep(c(70,80),10),70,80,70,70,80)
-caseIndex <- c(seq(10,28,2),seq(5,25,5))
+event <- c(rep(0,50),rep(1,5)) 
+ptid <- paste0("P",1:55)
+sex <- c(rep("fem",25),rep("mal",25),"fem","fem",rep("mal",3))
+age <- c(rep(c(70,80),25),70,80,70,70,80)
+caseIndex <- c(seq(1,49,1),seq(5,45,10))
 controlIndex <- caseIndex
 library(data.table)
 dat <- data.table(ptid,event,sex,age,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
 out <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,NoIndex=TRUE)
-# Risk set matching without reusing cases/controls - 3 cases get no controls
+# Risk set matching without reusing cases/controls - Some cases have no controls
 out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",
   controlIndex="controlIndex")
 # Risk set matching with reuse of cases (control prior to case) and reuse of 
-  controls
+  controls - more cases get controls
 out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex=
   "caseIndex",controlIndex="controlIndex"
   ,reuseCases=TRUE,reuseControls=TRUE)
-# Same with 2 cores          
-out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,
-  caseIndex="caseIndex",controlIndex="controlIndex"
- ,reuseCases=TRUE,reuseControls=TRUE,cores=2)
+# Same with 2 cores
+out3 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex=
+  "caseIndex",controlIndex="controlIndex"
+  ,reuseCases=TRUE,reuseControls=TRUE,cores=2)          
 }
 \seealso{
 matchReport Matchit

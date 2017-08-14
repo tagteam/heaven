@@ -1,6 +1,6 @@
-#' @title twoSplit
+#' @title lexisTwo
 #' 
-#' @description #' 
+#' @description 
 #' twoSplit is a specialised version of lexis splitting.  While preparing data for time dependent analyses with e.g.
 #' Cox org Poisson regression records need to be "split" at selected times.  For practical use there are often
 #' multiple conditions such as comorbidities that will cause either a single split or no splitting.  This function
@@ -27,7 +27,15 @@
 #' @return
 #' The function returns a new data table where records have been split according to the splittingguide dataset. Variables
 #' unrelated to the splitting are left unchanged.
-#' @export 
+#' @export
+#' 
+#' @details 
+#' The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
+#' This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
+#' The other table contains a single record for each participant and columns to identify dates to split by.  After splitting all
+#' intervals preceding the date will have a variable identified by each column with the value "0". After the date the value i "1".
+#' In the example the columns are dat1-date4 - but it is most useful to provide names that identify the condition which changes by
+#' the date rather than a names which indicates a date.
 #' 
 #' @examples
 #' library(data.table)
@@ -41,9 +49,12 @@
 #'        ,split # Data with id and dates
 #'        ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'        ,c("date1","date2","date3","date4")) #Names var date-vars to split by
+#' 
+#' 
+#' @export
 
 
-twoSplit <- function(indat # inddato with id/in/out/event - and possibly other variables
+lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
                      ,splitdat # Data with id and dates
                      ,invars #names of id/in/out/event - in that order
                      ,splitvars #Names var date-vars to split by
@@ -63,16 +74,13 @@ twoSplit <- function(indat # inddato with id/in/out/event - and possibly other v
   OUT <- INDAT[,c("pnrnum","inn"),with=F] # Prepare output start
   setnames(copysplitdat,invars[1],"pnr")
   for(name in splitvars){
+#browser()    
     selected <- copysplitdat[,c("pnr",name),with=F]
     toSplit <- merge(INDAT,selected,by="pnr",all.x=T)
     pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=F])# relation between pnr and pnrnum
-    .pnr <- toSplit[["pnrnum"]]
-    .in <- toSplit[["inn"]]
-    .out <- toSplit[["out"]]
-    .event <- toSplit[["dead"]]
-    .dato <- toSplit[[name]]
     if (name != splitvars[1]) OUT[,(c("out","dead")):=NULL]
-    INDAT <- heaven:::split2(.pnr,.in,.out,.dato,.event)  # Call to c++ split-function
+   # INDAT <- heaven::split2(.pnr,.in,.out,.dato,.event) 
+    INDAT <- toSplit[,heaven::split2(pnrnum,inn,out,eval(as.name(name)),dead)]  # Call to c++ split-function
     setDT(INDAT)
     INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=T)
     OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=T) 
