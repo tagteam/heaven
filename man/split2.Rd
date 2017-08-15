@@ -7,7 +7,7 @@
 split2(pnr, inn, out, dato, dead)
 }
 \description{
-Split2
+Split in two by a date
 }
 \author{
 Christian Torp-Pedersen
