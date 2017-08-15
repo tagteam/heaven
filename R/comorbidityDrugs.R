@@ -17,7 +17,7 @@
 #' comorbidityDrugs(dat, code=c('S01', 'R03'))
 #' #Find patients who have received drugs with atc codes starting with 'N' or 'M' in the period from "2001-03-01" to "2002-03-01" and report the date of the first occurrence
 #' comorbidityDrugs(dat, code=c('N', 'M'), date="2002-03-01", interval=365)
-#' @author Helle Højmark Eriksen <helle.e@@rn.dk>
+#' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 comorbidityDrugs<- function(data=NULL,code=NULL,date=NULL,interval=NULL){
    ## Check of input  
   options(warn=1)
