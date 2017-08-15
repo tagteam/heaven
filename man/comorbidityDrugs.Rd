@@ -29,5 +29,5 @@ comorbidityDrugs(dat, code=c('S01', 'R03'))
 comorbidityDrugs(dat, code=c('N', 'M'), date="2002-03-01", interval=365)
 }
 \author{
-Helle Højmark Eriksen <helle.e@rn.dk>
+Helle Hoejmark Eriksen <helle.e@rn.dk>
 }
