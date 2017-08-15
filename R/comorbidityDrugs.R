@@ -1,4 +1,4 @@
-#' @Title Comorbidity with drugs
+#' @title Comorbidity with drugs
 #'
 #' @param data Raw data with atc codes, needs specific variables: pnr, atc, eksd 
 #' @param code Vector with ATC codes for the drugs where the first-instance-date is desired
