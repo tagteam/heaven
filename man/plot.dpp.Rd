@@ -4,7 +4,7 @@
 \alias{plot.dpp}
 \title{Plot function for data preprocessing object}
 \usage{
-plot.dpp(x, drug = NULL, ...)
+\method{plot}{dpp}(x, drug = NULL, ...)
 }
 \arguments{
 \item{x}{Data preprocessing object obtained with \code{dpp}}

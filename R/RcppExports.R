@@ -28,9 +28,10 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
 
-#' @description Split2
+#' @description Split in two by a date
 #' @title Split2
 #' @author Christian Torp-Pedersen
+#' @export
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
