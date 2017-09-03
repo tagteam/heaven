@@ -1,7 +1,7 @@
 #' @title lexisTwo
 #' 
 #' @description 
-#' twoSplit is a specialised version of lexis splitting.  While preparing data for time dependent analyses with e.g.
+#' lexixTwo is a specialised version of lexis splitting.  While preparing data for time dependent analyses with e.g.
 #' Cox org Poisson regression records need to be "split" at selected times.  For practical use there are often
 #' multiple conditions such as comorbidities that will cause either a single split or no splitting.  This function
 #' is designed to receive base data with start/end/event and another set of data where patient id is accompanied with 
@@ -9,7 +9,7 @@
 #' 
 #' 
 #' @usage
-#' twoSplit <- function(indat # inddato with id/in/out/event - and possibly other variables
+#' lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
 #'                     ,splitdat # Data with id and dates
 #'                     ,invars #names of id/in/out/event - in that order
 #'                     ,splitvars #Names var date-vars to split by
@@ -45,11 +45,11 @@
 #'                 event=c(0,1,0,0,0,1,0,1))
 #' split <- data.table (id=c("A","B","C","D"),date1=c(0,50,150,300),date2=c(25,75,175,325),date3=c(30,30,30,30),
 #'                     date4=c(0,1,0,1))
-#' temp <- twoSplit(dat # inddato with id/in/out/event
+#' temp <- lexisTwo(dat # inddato with id/in/out/event
 #'        ,split # Data with id and dates
 #'        ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'        ,c("date1","date2","date3","date4")) #Names var date-vars to split by
-#' 
+#' temp[]
 #' 
 #' @export
 
