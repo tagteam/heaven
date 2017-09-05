@@ -31,11 +31,11 @@ getAdmLimitsV2 <- function(dt,personid,inddto,uddto){
   datecheckerInd=FALSE
   if (class(wdt[,inddtoxTempName])=="Date"){
     datecheckerInd=TRUE
-  } else if (!is.atomic(wdt[,inddtoxTempName])){stop("Error: inddto must be atomic or Date")}  
+  } else if (!is.numeric(wdt[,inddtoxTempName])){stop("Error: inddto must be numeric or Date")}  
   datecheckerUd=FALSE
   if (class(wdt[,uddtoxTempName])=="Date"){
     datecheckerUd=TRUE
-  } else if (!is.atomic(wdt[,uddtoxTempName])){stop("Error: uddto must be atomic or Date")}    
+  } else if (!is.numeric(wdt[,uddtoxTempName])){stop("Error: uddto must be numeric or Date")}    
   ## Copy rows with NA in inddto or uddto, into dataframe wdterror and change names back
   wdterror=copy(wdt[is.na(inddtoxTempName)|is.na(uddtoxTempName)|inddtoxTempName>uddtoxTempName])
   setnames(wdterror,'uddtoxTempName',uddto)
