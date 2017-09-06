@@ -15,7 +15,7 @@ This vignette introduces the use of the function comorbidityDrugs.
 
 Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient
 
-```{r}
+```{r,eval=FALSE}
 library(data.table)
 dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
 a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
@@ -23,7 +23,7 @@ a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
 
 Output of the funktion
 
-```{r}
+```{r,eval=FALSE}
 a 
 ```
 
