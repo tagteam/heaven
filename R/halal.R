@@ -24,7 +24,8 @@
 #' Diagnoses in a specific period of time can also be extracted by p.in and p.out.
 #' @return A list of three elements. The first one is the extracted data. The second element contains the diagnoses specified 
 #' to be extracted. The third element contains every unique diagnosis extracted. 
-#' @author Regitze Kuhr Skals
+#' @export
+#' @author Regitze Kuhr Skals <r.skals@rn.dk>
 
 halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
                   first.pnr=FALSE,pat=NULL,prefix='',entryvar='inddto',id='pnr',outvar='uddto',codevar='diag',patvar='pattype',record.id='recnum'){

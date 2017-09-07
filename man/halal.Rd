@@ -59,5 +59,5 @@ Extracts specific selected or predefined diagnoses. If specified by first.pnr on
 Diagnoses in a specific period of time can also be extracted by p.in and p.out.
 }
 \author{
-Regitze Kuhr Skals
+Regitze Kuhr Skals <r.skals@rn.dk>
 }
