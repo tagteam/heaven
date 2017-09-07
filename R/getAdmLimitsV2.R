@@ -2,15 +2,16 @@
 ##' 
 ##' @title Get Admission time
 ##' @param dt data.table containing the variables
-##' @param personid Variable with ID for each subject/group
-##' @param inddto Variable with entry times. Must be date or numeric
-##' @param uddto Variable with exit times. Must be date or numeric
+##' @param personid Variable with ID for each subject/group. Default name pnr
+##' @param inddto Variable with entry times. Must be date or numeric. Default name inddto
+##' @param uddto Variable with exit times. Must be date or numeric. Default name uddto
 ##' @return List containing dataset with admission dates add to data and dataset containing row errors
 ##' @export 
 ##' @examples
 ##' \dontrun{
-##' newpop <- getAdmLimits3(mydata,'Pnr','Entrydate','Outdate')
+##' newpop <- getAdmLimits3(mydata,personid='Pnr',inddto='Entrydate',uddto='Outdate')
 ##' 
+##'
 ##' ## List is returned containing two data.tables
 ##' newpopData <- newpop[[1]]
 ##' newpopError <- newpop[[2]]
@@ -18,7 +19,7 @@
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Peter Enemark Lund <peter.l@rn.dk>
 
-getAdmLimitsV2 <- function(dt,personid,inddto,uddto){
+getAdmLimitsV2 <- function(dt,personid='pnr',inddto='inddto',uddto='uddto'){
   # Data must be a data.table
   if (!is.data.table(dt)) stop("Error: Data is not data.table")
   # Makes hard copy
