@@ -8,6 +8,7 @@
 #' @param inclusions Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.
 #' @param exclusions Characterstring, specifying diagnoses to be omitted.
 #' @param first.pnr Logical. Specifies if only the first record of each patient should be output.
+#' @param mult Logical. Specifies if multiple diseases have been chosen.
 #' @param p.in Date of period start.
 #' @param p.out Date of period end.
 #' @param pat Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.
@@ -24,7 +25,7 @@
 #' either the input to disease, inclusion or both. The third element contains every unique diagnosis extracted. 
 #' @author Regitze Kuhr Skals
 
-halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
+halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
                   first.pnr=FALSE,pat=NULL,prefix='',entryvar='inddto',id='pnr',outvar='uddto',codevar='diag',patvar='pattype',record.id='recnum'){
   
   # HALAL definition of diseases
@@ -52,7 +53,7 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
                      
                      alcohol=c('F10','K70','E52','T51','K860','E244','G312','I426','O354','Z714','Z721','G621','G721','K292','L278A'))
   
-  ##  Make into data.table and change relevant variable namesto lower case
+  ##  Make into data.table and change relevant variable names to lower case
   d <- as.data.table(dat)
   var.names <- tolower(colnames(d)) 
   colnames(d) <- var.names 
@@ -64,11 +65,11 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   setnames(d,patvar,'pattype')
   setnames(d,record.id,'recnum')
   
-  if(!is.null(p.in)&class(p.in)!='Date'){
+  if(!is.null(p.in) & class(p.in)!='Date'){
     stop('p.in is not a date')    
   }
   
-  if(!is.null(p.out)&class(p.out)!='Date'){
+  if(!is.null(p.out) & class(p.out)!='Date'){
     stop('p.out is not a date')    
   }
   
@@ -82,16 +83,17 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   else{
     diags_for_substraction <- inclusions
   }
-
+  
   setkey(d,diag) #Sort by key
-  icdcodes <- d[.(unique(diag)),.(diag),mult="first"] #unique diagnosis
-  icdcodes <- icdcodes[unlist(lapply(paste('^D?',diags_for_substraction,sep=''),grep,diag))] #the unique diagnosis of interest
+  icdcodes <- d[.(unique(diag)),.(diag),mult="first"] #unique diagnoses
+  icdcodes <- icdcodes[unlist(lapply(paste('^D?',diags_for_substraction,sep=''),grep,diag))] #the unique diagnoses of interest
   if(!is.null(exclusions)){
     ex.diag <- grep(paste(paste('^D?',exclusions,sep=''),collapse='|'),icdcodes$diag)
     icdcodes <- icdcodes[-ex.diag]
+    diags_for_substraction <- setdiff(diags_for_substraction,exclusions)
   }
-  out <- d[icdcodes,nomatch = 0L] #Patients with unique diagnosis of interest
-
+  out <- d[icdcodes,nomatch = 0L] #Patients with unique diagnoses of interest
+  
   #Restrict diagnoses to specific period in time
   if(!is.null(p.in)&!is.null(p.out)){
     out <- out[p.in<inddto&inddto<p.out]
@@ -102,7 +104,7 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   }
   
   if(is.null(p.in)&!is.null(p.out)){
-    out <- out[inddto<p.out]
+    out <- out[p.out>inddto]
   }
   
   #Restrict to specific type of patient (pattype)
@@ -111,16 +113,58 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   }
   
   #Take first diagnosis if more than one for each patient
-  if(first.pnr){
+  if(first.pnr==T&mult==F){
     #Order data by pnr and increasing inddto
     setkey(out,pnr,inddto)
     out <- out[.(unique(pnr)),,mult="first"] 
   }
   
+  # Takes first diagnosis of each disease if multiple diseases are chosen for each patient.
+  if(first.pnr==T&mult==T){
+    
+    # Mark different diseases
+    out[,dis:=""]
+    names_dis <- names(halal_defs[disease])
+    sygdomme <- halal_defs[disease]
+    
+    idx <- lapply(sygdomme,function(var){grep(paste(paste('^D?',unlist(var),sep=''),collapse='|'),out$diag)})
+    
+    for(x in seq_along(idx)){
+      set(out,i=idx[[x]],j='dis',value=names_dis[x])
+    }
+    
+    # Order data by pnr, disease and increasing inddto
+    setkey(out,pnr,dis,inddto)
+    
+    # For each patient keeps only first diagnosis of each different disease.
+    out <- out[out[,list(row1=.I[1]),by=list(pnr,dis)][,row1]] 
+  }
+  
+  # Takes every diagnosis of each disease if multiple diseases are chosen and marks each disease by
+  # it's prespecified name.
+  
+  if(first.pnr==F&mult==T){
+    
+    # Mark different diseases
+    out[,dis:=""]
+    names_dis <- names(halal_defs[disease])
+    sygdomme <- halal_defs[disease]
+    
+    idx <- lapply(sygdomme,function(var){grep(paste(paste('^D?',unlist(var),sep=''),collapse='|'),out$diag)})
+    
+    for(x in seq_along(idx)){
+      set(out,i=idx[[x]],j='dis',value=names_dis[x])
+    }
+  }
+  
+  if(mult==T){
+    out <- out[,.(pnr,recnum,inddto,diag,pattype,dis)] # keeps marker of disease when multiple diseases are chosen.
+  }
+  else{
+    out <- out[,.(pnr,recnum,inddto,diag,pattype)]
+  }
   
   date_name <- paste(prefix,'date',sep='_')
-  
-  out <- out[,.(pnr,recnum,inddto,diag,pattype)]
   
   setnames(out,'inddto',date_name)
   setnames(out,'diag',codevar)
@@ -130,3 +174,4 @@ halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.o
   
   return(list(data=out,diagnoses=diags_for_substraction,unique.icd=icdcodes$diag))
 }
+
