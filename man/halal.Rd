@@ -5,9 +5,10 @@
 \title{Extraction of diseases by diagnoses}
 \usage{
 halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
-  p.in = NULL, p.out = NULL, first.pnr = FALSE, pat = NULL,
-  prefix = "", entryvar = "inddto", id = "pnr", outvar = "uddto",
-  codevar = "diag", patvar = "pattype", record.id = "recnum")
+  p.in = NULL, p.out = NULL, mult = FALSE, first.pnr = FALSE,
+  pat = NULL, prefix = "", entryvar = "inddto", id = "pnr",
+  outvar = "uddto", codevar = "diag", patvar = "pattype",
+  record.id = "recnum")
 }
 \arguments{
 \item{dat}{Data with diagnoses.}
@@ -25,7 +26,10 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
 
 \item{p.out}{Date of period end.}
 
-\item{first.pnr}{Logical. Specifies if only the first record of each patient should be output.}
+\item{mult}{Logical. Specifies if multiple diseases have been chosen.}
+
+\item{first.pnr}{Logical. Specifies if only the first record of each patient should be output. 
+If mult=TRUE and first.pnr=TRUE the first diagnosis of each disease specified will be extracted.}
 
 \item{pat}{Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.}
 
@@ -44,8 +48,8 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
 \item{record.id}{Name of the variable in data that contains the record number for each patient.}
 }
 \value{
-A list of three elements. The first one is the extracted data. The second element contains the diagnoses specified, 
-either the input to disease, inclusion or both. The third element contains every unique diagnosis extracted.
+A list of three elements. The first one is the extracted data. The second element contains the diagnoses specified 
+to be extracted. The third element contains every unique diagnosis extracted.
 }
 \description{
 Filtering of LPR registry data according to a given set of diseases
