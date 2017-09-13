@@ -9,12 +9,20 @@
 ##' @export 
 ##' @examples
 ##' \dontrun{
-##' newpop <- getAdmLimits3(mydata,personid='Pnr',inddto='Entrydate',uddto='Outdate')
-##' 
+##' ## Create Test data
+##' Pnr <- c(1,1,2,2,2,3)
+##' Entrydate <- as.Date(c("2001-03-14","2001-03-28","2006-03-14","2006-05-28","2001-11-11","1999-12-24"))
+##' Outdate <- as.Date(c("2001-03-30","2001-04-09","2006-05-28","2006-06-21","2001-12-04","2000-02-13"))
+##' Extra <- c(1:6)
 ##'
+##' library(data.table)
+##' mydata <- data.table(Pnr,Entrydate,Outdate,Extra)
+##' 
+##' pop <- getAdmLimits3(mydata,personid='Pnr',inddto='Entrydate',uddto='Outdate')
+##' 
 ##' ## List is returned containing two data.tables
-##' newpopData <- newpop[[1]]
-##' newpopError <- newpop[[2]]
+##' popData <- pop[[1]]
+##' popError <- pop[[2]]
 ##' }
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Peter Enemark Lund <peter.l@rn.dk>
