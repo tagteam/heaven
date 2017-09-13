@@ -16,7 +16,7 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
 \item{disease}{Characterstring containing pre-specified name of disease after HALAL definitions. Can be one or more of: "af",
 "rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
 "bleeding_without_hemstroke","cardiomyopathy", "hf", "lung_edema", "HF", "ihd","ap","ami","perart",
-"cancer","chronic_kidney_disease","copd","liver_disease","alcohol". See \link[=doc/halal_defs.pdf]{definitions of diseases}.}
+"cancer","chronic_kidney_disease","copd","liver_disease","alcohol". See \href{../doc/halal_defs.pdf}{definitions of diseases}.}
 
 \item{inclusions}{Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.}
 
