@@ -16,7 +16,7 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
 \item{disease}{Characterstring containing pre-specified name of disease after HALAL definitions. Can be one or more of: "af",
 "rheum_heart_valve_disease", "dvt_pe","stroke_tci_systemic_embolism_thrombosis",
 "bleeding_without_hemstroke","cardiomyopathy", "hf", "lung_edema", "HF", "ihd","ap","ami","perart",
-"cancer","chronic_kidney_disease","copd","liver_disease","alcohol".}
+"cancer","chronic_kidney_disease","copd","liver_disease","alcohol". See \link[=doc/halal_defs.pdf]{definitions of diseases}.}
 
 \item{inclusions}{Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.}
 
@@ -57,6 +57,51 @@ Filtering of LPR registry data according to a given set of diseases
 \details{
 Extracts specific selected or predefined diagnoses. If specified by first.pnr only the first occurrence of the diagnoses are extracted.
 Diagnoses in a specific period of time can also be extracted by p.in and p.out.
+}
+\examples{
+\dontrun{
+
+# Creating simulated LPR-registry data
+alphabet <- LETTERS[seq( from = 1, to = 26 )]
+abc <- sample(alphabet,500000,replace=T)
+numbers <- c(100:999)
+icd_codes <- sample(numbers, 500000, replace = T)
+diag <- paste(abc,icd_codes,sep='')
+diag <- paste('D',diag,sep='')
+inddto <- c(11688:14974)
+inddto <- as.Date(sample(inddto,500000,replace=T),origin='1970-01-01')
+uddto <- c(1:10)
+uddto <- inddto+sample(uddto,500000,replace = T)
+pattype <- sample(c(1:3),500000,replace = T)
+pnr <- sample(c(1:300000),500000,replace=T)
+pnr <- sort(pnr)
+lpr.data <- data.frame(pnr,diag,inddto,uddto,pattype,recnum=rep(1,500000))
+
+# Extract diagnoses related to acute myocardial infarction (ami) for patients of type 1, after 01-01-2007.
+dat.extracted <- halal(lpr.data,disease=c("ami"),pat=1,p.in=as.Date('01012007',format='\%d\%m\%Y'),prefix='ami')
+
+# View first 6 lines of extracted data 
+head(dat.extracted$data)
+
+# Codes specified to be extracted
+dat.extracted$diagnoses
+
+# Unique codes extracted
+dat.extracted$unique.icd
+
+# Extract diagnoses related to acute myocardial infarction (ami) within the period 01-01-2007 and 12-31-2008.
+dat.extracted <- halal(lpr.data,disease=c("ami"),p.in=as.Date('01012007',format='\%d\%m\%Y'),p.out=as.Date('31122008',format='\%d\%m\%Y'),prefix='ami')
+
+# Extract diagnoses related to bleeding (without hemorrhagic stroke) or atrial fibrilation, and only include first
+# diagnosis of each disease for each patient.
+dat.extracted <- halal(lpr.data,disease=c("bleeding_without_hemstroke","af"),mult=T,first.pnr=T,prefix='diag')
+
+# Extract all diagnoses starting with an 'A', and exclude all diagnoses with 'A21' and 'A7'.
+dat.extracted <- halal(lpr.data,inclusions='A',exclusions=c('A21','A7'),prefix='a')
+
+# Extract ischemic heart disease without I21 and I22:
+dat.extracted <- halal(lpr.data,disease='ihd',exclusions=c('I21','I22'),prefix='ihd_excl_ami')
+}
 }
 \author{
 Regitze Kuhr Skals <r.skals@rn.dk>
