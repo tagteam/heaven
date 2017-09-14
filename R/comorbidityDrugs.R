@@ -33,7 +33,7 @@
 #' 
 #' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 
-comorbidityDrugstest<- function(data=NULL,pnr='pnr',atc='atc',eksd='eksd',code=NULL,date=NULL,interval=NULL){
+comorbidityDrugs<- function(data=NULL,pnr='pnr',atc='atc',eksd='eksd',code=NULL,date=NULL,interval=NULL){
   ## Check of input  
   options(warn=1)
   if(is.null(data)){
