@@ -118,7 +118,7 @@ return List::create(Named("selectedCases") = selectedCases,
 // temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,  
 //                        controlIndex, caseIndex,
 //                         controls,  cases,NoIndex)
- 
+// library(data.table)
 //  setDT(temp)[]
 
 
