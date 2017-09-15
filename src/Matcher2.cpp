@@ -42,7 +42,8 @@ List Matcher(int Ncontrols, // Desired number of controls
       IsCoEl=  controlCounter<Tcontrols && (controlIndex[controlCounter]==NA || caseIndex[i]==NA || 
                caseIndex[i]<controlIndex[controlCounter]);
        // Above: End has not been reached && (no dates to compare || case-date prior to controldate) 
-      if ((usedControls[controlCounter]==0 && IsCoEl) || (haveTried[controlCounter]==0 && IsCoEl)) { //foundOne
+      if ((reuseControls==0 && usedControls[controlCounter]==0 && haveTried[controlCounter]==0 && IsCoEl) 
+            || (reuseControls==1 && haveTried[controlCounter]==0 && IsCoEl )) { //foundOne
         selectedControls.push_back(controls[controlCounter]); //next selected control
         selectedCases.push_back(cases[i]); //case-id for that control
         ii+=1; // next control to be selected
@@ -102,7 +103,7 @@ return List::create(Named("selectedCases") = selectedCases,
                     Named("selectedControls") = selectedControls);
 }  
 
-//*** R
+///*** R
 
 //Ncontrols <- 3 # desired number of controls
 //Tcontrols <- 20 # total number of controls
@@ -117,7 +118,7 @@ return List::create(Named("selectedCases") = selectedCases,
 // temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,  
 //                        controlIndex, caseIndex,
 //                         controls,  cases,NoIndex)
-// 
+ 
 //  setDT(temp)[]
 
 

@@ -14,26 +14,27 @@
 #' @author Christian Torp-Pedersen
 #' 
 #' @param ptid  Personal ID variable defining participant
-#' @param event Defines cases/controls MUST be 0/1 - 0 for controls, 1 for case
-#' @param terms c(.....) the variables that should be matched by - enclosed in ".."
+#' @param event Defining cases/controls MUST be 0/1 - 0 for controls, 1 for case
+#' @param terms c(.....) Specifies the variables that should be matched by - enclosed in ".."
 #' @param dat The single dataset with all information - must be data.table
 #' @param Ncontrols  Number of controls sought for each case
 #' @param reuseCases T/F If T a case can be a control prior to being a case
 #' @param reuseControls T/F If T a control can be reused for several cases
 #' @param caseIndex Date variable defining the date where a case becomes a case. For a case control study this
-#'        would be the date of event of interest, for a cohort study the date where a case enters an analysis
-#' @param controlIndex date variable defining the control data that needs to be larger chan caseIndex. For a
-#'        case control study this would be the date where a control has the event of interest or is censored.  For a
-#'        cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.
+#'        is the date of event of interest, for a cohort study the date where a case enters an analysis
+#' @param controlIndex date variable defining the date from which a controls can no longer be selected.  The controlIndex
+#'        must be larger than the caseIndex.  For a case control study this would be the date where a control has the 
+#'        event of interest or is censored.  For a cohort study it would be the date where the control disappears from 
+#'        the analysis, e.g. due to death or censoring.
 #' @param NoIndex if TRUE caseIndex/controlIndex are ignored
 #' @param cores number of cores to use, default is one
 #' 
 #' @details 
-#' The function does exact matching and keep 2 dates (indices) apart such that the date for controls is larger than that for cases.
-#' Because the matching is exact all matching variables must be integer or character. Make sure that
-#' sufficient rounding is done on continuous and semicontinuous variables to ensure a decent number of controls for each case.
-#' For example it may be difficult to find controls for very high age cases and age should often be rounded 
-#' by 2,3 og 5 years -- and further aggregating extreme ages.
+#' The function does exact matching and keeps 2 dates (indices) apart such that the date for controls is larger than 
+#' that for cases. Because the matching is exact all matching variables must be integer or character. Make sure that
+#' sufficient rounding is done on continuous and semicontinuous variables to ensure a decent number of controls for 
+#' each case. For example it may be difficult to find controls for cases of very high age and age should therefore
+#' often be rounded by 2,3 or 5 years - and extreme ages further aggregated.
 #' 
 #' For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
 #' more relevant since the age of a control varies with time.
@@ -43,14 +44,14 @@
 #' The function can be used for standard matching without the caseIndex/controlIndex, but other packages
 #' such as MatchIt are more likely to be optimal for these cases.
 #' 
-#' It may appear tempting always to use multiple cores, but this emplies a costly overhead because the function
+#' It may appear tempting always to use multiple cores, but this comes with a costly overhead because the function
 #' machinery has to be distributed to each defined "worker".  With very large numbers of cases and controls, multiple
-#' cores can save substantial time. When a single core is used a progress shows progress of matching. There is
-#' no progress bar with multiple cores
+#' cores can save substantial amounts of time. When a single core is used a progress shows progress of matching. 
+#' There is no progress bar with multiple cores
 #' 
 #' The function matchReport may afterwards be used to provide simple summaries of use of cases and controls
 #'
-#' @return data.table with cases and controls. A new variable "caseid" links controls to cases.  This variable name
+#' @return data.table with cases and controls. After matching, a new variable "caseid" links controls to cases.  This variable name
 #' is fixed and should not be used for other purposes.   Other variables in the original dataset are preserved 
 #' unchanged. The final dataset includes all original cases but only the controls that were selected.
 #' 
