@@ -4,16 +4,16 @@
 \alias{getAdmLimitsV2}
 \title{Get Admission time}
 \usage{
-getAdmLimitsV2(dt, personid, inddto, uddto)
+getAdmLimitsV2(dt, personid = "pnr", inddto = "inddto", uddto = "uddto")
 }
 \arguments{
 \item{dt}{data.table containing the variables}
 
-\item{personid}{Variable with ID for each subject/group}
+\item{personid}{Variable with ID for each subject/group. Default name pnr}
 
-\item{inddto}{Variable with entry times. Must be date or numeric}
+\item{inddto}{Variable with entry times. Must be date or numeric. Default name inddto}
 
-\item{uddto}{Variable with exit times. Must be date or numeric}
+\item{uddto}{Variable with exit times. Must be date or numeric. Default name uddto}
 }
 \value{
 List containing dataset with admission dates add to data and dataset containing row errors
@@ -23,7 +23,8 @@ Removes row errors and returns data with add admission time
 }
 \examples{
 \dontrun{
-newpop <- getAdmLimits3(mydata,'Pnr','Entrydate','Outdate')
+newpop <- getAdmLimits3(mydata,personid='Pnr',inddto='Entrydate',uddto='Outdate')
+
 
 ## List is returned containing two data.tables
 newpopData <- newpop[[1]]

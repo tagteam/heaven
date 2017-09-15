@@ -6,11 +6,13 @@
 #' 
 #' 
 #' @usage
-#' matchReport(dat, id, case, caseid) 
+#' matchReport(dat, id, case, caseid,oldcase="oldevent") 
 #' @param dat - data.table with result from riskSetMatch
 #' @param id - variable with participant id
 #' @param case - 0=control, 1=case
 #' @param caseid - variable defining the groups of matching cases/controls
+#' @param oldcase - Variable holding case/control=0/1 prior to matching. Distinguishes
+#' cases reused as controls
 #' 
 #' @author Christian Torp-Pedersen
 #' 

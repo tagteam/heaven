@@ -28,17 +28,18 @@ cases do not find controls it may be desirable to do further rounding of matchin
 }
 \examples{
 require(data.table)
-event <- c(rep(0,50),rep(1,5)) 
+case <- c(rep(0,40),rep(1,15)) 
 ptid <- paste0("P",1:55)
-sex <- c(rep("fem",25),rep("mal",25),"fem","fem",rep("mal",3))
-age <- c(rep(c(70,80),25),70,80,70,70,80)
-caseIndex <- c(seq(1,49,1),seq(5,45,10))
+sex <- c(rep("fem",20),rep("mal",20),rep("fem",8),rep("mal",7))
+byear <- c(rep(c(2020,2030),20),rep(2020,7),rep(2030,8))
+caseIndex <- c(seq(1,40,1),seq(5,47,3))
 controlIndex <- caseIndex
 library(data.table)
-dat <- data.table(ptid,event,sex,age,caseIndex,controlIndex)
-out2 <- RiskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",
-  controlIndex="controlIndex")
-matchReport(out2,"ptid","event","caseid")   
+dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
+# Very simple match without reuse - no dates to control for
+dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
+  controlIndex="controlIndex",reuseCases=T,reuseControls=T)
+matchReport(dataout,"ptid","case","caseid")   
 }
 \seealso{
 riskSetMatch

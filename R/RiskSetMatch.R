@@ -8,8 +8,20 @@
 #' 
 #' 
 #' @usage
-#' riskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
-#'         controlIndex=NULL, NoIndex=FALSE,cores=1)
+#'   riskSetMatch <- function(
+#'   ptid     # Unique patient identifier
+#' , event   # 0=Control, 1=case
+#' , terms   # terms c("n1","n2",...) - list of vairables to match by
+#' , dat     # dataset with all variables
+#' , Ncontrols  # number of controls to provide
+#' , oldevent="oldevent" # To distinguish cases used as controls
+#' , caseid="caseid" # variable to group cases and controls (case-ptid)
+#' , reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
+#' , reuseControls=FALSE # T or F or NULL - can controls be reused?
+#' , caseIndex=NULL      # Integer or date, date where controls must be prior
+#' , controlIndex=NULL   # controlIndex - Index date for controls
+#' ,  NoIndex=FALSE      # If T ignore index
+#' ,  cores=1)          # Number of cores to use, default 1
 #' 
 #' @author Christian Torp-Pedersen
 #' 
@@ -18,6 +30,8 @@
 #' @param terms c(.....) Specifies the variables that should be matched by - enclosed in ".."
 #' @param dat The single dataset with all information - must be data.table
 #' @param Ncontrols  Number of controls sought for each case
+#' @param oldevent Holds original value of event - distinguishes cases used as controls
+#' @param caseid - variable holding grouping variable for cases/controls (=case-ptid)
 #' @param reuseCases T/F If T a case can be a control prior to being a case
 #' @param reuseControls T/F If T a control can be reused for several cases
 #' @param caseIndex Date variable defining the date where a case becomes a case. For a case control study this
@@ -39,9 +53,10 @@
 #' For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
 #' more relevant since the age of a control varies with time.
 #' 
-#' For many purposes controls should be reused and cases allowed to be controls prior to being cases. 
+#' For many purposes controls should be reused and cases allowed to be controls prior to being cases. By default,
+#' there is no reuse and this can be adjusted with "reuseCases" and "reuseControls"
 #' 
-#' The function can be used for standard matching without the caseIndex/controlIndex, but other packages
+#' The function can be used for standard matching without the caseIndex/controlIndex (with "NoIndex"), but other packages
 #' such as MatchIt are more likely to be optimal for these cases.
 #' 
 #' It may appear tempting always to use multiple cores, but this comes with a costly overhead because the function
@@ -51,7 +66,9 @@
 #' 
 #' The function matchReport may afterwards be used to provide simple summaries of use of cases and controls
 #'
-#' @return data.table with cases and controls. After matching, a new variable "caseid" links controls to cases. 
+#' @return data.table with cases and controls. After matching, a new variable "caseid" links controls to cases.
+#' Further, a variable "oldevent" holds the orginal value of "event" - to be used to identify cases functioning
+#' as controls prior to being cases.
 #' Variables in the original dataset are preserved. The final dataset includes all original cases but only the 
 #' controls that were selected.
 #' 
