@@ -56,6 +56,9 @@ temp <- lexisTwo(dat # inddato with id/in/out/event
 temp[]
 
 }
+\seealso{
+lexisSeq lexisFromTo
+}
 \author{
 Christian Torp-Pedersen
 }

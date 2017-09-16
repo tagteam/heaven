@@ -2,7 +2,8 @@
 #' 
 #' @description  
 #' The function provides very simple tables of the success of finding controls and
-#' the reuse of cases and controls
+#' the reuse of cases and controls. Designed to deal with the results of function
+#' riskSetMatch
 #' 
 #' 
 #' @usage

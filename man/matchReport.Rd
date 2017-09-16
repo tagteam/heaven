@@ -4,7 +4,7 @@
 \alias{matchReport}
 \title{matchReport - report of matching from riskSetMatch}
 \usage{
-matchReport(dat, id, case, caseid)
+matchReport(dat, id, case, caseid,oldcase="oldevent")
 }
 \arguments{
 \item{dat}{- data.table with result from riskSetMatch}
@@ -14,13 +14,17 @@ matchReport(dat, id, case, caseid)
 \item{case}{- 0=control, 1=case}
 
 \item{caseid}{- variable defining the groups of matching cases/controls}
+
+\item{oldcase}{- Variable holding case/control=0/1 prior to matching. Distinguishes
+cases reused as controls}
 }
 \value{
 Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
 }
 \description{
 The function provides very simple tables of the success of finding controls and
-the reuse of cases and controls
+the reuse of cases and controls. Designed to deal with the results of function
+riskSetMatch
 }
 \details{
 This function can be helpful to define matching options.  If there is excessive reuse of controls or many

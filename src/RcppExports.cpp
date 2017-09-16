@@ -91,6 +91,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// splitDate
+List splitDate(std::vector<std::string> pnr, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector value, IntegerVector seq);
+RcppExport SEXP _heaven_splitDate(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP valueSEXP, SEXP seqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type pnr(pnrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type value(valueSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type seq(seqSEXP);
+    rcpp_result_gen = Rcpp::wrap(splitDate(pnr, inn, out, event, mergevar, value, seq));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
@@ -98,6 +115,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 9},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 5},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 9},
+    {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 7},
     {NULL, NULL, 0}
 };
 
