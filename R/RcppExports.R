@@ -46,3 +46,13 @@ splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end)
     .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end)
 }
 
+#' @description Split by one date for each record
+#' @title splitDate
+#' @author Christian Torp-Pedersen
+#' @export
+NULL
+
+splitDate <- function(pnr, inn, out, event, mergevar, value, seq) {
+    .Call('_heaven_splitDate', PACKAGE = 'heaven', pnr, inn, out, event, mergevar, value, seq)
+}
+

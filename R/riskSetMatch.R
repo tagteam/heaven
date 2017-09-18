@@ -1,4 +1,4 @@
-#' @title RiskSetMatch - Risk set matching
+#' @title riskSetMatch - Risk set matching
 #' 
 #' @description #' 
 #' Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
@@ -8,51 +8,69 @@
 #' 
 #' 
 #' @usage
-#' riskSetMatch(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
-#'         controlIndex=NULL, NoIndex=FALSE,cores=1)
+#'   riskSetMatch <- function(
+#'   ptid     # Unique patient identifier
+#' , event   # 0=Control, 1=case
+#' , terms   # terms c("n1","n2",...) - list of vairables to match by
+#' , dat     # dataset with all variables
+#' , Ncontrols  # number of controls to provide
+#' , oldevent="oldevent" # To distinguish cases used as controls
+#' , caseid="caseid" # variable to group cases and controls (case-ptid)
+#' , reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
+#' , reuseControls=FALSE # T or F or NULL - can controls be reused?
+#' , caseIndex=NULL      # Integer or date, date where controls must be prior
+#' , controlIndex=NULL   # controlIndex - Index date for controls
+#' ,  NoIndex=FALSE      # If T ignore index
+#' ,  cores=1)          # Number of cores to use, default 1
 #' 
 #' @author Christian Torp-Pedersen
 #' 
 #' @param ptid  Personal ID variable defining participant
-#' @param event Defines cases/controls MUST be 0/1 - 0 for controls, 1 for case
-#' @param terms c(.....) the variables that should be matched by - enclosed in ".."
+#' @param event Defining cases/controls MUST be 0/1 - 0 for controls, 1 for case
+#' @param terms c(.....) Specifies the variables that should be matched by - enclosed in ".."
 #' @param dat The single dataset with all information - must be data.table
 #' @param Ncontrols  Number of controls sought for each case
+#' @param oldevent Holds original value of event - distinguishes cases used as controls
+#' @param caseid - variable holding grouping variable for cases/controls (=case-ptid)
 #' @param reuseCases T/F If T a case can be a control prior to being a case
 #' @param reuseControls T/F If T a control can be reused for several cases
 #' @param caseIndex Date variable defining the date where a case becomes a case. For a case control study this
-#'        would be the date of event of interest, for a cohort study the date where a case enters an analysis
-#' @param controlIndex date variable defining the control data that needs to be larger chan caseIndex. For a
-#'        case control study this would be the date where a control has the event of interest or is censored.  For a
-#'        cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.
+#'        is the date of event of interest, for a cohort study the date where a case enters an analysis
+#' @param controlIndex date variable defining the date from which a controls can no longer be selected.  The controlIndex
+#'        must be larger than the caseIndex.  For a case control study this would be the date where a control has the 
+#'        event of interest or is censored.  For a cohort study it would be the date where the control disappears from 
+#'        the analysis, e.g. due to death or censoring.
 #' @param NoIndex if TRUE caseIndex/controlIndex are ignored
 #' @param cores number of cores to use, default is one
 #' 
 #' @details 
-#' The function does exact matching and keep 2 dates (indices) apart such that the date for controls is larger than that for cases.
-#' Because the matching is exact all matching variables must be integer or character. Make sure that
-#' sufficient rounding is done on continuous and semicontinuous variables to ensure a decent number of controls for each case.
-#' For example it may be difficult to find controls for very high age cases and age should often be rounded 
-#' by 2,3 og 5 years -- and further aggregating extreme ages.
+#' The function does exact matching and keeps 2 dates (indices) apart such that the date for controls is larger than 
+#' that for cases. Because the matching is exact all matching variables must be integer or character. Make sure that
+#' sufficient rounding is done on continuous and semicontinuous variables to ensure a decent number of controls for 
+#' each case. For example it may be difficult to find controls for cases of very high age and age should therefore
+#' often be rounded by 2,3 or 5 years - and extreme ages further aggregated.
 #' 
 #' For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
 #' more relevant since the age of a control varies with time.
 #' 
-#' For many purposes controls should be reused and cases allowed to be controls prior to being cases. 
+#' For many purposes controls should be reused and cases allowed to be controls prior to being cases. By default,
+#' there is no reuse and this can be adjusted with "reuseCases" and "reuseControls"
 #' 
-#' The function can be used for standard matching without the caseIndex/controlIndex, but other packages
+#' The function can be used for standard matching without the caseIndex/controlIndex (with "NoIndex"), but other packages
 #' such as MatchIt are more likely to be optimal for these cases.
 #' 
-#' It may appear tempting always to use multiple cores, but this emplies a costly overhead because the function
+#' It may appear tempting always to use multiple cores, but this comes with a costly overhead because the function
 #' machinery has to be distributed to each defined "worker".  With very large numbers of cases and controls, multiple
-#' cores can save substantial time. When a single core is used a progress shows progress of matching. There is
-#' no progress bar with multiple cores
+#' cores can save substantial amounts of time. When a single core is used a progress shows progress of matching. 
+#' There is no progress bar with multiple cores
 #' 
 #' The function matchReport may afterwards be used to provide simple summaries of use of cases and controls
 #'
-#' @return data.table with cases and controls. A new variable "caseid" links controls to cases.  This variable name
-#' is fixed and should not be used for other purposes.   Other variables in the original dataset are preserved 
-#' unchanged. The final dataset includes all original cases but only the controls that were selected.
+#' @return data.table with cases and controls. After matching, a new variable "caseid" links controls to cases.
+#' Further, a variable "oldevent" holds the orginal value of "event" - to be used to identify cases functioning
+#' as controls prior to being cases.
+#' Variables in the original dataset are preserved. The final dataset includes all original cases but only the 
+#' controls that were selected.
 #' 
 #' @seealso matchReport Matchit
 #' 
@@ -60,43 +78,45 @@
 #'
 #' @examples
 #' require(data.table)
-#' event <- c(rep(0,50),rep(1,5)) 
+#' case <- c(rep(0,40),rep(1,15)) 
 #' ptid <- paste0("P",1:55)
-#' sex <- c(rep("fem",25),rep("mal",25),"fem","fem",rep("mal",3))
-#' age <- c(rep(c(70,80),25),70,80,70,70,80)
-#' caseIndex <- c(seq(1,49,1),seq(5,45,10))
+#' sex <- c(rep("fem",20),rep("mal",20),rep("fem",8),rep("mal",7))
+#' byear <- c(rep(c(2020,2030),20),rep(2020,7),rep(2030,8))
+#' caseIndex <- c(seq(1,40,1),seq(5,47,3))
 #' controlIndex <- caseIndex
 #' library(data.table)
-#' dat <- data.table(ptid,event,sex,age,caseIndex,controlIndex)
+#' dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 #' # Very simple match without reuse - no dates to control for
-#' out <- riskSetMatch("ptid","event",c("age","sex"),dat,2,NoIndex=TRUE)
+#' out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 #' # Risk set matching without reusing cases/controls - Some cases have no controls
-#' out2 <- riskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex="caseIndex",
+#' out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
 #'   controlIndex="controlIndex")
 #' # Risk set matching with reuse of cases (control prior to case) and reuse of 
 #'   controls - more cases get controls
-#' out3 <- riskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex=
+#' out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
 #'   "caseIndex",controlIndex="controlIndex"
 #'   ,reuseCases=TRUE,reuseControls=TRUE)
 #' # Same with 2 cores
-#' out3 <- riskSetMatch("ptid","event",c("age","sex"),dat,2,caseIndex=
+#' out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
 #'   "caseIndex",controlIndex="controlIndex"
 #'   ,reuseCases=TRUE,reuseControls=TRUE,cores=2)          
-riskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
-                         controlIndex=NULL, NoIndex=FALSE, cores=1){
-#browser()
-    #ptid - pnr i DST id
-    #event 0/1 distinguishes cases from controls
-    #terms c(1,2,3) - list of vairables to match by
-    #dat - dataset with all variables
-    #Ncontrols - number of controls to provide
-    #reuseCases - T og F or NULL - can a case be a control prior to being a case?
-    #reuseControls - T or F or NULL
-    #caseIndex - Integer or date, date where controls must be prior
-    #controlIndex - Index date for controls
+riskSetMatch <- function(ptid     # Unique patient identifier
+                         ,event   # 0=Control, 1=case
+                         ,terms   # terms c("n1","n2",...) - list of vairables to match by
+                         ,dat     # dataset with all variables
+                         ,Ncontrols  # number of controls to provide
+                         ,oldevent="oldevent" # To distinguish cases used as controls
+                         ,caseid="caseid" # variable to group cases and controls (case-ptid)
+                         ,reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
+                         ,reuseControls=FALSE # T or F or NULL - can controls be reused?
+                         ,caseIndex=NULL      # Integer or date, date where controls must be prior
+                         ,controlIndex=NULL   # controlIndex - Index date for controls
+                         , NoIndex=FALSE      # If T ignore index
+                         , cores=1){          # Number of cores to use, default 1
     options(warn=-1)
     # copy input data
     datt <- copy(dat)
+    datt[,"oldevent":=eval(as.name(event))]
     if (NoIndex) noindex <- 1L else noindex <- 0L # allows omitting index vectors
     # Check data.table
     if (!is.data.table(dat)) stop("data not data.table")
@@ -127,7 +147,6 @@ riskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
         progress <- 0;
         # Select controls - rbind of each split-member that selects controls
         selected.controls <- do.call("rbind",lapply(split.alldata,function(controls){
-#browser()    
             # Setnames because data.table called from function
             if (!NoIndex) setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
             else setnames(controls,c(".ptid",".event",".cterms"))
@@ -136,7 +155,7 @@ riskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
             cases <- controls[.event==1]
             setkey(cases,.ptid)
             # Uf cases cannot becom controls they are removed from controls
-            if (!reuseCases) controls[.event==0]
+            if (!reuseCases) controls <- subset(controls,.event==0)
             #find lengths of controls and cases
             Tcontrols<-dim(controls)[1]
             Ncases<-dim(cases)[1]
@@ -179,7 +198,7 @@ riskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
             cases <- controls[.event==1]
             data.table::setkey(cases,.ptid)
             # If cases cannot become controls they are removed from controls
-            if (!reuseCases) controls[.event==0]
+            if (!reuseCases) controls <- subset(controls,.event==0)
             #find lengths of controls and cases
             Tcontrols<-dim(controls)[1]
             Ncases<-dim(cases)[1]
@@ -207,7 +226,7 @@ riskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
         parallel::stopCluster(CLUST)
         setDT(selected.controls)
     }  #end cores>1
-    setnames(selected.controls,c("caseid",".ptid"))
+    setnames(selected.controls,c(caseid,".ptid"))
     selected.controls[,.event:=0]
     setkey(alldata,.event)
     cases <- alldata[.event==1]
@@ -219,10 +238,10 @@ riskSetMatch <- function(ptid,event,terms,dat,Ncontrols,reuseCases=FALSE,reuseCo
     setnames(FINAL,".ptid",ptid) #give the proper ptid back
     # Ensure that original ptid is character
     datt[,ptid:=as.character(ptid)]
-    datt[,event:=NULL]
+    datt[,(event):=NULL]
     FINAL <- merge(FINAL,datt,by=ptid)
     FINAL[,c(".case","cterms"):=NULL] # remove cterms - aggregated terms
-    setkeyv(FINAL,c("caseid",".event"))
+    setkeyv(FINAL,c(caseid,".event"))
     #Add relevant caseid to controls
     if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
     setnames(FINAL,".event",event)

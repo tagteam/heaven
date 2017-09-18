@@ -36,6 +36,7 @@
 #' intervals preceding the date will have a variable identified by each column with the value "0". After the date the value i "1".
 #' In the example the columns are dat1-date4 - but it is most useful to provide names that identify the condition which changes by
 #' the date rather than a names which indicates a date.
+#' @seealso lexisSeq lexisFromTo
 #' 
 #' @examples
 #' library(data.table)

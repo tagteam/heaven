@@ -23,6 +23,7 @@ Removes row errors and returns data with add admission time
 }
 \examples{
 \dontrun{
+<<<<<<< HEAD
 ## Create Test data
 Pnr <- c(1,1,2,2,2,3)
 Entrydate <- as.Date(c("2001-03-14","2001-03-28","2006-03-14","2006-05-28","2001-11-11","1999-12-24"))
@@ -33,6 +34,10 @@ library(data.table)
 mydata <- data.table(Pnr,Entrydate,Outdate,Extra)
 
 pop <- getAdmLimits3(mydata,personid='Pnr',inddto='Entrydate',uddto='Outdate')
+=======
+newpop <- getAdmLimits3(mydata,personid='Pnr',inddto='Entrydate',uddto='Outdate')
+
+>>>>>>> 1ae3197d1106a0d75c05d04301037117e188e1b8
 
 ## List is returned containing two data.tables
 popData <- pop[[1]]

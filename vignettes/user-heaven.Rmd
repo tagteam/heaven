@@ -1,0 +1,44 @@
+---
+title: "user-heaven"
+author: "Christian Torp-Pedersen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{user-heaven}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is an introduction to the "heaven" R-package.  It is a package under development which implies that independent tests should always be performed to ensure that functions perform as expected.
+
+The heaven package is designed to ease data management in the environment of Statistics Denmark using R. The functions developed follow a typical data flow for an epidemiological project.
+
+#Getting started - Extract relevant data 
+Datasets are with few exceptions provided as SAS datasets.  These are in many cases very large (>20 GByte) and simple conversion to R data.tables is very time consuming. It is very rare for all data in the provided datasets to be relevant for any analysis.  For this first step it is therefore recommended to let SAS do the extraction in the background via an R-interface.  This step does not involve any functions developed specifically. The package RODBC implements ODBC (open database connectivity) and SQL (standard query language) commands can be provided to extract moderate sized datasets.  A series of examples is provided in the vignette "Getting_data_from_SAS".  Using this set of tools increases speed of extraction since SAS is very proficient for handling large sets of data.
+The idea should not be to obtain final datasets for analysis for limit extraction to that part of data which is relevant for a set of analyses.  In general the data.table package should afterwords be used to adjust data for analyses.
+
+#Hospitalisations start/end
+An important SAS dataset provided is "diag_indl". This dataset includes one record pr. provided diagnosis. The unit is not "hospitalisation", but the Danish concept "forløb" that can be translated to "course". During one hospitalisation a patient may experience multiple "forløb" when transferred between departments, when other specilities are involved in a patient or when the patient is transferred between hospitals.
+The function "getAdmLimits" can provide start and end of overlapping "forløb".  Whenever the time of discharge of a patient is relevant, this function should be used.
+
+#Obtain times of diagnoses/procedures/medications
+It is very common to require first occurrence of events for set entry times into analyses, to obtain time of morbidities/co-morbidites - and also common to require the second occurrence to determine events.  Three functions are available.
+"halal" - is designed to obtain dates of diagnoses
+"comorbidityDrugs" - is designed to obtain dates for first prescriptions of drugs
+...... - is designed to obtain dates of first procedures
+
+#Matching
+riskSetMatch provides a facility to match exactly on a number of variables and ensure that selected dates for controls are later than those for cases.
+matchReport provides summary statistics of matching success
+
+#Lexis
+Splitting for time dependent analyses is provided by 3 functions
+lexis2 - splits on a number of variables that require a single time point each. Typical use is comorbidity
+lexisFromTo - splits on multiple from/to/dose. Typical use is medication, postoperative period, 
+lexisSeq - splits on sequences of date - typical use for age and calender year.
+
+......... Thomas funktioner
