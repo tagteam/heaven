@@ -11,23 +11,29 @@ vignette: >
 
 This vignette introduces the use of the function comorbidityDrugs.
 
-## More Examples
+## Example
 
-Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient
+Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient.
 
-```{r}
+```{r,eval=FALSE}
+library(heaven)
 library(data.table)
 dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
 a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
 ```
 
-Output of the funktion
+Output of the funktion.
 
-```{r}
+```{r,echo=FALSE}
+library(heaven)
+library(data.table)
+suppressWarnings(dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10")))
+a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
 a 
 ```
 
 List with the following:
+
 1. Data.table with the columns pnr, atc and eksd containing the rows where the atc code is starting with 'S01' or 'R03'.
 2. A list of the atc codes used in the search.
 3. If the search is restricted to a interval, then the end of the interval is returned.
