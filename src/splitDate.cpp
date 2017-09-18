@@ -6,7 +6,6 @@ using namespace Rcpp;
 //' @title splitDate
 //' @author Christian Torp-Pedersen
 //' @export
-
 // [[Rcpp::export]]
 List splitDate(std::vector<std::string> pnr, // id
              IntegerVector inn, // Starttimes - base data

@@ -1,11 +1,7 @@
-
 #include <Rcpp.h>
 #include <vector>
 #include <string>
 using namespace Rcpp;
-
-
-
 //' @description Fast matcher
 //' @title Matcher
 //' @author Christian Torp-Pedersen

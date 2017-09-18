@@ -42,7 +42,7 @@ library(data.table)
 dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
 dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-  controlIndex="controlIndex",reuseCases=T,reuseControls=T)
+  controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
 matchReport(dataout,"ptid","case","caseid")   
 }
 \seealso{

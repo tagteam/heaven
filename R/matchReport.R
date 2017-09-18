@@ -40,7 +40,7 @@
 #' dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 #' # Very simple match without reuse - no dates to control for
 #' dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-#'   controlIndex="controlIndex",reuseCases=T,reuseControls=T)
+#'   controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
 #' matchReport(dataout,"ptid","case","caseid")   
 matchReport <- function(dat, # Datatable with matches
                         id, # Participant identification
@@ -48,7 +48,6 @@ matchReport <- function(dat, # Datatable with matches
                         caseid, # grouping variable
                         oldcase="oldevent" # remember whether a case used as control was originally a case
                         ){
- require(data.table)
  datt <- dat[,.SD,.SDcols=c(id,case,caseid,oldcase)] # select relevant data
  setnames(datt,c("id","case","caseid","oldcase"))
  cat("\n","------------------------------------------------------------------","\n","Matching success")

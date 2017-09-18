@@ -62,25 +62,24 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                      ,invars #names of id/in/out/event - in that order
                      ,splitvars #Names in splitdat with pnr/from/to/value/name
                      ){
-  require(data.table)
   copyindat <- copy(indat)
   #Tests of data
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Error - Input tables must both be data tables")
-  INDAT <- copyindat[,invars,with=F] # Necessary variables for split
+  INDAT <- copyindat[,invars,with=FALSE] # Necessary variables for split
   INDAT[,mergevar:=1:.N] # Variable to merge by after split;
   setnames(INDAT,invars,c("pnr","inn","out","event"))
   setkey(INDAT,pnr)
   INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
-  pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=F]) 
+  pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=FALSE]) 
   RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
   RESTDAT[,mergevar:=1:.N]  # Merge after split assuming possible prior splits 
   setnames(RESTDAT,invars[1],"pnr")
   #Prepare splitdat
   csplit <- copy(splitdat)
-  csplit[,splitvars,with=F] # necessary variables
+  csplit[,splitvars,with=FALSE] # necessary variables
   setnames(csplit,c("pnr","start","slut","val","name"))
   setkey(csplit,"pnr")
-  csplit <- merge(csplit,pnrgrp,by="pnr",all.x=T)
+  csplit <- merge(csplit,pnrgrp,by="pnr",all.x=TRUE)
   csplit[,pnr:=NULL] # identify only by pnrnum
   setkeyv(csplit,c("name","pnrnum","start","slut")) 
   ## Check csplit content
@@ -95,7 +94,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   if (temp>0) stop("Error - Intervals overlapping within individual and group")
   #Separate tables for each value of name
   namelist <- unique(csplit[["name"]])
-  OUT <- INDAT[,c("pnrnum","mergevar","inn","out","event"),with=F] # Prepare output start
+  OUT <- INDAT[,c("pnrnum","mergevar","inn","out","event"),with=FALSE] # Prepare output start
   OUT[,mergevar2:=mergevar] # to add sequential information
   PRIOR <- OUT[,c("mergevar","mergevar2")]
   
@@ -115,7 +114,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     setnames(OUT2,c("merge","val"),c("mergevar2",nam))
     setkeyv(OUT2,c("mergevar2","inn"))
     setkey(PRIOR,mergevar2)
-    OUT <- merge(OUT2,PRIOR,by="mergevar2",all=T) #Add information from prior loops
+    OUT <- merge(OUT2,PRIOR,by="mergevar2",all=TRUE) #Add information from prior loops
     OUT[,mergevar2:=1:.N] # Resequence
     PRIOR <- copy(OUT)
     PRIOR[,c("pnrnum","inn","out","event"):=NULL] #Remove data provided by splitFT function
@@ -123,7 +122,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   }
   setkey(OUT, mergevar, inn)
   setkey(RESTDAT, mergevar)
-  OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=T)
+  OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=TRUE)
   setnames(OUT,c("pnr","inn","out","event"),invars) 
   OUT[,c("mergevar","mergevar2","pnrnum"):=NULL]
   OUT
