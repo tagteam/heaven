@@ -19,22 +19,19 @@ Find patients who have received drugs with atc codes starting with 'S01' or 'R03
 library(heaven)
 library(data.table)
 dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+dat[,eksd:=as.Date(eksd)]
 a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
 ```
 
-Output of the funktion.
+Output of the funktion is a data.table with the columns pnr, atc and eksd containing the rows where the atc code is starting with 'S01' or 'R03'.
 
 ```{r,echo=FALSE}
 library(heaven)
 library(data.table)
 suppressWarnings(dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10")))
+dat[,eksd:=as.Date(eksd)]
 a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
 a 
 ```
 
-List with the following:
 
-1. Data.table with the columns pnr, atc and eksd containing the rows where the atc code is starting with 'S01' or 'R03'.
-2. A list of the atc codes used in the search.
-3. If the search is restricted to a interval, then the end of the interval is returned.
-4. If the search is restricted to a interval, then the length of the interval is returned. The length is given in days.

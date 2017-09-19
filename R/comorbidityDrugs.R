@@ -16,8 +16,9 @@
 #' @examples
 #' library(data.table)
 #' dat<-data.table(pnr=1:22, 
-#'                 atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), 
+#'                 atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"), each=5), 
 #'                 eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+#' dat[,eksd:=as.Date(eksd)]
 #'                
 #' #Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient
 #' comorbidityDrugs(dat, code=c('S01', 'R03'))
@@ -27,9 +28,10 @@
 #' 
 #' #With custom names
 #' dat2<-data.table(MyID=1:22, 
-#'                  MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), 
+#'                  MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"), each=5), 
 #'                  MyDates=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
-#' comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes',eksd='MyDates', code=c('S01', 'R03'))
+#' dat2[,MyDates:=as.Date(MyDates)]
+#' comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes', eksd='MyDates', code=c('S01', 'R03'))
 #' 
 #' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 
