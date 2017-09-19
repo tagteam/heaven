@@ -10,10 +10,7 @@
 #' 
 #' 
 #' @usage
-#'lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
-#'                        ,splitdat # Data with from/to/Value
-#'                        ,invars #names of id/in/out/event - in that order
-#'                        ,splitvars #Names in splitdat with id/from/to/value/name)
+#' lexisFromTo(indat,splitdat,invars,splitvars)
 #' 
 #' @author Christian Torp-Pedersen
 #' 
