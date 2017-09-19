@@ -16,11 +16,11 @@
 #' , Ncontrols  # number of controls to provide
 #' , oldevent="oldevent" # To distinguish cases used as controls
 #' , caseid="caseid" # variable to group cases and controls (case-ptid)
-#' , reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
-#' , reuseControls=FALSE # T or F or NULL - can controls be reused?
+#' , reuseCases=FALSE # TRUE og FALSE or NULL - can a case be a control prior to being a case?
+#' , reuseControls=FALSE # TRUE or FALSE or NULL - can controls be reused?
 #' , caseIndex=NULL      # Integer or date, date where controls must be prior
 #' , controlIndex=NULL   # controlIndex - Index date for controls
-#' ,  NoIndex=FALSE      # If T ignore index
+#' ,  NoIndex=FALSE      # If TRUE ignore index
 #' ,  cores=1)          # Number of cores to use, default 1
 #' 
 #' @author Christian Torp-Pedersen
@@ -32,15 +32,15 @@
 #' @param Ncontrols  Number of controls sought for each case
 #' @param oldevent Holds original value of event - distinguishes cases used as controls
 #' @param caseid - variable holding grouping variable for cases/controls (=case-ptid)
-#' @param reuseCases T/F If T a case can be a control prior to being a case
-#' @param reuseControls T/F If T a control can be reused for several cases
+#' @param reuseCases Logical. If \code{TRUE} a case can be a control prior to being a case
+#' @param reuseControls Logical. If \code{TRUE} a control can be reused for several cases
 #' @param caseIndex Date variable defining the date where a case becomes a case. For a case control study this
 #'        is the date of event of interest, for a cohort study the date where a case enters an analysis
 #' @param controlIndex date variable defining the date from which a controls can no longer be selected.  The controlIndex
 #'        must be larger than the caseIndex.  For a case control study this would be the date where a control has the 
 #'        event of interest or is censored.  For a cohort study it would be the date where the control disappears from 
 #'        the analysis, e.g. due to death or censoring.
-#' @param NoIndex if TRUE caseIndex/controlIndex are ignored
+#' @param NoIndex Logical. If \code{TRUE} caseIndex/controlIndex are ignored
 #' @param cores number of cores to use, default is one
 #' 
 #' @details 
@@ -92,7 +92,7 @@
 #' out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
 #'   controlIndex="controlIndex")
 #' # Risk set matching with reuse of cases (control prior to case) and reuse of 
-#'   controls - more cases get controls
+#' # controls - more cases get controls
 #' out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
 #'   "caseIndex",controlIndex="controlIndex"
 #'   ,reuseCases=TRUE,reuseControls=TRUE)

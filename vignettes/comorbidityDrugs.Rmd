@@ -28,8 +28,14 @@ Output of the funktion is a data.table with the columns pnr, atc and eksd contai
 ```{r,echo=FALSE}
 library(heaven)
 library(data.table)
+<<<<<<< HEAD
 suppressWarnings(dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10")))
 dat[,eksd:=as.Date(eksd)]
+=======
+dat <- data.table(pnr=1:30,
+                  atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5),
+		  eksd=as.Date(c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10")))
+>>>>>>> bae3c8e91cb285cc93a73e69525eae61e262d30e
 a<-comorbidityDrugs(dat, code=c('S01', 'R03'))
 a 
 ```

@@ -64,7 +64,6 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
                          ,format # "seq" for loop (3 values) and "vector" for list of values
                          ,value="value" #Name of output variable holding sequence number
                         ){
-  require(data.table)
   #Tests of data
   if (!is.data.table(indat)) stop("Input not data tables")
   if (class(invars) != "character") stop("Varnames in c(..) not character")
@@ -101,7 +100,7 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
   }
  setkeyv(splitdat,c("id","pnrnum","inn")) 
  if (is.null(varname)) datt[,varname:=NULL]
- splitdat <- merge(splitdat,datt,by="pnrnum",all=T) 
+ splitdat <- merge(splitdat,datt,by="pnrnum",all=TRUE) 
  splitdat[,pnrnum:=NULL]
  setnames(splitdat,c("id","inn","out","event","value"),c(invars,value))
 }

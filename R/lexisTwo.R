@@ -63,28 +63,26 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
 #browser()  
   #Tests of data
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")
-  require(data.table)
-  require(zoo)
   copyindat <- copy(indat) # leave original dataset intact
   copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
   copysplitdat <- copy(splitdat)
-  INDAT <- copyindat[,c("pnrnum",invars),with=F] # Ncessary variables for split
+  INDAT <- copyindat[,c("pnrnum",invars),with=FALSE] # Ncessary variables for split
   setnames(INDAT,invars,c("pnr","inn","out","dead"))
   RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
   setnames(RESTDAT,invars[1],"pnr")
-  OUT <- INDAT[,c("pnrnum","inn"),with=F] # Prepare output start
+  OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
   setnames(copysplitdat,invars[1],"pnr")
   for(name in splitvars){
 #browser()    
-    selected <- copysplitdat[,c("pnr",name),with=F]
-    toSplit <- merge(INDAT,selected,by="pnr",all.x=T)
-    pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=F])# relation between pnr and pnrnum
+    selected <- copysplitdat[,c("pnr",name),with=FALSE]
+    toSplit <- merge(INDAT,selected,by="pnr",all.x=TRUE)
+    pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=FALSE])# relation between pnr and pnrnum
     if (name != splitvars[1]) OUT[,(c("out","dead")):=NULL]
    # INDAT <- heaven::split2(.pnr,.in,.out,.dato,.event) 
     INDAT <- toSplit[,heaven::split2(pnrnum,inn,out,eval(as.name(name)),dead)]  # Call to c++ split-function
     setDT(INDAT)
-    INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=T)
-    OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=T) 
+    INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=TRUE)
+    OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=TRUE) 
     OUT <- OUT[,tail(.SD,1),by=c("pnrnum","inn","out")]
     OUT[,"pnr":=NULL]
     INDAT[,dato:=NULL]

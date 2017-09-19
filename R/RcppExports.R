@@ -36,23 +36,19 @@ split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
 
-#' @description Split by intervals of dates
-#' @title splitFT
-#' @author Christian Torp-Pedersen
-#' @export
-NULL
-
-splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end) {
-    .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end)
-}
-
 #' @description Split by one date for each record
 #' @title splitDate
 #' @author Christian Torp-Pedersen
 #' @export
-NULL
-
 splitDate <- function(pnr, inn, out, event, mergevar, value, seq) {
     .Call('_heaven_splitDate', PACKAGE = 'heaven', pnr, inn, out, event, mergevar, value, seq)
+}
+
+#' @description Split by intervals of dates
+#' @title splitFT
+#' @author Christian Torp-Pedersen
+#' @export
+splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end) {
+    .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end)
 }
 
