@@ -4,14 +4,21 @@
 \alias{comorbidityDrugs}
 \title{Comorbidity with drugs}
 \usage{
-comorbidityDrugs(data = NULL, code = NULL, date = NULL, interval = NULL)
+comorbidityDrugs(data = NULL, pnr = "pnr", atc = "atc", eksd = "eksd",
+  code = NULL, date = NULL, interval = NULL)
 }
 \arguments{
-\item{data}{Raw data with atc codes, needs specific variables: pnr, atc, eksd}
+\item{data}{Raw data with atc codes, eksd needs specific variables: pnr, atc, eksd}
+
+\item{pnr}{Variable with ID for each subject/group. Default name: pnr}
+
+\item{atc}{Variable with atc codes. Must be type character. Default name: atc}
+
+\item{eksd}{Variable with dates. Must be type Date or numeric. Default name: eksd}
 
 \item{code}{Vector with ATC codes for the drugs where the first-instance-date is desired}
 
-\item{date}{Date of end of search}
+\item{date}{Date of end of search "YYYY-MM-DD"}
 
 \item{interval}{Length of the interval to search (days before the argument 'date')}
 }
@@ -22,11 +29,22 @@ the interval before the date are returned.
 }
 \examples{
 library(data.table)
-dat<-data.table(pnr=1:22, atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+dat<-data.table(pnr=1:22, 
+                atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), 
+                eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+               
 #Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient
 comorbidityDrugs(dat, code=c('S01', 'R03'))
+
 #Find patients who have received drugs with atc codes starting with 'N' or 'M' in the period from "2001-03-01" to "2002-03-01" and report the date of the first occurrence
-comorbidityDrugs(dat, code=c('N', 'M'), date="2002-03-01", interval=365)
+comorbidityDrugs(dat, code=c('N', 'M'), date="2002-03-21", interval=365)
+
+#With custom names
+dat2<-data.table(MyID=1:22, 
+                 MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), 
+                 MyDates=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes',eksd='MyDates', code=c('S01', 'R03'))
+
 }
 \author{
 Helle Hoejmark Eriksen <helle.e@rn.dk>

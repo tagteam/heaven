@@ -12,15 +12,6 @@ library(heaven)
 #+end_src
 
 #+RESULTS[<2016-12-29 19:04:12> 7e3cf018f0688e78f0f5e75a98fa5c8bfd2106e5]:
-: Loading required package: data.table
-: data.table 1.9.6  For help type ?data.table or https://github.com/Rdatatable/data.table/wiki
-: The fastest way to learn (by data.table authors): https://www.datacamp.com/courses/data-analysis-the-data-table-way
-: Loading required package: ggplot2
-: Loading required package: gridExtra
-: Loading required package: scales
-: 
-: LOL: This is heaven! Version 0.0.3
-: A good place to get started is vignette('user-heaven').
 
 
 ** Sample data
