@@ -4,11 +4,7 @@
 \alias{lexisTwo}
 \title{lexisTwo}
 \usage{
-lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
-                    ,splitdat # Data with id and dates
-                    ,invars #names of id/in/out/event - in that order
-                    ,splitvars #Names var date-vars to split by
-                     )
+lexisTwo(indat,splitdat,invars,splitvars)
 }
 \arguments{
 \item{indat}{- base data with id, start, end, event and other data - possibly already split}
@@ -28,10 +24,10 @@ unrelated to the splitting are left unchanged.
 }
 \description{
 lexixTwo is a specialised version of lexis splitting.  While preparing data for time dependent analyses with e.g.
-Cox org Poisson regression records need to be "split" at selected times.  For practical use there are often
+Cox or Poisson regression records need to be "split" at selected times.  For practical use there are often
 multiple conditions such as comorbidities that will cause either a single split or no splitting.  This function
 is designed to receive base data with start/end/event and another set of data where patient id is accompanied with 
-one column per condition with these columns containing the time where split should occur.
+one column per condition with these columns containing the time where split should occur for each case.
 }
 \details{
 The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
