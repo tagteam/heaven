@@ -110,15 +110,17 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     # Check data.table
     if (!is.data.table(dat)) stop("data not data.table")
     # combine matching variables to single term - cterms
+    setnames(datt,ptid,".ptid")
+    datt[, pnrnum:=as.integer(factor(.ptid))]
     datt[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
     # Select relevant part of table for matching
     if (!NoIndex){
-        alldata <- datt[,.SD,.SDcols=c(ptid,caseIndex,controlIndex,event,"cterms") ]
-        setnames(alldata,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
+        alldata <- datt[,.SD,.SDcols=c("pnrnum",caseIndex,controlIndex,event,"cterms") ]
+        setnames(alldata,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
     }
     else{
-        alldata <- datt[,.SD,.SDcols=c(ptid,event,"cterms") ]
-        setnames(alldata,c(".ptid",".event",".cterms"))
+        alldata <- datt[,.SD,.SDcols=c("pnrnum",event,"cterms") ]
+        setnames(alldata,c("pnrnum",".event",".cterms"))
     }
     #Checking variables (partially)
     numbers <- table(alldata[,.event])
@@ -137,13 +139,13 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         # Select controls - rbind of each split-member that selects controls
         selected.controls <- do.call("rbind",lapply(split.alldata,function(controls){
             # Setnames because data.table called from function
-            if (!NoIndex) setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
-            else setnames(controls,c(".ptid",".event",".cterms"))
-            setkey(controls,.event,.ptid)
+            if (!NoIndex) setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
+            else setnames(controls,c("pnrnum",".event",".cterms"))
+            setkey(controls,.event,pnrnum)
             # Define cases in particular match-group
             cases <- controls[.event==1]
-            setkey(cases,.ptid)
-            # Uf cases cannot becom controls they are removed from controls
+            setkey(cases,pnrnum)
+            # If cases cannot become controls they are removed from controls
             if (!reuseCases) controls <- subset(controls,.event==0)
             #find lengths of controls and cases
             Tcontrols<-dim(controls)[1]
@@ -152,9 +154,6 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             set.seed(17)
             controls[,random:=runif(.N,1,Ncontrols*10)]
             setkey(controls,random)
-            # vectors for Rcpp
-            CONTROLS <- as.character(controls[,.ptid])
-            CASES <- as.character(cases[,.ptid])
             NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
             if(!NoIndex){
                 controlIndex <- controls[,.controlIndex]
@@ -164,7 +163,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                 caseIndex <- 0L
             }
             Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-                                      controlIndex, caseIndex, CONTROLS, CASES,noindex)
+                                      controlIndex, caseIndex, controls[,pnrnum], cases[,pnrnum],noindex)
             setDT(Output)
             progress <<- progress+1/totalprogress
             #Progress bar
@@ -176,13 +175,12 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     else {
         CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
         print(CLUST)
-        parallel::clusterExport(CLUST, c("Matcher"))#,"NreuseControls","noindex","reuseCases","NoIndex"),envir=environment())
-        # Select controls - rbind of each split-member that selects controls
+        parallel::clusterExport(CLUST, c("Matcher"))
         selected.controls <- do.call(rbind,foreach::foreach(controls=split.alldata,.packages=c("heaven"),.export=c("reuseControls")) %dopar% {
             # Setnames because data.table called from function
-            if (!NoIndex) data.table::setnames(controls,c(".ptid",".caseIndex",".controlIndex",".event",".cterms"))
-            else data.table::setnames(controls,c(".ptid",".event",".cterms"))
-            data.table::setkey(controls,.event,.ptid)
+            if (!NoIndex) data.table::setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
+            else data.table::setnames(controls,c("pnrnum",".event",".cterms"))
+            data.table::setkey(controls,.event,pnrnum)
             # Define cases in particular match-group
             cases <- controls[.event==1]
             data.table::setkey(cases,.ptid)
@@ -195,9 +193,6 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             set.seed(17)
             controls[,random:=runif(.N,1,Ncontrols*10)]
             setkey(controls,random)
-            # vectors for Rcpp
-            CONTROLS <- controls[,.ptid]
-            CASES <- cases[,.ptid]
             NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
             if(!NoIndex){
                 controlIndex <- controls[,.controlIndex]
@@ -208,28 +203,26 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             }
             ## print(list(Ncontrols, Tcontrols, Ncases, NreuseControls, controlIndex, caseIndex, CONTROLS, CASES,noindex))
             Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-                                      controlIndex, caseIndex, as.character(CONTROLS), as.character(CASES),noindex)
+                                      controlIndex, caseIndex, controls[,pnrnum], cases[,pnrnum],noindex)
             setDT(Output)
             Output
         }) # end function and do.call
         parallel::stopCluster(CLUST)
         setDT(selected.controls)
     }  #end cores>1
-    setnames(selected.controls,c(caseid,".ptid"))
+    setnames(selected.controls,c(caseid,"pnrnum"))
     selected.controls[,.event:=0]
     setkey(alldata,.event)
     cases <- alldata[.event==1]
-    cases[,caseid:=.ptid]
+    cases[,caseid:=pnrnum]
     # Create final dataset with cases and controls
-    FINAL <- rbind(cases[,.(.ptid,caseid,.event)],selected.controls[,.(.ptid,caseid,.event)])
+    FINAL <- rbind(cases[,.(pnrnum,caseid,.event)],selected.controls[,.(pnrnum,caseid,.event)])
     setkey(FINAL)
     #output
-    setnames(FINAL,".ptid",ptid) #give the proper ptid back
-    # Ensure that original ptid is character
-    datt[,(ptid):=as.character(eval(as.name(ptid)))]
     datt[,(event):=NULL]
-    FINAL <- merge(FINAL,datt,by=ptid)
-    FINAL[,c(".case","cterms"):=NULL] # remove cterms - aggregated terms
+    FINAL <- merge(FINAL,datt,by=pnrnum)
+    FINAL[,c(".case","cterms","pnrnum"):=NULL] # remove cterms - aggregated terms
+    setnames(FINAL,".ptid",ptid)
     setkeyv(FINAL,c(caseid,".event"))
     #Add relevant caseid to controls
     if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
