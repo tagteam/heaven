@@ -30,14 +30,9 @@ the interval before the date are returned.
 \examples{
 library(data.table)
 dat<-data.table(pnr=1:22, 
-<<<<<<< HEAD
                 atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"), each=5), 
                 eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
 dat[,eksd:=as.Date(eksd)]
-=======
-                atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), 
-                eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
->>>>>>> bae3c8e91cb285cc93a73e69525eae61e262d30e
                
 #Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient
 comorbidityDrugs(dat, code=c('S01', 'R03'))
@@ -47,16 +42,10 @@ comorbidityDrugs(dat, code=c('N', 'M'), date="2002-03-21", interval=365)
 
 #With custom names
 dat2<-data.table(MyID=1:22, 
-<<<<<<< HEAD
                  MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"), each=5), 
                  MyDates=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
 dat2[,MyDates:=as.Date(MyDates)]
 comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes', eksd='MyDates', code=c('S01', 'R03'))
-=======
-                 MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"),each=5), 
-                 MyDates=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
-comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes',eksd='MyDates', code=c('S01', 'R03'))
->>>>>>> bae3c8e91cb285cc93a73e69525eae61e262d30e
 
 }
 \author{
