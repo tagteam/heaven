@@ -103,7 +103,7 @@ hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   #The definitions must be moved outside the function!
   antiAdrenerg4=c('C02A','C02B','C02C')
   diu4=c('C02L','C03A','C03B','C03D','C03E','C03X','C07B','C07C','C07D','C08G')
-  diu5=c('C09BA','C09DA')
+  diu5=c('C02DA','C09BA','C09DA')
   diu7=c('C09XA52')
   Vaso5=c('C02DB','C02DD','C02DG')
   Andet4=c('C02L')
