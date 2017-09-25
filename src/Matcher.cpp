@@ -2,10 +2,6 @@
 #include <vector>
 #include <string>
 using namespace Rcpp;
-//' @description Fast matcher
-//' @title Matcher
-//' @author Christian Torp-Pedersen
-//' @export
 // [[Rcpp::export]]
 List Matcher(int Ncontrols, // Desired number of controls
              int Tcontrols, // Total number of controls
@@ -13,20 +9,19 @@ List Matcher(int Ncontrols, // Desired number of controls
              int reuseControls,  // Integer logical 0/1
              IntegerVector controlIndex, // Controls dates for risk-set
              IntegerVector caseIndex, // Cases dates for risk-set
-             std::vector<std::string> controls, // controls ID
-             std::vector<std::string> cases, // cases ID
+             IntegerVector controls, // controls ID
+             IntegerVector cases, // cases ID
              int NoIndex){ // Ignore index if 1 - match without regard to risk-set - essentially simple match 
   
   int ii; // while counter - number of selected controls
   int controlCounter=0;// Sequencer through list of controls - controlIndex
   bool IsCoEl;  // preliminary test of selectability
-  std::vector<std::string> selectedControls; // output controls
+  std::vector<int> selectedControls; // output controls
     selectedControls.reserve(Tcontrols*(Ncases+1)); // avoid repeated copying of vector
-  std::vector<std::string> selectedCases;    // output cases-list
+  std::vector<int> selectedCases;    // output cases-list
     selectedCases.reserve(Ncontrols*(Ncases+1));
   std::vector<int> haveTried(Tcontrols+1,0); // Have tried and failed - or is-taken if 1
   std::vector<int> usedControls(Tcontrols+1,0);  // Have already been used
-  srand(216); //set seed;
   for (int i=0; i<Ncases; i++){
     if (Ncases<1 || Tcontrols<1) break; // allows for groups to have no controls or no cases
     for (int j=0; j<Tcontrols; j++) haveTried[j]=0; //Initialize to "have not tried"
@@ -58,15 +53,13 @@ List Matcher(int Ncontrols, // Desired number of controls
       else { // Action for skipped control
         if (controlCounter < Tcontrols) haveTried[controlCounter]=1;
         if (reuseControls==0) {
-            // random decision to start with first or continue searching
-            int flip=std::rand()%1; if (flip==1) flip=controlCounter;
-            for (int iii=flip; iii<=Tcontrols; iii++){
+            for (int iii=controlCounter; iii<=Tcontrols; iii++){
               if ((haveTried[iii]==0 && usedControls[iii]==0) || iii==Tcontrols) { //foundOne or end
                 controlCounter = iii;
                 break;
               }
             }
-            if (controlCounter==Tcontrols && flip !=0){// no find - start from firstUnused
+            if (controlCounter==Tcontrols){// no find - start from firstUnused
               for (int iii=0; iii<=Tcontrols; iii++){
                 if ((haveTried[iii]==0 && usedControls[iii]==0) || iii==Tcontrols) { //foundOne or end
                   controlCounter = iii;
@@ -108,7 +101,9 @@ return List::create(Named("selectedCases") = selectedCases,
 //controlIndex <- c(rep(0,5),rep(5,5),rep(10,5),rep(15,5)) #control dates
 //caseIndex <- c(0,4,9,14,10) # case dates
 //controls <- c(paste0('A',1:5),paste0('B',1:5),paste0('C',1:5),paste0('D',1:5)) #control ids
+//controls <- as.integer(factor(controls))
 //cases <- LETTERS[1:5] #case ids
+//cases <- as.integer(factor(cases))
 //NoIndex <- 0
 
 // temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,  
@@ -117,8 +112,7 @@ return List::create(Named("selectedCases") = selectedCases,
 // library(data.table)
 //  setDT(temp)[]
 
-
-//  */
+//*/
   
  
  
