@@ -84,7 +84,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
     INDAT[,dato:=NULL]
     setnames(OUT,"dato",name)
   }
- OUT[,(splitvars) := na.locf(.SD, na.rm = F), by = "pnrnum", .SDcols = splitvars]  
+ OUT[,(splitvars) := zoo::na.locf(.SD, na.rm = F), by = "pnrnum", .SDcols = splitvars]  
  OUT <- merge(OUT,RESTDAT,by="pnrnum")
  OUT[,pnrnum:=NULL] # remove number version of pnr
  setnames(OUT,c("pnr","inn","out","dead"),invars)

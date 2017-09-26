@@ -39,7 +39,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Matcher
-List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, std::vector<std::string> controls, std::vector<std::string> cases, int NoIndex);
+List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int NoIndex);
 RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NoIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -50,8 +50,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type reuseControls(reuseControlsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type controlIndex(controlIndexSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type caseIndex(caseIndexSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type controls(controlsSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type cases(casesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type controls(controlsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type cases(casesSEXP);
     Rcpp::traits::input_parameter< int >::type NoIndex(NoIndexSEXP);
     rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex));
     return rcpp_result_gen;
