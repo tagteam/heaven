@@ -17,7 +17,13 @@
 #' 
 #' 
 #' @usage
-#' lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
+#' lexisSeq(indat # inddata with id/in/out/event - and possibly other variables
+#' ,invars #names of id/in/out/event - in that order
+#' ,varname=NULL # Name of varriable to add to splitvector
+#' ,splitvector # Integer vector of dates to split by
+#' ,format # "seq" for loop (3 values) and "vector" for list of values
+#' ,value="value" #Name of output variable holding sequence number
+#' )
 #' 
 #' @author Christian Torp-Pedersen
 #' 

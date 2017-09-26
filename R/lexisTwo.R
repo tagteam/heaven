@@ -2,14 +2,18 @@
 #' 
 #' @description 
 #' lexixTwo is a specialised version of lexis splitting.  While preparing data for time dependent analyses with e.g.
-#' Cox or Poisson regression records need to be "split" at selected times.  For practical use there are often
+#' Cox org Poisson regression records need to be "split" at selected times.  For practical use there are often
 #' multiple conditions such as comorbidities that will cause either a single split or no splitting.  This function
 #' is designed to receive base data with start/end/event and another set of data where patient id is accompanied with 
-#' one column per condition with these columns containing the time where split should occur for each case.
+#' one column per condition with these columns containing the time where split should occur.
 #' 
 #' 
 #' @usage
-#' lexisTwo(indat,splitdat,invars,splitvars)
+#' lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
+#'                     ,splitdat # Data with id and dates
+#'                     ,invars #names of id/in/out/event - in that order
+#'                     ,splitvars #Names var date-vars to split by
+#'                      )
 #' 
 #' @author Christian Torp-Pedersen
 #' 
