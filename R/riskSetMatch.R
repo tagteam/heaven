@@ -173,8 +173,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                 controlIndex <- 0L
                 caseIndex <- 0L
             }
-            Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-                                      controlIndex, caseIndex, controls[,pnrnum], cases[,pnrnum],noindex)
+            Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,controlIndex,caseIndex,controls[,pnrnum],cases[,pnrnum],noindex)
             setDT(Output)
             progress <<- progress+1/totalprogress
             #Progress bar
@@ -185,8 +184,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     } #end if cores<2
     else {
         CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
-        print(CLUST)
-        parallel::clusterExport(CLUST, c("Matcher"))
+        ## print(CLUST)
         selected.controls <- do.call(rbind,foreach::foreach(controls=split.alldata,.packages=c("heaven"),.export=c("reuseControls")) %dopar% {
             # Setnames because data.table called from function
             if (!NoIndex) data.table::setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
@@ -213,8 +211,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                 caseIndex <- 0L
             }
             ## print(list(Ncontrols, Tcontrols, Ncases, NreuseControls, controlIndex, caseIndex, CONTROLS, CASES,noindex))
-            Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-                                      controlIndex, caseIndex, controls[,pnrnum], cases[,pnrnum],noindex)
+            Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,controlIndex,caseIndex,controls[,pnrnum],cases[,pnrnum],noindex)
             setDT(Output)
             Output
         }) # end function and do.call
