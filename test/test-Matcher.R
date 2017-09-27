@@ -11,6 +11,6 @@ test_that("Risk set matching",{
                  sex=rbinom(n,1,.4),
                  birthyear=round(runif(n,2000,2017)))
     # Very simple match without reuse - no dates to control for
-    out <- riskSetMatch("ptid","case",c("byear","sex"),dat=d,2,NoIndex=TRUE)    
+    out <- riskSetMatch("pnr","case",c("birthyear","sex"),dat=d,2,NoIndex=TRUE)    
     ## expect_equal(out,)
 })
