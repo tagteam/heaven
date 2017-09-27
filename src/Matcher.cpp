@@ -2,9 +2,6 @@
 #include <vector>
 #include <string>
 using namespace Rcpp;
-//' @description Defines controls for cases
-//' @title Matcher
-//' @author Christian Torp-Pedersen
 // [[Rcpp::export]]
 List Matcher(int Ncontrols, // Desired number of controls
              int Tcontrols, // Total number of controls

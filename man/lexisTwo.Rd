@@ -4,11 +4,7 @@
 \alias{lexisTwo}
 \title{lexisTwo}
 \usage{
-lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
-                    ,splitdat # Data with id and dates
-                    ,invars #names of id/in/out/event - in that order
-                    ,splitvars #Names var date-vars to split by
-                     )
+lexisTwo(indat,splitdat,invars,splitvars)
 }
 \arguments{
 \item{indat}{- base data with id, start, end, event and other data - possibly already split}

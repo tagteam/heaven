@@ -2,9 +2,6 @@
 #include <string>
 #include <vector>
 using namespace Rcpp;
-//' @description Split by one date for each record
-//' @title splitDate
-//' @author Christian Torp-Pedersen
 // [[Rcpp::export]]
 List splitDate(IntegerVector inn, // Starttimes - base data
              IntegerVector out, // Endtimes - base data

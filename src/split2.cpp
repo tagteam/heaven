@@ -2,12 +2,7 @@
 #include <Rcpp.h>
 #include <vector>
 #include <string>
-
 using namespace Rcpp;
-
-//' @description Split in two by a date
-//' @title Split2
-//' @author Christian Torp-Pedersen
 // [[Rcpp::export]]
 DataFrame split2 (IntegerVector   pnr, //ID
                   IntegerVector   inn,  //Start intervals
