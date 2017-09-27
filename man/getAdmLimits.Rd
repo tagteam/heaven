@@ -2,41 +2,53 @@
 % Please edit documentation in R/getAdmLimits.R
 \name{getAdmLimits}
 \alias{getAdmLimits}
-\title{Get Admission time}
+\title{Thomas's first R-version of the sas code from hell}
 \usage{
-getAdmLimits(dt, pnr = "pnr", inddto = "inddto", uddto = "uddto")
+getAdmLimits(dt, admtype = 0, pnr = "pnr", inddto = "inddto",
+  uddto = "uddto", pattype = "pattype")
 }
 \arguments{
-\item{dt}{data.table containing the variables}
+\item{dt}{data.table which provides variables: pnr, recno, inddto,
+uddto, pattype. The function assumes these variable names that
+can be changed with the function call when appropriate}
 
-\item{pnr}{Variable with ID for each subject/group (default is \code{pnr}).}
+\item{admtype}{Type of admission to be included: inpatient/outpatient.}
 
-\item{inddto}{Variable with entry times. Must be date or numeric (default is \code{inddto}).}
+\item{pnr}{Name of pnr variable (default is \code{pnr}).}
 
-\item{uddto}{Variable with exit times. Must be date or numeric (default is \code{uddto}).}
+\item{inddto}{Name of admission date variable (default is \code{inddto}).}
+
+\item{uddto}{Name of discharge date variable (default is \code{uddto}).}
+
+\item{pattype}{Name of pattype variable (default is \code{pattype}).}
 }
 \value{
-List containing two datasets. 
-        First contains the same data.table as for input but with 2 new variables first.inddto and last.outdate.
-        Second contains all rows with missing data or where inddto > uddto.
+The same data.table as for input but with 3 new variables
+    first.inddto, last.uddto and admnum (admission number)
 }
 \description{
-Adds first admission date and last discharge date to a sequence of admissions. The default input data.table is the current standard
-by which admissions are available in Statistics Denmark.
+Adds first admission date and last discharge date to a sequence of admissions with diagnoses. The expected input data.table is the current standard
+by which diagnoses and admissions are available in Statistics Denmark - a merge between diagnoses and the administrative data. The function is general
+for all diagnoses and the examples show how e.g. the first infarction and the associated "true" admission and discharge ar obtained.
+}
+\details{
+For now pattype is ignored.
+
+dt is a data table with the following fields: inddto,
+    uddto, pattype if e.g. inddto has a different name, then the
+    function call should include 'inddto="newname"'
 }
 \examples{
 \dontrun{
-pop <- as.data.table(data(sample.diag))
-## Varaibles have default names
-newpop <- getAdmLimits(pop)
-
-## Varaibles have custom names
-setnames(pop, c('pnr','inddto','uddto'), c('personid', 'Entrydate','Outdate'))
-newpop <- getAdmLimits(pop,pnr='personid',inddto='Entrydate',uddto='Outdate')
-
-## List is returned containing two data.tables
-newpopData <- newpop[[1]]
-newpopError <- newpop[[2]]
+data(samplediag)
+## take a copy to preserve the object samplepop
+pop=copy(samplediag)
+setDT(pop)
+newpop=getAdmLimits(pop,admtype=c(0,1)) # Keep overnight admissions and emergency room admissions
+print(print(newpop))
+#As an example - get first AMI admission with limits
+setkey(newpop,pnr,admnum)
+newpop[grepl('I21',diag)|substr(diag,1,3)=='410',.(AMIdto=min(inddto),first.ind=min(first.inddto),last.ud=min(last.uddto)),by=list(pnr,admnum)][]
 }
 }
 \author{

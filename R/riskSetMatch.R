@@ -8,9 +8,20 @@
 #' 
 #' 
 #' @usage
-#' riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent",
-#' caseid="caseid",reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
-#' controlIndex=NULL,NoIndex=FALSE,cores=1)  
+#'   riskSetMatch <- function(
+#'   ptid     # Unique patient identifier
+#' , event   # 0=Control, 1=case
+#' , terms   # terms c("n1","n2",...) - list of vairables to match by
+#' , dat     # dataset with all variables
+#' , Ncontrols  # number of controls to provide
+#' , oldevent="oldevent" # To distinguish cases used as controls
+#' , caseid="caseid" # variable to group cases and controls (case-ptid)
+#' , reuseCases=FALSE # TRUE og FALSE or NULL - can a case be a control prior to being a case?
+#' , reuseControls=FALSE # TRUE or FALSE or NULL - can controls be reused?
+#' , caseIndex=NULL      # Integer or date, date where controls must be prior
+#' , controlIndex=NULL   # controlIndex - Index date for controls
+#' ,  NoIndex=FALSE      # If TRUE ignore index
+#' ,  cores=1)          # Number of cores to use, default 1
 #' 
 #' @author Christian Torp-Pedersen
 #' 
@@ -166,8 +177,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                 controlIndex <- 0L
                 caseIndex <- 0L
             }
-            Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-                                      controlIndex, caseIndex, controls[,pnrnum], cases[,pnrnum],noindex)
+            Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,controlIndex,caseIndex,controls[,pnrnum],cases[,pnrnum],noindex)
             setDT(Output)
             progress <<- progress+1/totalprogress
             #Progress bar
@@ -178,8 +188,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     } #end if cores<2
     else {
         CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
-        print(CLUST)
-        parallel::clusterExport(CLUST, c("Matcher"))
+        ## print(CLUST)
         selected.controls <- do.call(rbind,foreach::foreach(controls=split.alldata,.packages=c("heaven"),.export=c("reuseControls")) %dopar% {
             # Setnames because data.table called from function
             if (!NoIndex) data.table::setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
@@ -206,8 +215,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                 caseIndex <- 0L
             }
             ## print(list(Ncontrols, Tcontrols, Ncases, NreuseControls, controlIndex, caseIndex, CONTROLS, CASES,noindex))
-            Output <- heaven::Matcher(Ncontrols, Tcontrols, Ncases, NreuseControls,  
-                                      controlIndex, caseIndex, controls[,pnrnum], cases[,pnrnum],noindex)
+            Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,controlIndex,caseIndex,controls[,pnrnum],cases[,pnrnum],noindex)
             setDT(Output)
             Output
         }) # end function and do.call

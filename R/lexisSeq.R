@@ -17,7 +17,13 @@
 #' 
 #' 
 #' @usage
-#' lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
+#' lexisSeq(indat # inddata with id/in/out/event - and possibly other variables
+#' ,invars #names of id/in/out/event - in that order
+#' ,varname=NULL # Name of varriable to add to splitvector
+#' ,splitvector # Integer vector of dates to split by
+#' ,format # "seq" for loop (3 values) and "vector" for list of values
+#' ,value="value" #Name of output variable holding sequence number
+#' )
 #' 
 #' @author Christian Torp-Pedersen
 #' 
@@ -88,7 +94,7 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
   for (i in 1:length(splitvector)){
     subsplit <- splitguide[,.SD[i],by=pnrnum]
     splitdat <- merge(splitdat,subsplit,by="pnrnum")
-    splitdat <- splitdat[,heaven::splitDate(inn, out, event, pnrnum,value, varname)] # call c++ function
+    splitdat <- splitdat[,.Call('_heaven_splitDate',PACKAGE = 'heaven',inn, out, event, pnrnum,value, varname)] # call c++ function
     setDT(splitdat)
   }
  setkeyv(splitdat,c("pnrnum","inn")) 

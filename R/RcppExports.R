@@ -20,9 +20,12 @@ innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
     .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
 }
 
+<<<<<<< HEAD
 #' @description Defines controls for cases
 #' @title Matcher
 #' @author Christian Torp-Pedersen
+=======
+>>>>>>> d4107f87ab98975f1a0745deac232facadc8a88c
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
