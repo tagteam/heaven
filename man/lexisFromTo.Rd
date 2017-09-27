@@ -27,7 +27,7 @@ and similar factors the individual may move in and out of conditions.  This func
 according such a situation.  The input is first "base data" id/in/out/event (and other variables) that
 may already have been split by other functions.  The other data is a sequence of 
 id/from/to/value/name - that may represent multiple conditions with from/to and with "name" to
-distinguish
+distinguish.
 }
 \details{
 The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
@@ -43,7 +43,6 @@ dat <- data.table(id=c("A","A","B","B"),
                  start=c(0,100,0,100),
                  end=c(100,200,100,200),
                  event=c(0,1,0,0))
-
 split <- data.table (id=c("A","A","A","B","B","B"),
                     start=c(0,50,25,110,150,400),
                     end= c(25,75,150,120,250,500),
@@ -54,7 +53,6 @@ temp <- lexisFromTo(dat # inddato with id/in/out/event
                    ,c("id","start","end","event") #names of id/in/out/event - in that order
                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
 temp[]
-
 }
 \author{
 Christian Torp-Pedersen

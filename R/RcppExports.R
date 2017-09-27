@@ -20,10 +20,9 @@ innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
     .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
 }
 
-#' @description Fast matcher
+#' @description Defines controls for cases
 #' @title Matcher
 #' @author Christian Torp-Pedersen
-#' @export
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
@@ -31,7 +30,6 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
 #' @description Split in two by a date
 #' @title Split2
 #' @author Christian Torp-Pedersen
-#' @export
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
@@ -39,15 +37,13 @@ split2 <- function(pnr, inn, out, dato, dead) {
 #' @description Split by one date for each record
 #' @title splitDate
 #' @author Christian Torp-Pedersen
-#' @export
-splitDate <- function(pnr, inn, out, event, mergevar, value, seq) {
-    .Call('_heaven_splitDate', PACKAGE = 'heaven', pnr, inn, out, event, mergevar, value, seq)
+splitDate <- function(inn, out, event, mergevar, value, seq) {
+    .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, value, seq)
 }
 
 #' @description Split by intervals of dates
 #' @title splitFT
 #' @author Christian Torp-Pedersen
-#' @export
 splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end) {
     .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end)
 }

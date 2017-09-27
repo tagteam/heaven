@@ -39,7 +39,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Matcher
-List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, std::vector<std::string> controls, std::vector<std::string> cases, int NoIndex);
+List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int NoIndex);
 RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NoIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -50,20 +50,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type reuseControls(reuseControlsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type controlIndex(controlIndexSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type caseIndex(caseIndexSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type controls(controlsSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type cases(casesSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type controls(controlsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type cases(casesSEXP);
     Rcpp::traits::input_parameter< int >::type NoIndex(NoIndexSEXP);
     rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex));
     return rcpp_result_gen;
 END_RCPP
 }
 // split2
-DataFrame split2(std::vector<int> pnr, IntegerVector inn, IntegerVector out, IntegerVector dato, IntegerVector dead);
+DataFrame split2(IntegerVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dato, IntegerVector dead);
 RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP datoSEXP, SEXP deadSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<int> >::type pnr(pnrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type pnr(pnrSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type dato(datoSEXP);
@@ -73,19 +73,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // splitDate
-List splitDate(std::vector<std::string> pnr, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector value, IntegerVector seq);
-RcppExport SEXP _heaven_splitDate(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP valueSEXP, SEXP seqSEXP) {
+List splitDate(IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector value, IntegerVector seq);
+RcppExport SEXP _heaven_splitDate(SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP valueSEXP, SEXP seqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type pnr(pnrSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type value(valueSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type seq(seqSEXP);
-    rcpp_result_gen = Rcpp::wrap(splitDate(pnr, inn, out, event, mergevar, value, seq));
+    rcpp_result_gen = Rcpp::wrap(splitDate(inn, out, event, mergevar, value, seq));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -114,7 +113,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 9},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 5},
-    {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 7},
+    {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 9},
     {NULL, NULL, 0}
 };

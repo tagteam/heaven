@@ -46,11 +46,10 @@
 #'                 dead=c(0,1,0,0,0,1,0,1),
 #'                 Bdate=c(-5000,-5000,-2000,-2000,0,0,100,100))
 #' out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),varname="Bdate",c(0,1000,5000),format="vector")
-#'
+#' out[]
 #' out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),varname=NULL,c(0,200,50),format="seq")
+#' out2[]
 #' @export
-
-
 lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other variables
                          ,invars #names of id/in/out/event - in that order
                          ,varname=NULL # Name of var to ad to splitvector
@@ -68,10 +67,10 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
    else setnames(datt,varname,"varname")
   datt[,pnrnum:=1:.N]
   
-  splitdat <- datt[,.SD,.SDcols=c("pnrnum",invars,"varname")]
-  setnames(splitdat,c("pnrnum","id","inn","out","event","varname"))
+  splitdat <- datt[,.SD,.SDcols=c("pnrnum",invars[2:4],"varname")]
+  setnames(splitdat,c("pnrnum","inn","out","event","varname"))
   # Prepare to merge with residual columns
-  datt[,(invars):=NULL]
+  datt[,(invars[2:4]):=NULL]
   # Check vector
   if (!(format %in% c("vector","seq"))) stop("format must be 'seq' or 'vector'")
   #Create dataset/matrix with ptid and vector
@@ -79,23 +78,23 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
       if ((length(splitvector)!=3) || (splitvector[1]>=splitvector[2]) || (splitvector[3]>=(splitvector[2]-splitvector[1])))
         stop("Argument 'seq' must be a vector of the form (start, stop, by) where start < stop and by < stop-start.")
       splitguide <- splitdat[,{splitvector1=.SD[[1]][1];.(seq(from=splitvector1+splitvector[1],
-                    to=splitvector1+splitvector[2],by=splitvector[3]))},.SDcol="varname",by=id]
+                    to=splitvector1+splitvector[2],by=splitvector[3]))},.SDcol="varname",by=pnrnum]
     } else{ ## simple vector
-      splitguide <- splitdat[,.(.SD[[1]][1]+splitvector),.SDcol="varname",by=id]
+      splitguide <- splitdat[,.(.SD[[1]][1]+splitvector),.SDcol="varname",by=pnrnum]
     }
   setnames(splitguide,"V1","varname")
   splitdat[,varname:=NULL]
   splitdat[,value:=0] # counts sequentially from zero as data is split by vector
   for (i in 1:length(splitvector)){
-    subsplit <- splitguide[,.SD[i],by=id]
-    splitdat <- merge(splitdat,subsplit,by="id")
-    splitdat <- splitdat[,heaven::splitDate(id,inn, out, event, pnrnum,value, varname)] # call c++ function
+    subsplit <- splitguide[,.SD[i],by=pnrnum]
+    splitdat <- merge(splitdat,subsplit,by="pnrnum")
+    splitdat <- splitdat[,heaven::splitDate(inn, out, event, pnrnum,value, varname)] # call c++ function
     setDT(splitdat)
   }
- setkeyv(splitdat,c("id","pnrnum","inn")) 
+ setkeyv(splitdat,c("pnrnum","inn")) 
  if (is.null(varname)) datt[,varname:=NULL]
  splitdat <- merge(splitdat,datt,by="pnrnum",all=TRUE) 
  splitdat[,pnrnum:=NULL]
- setnames(splitdat,c("id","inn","out","event","value"),c(invars,value))
+ setnames(splitdat,c("inn","out","event","value"),c(invars[2:4],value))
 }
 

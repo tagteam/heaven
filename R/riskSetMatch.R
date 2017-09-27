@@ -77,18 +77,22 @@
 #' dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 #' # Very simple match without reuse - no dates to control for
 #' out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
+#' out[]
 #' # Risk set matching without reusing cases/controls - Some cases have no controls
 #' out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
 #'   controlIndex="controlIndex")
+#' out2[]   
 #' # Risk set matching with reuse of cases (control prior to case) and reuse of 
 #' # controls - more cases get controls
 #' out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
 #'   "caseIndex",controlIndex="controlIndex"
 #'   ,reuseCases=TRUE,reuseControls=TRUE)
+#' out3[]   
 #' # Same with 2 cores
-#' out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
+#' out4 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
 #'   "caseIndex",controlIndex="controlIndex"
-#'   ,reuseCases=TRUE,reuseControls=TRUE,cores=2)          
+#'   ,reuseCases=TRUE,reuseControls=TRUE,cores=2)  
+#' out4[]           
 riskSetMatch <- function(ptid     # Unique patient identifier
                          ,event   # 0=Control, 1=case
                          ,terms   # terms c("n1","n2",...) - list of vairables to match by
@@ -183,7 +187,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             data.table::setkey(controls,.event,pnrnum)
             # Define cases in particular match-group
             cases <- controls[.event==1]
-            data.table::setkey(cases,.ptid)
+            data.table::setkey(cases,pnrnum)
             # If cases cannot become controls they are removed from controls
             if (!reuseCases) controls <- subset(controls,.event==0)
             #find lengths of controls and cases
@@ -220,7 +224,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     setkey(FINAL)
     #output
     datt[,(event):=NULL]
-    FINAL <- merge(FINAL,datt,by=pnrnum)
+    FINAL <- merge(FINAL,datt,by="pnrnum")
     FINAL[,c(".case","cterms","pnrnum"):=NULL] # remove cterms - aggregated terms
     setnames(FINAL,".ptid",ptid)
     setkeyv(FINAL,c(caseid,".event"))

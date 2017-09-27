@@ -5,7 +5,6 @@ using namespace Rcpp;
 //' @description Split by intervals of dates
 //' @title splitFT
 //' @author Christian Torp-Pedersen
-//' @export
 // [[Rcpp::export]]
 List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
              IntegerVector inn, // Starttimes - base data

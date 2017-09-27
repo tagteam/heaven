@@ -49,8 +49,6 @@
 #' temp[]
 #' 
 #' @export
-
-
 lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
                      ,splitdat # Data with id and dates
                      ,invars #names of id/in/out/event - in that order
@@ -69,7 +67,6 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
   setnames(copysplitdat,invars[1],"pnr")
   for(name in splitvars){
-#browser()    
     selected <- copysplitdat[,c("pnr",name),with=FALSE]
     toSplit <- merge(INDAT,selected,by="pnr",all.x=TRUE)
     pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=FALSE])# relation between pnr and pnrnum
@@ -84,7 +81,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
     INDAT[,dato:=NULL]
     setnames(OUT,"dato",name)
   }
- OUT[,(splitvars) := na.locf(.SD, na.rm = F), by = "pnrnum", .SDcols = splitvars]  
+ OUT[,(splitvars) := zoo::na.locf(.SD, na.rm = F), by = "pnrnum", .SDcols = splitvars]  
  OUT <- merge(OUT,RESTDAT,by="pnrnum")
  OUT[,pnrnum:=NULL] # remove number version of pnr
  setnames(OUT,c("pnr","inn","out","dead"),invars)

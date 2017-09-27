@@ -16,7 +16,8 @@ Imports:
     parallel,
     foreach,
     utils,
-    Rcpp
+    Rcpp,
+    zoo
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     survival,

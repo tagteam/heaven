@@ -6,14 +6,10 @@
 #' according such a situation.  The input is first "base data" id/in/out/event (and other variables) that
 #' may already have been split by other functions.  The other data is a sequence of 
 #' id/from/to/value/name - that may represent multiple conditions with from/to and with "name" to
-#' distinguish
-#' 
-#' 
+#' distinguish.
 #' @usage
 #' lexisFromTo(indat,splitdat,invars,splitvars)
-#' 
 #' @author Christian Torp-Pedersen
-#' 
 #' @param indat - base data with id, start, end, event and other data - possibly already split
 #' @param splitdat - Data with splitting guide - id/from/to/value/name 
 #' @param invars - vector of colum names for id/entry/exit/event - in that order, 
@@ -23,8 +19,6 @@
 #' @return
 #' The function returns a new data table where records have been split according to the splittingguide dataset. Variables
 #' unrelated to the splitting are left unchanged.
-#' @export
-#' 
 #' @details 
 #' The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
 #' This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
@@ -32,28 +26,23 @@
 #' The program checks that intervals are not negative and that intervals for each "name" and each individual
 #' do not overlap.  Violation stops the program with error. Overlaps may occur in real situations, but the
 #' user needs to make decisions regarding this prior to this function.
-#' 
 #' @examples
-#'library(data.table)
-#'dat <- data.table(id=c("A","A","B","B"),
+#' library(data.table)
+#' dat <- data.table(id=c("A","A","B","B"),
 #'                  start=c(0,100,0,100),
 #'                  end=c(100,200,100,200),
 #'                  event=c(0,1,0,0))
-#'
-#'split <- data.table (id=c("A","A","A","B","B","B"),
+#' split <- data.table (id=c("A","A","A","B","B","B"),
 #'                     start=c(0,50,25,110,150,400),
 #'                     end= c(25,75,150,120,250,500),
 #'                     value=c(1,2,3,1,2,3),
 #'                     name=c("d1","d1","d2","d1","d1","d2"))
-#'temp <- lexisFromTo(dat # inddato with id/in/out/event
+#' temp <- lexisFromTo(dat # inddato with id/in/out/event
 #'                    ,split # Data with id and dates
 #'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
 #' temp[]
-#' 
 #' @export
-
-
 lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
                      ,splitdat # Data with from/to/Value
                      ,invars #names of id/in/out/event - in that order
@@ -107,7 +96,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     .start <- csplit[name==nam][["start"]]
     .slut <- csplit[name==nam][["slut"]]
     OUT2 <- heaven::splitFT(.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut) # Call c++
-    setDT(OUT2) # which not has mre records and a new colume named after name
+    setDT(OUT2) # which now has more records and a new colume named after name
     setnames(OUT2,c("merge","val"),c("mergevar2",nam))
     setkeyv(OUT2,c("mergevar2","inn"))
     setkey(PRIOR,mergevar2)
@@ -115,7 +104,6 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     OUT[,mergevar2:=1:.N] # Resequence
     PRIOR <- copy(OUT)
     PRIOR[,c("pnrnum","inn","out","event"):=NULL] #Remove data provided by splitFT function
-
   }
   setkey(OUT, mergevar, inn)
   setkey(RESTDAT, mergevar)
@@ -124,8 +112,3 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   OUT[,c("mergevar","mergevar2","pnrnum"):=NULL]
   OUT
 }
-
-
-
-
-

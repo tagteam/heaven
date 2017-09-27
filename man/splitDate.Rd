@@ -4,7 +4,7 @@
 \alias{splitDate}
 \title{splitDate}
 \usage{
-splitDate(pnr, inn, out, event, mergevar, value, seq)
+splitDate(inn, out, event, mergevar, value, seq)
 }
 \description{
 Split by one date for each record

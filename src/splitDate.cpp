@@ -5,10 +5,8 @@ using namespace Rcpp;
 //' @description Split by one date for each record
 //' @title splitDate
 //' @author Christian Torp-Pedersen
-//' @export
 // [[Rcpp::export]]
-List splitDate(std::vector<std::string> pnr, // id
-             IntegerVector inn, // Starttimes - base data
+List splitDate(IntegerVector inn, // Starttimes - base data
              IntegerVector out, // Endtimes - base data
              IntegerVector event, // Event at end of interval 0/1 - base data
              IntegerVector mergevar, // Merge variable, multiple records can have same pnr - base data
@@ -22,22 +20,19 @@ List splitDate(std::vector<std::string> pnr, // id
 // when "num" is after and there is a split when "num" is in the interval.
 
   // Define output vectors
-  std::vector<std::string> Opnr;
-  Opnr.reserve(pnr.size()*5);
   std::vector<int> Omergevar;  
-  Omergevar.reserve(pnr.size()*5);
+  Omergevar.reserve(mergevar.size()*5);
   std::vector<int> Oinn;  // Starttimes output
-  Oinn.reserve(pnr.size()*5);
+  Oinn.reserve(mergevar.size()*5);
   std::vector<int> Oout; // Endtimes output
-  Oout.reserve(pnr.size()*5);
+  Oout.reserve(mergevar.size()*5);
   std::vector<int> Oevent; // Event at end 0/1
-  Oevent.reserve(pnr.size()*2);
+  Oevent.reserve(mergevar.size()*2);
   std::vector<int> Ovalue; // Value for output 0.1,2...
-  Ovalue.reserve(pnr.size()*5);
+  Ovalue.reserve(mergevar.size()*5);
 
-  for (int i=0; i<pnr.size(); i++){
+  for (int i=0; i<mergevar.size(); i++){
     if (seq(i)<=inn(i)){ // seq to the left of interval
-      Opnr.push_back(pnr[i]);
       Omergevar.push_back(mergevar(i));
       Oinn.push_back(inn(i));
       Oout.push_back(out(i));
@@ -46,7 +41,6 @@ List splitDate(std::vector<std::string> pnr, // id
     }
     else
     if (seq(i)>=out(i)){ // To the right - record passed without change
-      Opnr.push_back(pnr[i]);
       Omergevar.push_back(mergevar(i));
       Oinn.push_back(inn(i));
       Oout.push_back(out(i));
@@ -55,13 +49,11 @@ List splitDate(std::vector<std::string> pnr, // id
     }
     else
     if (seq(i)>inn(i) && seq(i)<out(i)){// interval to be split
-      Opnr.push_back(pnr[i]);
       Omergevar.push_back(mergevar(i));
       Oinn.push_back(inn(i));
       Oout.push_back(seq(i));
       Oevent.push_back(0);
       Ovalue.push_back(value[i]);
-      Opnr.push_back(pnr[i]);
       Omergevar.push_back(mergevar(i));
       Oinn.push_back(seq(i));
       Oout.push_back(out(i));
@@ -70,8 +62,7 @@ List splitDate(std::vector<std::string> pnr, // id
     }
     
   }
-  return (Rcpp::List::create(Rcpp::Named("id") = Opnr,
-                            Rcpp::Named("pnrnum")=Omergevar, 
+  return (Rcpp::List::create(Rcpp::Named("pnrnum")=Omergevar, 
                             Rcpp::Named("inn") = Oinn,
                             Rcpp::Named("out") = Oout,
                             Rcpp::Named("event") = Oevent,

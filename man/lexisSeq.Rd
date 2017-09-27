@@ -51,8 +51,9 @@ dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
                 dead=c(0,1,0,0,0,1,0,1),
                 Bdate=c(-5000,-5000,-2000,-2000,0,0,100,100))
 out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),varname="Bdate",c(0,1000,5000),format="vector")
-
+out[]
 out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),varname=NULL,c(0,200,50),format="seq")
+out2[]
 }
 \seealso{
 lexis2 lexisFromTo
