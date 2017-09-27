@@ -41,7 +41,6 @@
 #'        ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'        ,c("date1","date2","date3","date4")) #Names var date-vars to split by
 #' temp[]
-#' 
 #' @export
 lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
                      ,splitdat # Data with id and dates

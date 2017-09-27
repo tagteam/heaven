@@ -20,6 +20,7 @@
 #' @param indat - base data with id, start, end, event and other data - possibly already split
 #' @param invars - vector of colum names for id/entry/exit/event - in that order, 
 #' example: c("id","start","end","event")
+#' @param varname - name of variable to be added to vector
 #' @param splitvector - A vector of calender times (integer). Splitvector can be a sequence of fixed times
 #' with format="vector" or generate a sequence of from-to-by if given 3 values and format="seq"
 #' @param format - either "vector" for fixed times or "seq" to generate a sequence of from-to-by
