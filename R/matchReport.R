@@ -4,8 +4,6 @@
 #' The function provides very simple tables of the success of finding controls and
 #' the reuse of cases and controls. Designed to deal with the results of function
 #' riskSetMatch
-#' 
-#' 
 #' @usage
 #' matchReport(dat, id, case, caseid,oldcase="oldevent") 
 #' @param dat - data.table with result from riskSetMatch
@@ -14,20 +12,13 @@
 #' @param caseid - variable defining the groups of matching cases/controls
 #' @param oldcase - Variable holding case/control=0/1 prior to matching. Distinguishes
 #' cases reused as controls
-#' 
 #' @author Christian Torp-Pedersen
-#' 
-#' 
 #' @details 
 #' This function can be helpful to define matching options.  If there is excessive reuse of controls or many
 #' cases do not find controls it may be desirable to do further rounding of matching variables.
-#'
 #' @return Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
-#' 
 #' @seealso riskSetMatch
-#' 
 #' @export
-#'
 #' @examples
 #' require(data.table)
 #' case <- c(rep(0,40),rep(1,15)) 

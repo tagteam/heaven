@@ -4,10 +4,7 @@
 \alias{lexisFromTo}
 \title{lexisFromTo}
 \usage{
-lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
-                       ,splitdat # Data with from/to/Value
-                       ,invars #names of id/in/out/event - in that order
-                       ,splitvars #Names in splitdat with id/from/to/value/name)
+lexisFromTo(indat,splitdat,invars,splitvars)
 }
 \arguments{
 \item{indat}{- base data with id, start, end, event and other data - possibly already split}

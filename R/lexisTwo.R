@@ -6,17 +6,9 @@
 #' multiple conditions such as comorbidities that will cause either a single split or no splitting.  This function
 #' is designed to receive base data with start/end/event and another set of data where patient id is accompanied with 
 #' one column per condition with these columns containing the time where split should occur.
-#' 
-#' 
 #' @usage
-#' lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
-#'                     ,splitdat # Data with id and dates
-#'                     ,invars #names of id/in/out/event - in that order
-#'                     ,splitvars #Names var date-vars to split by
-#'                      )
-#' 
+#' lexisTwo(indat,splitdat,invars,splitvars)
 #' @author Christian Torp-Pedersen
-#' 
 #' @param indat - base data with id, start, end, event and other data - possibly already split
 #' @param splitdat - Data with splitting guide - id and columns with dates to split by 
 #' @param invars - vector of colum names for id/entry/exit/event - in that order, 
@@ -28,7 +20,6 @@
 #' The function returns a new data table where records have been split according to the splittingguide dataset. Variables
 #' unrelated to the splitting are left unchanged.
 #' @export
-#' 
 #' @details 
 #' The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
 #' This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
@@ -37,7 +28,6 @@
 #' In the example the columns are dat1-date4 - but it is most useful to provide names that identify the condition which changes by
 #' the date rather than a names which indicates a date.
 #' @seealso lexisSeq lexisFromTo
-#' 
 #' @examples
 #' library(data.table)
 #' dat <- data.table(id=c("A","A","B","B","C","C","D","D"),
@@ -58,7 +48,6 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                      ,invars #names of id/in/out/event - in that order
                      ,splitvars #Names var date-vars to split by
                      ){
-#browser()  
   #Tests of data
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")
   copyindat <- copy(indat) # leave original dataset intact

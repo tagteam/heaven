@@ -1,28 +1,13 @@
 #' @title riskSetMatch - Risk set matching
 #' 
-#' @description #' 
+#' @description 
 #' Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
 #' controls with event later than the case are accepted.  The current program is based on exact matching and allows 
 #' the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
 #' reuse controls and to allow cases to be controls prior to being a case.
-#' 
-#' 
 #' @usage
-#'   riskSetMatch <- function(
-#'   ptid     # Unique patient identifier
-#' , event   # 0=Control, 1=case
-#' , terms   # terms c("n1","n2",...) - list of vairables to match by
-#' , dat     # dataset with all variables
-#' , Ncontrols  # number of controls to provide
-#' , oldevent="oldevent" # To distinguish cases used as controls
-#' , caseid="caseid" # variable to group cases and controls (case-ptid)
-#' , reuseCases=FALSE # TRUE og FALSE or NULL - can a case be a control prior to being a case?
-#' , reuseControls=FALSE # TRUE or FALSE or NULL - can controls be reused?
-#' , caseIndex=NULL      # Integer or date, date where controls must be prior
-#' , controlIndex=NULL   # controlIndex - Index date for controls
-#' ,  NoIndex=FALSE      # If TRUE ignore index
-#' ,  cores=1)          # Number of cores to use, default 1
-#' 
+#'   riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent",caseid="caseid",
+#'   reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,controlIndex=NULL,NoIndex=FALSE,cores=1) 
 #' @author Christian Torp-Pedersen
 #' 
 #' @param ptid  Personal ID variable defining participant

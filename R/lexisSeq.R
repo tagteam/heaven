@@ -14,19 +14,9 @@
 #' element in the vector is passed.
 #' 
 #' Overall the function provides identical usefulness as the SAS lexis macro
-#' 
-#' 
 #' @usage
-#' lexisSeq(indat # inddata with id/in/out/event - and possibly other variables
-#' ,invars #names of id/in/out/event - in that order
-#' ,varname=NULL # Name of varriable to add to splitvector
-#' ,splitvector # Integer vector of dates to split by
-#' ,format # "seq" for loop (3 values) and "vector" for list of values
-#' ,value="value" #Name of output variable holding sequence number
-#' )
-#' 
+#' lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
 #' @author Christian Torp-Pedersen
-#' 
 #' @param indat - base data with id, start, end, event and other data - possibly already split
 #' @param invars - vector of colum names for id/entry/exit/event - in that order, 
 #' example: c("id","start","end","event")
@@ -38,7 +28,6 @@
 #' The function returns a new data table where records have been split according to the provided vector. Variables
 #' unrelated to the splitting are left unchanged.
 #' @export
-#' 
 #' @details 
 #' The input must be data.table.  This data.table is assumed already to be split by other functions with multiple
 #' records having identical participant id. The function extracts thos variables necessary for splitting, splits
@@ -102,5 +91,5 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
  splitdat <- merge(splitdat,datt,by="pnrnum",all=TRUE) 
  splitdat[,pnrnum:=NULL]
  setnames(splitdat,c("inn","out","event","value"),c(invars[2:4],value))
+ splitdat
 }
-

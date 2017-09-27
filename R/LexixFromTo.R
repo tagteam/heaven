@@ -1,5 +1,4 @@
 #' @title lexisFromTo
-#' 
 #' @description 
 #' lexixFromTo is a specialised version of lexis splitting.  In handling drug treatment, employment
 #' and similar factors the individual may move in and out of conditions.  This function splits 
