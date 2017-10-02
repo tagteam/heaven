@@ -12,6 +12,8 @@ lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
 \item{invars}{- vector of colum names for id/entry/exit/event - in that order, 
 example: c("id","start","end","event")}
 
+\item{varname}{- name of variable to be added to vector}
+
 \item{splitvector}{- A vector of calender times (integer). Splitvector can be a sequence of fixed times
 with format="vector" or generate a sequence of from-to-by if given 3 values and format="seq"}
 
