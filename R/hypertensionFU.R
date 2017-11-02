@@ -25,7 +25,7 @@
 #' baseline<-"2001-02-15"
 #' followup<-"2002-01-30"
 #' #Create hypertension variable
-#' ht<-hypertensionFU(datn,baseline)
+#' ht<-hypertensionFU(datn,baseline,followup)
 #' ht
 #' #With custom names
 #' dat2<-data.table(MyID=c(1,1,1,1), MyAtcCodes=c("C07FB02", "C07FB02", "C09CA04", "C02A"), MyDates=c("2001-01-23" ,"2001-05-23", "2001-10-23", "2001-10-23"))
