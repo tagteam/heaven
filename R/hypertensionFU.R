@@ -17,25 +17,21 @@
 #'
 #' @examples
 #' library(data.table)
-#' dat<-data.table(pnr=1:50, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-#' dat$eksd<-as.Date(dat$eksd)
-#' dat
-#' baseline<-"2001-03-30"
+#' dat<-data.table(pnr=rep(1:20, each=4), atc=c("C09CA04", "C04AD03", "C07D", "C07FB02", "C01DA02"), eksd=c("2002-01-23" ,"2001-02-15", "2001-05-10", "2001-02-15", "2001-05-15","2001-04-10","2001-05-01"))
+#' datadd<-data.table(pnr=rep(21:22, each=4), atc=c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-10"))
+#' datn<-merge(dat, datadd, all=TRUE)
+#' datn$eksd<-as.Date(datn$eksd)
+#' datn
+#' baseline<-"2001-02-15"
+#' followup<-"2002-01-30"
 #' #Create hypertension variable
-#' ht<-hypertensionBaseline(dat,baseline)
+#' ht<-hypertensionFU(datn,baseline)
 #' ht
 #' #With custom names
-#' dat2<-data.table(MyID=1:50, MyAtcCodes=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), MyDates=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
+#' dat2<-data.table(MyID=c(1,1,1,1), MyAtcCodes=c("C07FB02", "C07FB02", "C09CA04", "C02A"), MyDates=c("2001-01-23" ,"2001-05-23", "2001-10-23", "2001-10-23"))
 #' dat2$MyDates<-as.Date(dat2$MyDates)
-#' dat2
-#' ht2<-hypertensionBaseline(dat2, baseline, pnr='MyID', atc='MyAtcCodes', eksd='MyDates')
+#' ht2<-hypertensionFU(dat2,"2001-02-15","2002-01-30", pnr='MyID', atc='MyAtcCodes', eksd='MyDates')
 #' ht2
-#' #Several rows per pnr
-#' dat3<-data.table(pnr=1:15, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02", "C09BB"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-#' dat3$eksd<-as.Date(dat3$eksd)
-#' dat3
-#' ht3<-hypertensionBaseline(dat3,baseline)
-#' ht3
 #' @author Helle Højmark Eriksen <helle.e@@rn.dk>
 hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   
