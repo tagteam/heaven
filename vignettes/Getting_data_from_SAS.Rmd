@@ -9,17 +9,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This document explains how to import data from SAS. The example is meant for preprocessing on Statistics Denmark servers. Using the package "RODBC" it is possible to take advantage of the SAS engine to generate smaller data sets to use in R. 
+This document explains how to import data from SAS. The example is meant for preprocessing on Statistics Denmark servers. Using the package RODBC it is possible to take advantage of the SAS engine to generate smaller data sets to use in R. 
 
-## Open Connection to SAS
-The package RODBC implements ODBC (open database connectivity). ODBC provides a common API to access databases, so that you can access data originating from a variety of softare applications.
+## Open connection to SAS
+The package RODBC implements ODBC (open database connectivity). ODBC provides a common API (application programming interface) to access databases, so that you can access data originating from a variety of software applications.
 
 ```{r,eval=FALSE}
 library(RODBC)
 ```
-odbcConnect opens a connection through a prespecified DSN (Data Source Name) making it possible to access data on a remote server. The data libraries on Statistics Denmarks are accessed using this DSN. The Libnames for all projects on Statistics Denmark are predefined in a SAS macro and can only be changed by someone in Statistics Denmark.
+The command odbcConnect opens a connection through a prespecified DSN (Data Source Name) making it possible to access data on a remote server. The data libraries on Statistics Denmarks are accessed using this DSN. The libnames for all projects on Statistics Denmark are predefined in a SAS macro and can only be changed by someone in Statistics Denmark.
 
-The command below opens a connection to SAS called "cnn", and a SAS session is initialized in the background.
+The command below opens a connection to SAS called "cnn", and a SAS session is initialized in the background. When the SAS session is initialized, a dialog box opens in SAS. This window needs to be closed for the connection to initialize.
 
 SAS should not be startet before, since this may cause the connection to fail.
 
@@ -37,37 +37,38 @@ sqlTables(cnn, schema="raw3766")
 
 To reduce the data set, either restrict the columns or return only rows meeting some criteria.
 
-sqlColumns returns available colunms in a table, eg. which columns are availble in the table pop in raw3766.
+The command sqlColumns returns available colunms in a table, eg. which columns are availble in the table called pop in raw3766.
 
 ```{r,eval=FALSE}
 sqlColumns(cnn, "raw3766.pop", as.is=TRUE)
 ```
-as.is= TRUE let characters be returned as character vectors and not be converted.
+The option as.is=TRUE lets characters be returned as character vectors and not converted.
 
 ##Returning specific variables using SQL
 
 Below are examples on how to reduce the data set by returning part of tables using SQL.
 
-The expressions are made using the command sqlQuery, in which you can put a SELECT statement. These statements are on the form "SELECT column_name,column_name,... From table_name" where colunm_name is the variable to return. If all variables in the table is needed, use "SELECT * " (select all).
+The expressions are made using the command sqlQuery, in which you can put a SELECT statement. These statements are on the form "SELECT column_name,column_name,... FROM table_name" where colunm_name is the variable to return. If all variables in the table is needed, use "SELECT * " (select all).
 
 The query below returns all variables in the table pop.
 
 ```{r,eval=FALSE}
-pop <- sqlQuery(cnn, "SELECT * From raw3766.pop", as.is=TRUE)
+pop <- sqlQuery(cnn, "SELECT * FROM raw3766.pop", as.is=TRUE)
 ```
 
 To return records meeting specific criteria, use the "WHERE" clause as seen below.
-The command returns all variables in the table pop for records born after 01jan2010.
+The command returns all variables in the table pop for records born after 1 january 2010.
 
 ```{r,eval=FALSE}
-pop <- sqlQuery(cnn, "SELECT * From raw3766.pop WHERE fdato > '01jan2010'd", as.is=TRUE)
+pop <- sqlQuery(cnn, "SELECT * FROM raw3766.pop WHERE fdato > '01jan2010'd", as.is=TRUE)
 ```
 
-The command below returns all variables in the table pop for records born after 01jan2010 with sex = 1.
+The command below returns all variables in the table pop for records born after 1 january 2010 with sex = 1.
+
 ```{r,eval=FALSE}
-pop <- sqlQuery(cnn, "SELECT * From raw3766.pop WHERE fdato > '01jan2010'd AND sex = 1", as.is=TRUE)
+pop <- sqlQuery(cnn, "SELECT * FROM raw3766.pop WHERE fdato > '01jan2010'd AND sex = 1", as.is=TRUE)
 ```
-The following commands use the table "diag_indl" as example. 
+The following commands use the table "diag_indl" as an example. 
 
 To display which columns are accesible, sqlColumns is used.
 
@@ -76,16 +77,16 @@ sqlColumns(cnn, "diag_indl", as.is=TRUE)
 ```
 Returning all variables in the table diag_indl for records with the diagnosis codes I21, I22 and 410 for heart attacks:
 ```{r,eval=FALSE}
-heartattacs <- sqlQuery(cnn, "SELECT * From raw3766.diag_indl WHERE substr(diag, 1, 3) in ('I21', 'I22', '410')", as.is=TRUE)
+heartattacks <- sqlQuery(cnn, "SELECT * FROM raw3766.diag_indl WHERE substr(diag, 1, 3) in ('I21', 'I22', '410')", as.is=TRUE)
 ```
 Return only diagnosis code and pnr from diag_indl for records with pattype = 0:
 
 ```{r,eval=FALSE}
-heldogn <- sqlQuery(cnn, "SELECT diag,pnr From raw3766.diag_indl WHERE pattype = '0'", as.is=TRUE)
+admission <- sqlQuery(cnn, "SELECT diag,pnr FROM raw3766.diag_indl WHERE pattype = '0'", as.is=TRUE)
 ```
 
 
-##Close the ODBC connection.
+##Close the ODBC connection
 To close the connection use the function close.
 
 ```{r,eval=FALSE}
