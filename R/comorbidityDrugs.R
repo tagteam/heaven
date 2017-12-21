@@ -33,7 +33,7 @@
 #' dat2[,MyDates:=as.Date(MyDates)]
 #' comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes', eksd='MyDates', code=c('S01', 'R03'))
 #' 
-#' @author Helle Højmark Eriksen <helle.e@@rn.dk>
+#' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 
 comorbidityDrugs<- function(data=NULL,pnr='pnr',atc='atc',eksd='eksd',code=NULL,date=NULL,interval=NULL){
   ## Check of input  

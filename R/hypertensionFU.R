@@ -32,7 +32,7 @@
 #' dat2$MyDates<-as.Date(dat2$MyDates)
 #' ht2<-hypertensionFU(dat2,"2001-02-15","2002-01-30", pnr='MyID', atc='MyAtcCodes', eksd='MyDates')
 #' ht2
-#' @author Helle Højmark Eriksen <helle.e@@rn.dk>
+#' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   
   options(warn=1)

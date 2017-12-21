@@ -35,7 +35,7 @@
 #' dat3
 #' ht3<-hypertensionBaseline(dat3,baseline)
 #' ht3
-#' @author Helle Højmark Eriksen <helle.e@@rn.dk>
+#' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   
   options(warn=1)
