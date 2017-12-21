@@ -6,7 +6,7 @@
 #' @param atc Variable with atc codes. Must be type character. Default name: atc 
 #' @param eksd Variable with dates. Must be type Date or numeric. Default name: eksd
 #'
-#' @return A variable indicating wheter there is hypertension at baseline. The variable hypertension at baseline is one if 
+#' @return A variable indicating whether there is hypertension at baseline. The variable hypertension at baseline is one if 
 #' the person has received two or more types of anti-hypertensive medications within 180 days before 
 #' the baseline date. The codes for hypertension are currently defined in the function.
 #' Output: A data set with pnr, hypertension variable, number of medications within 180 days before baseline 
@@ -80,19 +80,17 @@ hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   if( dim(outerror)[1]!=dim(outerrorTemp)[1] ){message("Some atc are missing and have been removed")}
   
   #All anti-hypertensive medication
-  atc_C <- d[unlist(lapply("^C",grep,atcxTempName))]
+  atc_C <- d[unlist(lapply("^C0",grep,atcxTempName))]
   
   #Population with "index" as the time of eventual hypertension
-  pop<-d[,1] #pnr
+  pop<-d[,"pnrxTempName"] #pnr
   setkey(pop,pnrxTempName)
   pop<-pop[.(unique(pnrxTempName)),,mult="first"] #unique pnr
   pop$index<-date #index/baseline
-  hyp<-data.table(pop$pnrxTempName,pop$index)
+  hyp<-pop[,c("pnrxTempName","index")]
   
   #Merge of population and medicaiton
-  atc_Cm<-data.table(atc_C$pnrxTempName,atc_C$eksdxTempName,atc_C$atcxTempName)
-  colnames(atc_Cm) <- c("pnrxTempName","eksdxTempName","atcxTempName")
-  colnames(hyp) <- c("pnrxTempName","index")
+  atc_Cm<-atc_C[,c("pnrxTempName","eksdxTempName","atcxTempName")]
   
   hyp2<-merge(hyp, atc_Cm, by="pnrxTempName", all.x=TRUE)
   
@@ -124,11 +122,9 @@ hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   hyp3$ras<-as.numeric(substr(hyp3$atcxTempName,1,5) %in% ras5 | substr(hyp3$atcxTempName,1,7) %in% ras7)
   
   #Count number of anti-hypertensive drug
-  popm<-pop[,1]
-  hyp3m<-data.table(hyp3$pnrxTempName, hyp3$eksdxTempName, hyp3$atcxTempName, hyp3$AntiAdrenerg, hyp3$diu, hyp3$Andet, hyp3$Vaso, hyp3$bb, hyp3$ccb, hyp3$ras)
-  colnames(hyp3m) <- c("pnrxTempName","eksdxTempName", "atcxTempName", "AntiAdrenerg","diu", "Andet", "Vaso", "bb", "ccb", "ras")
+  popm<-pop[,"pnrxTempName"]
+  hyp3m<-hyp3[,c("pnrxTempName", "eksdxTempName", "atcxTempName", "AntiAdrenerg", "diu", "Andet", "Vaso", "bb", "ccb", "ras")]
   pop<-merge(popm, hyp3m, by="pnrxTempName", all.x=TRUE)
-  pop$antal_drugs<-0 
   pop$antal_drugs<-pop$AntiAdrenerg+pop$diu+pop$Andet+pop$Vaso+pop$bb+pop$ccb+pop$ras
   pop$antal_drugs[is.na(pop$antal_drugs)]<-0 #replace missing with 0
   
@@ -140,6 +136,7 @@ hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   pop$type5<-ifelse(pop$bb>0,"bb","")
   pop$type6<-ifelse(pop$ccb>0,"ccb","")
   pop$type7<-ifelse(pop$ras>0,"ras","")
+  #replace NA with empty
   pop$type1[is.na(pop$type1)]<-""
   pop$type2[is.na(pop$type2)]<-""
   pop$type3[is.na(pop$type3)]<-""
@@ -147,21 +144,22 @@ hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   pop$type5[is.na(pop$type5)]<-""
   pop$type6[is.na(pop$type6)]<-""
   pop$type7[is.na(pop$type7)]<-""
+  #Concatinate all types in one line
   pop$type<-gsub("^\\s+|\\s+$", "", paste(pop$type1,pop$type2,pop$type3,pop$type4,pop$type5,pop$type6,pop$type7, sep=" "))
   
   #drop eksd-column
-  pop<-pop[,c(1,3:11,19)] 
+  pop<-pop[,"eksdxTempName":=NULL]
   
   #keep unique rows (of pnr and atc)
   setkey(pop)
   pop<-unique(pop)
   
   #drop atc-column
-  pop<-pop[,c(1,10:11)] 
+  pop<-pop[,"atcxTempName":=NULL]
   
   #collaps data dy pnr
   setkey(pop,pnrxTempName)
-  pop<-setDT(pop)[, list(count=.N, antal_drugs=sum(antal_drugs), type=paste(type, collapse=' ')), by=pnrxTempName]
+  pop<-pop[, list(count=.N, antal_drugs=sum(antal_drugs), type=paste(type, collapse=' ')), by=pnrxTempName]
   
   #keep unique rows (of pnr)
   setkey(pop)
@@ -171,7 +169,7 @@ hypertensionBaseline<- function(data,date,pnr='pnr',atc='atc',eksd='eksd'){
   pop$HT<-as.numeric(2<=pop$antal_drugs)
   
   #drop count
-  pop<-pop[,c(1,3:5)]
+  pop<-pop[, c("pnrxTempName", "antal_drugs", "type", "HT")]
   
   ## Change name in output back
   setnames(pop,'pnrxTempName',pnr)

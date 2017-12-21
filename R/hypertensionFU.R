@@ -7,7 +7,7 @@
 #' @param atc Variable with atc codes. Must be type character. Default name: atc 
 #' @param eksd Variable with dates. Must be type Date or numeric. Default name: eksd
 #'
-#' @return A variable indicating wheter there is hypertension during follow up. The variable hypertension during follow up is one if 
+#' @return A variable indicating whether there is hypertension during follow up. The variable hypertension during follow up is one if 
 #' the person has received two or more types of anti-hypertensive medications within 90 days in two quarters in a row. 
 #' Devision in quaters (90 days) from the baseline date.
 #' The codes for hypertension are currently defined in the function.
@@ -96,7 +96,7 @@ hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   if( dim(outerror)[1]!=dim(outerrorTemp)[1] ){message("Some atc are missing and have been removed")}
   
   #All anti-hypertensive medication
-  atc_C <- d[unlist(lapply("^C",grep,atcxTempName))]
+  atc_C <- d[unlist(lapply("^C0",grep,atcxTempName))]
   
   #Population with follow up period (between "index" and "FU")
   pop<-d[,1] #pnr
@@ -120,6 +120,7 @@ hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   hyp2$eksd<-as.integer(hyp2$eksdxTempName)
   hyp2$index<-as.integer(as.Date(hyp2$index))
   hyp2$eksd_ba<-hyp2$eksd-hyp2$index
+  #round up to the nearest quarter (a quarter is 90 days)
   hyp2$eksd_90<-hyp2$eksd_ba%/%90 + as.logical(hyp2$eksd_ba%%90)
   
   #Defining different treatment regims
@@ -164,8 +165,9 @@ hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   #indicator first element per group
   hypno$indicator<-FALSE
   hypno$indicator[which(diff(c(0,as.numeric(hypno$pnrxTempName)))==1)] <- TRUE
+  #pnr without hypertension
   popno<-hypno[indicator==1,]
-  popno<-popno[,c(1)]
+  popno<-popno[,c("pnrxTempName")]
   popno$HT<-0
   
   #Count number of anti-hypertensive drug and quarters
@@ -185,8 +187,6 @@ hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   #hypertension registret on all rows pr patient
   hyp2[,HT:=sum(HT), by=pnrxTempName]
   
-  #test<-hyp2
-  
   #One row per person with hypertension
   pop<-hyp2[indicator==1,]
   
@@ -195,16 +195,15 @@ hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   {warning("The dataset contains no atc-code starting with C")}
   
   #Concate person with and without hypertension
-  pop<-pop[,c(1,22)]
+  pop<-pop[,c("pnrxTempName","HT")]
   pop<-merge(hyp, pop, by="pnrxTempName", all.x=TRUE)
   pop[is.na(get("HT")), HT:=0]
-  pop<-pop[,c(1,4)]
+  pop<-pop[,c("pnrxTempName","HT")]
   
   setkey(pop,pnrxTempName)
   
   ## Change name in output back
   setnames(pop,'pnrxTempName',pnr)
   
-  #return(list(data=pop, test=test))
   return(list(data=pop))
 }
