@@ -34,14 +34,12 @@
 #' icd_codes <- sample(numbers, 500000, replace = T)
 #' diag <- paste(abc,icd_codes,sep='')
 #' diag <- paste('D',diag,sep='')
-<<<<<<< HEAD
+
 #' inddto.nr <- c(11688:14974)
 #' inddto <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
 #' index <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
-=======
 #' inddto <- c(11688:14974)
 #' inddto <- as.Date(sample(inddto,500000,replace=TRUE),origin='1970-01-01')
->>>>>>> 86fa5e24c1959be75db0e6a062bbc5efbe7aeb66
 #' uddto <- c(1:10)
 #' uddto <- inddto+sample(uddto,500000,replace = T)
 #' pattype <- sample(c(1:3),500000,replace = T)
