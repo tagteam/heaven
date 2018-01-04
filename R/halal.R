@@ -75,7 +75,7 @@
 #' @export
 #' @author Regitze Kuhr Skals <r.skals@rn.dk>
 
-extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
+halal <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
                   first.pnr=FALSE,pat=NULL,prefix='',entryvar='inddto',id='pnr',outvar='uddto',codevar='diag',
                   patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,outcome=FALSE){
   
