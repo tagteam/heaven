@@ -29,18 +29,23 @@
 #' 
 #' # Creating simulated LPR-registry data
 #' alphabet <- LETTERS[seq( from = 1, to = 26 )]
-#' abc <- sample(alphabet,500000,replace=T)
+#' abc <- sample(alphabet,500000,replace=TRUE)
 #' numbers <- c(100:999)
 #' icd_codes <- sample(numbers, 500000, replace = T)
 #' diag <- paste(abc,icd_codes,sep='')
 #' diag <- paste('D',diag,sep='')
+<<<<<<< HEAD
 #' inddto.nr <- c(11688:14974)
 #' inddto <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
 #' index <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
+=======
+#' inddto <- c(11688:14974)
+#' inddto <- as.Date(sample(inddto,500000,replace=TRUE),origin='1970-01-01')
+>>>>>>> 86fa5e24c1959be75db0e6a062bbc5efbe7aeb66
 #' uddto <- c(1:10)
 #' uddto <- inddto+sample(uddto,500000,replace = T)
 #' pattype <- sample(c(1:3),500000,replace = T)
-#' pnr <- sample(c(1:300000),500000,replace=T)
+#' pnr <- sample(c(1:300000),500000,replace=TRUE)
 #' pnr <- sort(pnr)
 #' lpr.data <- data.frame(pnr,diag,inddto,uddto,pattype,recnum=rep(1,500000))
 #'
@@ -61,7 +66,7 @@
 #'
 #' # Extract diagnoses related to bleeding (without hemorrhagic stroke) or atrial fibrilation, and only include first
 #' # diagnosis of each disease for each patient.
-#' dat.extracted <- halal(lpr.data,disease=c("bleeding_without_hemstroke","af"),mult=T,first.pnr=T,prefix='diag')
+#' dat.extracted <- halal(lpr.data,disease=c("bleeding_without_hemstroke","af"),mult=TRUE,first.pnr=TRUE,prefix='diag')
 #'
 #' # Extract all diagnoses starting with an 'A', and exclude all diagnoses with 'A21' and 'A7'.
 #' dat.extracted <- halal(lpr.data,inclusions='A',exclusions=c('A21','A7'),prefix='a')
@@ -201,14 +206,14 @@ extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NUL
   }
   
   #Take first diagnosis if more than one for each patient
-  if(first.pnr==T&mult==F){
+  if(first.pnr==TRUE&mult==FALSE){
     #Order data by pnr and increasing inddto
     setkey(out,pnr,inddto)
     out <- out[.(unique(pnr)),,mult="first"] 
   }
   
   # Takes first diagnosis of each disease if multiple diseases are chosen for each patient.
-  if(first.pnr==T&mult==T){
+  if(first.pnr==TRUE&mult==TRUE){
     
     # Mark different diseases
     out[,dis:=""]
@@ -231,7 +236,7 @@ extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NUL
   # Takes every diagnosis of each disease if multiple diseases are chosen and marks each disease by
   # it's prespecified name.
   
-  if(first.pnr==F&mult==T){
+  if(first.pnr==FALSE&mult==TRUE){
     
     # Mark different diseases
     out[,dis:=""]
@@ -245,7 +250,7 @@ extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NUL
     }
   }
   
-  if(mult==T){
+  if(mult==TRUE){
     out <- out[,.(pnr,recnum,inddto,diag,pattype,dis)] # keeps marker of disease when multiple diseases are chosen.
   }
   else{

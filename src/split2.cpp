@@ -2,15 +2,9 @@
 #include <Rcpp.h>
 #include <vector>
 #include <string>
-
 using namespace Rcpp;
-
-//' @description Split in two by a date
-//' @title Split2
-//' @author Christian Torp-Pedersen
-//' @export
 // [[Rcpp::export]]
-DataFrame split2 (std::vector<int> pnr, //ID
+DataFrame split2 (IntegerVector   pnr, //ID
                   IntegerVector   inn,  //Start intervals
                   IntegerVector   out, //End intervals
                   IntegerVector   dato, // Split dates - NA interpreted as zero
