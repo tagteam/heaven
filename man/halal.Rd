@@ -8,7 +8,8 @@ halal(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
   p.in = NULL, p.out = NULL, mult = FALSE, first.pnr = FALSE,
   pat = NULL, prefix = "", entryvar = "inddto", id = "pnr",
   outvar = "uddto", codevar = "diag", patvar = "pattype",
-  record.id = "recnum")
+  record.id = "recnum", indexvar = NULL, index.int = NULL,
+  outcome = FALSE)
 }
 \arguments{
 \item{dat}{Data with diagnoses.}
@@ -68,6 +69,9 @@ numbers <- c(100:999)
 icd_codes <- sample(numbers, 500000, replace = T)
 diag <- paste(abc,icd_codes,sep='')
 diag <- paste('D',diag,sep='')
+inddto.nr <- c(11688:14974)
+inddto <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
+index <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
 inddto <- c(11688:14974)
 inddto <- as.Date(sample(inddto,500000,replace=TRUE),origin='1970-01-01')
 uddto <- c(1:10)

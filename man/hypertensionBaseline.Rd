@@ -18,7 +18,7 @@ hypertensionBaseline(data, date, pnr = "pnr", atc = "atc", eksd = "eksd")
 \item{eksd}{Variable with dates. Must be type Date or numeric. Default name: eksd}
 }
 \value{
-A variable indicating wheter there is hypertension at baseline. The variable hypertension at baseline is one if 
+A variable indicating whether there is hypertension at baseline. The variable hypertension at baseline is one if 
 the person has received two or more types of anti-hypertensive medications within 180 days before 
 the baseline date. The codes for hypertension are currently defined in the function.
 Output: A data set with pnr, hypertension variable, number of medications within 180 days before baseline 
