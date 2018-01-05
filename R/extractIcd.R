@@ -26,23 +26,9 @@
 #' @examples 
 #' \dontrun{
 #' 
-#' # Creating simulated LPR-registry data
-#' alphabet <- LETTERS[seq( from = 1, to = 26 )]
-#' abc <- sample(alphabet,500000,replace=T)
-#' numbers <- c(100:999)
-#' icd_codes <- sample(numbers, 500000, replace = T)
-#' diag <- paste(abc,icd_codes,sep='')
-#' diag <- paste('D',diag,sep='')
-#' inddto.nr <- c(11688:14974)
-#' inddto <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
-#' indexdate <- as.Date(sample(inddto.nr,500000,replace=T),origin='1970-01-01')
-#' uddto <- c(1:10)
-#' uddto <- inddto+sample(uddto,500000,replace = T)
-#' pattype <- sample(c(1:3),500000,replace = T)
-#' pnr <- sample(c(1:300000),500000,replace=T)
-#' pnr <- sort(pnr)
-#' lpr.data <- data.frame(pnr,diag,inddto,uddto,indexdate,pattype,recnum=rep(1,500000))
-#'
+#' # Simulated LPR-registry data
+#' data(lpr.data)
+#' 
 #' # Extract diagnoses related to myocardial infarction (mi) for patients of type 1, after 01-01-2007.
 #' dat.extracted <- extractIcd(lpr.data,disease=c("mi"),pat=1,p.in=as.Date('01012007',format='%d%m%Y'),prefix='mi')
 #' 
