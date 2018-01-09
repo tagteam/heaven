@@ -7,8 +7,8 @@
 #' @param mult Logical. Specifies if multiple diseases are chosen.
 #' @param keep Takes the values "first" or "last". Specifies if only the first or last record of each patient should be output. 
 #' If mult=TRUE and keep="first" the first diagnosis of each disease specified will be extracted.
-#' @param p.in Date of period start.
-#' @param p.out Date of period end.
+#' @param p.in Date of period p.in, as characterstring in the format "YYYY-MM-DD". 
+#' @param p.out Date of period p.out, as characterstring in the format "YYYY-MM-DD".
 #' @param pat Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.
 #' @param prefix Character string of prefix name for the resulting date variable of disease.
 #' @param entryvar Name of the variable in data that contains the entrydate of diagnosis.
@@ -30,7 +30,7 @@
 #' data(lpr.data)
 #' 
 #' # Extract diagnoses related to myocardial infarction (mi) for patients of type 1, after 01-01-2007.
-#' dat.extracted <- extractIcd(lpr.data,disease=c("mi"),pat=1,p.in=as.Date('01012007',format='%d%m%Y'),prefix='mi')
+#' dat.extracted <- extractCode(lpr.data,disease=c("mi"),pat=1,p.in='2007-01-01')
 #' 
 #' # View first 6 lines of extracted data 
 #' head(dat.extracted$data)
@@ -42,30 +42,30 @@
 #' dat.extracted$unique.icd
 #'
 #' # Extract diagnoses related to myocardial infarction (mi) within the period 01-01-2007 and 12-31-2008.
-#' dat.extracted <- extractIcd(lpr.data,disease=c("mi"),p.in=as.Date('01012007',format='%d%m%Y'),p.out=as.Date('31122008',format='%d%m%Y'),prefix='mi')
+#' dat.extracted <- extractCode(lpr.data,disease=c("mi"),p.in='2007-01-01',p.out='2008-12-31')
 #'
 #' # Extract diagnoses related to bleeding (without hemorrhagic stroke) or atrial fibrilation, and only include first
 #' # diagnosis of each disease for each patient.
-#' dat.extracted <- extractIcd(lpr.data,disease=c("bleeding","af"),mult=T,keep='first',prefix='diag')
+#' dat.extracted <- extractCode(lpr.data,disease=c("bleeding","af"),mult=T,keep='first',prefix='diag')
 #'
-#' # Extract all diagnoses starting with an 'A', and exclude all diagnoses with 'A21' and 'A7'.
-#' dat.extracted <- extractIcd(lpr.data,inclusions='A',exclusions=c('A21','A7'),prefix='a')
+#' # Extract all diagnoses p.ining with an 'A', and exclude all diagnoses with 'A21' and 'A7'.
+#' dat.extracted <- extractCode(lpr.data,inclusions='A',exclusions=c('A21','A7'),prefix='a')
 #'
 #' # Extract ischemic heart disease without I21 and I22:
-#' dat.extracted <- extractIcd(lpr.data,disease='ihd',exclusions=c('I21','I22'),prefix='ihd_excl_ami')
+#' dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('I21','I22'),prefix='ihd_excl_ami')
 #' 
 #' # Extract ischemic heart disease diagnoses after index date
-#' dat.extracted <- extractIcd(lpr.data,disease=c("ihd"),p.in=as.Date('01012007',format='%d%m%Y'),p.out=as.Date('31122008',format='%d%m%Y'),prefix='ihd',indexvar='indexdate',outcome = TRUE)
+#' dat.extracted <- extractCode(lpr.data,disease=c("ihd"),p.in='2007-01-01',p.out='2008-12-31',indexvar='indexdate',outcome = TRUE)
 #' 
 #' # Extract ischemic heart disease diagnoses within 30 days before index date
-#' dat.extracted <- extractIcd(lpr.data,disease=c("ihd"),p.in=as.Date('01012007',format='%d%m%Y'),p.out=as.Date('31122008',format='%d%m%Y'),prefix='ihd',indexvar='indexdate',index.int=30)
+#' dat.extracted <- extractCode(lpr.data,disease=c("ihd"),p.in='2007-01-01',p.out='2008-12-31',indexvar='indexdate',index.int=30)
 #' }
 #' @export
 #' @author Regitze Kuhr Skals <r.skals@rn.dk>
 
-extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
+extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
                   keep='',pat=NULL,prefix='',entryvar='inddto',id='pnr',codevar='diag',
-                  patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,outcome=FALSE){
+                  patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,outcome=FALSE,lmdb=FALSE){
   
   # HALAL definition of diseases
   
@@ -121,33 +121,55 @@ extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NUL
                      )
   
   ##  Make into data.table and change relevant variable names to lower case
+  require(data.table)
   d <- as.data.table(dat)
   # var.names <- tolower(colnames(d)) 
   # colnames(d) <- var.names 
   
-  if(is.null(indexvar)){
+  if(is.null(indexvar)&lmdb==FALSE){
     d <- d[,c(id,record.id,entryvar,codevar,patvar),with=FALSE]
+    setnames(d,codevar,'diag')
+    setnames(d,id,'pnr')
+    setnames(d,entryvar,'entrydate')
+    setnames(d,patvar,'pattype')
+    setnames(d,record.id,'recnum')
   }
-  else{
+  if(!is.null(indexvar)&lmdb==FALSE){
     d <- d[,c(id,record.id,entryvar,codevar,patvar,indexvar),with=FALSE]
-  }
-  
-  setnames(d,codevar,'diag')
-  setnames(d,id,'pnr')
-  setnames(d,entryvar,'entrydate')
-  setnames(d,patvar,'pattype')
-  setnames(d,record.id,'recnum')
-  
-  if(!is.null(indexvar)){
+    setnames(d,codevar,'diag')
+    setnames(d,id,'pnr')
+    setnames(d,entryvar,'entrydate')
+    setnames(d,patvar,'pattype')
+    setnames(d,record.id,'recnum')
     setnames(d,indexvar,'index')
   }
-  
-  if(!is.null(p.in) & class(p.in)!='Date'){
-    stop('p.in is not a date')    
+  if(is.null(indexvar)&lmdb==TRUE){
+    d <- d[,c(id,entryvar,codevar),with=FALSE]
+    setnames(d,codevar,'diag')
+    setnames(d,id,'pnr')
+    setnames(d,entryvar,'entrydate')
   }
   
-  if(!is.null(p.out) & class(p.out)!='Date'){
-    stop('p.out is not a date')    
+  if(!is.null(indexvar)&lmdb==TRUE){
+    d <- d[,c(id,entryvar,codevar,indexvar),with=FALSE]
+    setnames(d,codevar,'diag')
+    setnames(d,id,'pnr')
+    setnames(d,entryvar,'entrydate')
+    setnames(d,indexvar,'index')
+  }
+
+  if(!is.null(p.in)){ 
+    if(class(as.Date(p.in))!='Date'){
+      warning("Argument 'p.in' is not a date") 
+      return(NA)
+    }
+  }
+  
+  if(!is.null(p.out)){
+    if(class(as.Date(p.out))!='Date'){
+    warning("Argument 'p.out' is not a date") 
+    return(NA)
+    }
   }
   
   ## extraction of diagnoses
@@ -173,20 +195,24 @@ extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NUL
   
   #Restrict diagnoses to specific period in time
   if(!is.null(p.in)&!is.null(p.out)){
+    p.in <- as.Date(p.in)
+    p.out <- as.Date(p.out)
     out <- out[p.in<entrydate&entrydate<p.out]
   }
   
   if(!is.null(p.in)&is.null(p.out)){
+    p.in <- as.Date(p.in)
     out <- out[p.in<entrydate]
   }
   
   if(is.null(p.in)&!is.null(p.out)){
+    p.out <- as.Date(p.out)
     out <- out[p.out>entrydate]
   }
 
   # Find diagnoses in specific interval before an index date
   if(!is.null(indexvar)&!is.null(index.int)){
-    out <- out[index>=entrydate&(index-index.interval)<=entrydate]
+    out <- out[index>=entrydate&(index-index.int)<=entrydate]
   }
   
   # Find diagnoses after an index date (outcome)
@@ -277,11 +303,34 @@ extractIcd <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NUL
     date_name <- paste(prefix,'date',sep='_')
   }
   
-  setnames(out,'entrydate',date_name)
-  setnames(out,'diag',codevar)
-  setnames(out,'pnr',id)
-  setnames(out,'pattype',patvar)
-  setnames(out,'recnum',record.id)
+  
+  if(is.null(indexvar)&lmdb==FALSE){
+    setnames(out,'entrydate',date_name)
+    setnames(out,'diag',codevar)
+    setnames(out,'pnr',id)
+    setnames(out,'pattype',patvar)
+    setnames(out,'recnum',record.id)
+  }
+  if(!is.null(indexvar)&lmdb==FALSE){
+    setnames(out,'entrydate',date_name)
+    setnames(out,'diag',codevar)
+    setnames(out,'pnr',id)
+    setnames(out,'pattype',patvar)
+    setnames(out,'recnum',record.id)
+    setnames(out,'index',indexvar)
+  }
+  if(is.null(indexvar)&lmdb==TRUE){
+    setnames(out,'entrydate',date_name)
+    setnames(out,'diag',codevar)
+    setnames(out,'pnr',id)
+  }
+  
+  if(!is.null(indexvar)&lmdb==TRUE){
+    setnames(out,'entrydate',date_name)
+    setnames(out,'diag',codevar)
+    setnames(out,'pnr',id)
+    setnames(out,'index',indexvar,)
+  }
   
   names(diags_for_extraction) <- NULL
   
