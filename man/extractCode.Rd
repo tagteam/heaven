@@ -11,7 +11,7 @@ extractCode(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
   index.int = NULL, outcome = FALSE, lmdb = FALSE)
 }
 \arguments{
-\item{dat}{Dataset containing diagnoses, dates, patient id, patient type etc.}
+\item{dat}{Dataset containing diagnoses, entrydate, patient id, patient type, record number and optionally index date. If extraction of atc codes is desired, patient type and record number is not expected in the input data (see lmdb).}
 
 \item{disease}{Characterstring containing pre-specified name of diseases. See \href{../doc/predefined_diseases.pdf}{definitions of diseases}.}
 
@@ -19,9 +19,9 @@ extractCode(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
 
 \item{exclusions}{Characterstring, specifying diagnoses to be omitted.}
 
-\item{p.in}{Date of period p.in, as characterstring in the format "YYYY-MM-DD".}
+\item{p.in}{Date of period start, if a specific period of time is desired. Characterstring in the format "YYYY-MM-DD".}
 
-\item{p.out}{Date of period p.out, as characterstring in the format "YYYY-MM-DD".}
+\item{p.out}{Date of period end. See p.in.}
 
 \item{mult}{Logical. Specifies if multiple diseases are chosen.}
 
@@ -30,13 +30,13 @@ If mult=TRUE and keep="first" the first diagnosis of each disease specified will
 
 \item{pat}{Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.}
 
-\item{prefix}{Character string of prefix name for the resulting date variable of disease.}
+\item{prefix}{Character string of prefix name for the resulting date variable of disease. If not specified, and disease is specified, the name in disease is chosen as prefix.}
 
 \item{entryvar}{Name of the variable in data that contains the entrydate of diagnosis.}
 
 \item{id}{Name of the variable in data that contains patient id.}
 
-\item{codevar}{Name of the variable in data that contains diagnoses.}
+\item{codevar}{Name of the variable in data that contains diagnoses or atc codes.}
 
 \item{patvar}{Name of the variable in data that contains the type of patient.}
 
@@ -51,15 +51,14 @@ If mult=TRUE and keep="first" the first diagnosis of each disease specified will
 \item{lmdb}{Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.}
 }
 \value{
-A list of three elements. data: the extracted data. diagnoses: contains the diagnoses specified 
-to be extracted. unique.icd: contains every unique diagnosis extracted. If exclusions are specified, these are contained in an additional list element: excl.
+A list of three elements. data: the extracted data. codes: contains the codes specified 
+to be extracted. unique.codes: contains every unique code extracted. If exclusions are specified, these are contained in an additional list element: excl.
 }
 \description{
-Filtering of LPR registry data according to a given set of diseases
+Filtering of LPR registry data according to a given set of diseases, or filtering of medical prescription data according to given atc codes.
 }
 \details{
-Extracts specific selected or predefined diagnoses. If specified by keep only the first or last occurrence of the diagnoses are extracted.
-Diagnoses in a specific period of time can also be extracted by p.in and p.out.
+Extracts specific selected ICD- or ATC codes, or predefined diseases by diagnoses. If specified by keep, only the first or last occurrence of the code is extracted.
 }
 \examples{
 \dontrun{
@@ -67,36 +66,39 @@ Diagnoses in a specific period of time can also be extracted by p.in and p.out.
 # Simulated LPR-registry data
 data(lpr.data)
 
-# Extract diagnoses related to myocardial infarction (mi) for patients of type 1, after 01-01-2007.
-dat.extracted <- extractCode(lpr.data,disease=c("mi"),pat=1,p.in='2007-01-01')
+# Extract diagnoses related to heart failure
+dat.extracted <- extractCode(lpr.data,disease=c("mi"))
 
 # View first 6 lines of extracted data 
 head(dat.extracted$data)
 
 # Codes specified to be extracted
-dat.extracted$diagnoses
+dat.extracted$codes
 
 # Unique codes extracted
-dat.extracted$unique.icd
+dat.extracted$unique.codes
 
-# Extract diagnoses related to myocardial infarction (mi) within the period 01-01-2007 and 12-31-2008.
-dat.extracted <- extractCode(lpr.data,disease=c("mi"),p.in='2007-01-01',p.out='2008-12-31')
+# Extract diagnoses related to heart failure after the date 01-01-2007.
+dat.extracted <- extractCode(lpr.data,disease=c("hf"),p.in='2007-01-01')
 
-# Extract diagnoses related to bleeding (without hemorrhagic stroke) or atrial fibrilation, and only include first
+# Extract diagnoses related to liver disease or cancer, and only include first
 # diagnosis of each disease for each patient.
-dat.extracted <- extractCode(lpr.data,disease=c("bleeding","af"),mult=T,keep='first',prefix='diag')
+dat.extracted <- extractCode(lpr.data,disease=c("liver","cancer"),mult=T,keep='first',prefix='diag')
 
-# Extract all diagnoses p.ining with an 'A', and exclude all diagnoses with 'A21' and 'A7'.
-dat.extracted <- extractCode(lpr.data,inclusions='A',exclusions=c('A21','A7'),prefix='a')
+# Extract cancer diagnoses, and keep only first diagnosis and patients of type 3
+dat.extracted <- extractCode(lpr.data,disease="cancer",keep='first',pat=3)
+
+# Extract all diagnoses begining with an 'I', and exclude all diagnoses with 'I21' and 'I8'.
+dat.extracted <- extractCode(lpr.data,inclusions='DI',exclusions=c('DI21','DI8'),prefix='i')
 
 # Extract ischemic heart disease without I21 and I22:
-dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('I21','I22'),prefix='ihd_excl_ami')
+dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('DI21','DI22'),prefix='ihd_excl_ami')
 
 # Extract ischemic heart disease diagnoses after index date
-dat.extracted <- extractCode(lpr.data,disease=c("ihd"),p.in='2007-01-01',p.out='2008-12-31',indexvar='indexdate',outcome = TRUE)
+dat.extracted <- extractCode(lpr.data,disease=c("ihd"),indexvar='indexdate',outcome = TRUE)
 
-# Extract ischemic heart disease diagnoses within 30 days before index date
-dat.extracted <- extractCode(lpr.data,disease=c("ihd"),p.in='2007-01-01',p.out='2008-12-31',indexvar='indexdate',index.int=30)
+# Extract bleeding diagnoses within 365 days before index date
+dat.extracted <- extractCode(lpr.data,disease=c("bleeding"),indexvar='indexdate',index.int=365)
 }
 }
 \author{
