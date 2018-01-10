@@ -47,6 +47,8 @@ If mult=TRUE and keep="first" the first diagnosis of each disease specified will
 \item{index.int}{Number of days before index date to search for specific diagnoses.}
 
 \item{outcome}{Logical. If true, all specific diagnoses after index date is returned. If set to TRUE, do not specify index.int.}
+
+\item{lmdb}{Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.}
 }
 \value{
 A list of three elements. data: the extracted data. diagnoses: contains the diagnoses specified 

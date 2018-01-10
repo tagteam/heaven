@@ -19,6 +19,7 @@
 #' @param indexvar Name of the variable in data that contains the index date.
 #' @param index.int Number of days before index date to search for specific diagnoses.
 #' @param outcome Logical. If true, all specific diagnoses after index date is returned. If set to TRUE, do not specify index.int.
+#' @param lmdb Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.
 #' @details Extracts specific selected or predefined diagnoses. If specified by keep only the first or last occurrence of the diagnoses are extracted.
 #' Diagnoses in a specific period of time can also be extracted by p.in and p.out.
 #' @return A list of three elements. data: the extracted data. diagnoses: contains the diagnoses specified 
