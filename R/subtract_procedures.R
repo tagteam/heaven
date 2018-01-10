@@ -1,4 +1,4 @@
-#' @Title Extraction of simple procedures
+#' @title Extraction of simple procedures
 #'
 #' @description Extracting simple procedures given from a list of procedure codes from a data file.
 #'              The procedures must be the only procedure occuring within a given time-frame.
