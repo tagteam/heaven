@@ -4,40 +4,31 @@
 #' @param pnr Variable with ID for each subject/group. Default name: pnr 
 #' @param atc Variable with atc codes. Must be type character. Default name: atc 
 #' @param eksd Variable with dates. Must be type Date or numeric. Default name: eksd
-#' @param date Variable with dates. Must be type Date or numeric. Default name: date
+#' @param baseline Variable with dates. Must be type Date or numeric. Default name: baseline
 #'
-#' @return A variable indicating whether there is hypertension at baseline. The variable hypertension at baseline is one if 
-#' the person has received two or more types of anti-hypertensive medications within 180 days before 
-#' the baseline date. The codes for hypertension are currently defined in the function.
-#' Output: A data set with pnr, hypertension variable, number of medications within 180 days before baseline 
-#' and types of medications
-#' 
+#' @return List containing two datasets. First contains data with hypertension information. 
+#' The second contains all rows with missing data that were removed before hypertension where calculated.
+#' The variable hypertension at baseline is one if the person has received two or more types of anti-hypertensive
+#' medications within 180 days before the baseline date (and 7 days after due to data errors). 
+#' The codes for hypertension are currently defined in the function.
+#'
 #' @export
 #'
 #' @examples
-#' Warning: examples are outdated. New ones are coming
+#' #Required library
 #' library(data.table)
-#' dat<-data.table(pnr=1:50, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-#' dat$eksd<-as.Date(dat$eksd)
-#' dat
-#' baseline<-"2001-03-30"
-#' #Create hypertension variable
-#' ht<-hypertensionBaseline(dat,baseline)
-#' ht
-#' #With custom names
-#' dat2<-data.table(MyID=1:50, MyAtcCodes=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), MyDates=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-#' dat2$MyDates<-as.Date(dat2$MyDates)
-#' dat2
-#' ht2<-hypertensionBaseline(dat2, baseline, pnr='MyID', atc='MyAtcCodes', eksd='MyDates')
-#' ht2
-#' #Several rows per pnr
-#' dat3<-data.table(pnr=1:15, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02", "C09BB"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-#' dat3$eksd<-as.Date(dat3$eksd)
-#' dat3
-#' ht3<-hypertensionBaseline(dat3,baseline)
-#' ht3
+#' 
+#' #Load data
+#' data(Hypertension.data) 
+#' 
+#' ht<-hypertensionBaseline(Hypertension,pnr='myID',atc='myAtc',eksd='myEksd',baseline='myBaseline')
+#' 
+#' List is returned containing two data.tables
+#' htData  <- ht[[1]]
+#' htError <- ht[[2]]
+#' 
 #' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
-hypertensionBaseline<- function(data,pnr='pnr',atc='atc',eksd='eksd',date='date'){
+hypertensionBaseline<- function(data,pnr='pnr',atc='atc',eksd='eksd',baseline='baseline'){
   
   options(warn=1)
 
@@ -48,18 +39,18 @@ hypertensionBaseline<- function(data,pnr='pnr',atc='atc',eksd='eksd',date='date'
   setnames(out,pnr,'pnrxTempName')
   setnames(out,atc,'atcxTempName')
   setnames(out,eksd,'eksdxTempName')
-  setnames(out,date,'datexTempName')
+  setnames(out,baseline,'baselinexTempName')
   
   ## Check variable types 
   if( !( class(out[,eksdxTempName])=="Date" | is.numeric(out[,eksdxTempName]) ) ){stop("eksd must be numeric or Date")} 
-  if( !( class(out[,datexTempName])=="Date" | is.numeric(out[,datexTempName]) ) ){stop("date must be numeric or Date")} 
+  if( !( class(out[,baselinexTempName])=="Date" | is.numeric(out[,baselinexTempName]) ) ){stop("baseline must be numeric or Date")} 
   if( !is.character(out[,atcxTempName]) ){stop("atc must be character")} #else grep won't work
   
   ## Removes invalid dates and atc codes
-  #date
-  outerror <- copy(out[is.na(datexTempName)])
-  out <- out[!is.na(datexTempName)]
-  if( dim(outerror)[1]!=0 ){message("Some date are missing and have been removed")} 
+  #baseline
+  outerror <- copy(out[is.na(baselinexTempName)])
+  out <- out[!is.na(baselinexTempName)]
+  if( dim(outerror)[1]!=0 ){message("Some baseline are missing and have been removed")} 
   #eksd
   outerrorTemp <- rbind(outerror,out[is.na(eksdxTempName)])
   out <- out[!is.na(eksdxTempName)]
@@ -72,12 +63,12 @@ hypertensionBaseline<- function(data,pnr='pnr',atc='atc',eksd='eksd',date='date'
   
   #All anti-hypertensive medication
   setkey(out,pnrxTempName)
-  d <- out[unlist(lapply("^C0",grep,atcxTempName)),c("pnrxTempName","eksdxTempName","atcxTempName","datexTempName")]
+  d <- out[unlist(lapply("^C0",grep,atcxTempName)),c("pnrxTempName","eksdxTempName","atcxTempName","baselinexTempName")]
   #Id
   out <- out[.(unique(pnrxTempName)),c("pnrxTempName"),mult="first"]
   
   #Only prescriptions around inclusion
-  d <- d[-7<=datexTempName-eksdxTempName & datexTempName-eksdxTempName<=180]
+  d <- d[-7<=baselinexTempName-eksdxTempName & baselinexTempName-eksdxTempName<=180]
   #Defining different treatment regims
   antiA4=c('C02A','C02B','C02C') #antiAdrenerg
   diu4=c('C02L','C03A','C03B','C03D','C03E','C03X','C07B','C07C','C07D','C08G')
@@ -119,7 +110,7 @@ hypertensionBaseline<- function(data,pnr='pnr',atc='atc',eksd='eksd',date='date'
   d$type5<-ifelse(d$bb==1,"bb","")
   d$type6<-ifelse(d$ccb==1,"ccb","")
   d$type7<-ifelse(d$ras==1,"ras","")
-  d[,type:=gsub("^\\s+|\\s+$", "", paste(type1,type2,type3,type4,type5,type6,type7, sep=" "))]
+  d[,type:=gsub("(?<=[\\s])\\s*|^\\s+|\\s+$", "", paste(type1,type2,type3,type4,type5,type6,type7, sep=" "),perl=TRUE)]
   #drop count
   d<-d[, c("pnrxTempName","antal_drugs","type","HT")]
   #Merge with full population
@@ -131,7 +122,7 @@ hypertensionBaseline<- function(data,pnr='pnr',atc='atc',eksd='eksd',date='date'
   setnames(outerror,'pnrxTempName',pnr)
   setnames(outerror,'atcxTempName',atc)
   setnames(outerror,'eksdxTempName',eksd)
-  setnames(outerror,'datexTempName',date)
+  setnames(outerror,'baselinexTempName',baseline)
   
   outList <- list("HypBase"=out,"RowErrors"=outerror)   
   

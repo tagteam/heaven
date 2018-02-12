@@ -27,7 +27,7 @@ The function "getAdmLimits" can provide start and end of overlapping "forløb". 
 
 #Obtain times of diagnoses/procedures/medications
 It is very common to require first occurrence of events for set entry times into analyses, to obtain time of morbidities/co-morbidites - and also common to require the second occurrence to determine events.  Three functions are available.
-"halal" - is designed to obtain dates of diagnoses
+"extractCode" - is designed to obtain dates of diagnoses
 "comorbidityDrugs" - is designed to obtain dates for first prescriptions of drugs
 ...... - is designed to obtain dates of first procedures
 
