@@ -1,0 +1,16 @@
+#' @title Predicting absolute risk from poisson regression model
+#' @param model glm object of fitted poisson model
+#' @param interval risk interval within time scale of the poisson model 
+#' @param newdata values of the covariates in the poisson model for which the absolute risks are calculated.
+#' @author Thomas A. Gerds <tag@biostat.ku.dk>, Regitze Kuhr Skals <r.skals@rn.dk>
+poissonRisk <- function(model,interval,newdata){
+  model.t <- terms(model)
+  offset.position <- attr(model.t,'offset')
+  if(is.null(offset.position)){stop('Offset is missing')}
+  ff <- formula(drop.terms(model.t,offset.position))
+  new.mat <- model.matrix(ff,newdata)
+  out <- estimate(coef=coef(model),vcov=vcov(model),f=function(p){ 1-exp(-exp(new.mat%*%matrix(p))*interval)})
+  out <- cbind(newdata,summary(out)$coefmat)
+  out
+}
+

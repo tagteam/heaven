@@ -4,18 +4,19 @@
 \alias{hypertensionBaseline}
 \title{Hypertension at baseline}
 \usage{
-hypertensionBaseline(data, date, pnr = "pnr", atc = "atc", eksd = "eksd")
+hypertensionBaseline(data, pnr = "pnr", atc = "atc", eksd = "eksd",
+  date = "date")
 }
 \arguments{
 \item{data}{Data set with drugs indicated by atc codes and date of drugs, e.g. lmdb}
-
-\item{date}{Baseline date (date of hypertension) "YYYY-MM-DD"}
 
 \item{pnr}{Variable with ID for each subject/group. Default name: pnr}
 
 \item{atc}{Variable with atc codes. Must be type character. Default name: atc}
 
 \item{eksd}{Variable with dates. Must be type Date or numeric. Default name: eksd}
+
+\item{date}{Variable with dates. Must be type Date or numeric. Default name: date}
 }
 \value{
 A variable indicating whether there is hypertension at baseline. The variable hypertension at baseline is one if 
@@ -25,6 +26,7 @@ Output: A data set with pnr, hypertension variable, number of medications within
 and types of medications
 }
 \examples{
+Warning: examples are outdated. New ones are coming
 library(data.table)
 dat<-data.table(pnr=1:50, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
 dat$eksd<-as.Date(dat$eksd)
