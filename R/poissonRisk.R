@@ -2,6 +2,7 @@
 #' @param model glm object of fitted poisson model
 #' @param interval risk interval within time scale of the poisson model 
 #' @param newdata values of the covariates in the poisson model for which the absolute risks are calculated.
+#' @export
 #' @author Thomas A. Gerds <tag@biostat.ku.dk>, Regitze Kuhr Skals <r.skals@rn.dk>
 poissonRisk <- function(model,interval,newdata){
   model.t <- terms(model)

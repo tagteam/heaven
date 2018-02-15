@@ -2,9 +2,6 @@ library(lava)
 library(data.table)
 library(Publish)
 
-source("C:\\Users\\bz9v\\Documents\\poisson\\SIM-14-0777-Appendix-SimulationFunctions-Rcode.R")
-source("C:\\Users\\bz9v\\Documents\\poisson\\poissonRisk.R")
-
 ######################################
 # Does rates equal the ones simulated
 ######################################
@@ -28,6 +25,30 @@ fit <- poissonregression(formula=event~-1+X+Z+time+offset(log(risktime)),data=si
                          timegrid=c(1,2))
 fit1 <- poissonregression(formula=event~-1+X*Z+time+offset(log(risktime)),data=simdat,
                          timegrid=c(1,2))
+
+aggregateData <- function(data,timegrid){
+  if (class(data)[1]!="data.table") data <- data.table(data)
+  data[,time:=interval]
+  if (length(timegrid)<=length(levels(data$time))){
+    levels(data$time) <- timegrid
+    if (match("V",names(data),nomatch=FALSE))
+      aggdata <- data[,list(risktime=sum(risktime),event=sum(event)),by=list(X,Z,V,time)]
+    else
+      aggdata <- data[,list(risktime=sum(risktime),event=sum(event)),by=list(X,Z,time)]
+    return(aggdata)
+  }else
+    return(data)
+}
+
+poissonregression <- function(formula,data,timegrid,effectZgrid){
+  aggdata <- aggregateData(data=data,timegrid=timegrid)
+  if (!missing(effectZgrid)){
+    aggdata[,Ztime:=factor(time)]
+    levels(aggdata$Ztime) <- effectZgrid
+  }
+  fit <- glm(formula,data=aggdata,family=poisson())
+  fit
+}
 
 # Rates simulated: 0.005, 0.02
 testdat <- aggregateData(simdat,1:2)

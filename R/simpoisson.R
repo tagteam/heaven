@@ -20,6 +20,7 @@
 #' const="XZ" means that both X and Z do not change over time.
 #' const="X" means that only X does not change over time.
 #' const="Z" means that only Z does not change over time.
+#' @export
 #' @author Thomas A. Gerds <tag@biostat.ku.dk>
 simpoisson <- function(N,            # sample size
                        changepoints, # borders of time intervals
