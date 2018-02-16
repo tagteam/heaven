@@ -1,6 +1,8 @@
 library(lava)
 library(data.table)
 library(Publish)
+library(foreach)
+library(doParallel)
 
 ######################################
 # Does rates equal the ones simulated
@@ -143,3 +145,69 @@ t1 <- test.beta(b=rep(3,length(c(15:50))),
                 time.p=35)
 
 t1[[2]]
+
+######################################
+# Testing standard errors from lava (robust vs. non-robust)
+######################################
+
+# Test function with se option in lava estimate added
+poissonRisk.test <- function(model,interval,newdata,se.robust){
+  model.t <- terms(model)
+  offset.position <- attr(model.t,'offset')
+  if(is.null(offset.position)){stop('Offset is missing')}
+  ff <- formula(drop.terms(model.t,offset.position))
+  new.mat <- model.matrix(ff,newdata)
+  out <- estimate(model,robust=se.robust,f=function(p){ 1-exp(-exp(new.mat%*%matrix(p))*interval)})
+  out <- cbind(newdata,summary(out)$coefmat)
+  out
+}
+
+test.lava <- function(dat,time.p=1,se.robust=TRUE){
+  fit <- poissonregression(formula=event~-1+X+Z+time+offset(log(risktime)),data=dat,
+                           timegrid=c(1:2))
+  
+  return(poissonRisk.test(fit,interval=1,se.robust, newdata=data.frame(X=1,Z=1,time=factor(time.p,levels=c(1:2)))))
+}
+
+# Simulates several datasets and computes the absolute risk
+cl <- makeCluster(4)
+registerDoParallel(cl)
+
+est <- foreach(i=1:3000, .packages = 'heaven') %dopar% {
+  simdat <- simpoisson(N=10000,
+                       changepoints=c(1:2),
+                       baseline=rep(0.005,2),
+                       beta=log(rep(1.5,2)),
+                       gamma=rep(0,2),
+                       px=0.4,
+                       pz=0.3,
+                       pxz=0,
+                       const="XZ")
+  return(test.lava(dat=simdat,time.p=1)[,4])
+}
+stopCluster(cl)
+
+est.sim <- unlist(est)
+
+#########
+
+simdat <- simpoisson(N=10000,
+                     changepoints=c(1:2),
+                     baseline=rep(0.005,2),
+                     beta=log(c(1.5,1.5)),
+                     gamma=rep(0,2),
+                     px=0.4,
+                     pz=0.3,
+                     pxz=0,
+                     const="XZ")
+
+# Computes se of the absolute risk using lava with robust and non-robust se
+est.lava <- test.lava(dat=simdat,time.p=1,se.robust=TRUE)
+est.lava2 <- test.lava(dat=simdat,time.p=1,se.robust=FALSE)
+
+###########
+
+sd(est.sim) # standard deviation of absolute risks based on 3000 simulated datasets
+est.lava[,5] # robust se lava
+est.lava2[,5] # non-robust se lava
+

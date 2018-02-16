@@ -10,7 +10,7 @@ poissonRisk <- function(model,interval,newdata){
   if(is.null(offset.position)){stop('Offset is missing')}
   ff <- formula(drop.terms(model.t,offset.position))
   new.mat <- model.matrix(ff,newdata)
-  out <- estimate(coef=coef(model),vcov=vcov(model),f=function(p){ 1-exp(-exp(new.mat%*%matrix(p))*interval)})
+  out <- estimate(model,robust=FALSE,f=function(p){ 1-exp(-exp(new.mat%*%matrix(p))*interval)})
   out <- cbind(newdata,summary(out)$coefmat)
   out
 }
