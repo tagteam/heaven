@@ -4,9 +4,8 @@
 #' @param disease Characterstring containing pre-specified name of diseases. See \href{../doc/predefined_diseases.pdf}{definitions of diseases}. 
 #' @param inclusions Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.
 #' @param exclusions Characterstring, specifying diagnoses to be omitted.
-#' @param mult Logical. Specifies if multiple diseases are chosen.
 #' @param keep Takes the values "first" or "last". Specifies if only the first or last record of each patient should be output. 
-#' If mult=TRUE and keep="first" the first diagnosis of each disease specified will be extracted.
+#' If multiple diseases are chosen and keep="first" the first diagnosis of each disease specified will be extracted.
 #' @param p.in Date of period start, if a specific period of time is desired. Characterstring in the format "YYYY-MM-DD". 
 #' @param p.out Date of period end. See p.in.
 #' @param pat Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.
@@ -17,8 +16,7 @@
 #' @param patvar Name of the variable in data that contains the type of patient.
 #' @param record.id Name of the variable in data that contains the record number for each patient.
 #' @param indexvar Name of the variable in data that contains the index date.
-#' @param index.int Number of days before index date to search for specific diagnoses.
-#' @param outcome Logical. If true, all specific diagnoses after index date is returned. If set to TRUE, do not specify index.int.
+#' @param index.int Numeric. Number  of days before or after an index date to search for specific diagnoses. If negative, days before index date. If positve, days after index date (i.e. outcome).
 #' @param lmdb Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.
 #' @details Extracts specific selected ICD- or ATC codes, or predefined diseases by diagnoses. If specified by keep, only the first or last occurrence of the code is extracted.
 #' @return A list of three elements. data: the extracted data. codes: contains the codes specified 
@@ -30,7 +28,7 @@
 #' data(lpr.data)
 #' 
 #' # Extract diagnoses related to heart failure
-#' dat.extracted <- extractCode(lpr.data,disease=c("mi"))
+#' dat.extracted <- extractCode(lpr.data,disease=c("hf"))
 #' 
 #' # View first 6 lines of extracted data 
 #' head(dat.extracted$data)
@@ -46,29 +44,29 @@
 #'
 #' # Extract diagnoses related to liver disease or cancer, and only include first
 #' # diagnosis of each disease for each patient.
-#' dat.extracted <- extractCode(lpr.data,disease=c("liver","cancer"),mult=T,keep='first',prefix='diag')
+#' dat.extracted <- extractCode(lpr.data,disease=c("liver","cancer"),keep='first',prefix='diag')
 #' 
 #' # Extract cancer diagnoses, and keep only first diagnosis and patients of type 3
 #' dat.extracted <- extractCode(lpr.data,disease="cancer",keep='first',pat=3)
 #'
-#' # Extract all diagnoses begining with an 'I', and exclude all diagnoses with 'I21' and 'I8'.
+#' # Extract all diagnoses begining with an 'DI', and exclude all diagnoses with 'DI21' and 'DI8'.
 #' dat.extracted <- extractCode(lpr.data,inclusions='DI',exclusions=c('DI21','DI8'),prefix='i')
 #'
-#' # Extract ischemic heart disease without I21 and I22:
+#' # Extract ischemic heart disease without DI21 and DI22:
 #' dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('DI21','DI22'),prefix='ihd_excl_ami')
 #' 
-#' # Extract ischemic heart disease diagnoses after index date
-#' dat.extracted <- extractCode(lpr.data,disease=c("ihd"),indexvar='indexdate',outcome = TRUE)
+#' # Extract ischemic heart disease diagnoses within three years after index date
+#' dat.extracted <- extractCode(lpr.data,disease=c("ihd"),indexvar='indexdate',index.int=365*3)
 #' 
-#' # Extract bleeding diagnoses within 365 days before index date
-#' dat.extracted <- extractCode(lpr.data,disease=c("bleeding"),indexvar='indexdate',index.int=365)
+#' # Extract bleeding diagnoses within one month before index date
+#' dat.extracted <- extractCode(lpr.data,disease=c("bleeding"),indexvar='indexdate',index.int=-365)
 #' }
 #' @export
 #' @author Regitze Kuhr Skals <r.skals@rn.dk>
 
-extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,mult=FALSE,
-                  keep='',pat=NULL,prefix='',entryvar='inddto',id='pnr',codevar='diag',
-                  patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,outcome=FALSE,lmdb=FALSE){
+extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
+                  keep='',pat=NULL,prefix='',entryvar='inddto',id='PNR',codevar='diag',
+                  patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,lmdb=FALSE){
   
   # definition of diseases
   
@@ -123,11 +121,9 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
                                                                53390,53391,53399,53409,53490,53491,53499)))
                      )
   
-  ##  Make into data.table and change relevant variable names to lower case
+  ##  Make into data.table 
   require(data.table)
   d <- as.data.table(dat)
-  # var.names <- tolower(colnames(d)) 
-  # colnames(d) <- var.names 
   
   if(is.null(indexvar)&lmdb==FALSE){
     d <- d[,c(id,record.id,entryvar,codevar,patvar),with=FALSE]
@@ -162,14 +158,14 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   }
 
   if(!is.null(p.in)){ 
-    if(class(as.Date(p.in))!='Date'){
+    if(class(try(as.Date(p.in),silent=TRUE))=='try-error'){
       warning("Argument 'p.in' is not a date") 
       return(NA)
     }
   }
   
   if(!is.null(p.out)){
-    if(class(as.Date(p.out))!='Date'){
+    if(class(try(as.Date(p.out),silent=TRUE))=='try-error'){
     warning("Argument 'p.out' is not a date") 
     return(NA)
     }
@@ -200,27 +196,27 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   if(!is.null(p.in)&!is.null(p.out)){
     p.in <- as.Date(p.in)
     p.out <- as.Date(p.out)
-    out <- out[p.in<entrydate&entrydate<p.out]
+    out <- out[p.in<=entrydate&entrydate<=p.out]
   }
   
   if(!is.null(p.in)&is.null(p.out)){
     p.in <- as.Date(p.in)
-    out <- out[p.in<entrydate]
+    out <- out[p.in<=entrydate]
   }
   
   if(is.null(p.in)&!is.null(p.out)){
     p.out <- as.Date(p.out)
-    out <- out[p.out>entrydate]
+    out <- out[p.out>=entrydate]
   }
 
   # Find diagnoses in specific interval before an index date
   if(!is.null(indexvar)&!is.null(index.int)){
-    out <- out[index>=entrydate&(index-index.int)<=entrydate]
-  }
-  
-  # Find diagnoses after an index date (outcome)
-  if(!is.null(indexvar)&outcome==TRUE){
-    out <- out[index<entrydate]
+    if(index.int<0){
+      out <- out[index>=entrydate&(index+index.int)<=entrydate]
+    }
+    if(index.int>0){
+      out <- out[index<=entrydate&(index+index.int)>=entrydate]
+    }
   }
   
   #Restrict to specific type of patient (pattype)
@@ -229,21 +225,21 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   }
 
   #Take first diagnosis if more than one for each patient
-  if(keep=="first"&mult==FALSE){
+  if(keep=="first"&length(disease)==1){
     #Order data by pnr and increasing entrydate
     setkey(out,pnr,entrydate)
     out <- out[.(unique(pnr)),,mult="first"] 
   }
   
   #Take last diagnosis if more than one for each patient
-  if(keep=="last"&mult==FALSE){
+  if(keep=="last"&length(disease)==1){
     #Order data by pnr and increasing entrydate
     setkey(out,pnr,entrydate)
     out <- out[.(unique(pnr)),,mult="last"] 
   }
   
   # Takes first diagnosis of each disease if multiple diseases are chosen for each patient.
-  if(keep=="first"&mult==TRUE){
+  if(keep=="first"&length(disease)>1){
     
     # Mark different diseases
     out[,dis:=""]
@@ -264,7 +260,7 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   }
   
   # Takes last diagnosis of each disease if multiple diseases are chosen for each patient.
-  if(keep=="last"&mult==TRUE){
+  if(keep=="last"&length(disease)>1){
     
     # Mark different diseases
     out[,dis:=""]
@@ -286,7 +282,7 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   
   # Takes every diagnosis of each disease if multiple diseases are chosen and marks each disease by
   # it's prespecified name.
-   if(keep==''&mult==TRUE){
+   if(keep==''&length(disease)>1){
     # Mark different diseases
     out[,dis:='']
     names_dis <- names(disease_defs[disease])
@@ -298,7 +294,7 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     }
   }
   
-  if(!is.null(disease)&mult==FALSE&prefix==''){
+  if(!is.null(disease)&length(disease)==1&prefix==''){
   date_name <- paste(disease,'date',sep='_')
   }
   
@@ -306,6 +302,7 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     date_name <- paste(prefix,'date',sep='_')
   }
   
+  unique.codes=as.character(unique(out$diag))
   
   if(is.null(indexvar)&lmdb==FALSE){
     setnames(out,'entrydate',date_name)
@@ -332,16 +329,16 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     setnames(out,'entrydate',date_name)
     setnames(out,'diag',codevar)
     setnames(out,'pnr',id)
-    setnames(out,'index',indexvar,)
+    setnames(out,'index',indexvar)
   }
   
   names(diags_for_extraction) <- NULL
 
   if(!is.null(exclusions)){
-    return(list(data=out,codes=diags_for_extraction,excl=exclusions,unique.codes=as.character(unique(out$diag))))
+    return(list(data=out,codes=diags_for_extraction,excl=exclusions,unique.codes=unique.codes))
   }
   else{
-    return(list(data=out,codes=diags_for_extraction,unique.codes=as.character(unique(out$diag))))  
+    return(list(data=out,codes=diags_for_extraction,unique.codes=unique.codes))  
   }
   
 }

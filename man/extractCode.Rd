@@ -6,7 +6,7 @@
 \usage{
 extractCode(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
   p.in = NULL, p.out = NULL, mult = FALSE, keep = "", pat = NULL,
-  prefix = "", entryvar = "inddto", id = "pnr", codevar = "diag",
+  prefix = "", entryvar = "inddto", id = "PNR", codevar = "diag",
   patvar = "pattype", record.id = "recnum", indexvar = NULL,
   index.int = NULL, outcome = FALSE, lmdb = FALSE)
 }
