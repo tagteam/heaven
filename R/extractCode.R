@@ -1,22 +1,22 @@
 #' @title Extraction of diseases by diagnoses
 #' @description Filtering of LPR registry data according to a given set of diseases, or filtering of medical prescription data according to given atc codes.
-#' @param dat Dataset containing diagnoses, entrydate, patient id, patient type, record number and optionally index date. If extraction of atc codes is desired, patient type and record number is not expected in the input data (see lmdb).
+#' @param dat Dataset containing diagnoses/atc codes, entrydate, patient id, patient type, record number and optionally index date. If extraction of atc codes is desired, patient type and record number is not expected in the input data (see lmdb).
 #' @param disease Characterstring containing pre-specified name of diseases. See \href{../doc/predefined_diseases.pdf}{definitions of diseases}. 
-#' @param inclusions Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.
-#' @param exclusions Characterstring, specifying diagnoses to be omitted.
+#' @param inclusions Characterstring, where additional diagnoses/atc codes can be included. If disease is not specified, inclusions will be the extracted codes.
+#' @param exclusions Characterstring, specifying codes to be omitted. If disease and inclusions are not specified, all codes except exclusions will be extracted.
 #' @param keep Takes the values "first" or "last". Specifies if only the first or last record of each patient should be output. 
-#' If multiple diseases are chosen and keep="first" the first diagnosis of each disease specified will be extracted.
+#' If multiple diseases are chosen and keep="first" the first code of each disease specified will be extracted.
 #' @param p.in Date of period start, if a specific period of time is desired. Characterstring in the format "YYYY-MM-DD". 
 #' @param p.out Date of period end. See p.in.
 #' @param pat Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.
 #' @param prefix Character string of prefix name for the resulting date variable of disease. If not specified, and disease is specified, the name in disease is chosen as prefix.
-#' @param entryvar Name of the variable in data that contains the entrydate of diagnosis.
+#' @param entryvar Name of the variable in data that contains the entrydate/prescription date of a diagnosis/atc code.
 #' @param id Name of the variable in data that contains patient id.
 #' @param codevar Name of the variable in data that contains diagnoses or atc codes.
 #' @param patvar Name of the variable in data that contains the type of patient.
 #' @param record.id Name of the variable in data that contains the record number for each patient.
 #' @param indexvar Name of the variable in data that contains the index date.
-#' @param index.int Numeric. Number  of days before or after an index date to search for specific diagnoses. If negative, days before index date. If positve, days after index date (i.e. outcome).
+#' @param index.int Numeric. Number of days before or after an index date to search for specific diagnoses/atc codes. If negative, days before index date. If positve, days after index date (i.e. outcome).
 #' @param lmdb Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.
 #' @details Extracts specific selected ICD- or ATC codes, or predefined diseases by diagnoses. If specified by keep, only the first or last occurrence of the code is extracted.
 #' @return A list of three elements. data: the extracted data. codes: contains the codes specified 
@@ -187,8 +187,13 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   icdcodes <- icdcodes[unlist(lapply(paste('^?',diags_for_extraction,sep=''),grep,diag))] #the unique diagnoses of interest
   if(!is.null(exclusions)){
     ex.diag <- grep(paste(paste('^?',exclusions,sep=''),collapse='|'),icdcodes$diag)
-    icdcodes <- icdcodes[-ex.diag]
-    diags_for_extraction <- setdiff(diags_for_extraction,exclusions)
+    if(length(ex.diag)==0){
+      warning('exclusions do not exist in data')
+    }
+    else{
+      icdcodes <- icdcodes[-ex.diag]
+      diags_for_extraction <- setdiff(diags_for_extraction,exclusions)
+    }
   }
   out <- d[icdcodes,nomatch = 0L] #Patients with unique diagnoses of interest
   
@@ -335,7 +340,7 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   names(diags_for_extraction) <- NULL
 
   if(!is.null(exclusions)){
-    return(list(data=out,codes=diags_for_extraction,excl=exclusions,unique.codes=unique.codes))
+    return(list(data=out,codes=diags_for_extraction,unique.codes=unique.codes,excl=exclusions))
   }
   else{
     return(list(data=out,codes=diags_for_extraction,unique.codes=unique.codes))  
