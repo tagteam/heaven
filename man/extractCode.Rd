@@ -10,26 +10,26 @@ extractCode(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
   record.id = "recnum", indexvar = NULL, index.int = NULL, lmdb = FALSE)
 }
 \arguments{
-\item{dat}{Dataset containing diagnoses, entrydate, patient id, patient type, record number and optionally index date. If extraction of atc codes is desired, patient type and record number is not expected in the input data (see lmdb).}
+\item{dat}{Dataset containing diagnoses/atc codes, entrydate, patient id, patient type, record number and optionally index date. If extraction of atc codes is desired, patient type and record number is not expected in the input data (see lmdb).}
 
 \item{disease}{Characterstring containing pre-specified name of diseases. See \href{../doc/predefined_diseases.pdf}{definitions of diseases}.}
 
-\item{inclusions}{Characterstring, where additional diagnoses can be included. If disease is not defined, inclusions will be the extracted diagnoses.}
+\item{inclusions}{Characterstring, where additional diagnoses/atc codes can be included. If disease is not specified, inclusions will be the extracted codes.}
 
-\item{exclusions}{Characterstring, specifying diagnoses to be omitted.}
+\item{exclusions}{Characterstring, specifying codes to be omitted. If disease and inclusions are not specified, all codes except exclusions will be extracted.}
 
 \item{p.in}{Date of period start, if a specific period of time is desired. Characterstring in the format "YYYY-MM-DD".}
 
 \item{p.out}{Date of period end. See p.in.}
 
 \item{keep}{Takes the values "first" or "last". Specifies if only the first or last record of each patient should be output. 
-If multiple diseases are chosen and keep="first" the first diagnosis of each disease specified will be extracted.}
+If multiple diseases are chosen and keep="first" the first code of each disease specified will be extracted.}
 
 \item{pat}{Number or vector defining types of patients to include (pattype: 0,1,2,3), default is all types.}
 
 \item{prefix}{Character string of prefix name for the resulting date variable of disease. If not specified, and disease is specified, the name in disease is chosen as prefix.}
 
-\item{entryvar}{Name of the variable in data that contains the entrydate of diagnosis.}
+\item{entryvar}{Name of the variable in data that contains the entrydate/prescription date of a diagnosis/atc code.}
 
 \item{id}{Name of the variable in data that contains patient id.}
 
@@ -41,7 +41,7 @@ If multiple diseases are chosen and keep="first" the first diagnosis of each dis
 
 \item{indexvar}{Name of the variable in data that contains the index date.}
 
-\item{index.int}{Numeric. Number  of days before or after an index date to search for specific diagnoses. If negative, days before index date. If positve, days after index date (i.e. outcome).}
+\item{index.int}{Numeric. Number of days before or after an index date to search for specific diagnoses/atc codes. If negative, days before index date. If positve, days after index date (i.e. outcome).}
 
 \item{lmdb}{Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.}
 }

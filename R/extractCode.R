@@ -114,12 +114,28 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
                                               98099, 29109, 29119, 29129, 29139, 29199, 30309, 30319, 30320, 30328,
                                               30329, 30390, 30391, 30399, 57710, 57109, 57110))),
                      dm=c(paste0('DE',10:14),'250'),
-                     ht=c(paste0('DI',10:15),as.character(c(40009, 40019, 40029, 40039, 40099, 40199, 40299,
+                     ht_diag=c(paste0('DI',10:15),as.character(c(40009, 40019, 40029, 40039, 40099, 40199, 40299,
                                                                       40399, 40499))),
                      ulcus=c(paste0('DK',25:27),as.character(c(53100,53101,53108,53109,53190,53191,53192,53193,53194,
                                                                53195,53196,53198,53199,53209,53290,53291,53299,53309,
-                                                               53390,53391,53399,53409,53490,53491,53499)))
-                     )
+                                                               53390,53391,53399,53409,53490,53491,53499))),
+                     acetylsalicylic_acid=c("B01AC06","N02BA01"),
+                     asappi=c("B01AC56"),amiodarone="C01BD01",
+                     betablockers=c("C07A","C07B","C07C","C07D","C07F"),class_ic_antiarrytmic_drugs="C01BC",
+                     cardiac_glycosides="C01A",
+                     diu=c("C02DA", "C02L", "C03A", "C03B", "C03D", "C03E", "C03X", "C07B", "C07C", "C07D", "C07F", "C08G", "C09BA", "C09DA", "C09XA52"),
+                     dronedarone="C01BD07",
+                     diabetes="A10",
+                     ht_med=c("C02A", "C02B", "C02C", "C02DA", "C03A", "C03B", "C03D", "C03E", "C03X", "C02DB", "C02DD", "C02DG", "C07A", "C08", "C09AA", "C09XA02",
+                              "C09CA", "C07B","C07C", "C07D", "C07F", "C08G", "C09BA", "C09DA", "C09XA52", "C02L", "C09BB", "C09DB"),
+                     loop_diu="C03C",
+                     nsaid="M01A",
+                     ras=c("C09AA", "C09BA", "C09BB", "C09CA", "C09DA", "C09DB", "C09XA02", "C09XA52"),
+                     statins="C10AA",
+                     vka=c("B01AA03", "B01AA04"),
+                     xa_inhibitors=c("B01AF02", "B01AF03", "B01AF01"),
+                     thrombin_inhibitors="B01AE07",
+                     adp_inhibitors=c("B01AC04", "B01AC22", "B01AC24"))
   
   ##  Make into data.table 
   require(data.table)
