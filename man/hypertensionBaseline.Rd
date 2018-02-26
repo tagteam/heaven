@@ -4,47 +4,52 @@
 \alias{hypertensionBaseline}
 \title{Hypertension at baseline}
 \usage{
-hypertensionBaseline(data, date, pnr = "pnr", atc = "atc", eksd = "eksd")
+hypertensionBaseline(data, pnr = "pnr", atc = "atc", eksd = "eksd",
+<<<<<<< HEAD
+  date = "date")
+=======
+  baseline = "baseline")
+>>>>>>> 6b35cf84506e4e5490ad8028cc0d1c987cfee4be
 }
 \arguments{
 \item{data}{Data set with drugs indicated by atc codes and date of drugs, e.g. lmdb}
-
-\item{date}{Baseline date (date of hypertension) "YYYY-MM-DD"}
 
 \item{pnr}{Variable with ID for each subject/group. Default name: pnr}
 
 \item{atc}{Variable with atc codes. Must be type character. Default name: atc}
 
 \item{eksd}{Variable with dates. Must be type Date or numeric. Default name: eksd}
+
+<<<<<<< HEAD
+\item{date}{Variable with dates. Must be type Date or numeric. Default name: date}
+=======
+\item{baseline}{Variable with dates. Must be type Date or numeric. Default name: baseline}
+>>>>>>> 6b35cf84506e4e5490ad8028cc0d1c987cfee4be
 }
 \value{
-A variable indicating wheter there is hypertension at baseline. The variable hypertension at baseline is one if 
-the person has received two or more types of anti-hypertensive medications within 180 days before 
-the baseline date. The codes for hypertension are currently defined in the function.
-Output: A data set with pnr, hypertension variable, number of medications within 180 days before baseline 
-and types of medications
+List containing two datasets. First contains data with hypertension information. 
+The second contains all rows with missing data that were removed before hypertension where calculated.
+The variable hypertension at baseline is one if the person has received two or more types of anti-hypertensive
+medications within 180 days before the baseline date (and 7 days after due to data errors). 
+The codes for hypertension are currently defined in the function.
 }
 \examples{
+<<<<<<< HEAD
+Warning: examples are outdated. New ones are coming
+=======
+#Required library
+>>>>>>> 6b35cf84506e4e5490ad8028cc0d1c987cfee4be
 library(data.table)
-dat<-data.table(pnr=1:50, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-dat$eksd<-as.Date(dat$eksd)
-dat
-baseline<-"2001-03-30"
-#Create hypertension variable
-ht<-hypertensionBaseline(dat,baseline)
-ht
-#With custom names
-dat2<-data.table(MyID=1:50, MyAtcCodes=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), each=10), MyDates=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-dat2$MyDates<-as.Date(dat2$MyDates)
-dat2
-ht2<-hypertensionBaseline(dat2, baseline, pnr='MyID', atc='MyAtcCodes', eksd='MyDates')
-ht2
-#Several rows per pnr
-dat3<-data.table(pnr=1:15, atc=rep(c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02", "C09BB"), each=10), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-23", "2001-03-01"))
-dat3$eksd<-as.Date(dat3$eksd)
-dat3
-ht3<-hypertensionBaseline(dat3,baseline)
-ht3
+
+#Load data
+data(Hypertension.data) 
+
+ht<-hypertensionBaseline(Hypertension,pnr='myID',atc='myAtc',eksd='myEksd',baseline='myBaseline')
+
+List is returned containing two data.tables
+htData  <- ht[[1]]
+htError <- ht[[2]]
+
 }
 \author{
 Helle Hoejmark Eriksen <helle.e@rn.dk>
