@@ -5,11 +5,7 @@
 \title{Hypertension at baseline}
 \usage{
 hypertensionBaseline(data, pnr = "pnr", atc = "atc", eksd = "eksd",
-<<<<<<< HEAD
-  date = "date")
-=======
   baseline = "baseline")
->>>>>>> 6b35cf84506e4e5490ad8028cc0d1c987cfee4be
 }
 \arguments{
 \item{data}{Data set with drugs indicated by atc codes and date of drugs, e.g. lmdb}
@@ -20,11 +16,7 @@ hypertensionBaseline(data, pnr = "pnr", atc = "atc", eksd = "eksd",
 
 \item{eksd}{Variable with dates. Must be type Date or numeric. Default name: eksd}
 
-<<<<<<< HEAD
-\item{date}{Variable with dates. Must be type Date or numeric. Default name: date}
-=======
 \item{baseline}{Variable with dates. Must be type Date or numeric. Default name: baseline}
->>>>>>> 6b35cf84506e4e5490ad8028cc0d1c987cfee4be
 }
 \value{
 List containing two datasets. First contains data with hypertension information. 
@@ -34,11 +26,7 @@ medications within 180 days before the baseline date (and 7 days after due to da
 The codes for hypertension are currently defined in the function.
 }
 \examples{
-<<<<<<< HEAD
-Warning: examples are outdated. New ones are coming
-=======
 #Required library
->>>>>>> 6b35cf84506e4e5490ad8028cc0d1c987cfee4be
 library(data.table)
 
 #Load data

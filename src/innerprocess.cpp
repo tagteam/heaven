@@ -42,7 +42,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
   arma::vec INadmin = Rcpp::as<arma::vec>(admdat["inddto"]);
   arma::vec INadmax = Rcpp::as<arma::vec>(admdat["uddto"]);
   
-  Function formatDate("format.Date");
+  //  Function formatDate("format.Date");
   // Rcout << "before loop \n"<< std::endl;  
   for (uword i = 0; i < NOBS; i++) {
     // if (i == 1000 || i == 2000 || i==3000){
@@ -242,8 +242,10 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
 	ylength += yk(k-1); // this will define length of output data
       }
     
-      B(k) = as<std::string>(formatDate(wrap(Date(T(k)))));
-      E(k) = as<std::string>(formatDate(wrap(Date(Enum(k)))));
+      // B(k) = as<std::string>(formatDate(wrap(Date(T(k)))));
+      // E(k) = as<std::string>(formatDate(wrap(Date(Enum(k)))));
+      B(k) = T(k);
+      E(k) = Enum(k);
     } // end loop over unique prescription dates
   
     yk(K-1) = 1; 
