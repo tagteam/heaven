@@ -17,7 +17,11 @@ Imports:
     foreach,
     utils,
     Rcpp,
-    zoo
+    zoo,
+    Publish,
+    lava,
+    doParallel,
+    testthat
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     survival,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/patientProfiles.R
 \name{patientProfile}
 \alias{patientProfile}
-\title{Create profile of}
+\title{Profile of common covariate combinations among patients}
 \usage{
 patientProfile(dt, primary.cov, ...)
 }
@@ -19,12 +19,15 @@ factors}
 }
 \value{
 Returns a data.table object where each row is a covariate
-  combination. \code{prop.by.primary.cov} records the proportion of patients
-  with the same primary covariate (\code{primary.cov}) with that parameter
+  combination. \code{N.in.primary.cov} records the number of patients in the
+  data set with the specified primary covariate. E.g. using the "age" example
+  from the "details" section, this column would record how many patients are
+  20, 21, 22....50. \code{prop.by.primary.cov} records the proportion of patients with the
+  same primary covariate (\code{primary.cov}) with that parameter
   combination.
 }
 \description{
-Create profile of
+Profile of common covariate combinations among patients
 }
 \details{
 The function is designed to show how many patients exists in the
