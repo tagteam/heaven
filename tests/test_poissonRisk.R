@@ -4,31 +4,6 @@ library(Publish)
 library(foreach)
 library(doParallel)
 
-## Useful functions
-aggregateData <- function(data,timegrid){
-  if (class(data)[1]!="data.table") data <- data.table(data)
-  data[,time:=interval]
-  if (length(timegrid)<=length(levels(data$time))){
-    levels(data$time) <- timegrid
-    if (match("V",names(data),nomatch=FALSE))
-      aggdata <- data[,list(risktime=sum(risktime),event=sum(event)),by=list(X,Z,V,time)]
-    else
-      aggdata <- data[,list(risktime=sum(risktime),event=sum(event)),by=list(X,Z,time)]
-    return(aggdata)
-  }else
-    return(data)
-}
-
-poissonregression <- function(formula,data,timegrid,effectZgrid){
-  aggdata <- aggregateData(data=data,timegrid=timegrid)
-  if (!missing(effectZgrid)){
-    aggdata[,Ztime:=factor(time)]
-    levels(aggdata$Ztime) <- effectZgrid
-  }
-  fit <- glm(formula,data=aggdata,family=poisson())
-  fit
-}
-
 ######################################
 # Does rates equal the ones simulated
 ######################################
@@ -104,12 +79,12 @@ fita <- poissonregression(formula=event~-1+X+Z+time+offset(log(risktime)),data=s
 fita1 <- poissonregression(formula=event~-1+X*Z+time+offset(log(risktime)),data=simdat,
                           timegrid=c(1,2))
 
-a <- poissonRisk(fita,formula=~-1+X+Z+time,interval=1,
+a <- poissonRisk(fita,interval=1,
                  newdata=expand.grid(X=0:1,Z=0:1,time=factor(1,levels=c(1,2))))
 a[2,4]/a[1,4]
 a[4,4]/a[3,4]
 
-a1 <- poissonRisk(fita1,formula=~-1+X*Z+time,interval=1,
+a1 <- poissonRisk(fita1,interval=1,
                   newdata=expand.grid(X=0:1,Z=0:1,time=factor(1,levels=c(1,2))))
 a1[2,4]/a1[1,4]
 a1[4,4]/a1[3,4]
