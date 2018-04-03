@@ -31,6 +31,7 @@
 #'
 #'
 #' @examples
+#' library(data.table)
 #'   n <- 1e2
 #'   set.seed(13)
 #'   x <- data.frame(

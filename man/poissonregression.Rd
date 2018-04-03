@@ -12,4 +12,12 @@ poissonregression(formula, data, timegrid, effectZgrid)
 \item{data}{dataset containing the variables "interval" and "event".}
 
 \item{timegrid}{vector of times the data should be aggregated by.}
+
+\item{effectZgrid}{levels of Z variable}
+}
+\description{
+Poisson regression applied to aggregated data using glm
+}
+\details{
+Poisson regression applied to aggregated data using glm
 }

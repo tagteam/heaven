@@ -43,6 +43,7 @@ The function is designed to show how many patients exists in the
   aged 22 will be created.
 }
 \examples{
+library(data.table)
   n <- 1e2
   set.seed(13)
   x <- data.frame(
