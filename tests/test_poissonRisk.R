@@ -3,6 +3,8 @@ library(data.table)
 library(Publish)
 library(foreach)
 library(doParallel)
+library(heaven)
+library(testthat)
 
 ######################################
 # Does rates equal the ones simulated

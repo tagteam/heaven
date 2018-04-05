@@ -1,6 +1,7 @@
 library(data.table)
 library(testthat)
-
+library(heaven)
+context("patient profiles")
 
 
 
@@ -27,9 +28,9 @@ test_that("Output is correct", {
   )
   setDT(x)
   x[,v2 := as.character(v2)]
-  out <- patientProfile(dt = x, primary.cov = "age", "v2", "v3")
-  
-  
+  out <- data.table(patientProfile(dt = x, primary.cov = "age", "v2", "v3"))
+
+
   true_out <- data.table(join.id = c("21:no:no", "21:yes:no",
                                      "22:no:no", "22:yes:no"),
                          age = c(21,21,22,22),
