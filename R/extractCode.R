@@ -138,7 +138,6 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
                      adp_inhibitors=c("B01AC04", "B01AC22", "B01AC24"))
   
   ##  Make into data.table 
-  require(data.table)
   d <- as.data.table(dat)
   
   if(is.null(indexvar)&lmdb==FALSE){

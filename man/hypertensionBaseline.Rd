@@ -30,14 +30,14 @@ The codes for hypertension are currently defined in the function.
 library(data.table)
 
 #Load data
-data(Hypertension.data) 
+\dontrun{
+data(Hypertension) 
+ht<-hypertensionBaseline(data=Hypertension,pnr='myID',atc='myAtc',eksd='myEksd',baseline='myBaseline')
 
-ht<-hypertensionBaseline(Hypertension,pnr='myID',atc='myAtc',eksd='myEksd',baseline='myBaseline')
-
-List is returned containing two data.tables
+# A list is returned which contains two data.tables
 htData  <- ht[[1]]
 htError <- ht[[2]]
-
+}
 }
 \author{
 Helle Hoejmark Eriksen <helle.e@rn.dk>

@@ -18,13 +18,14 @@ Imports:
     utils,
     Rcpp,
     zoo,
-    Publish,
     lava,
-    doParallel,
-    testthat
+    lubridate
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
+    testthat,
+    doParallel,
     survival,
+    Publish,
     prodlim,
     riskRegression,
     knitr,

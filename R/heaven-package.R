@@ -28,6 +28,6 @@
 #' @importFrom foreach "%dopar%" foreach
 #' @importFrom grDevices colorRampPalette topo.colors
 #' @importFrom graphics points title
-#' @importFrom stats D predict qnorm rbinom rnorm runif
+#' @importFrom stats D predict qnorm rbinom rnorm runif drop.terms formula glm model.matrix poisson poisson.test qf qgamma quantile start terms time
 #' @importFrom utils packageVersion setTxtProgressBar tail txtProgressBar
 NULL
