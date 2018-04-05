@@ -1,7 +1,6 @@
-rm(list = ls())
 library(data.table)
 library(testthat)
-source("R/patientProfiles.R")
+
 
 
 
