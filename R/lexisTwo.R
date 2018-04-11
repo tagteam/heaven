@@ -48,6 +48,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                      ,splitvars #Names var date-vars to split by
                      ){
   #Tests of data
+browser()  
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")
   copyindat <- copy(indat) # leave original dataset intact
   copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
@@ -57,7 +58,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
   setnames(RESTDAT,invars[1],"pnr")
   OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
-  MAX <- max(INDAT[,"out"],na.rm=TRUE) # find minimal date - to handle missing dates
+  MAX <- INDAT[,max(out,na.rm=TRUE)] # find max date - to handle missing dates
   setnames(copysplitdat,invars[1],"pnr")
   # Replace missing dates with MAX+1:
   for (j in seq_len(ncol(copysplitdat)))
