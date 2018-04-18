@@ -1,10 +1,20 @@
 #' @title riskSetMatch - Risk set matching
 #' 
 #' @description 
-#' Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
-#' controls with event later than the case are accepted.  The current program is based on exact matching and allows 
+#' Risk set matching is common term to represent "incidence density sampling" or "exposure density sampling". In both cases
+#' the request is to match by a series of variables such that the outcome or exposure data of "controls" are later than the outcome or 
+#' exposure for cases.
+#' 
+#' The current program is based on exact matching and allows 
 #' the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
 #' reuse controls and to allow cases to be controls prior to being a case.
+#' 
+#' To provide necessary speed for large samples the general technique used is to create a series of risk-groups that have the 
+#' fixed matching variables identical (such as birthyear and gender).  The available controls are then sorted by a random number
+#' and selected for consecutive cases if the "case-date" is later than the corresponding "control-date". The consecutive selection
+#' can in theory cause bias and the result of the function needs careful attention when the number of controls is small compared to
+#' the number of cases.
+#' 
 #' @usage
 #'   riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent",caseid="caseid",
 #'   reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,controlIndex=NULL,NoIndex=FALSE,cores=1) 
@@ -67,26 +77,26 @@
 #' ptid <- paste0("P",1:55)
 #' sex <- c(rep("fem",20),rep("mal",20),rep("fem",8),rep("mal",7))
 #' byear <- c(rep(c(2020,2030),20),rep(2020,7),rep(2030,8))
-#' caseIndex <- c(seq(1,40,1),seq(5,47,3))
-#' controlIndex <- caseIndex
+#' case.Index <- c(seq(1,40,1),seq(5,47,3))
+#' control.Index <- case.Index
 #' library(data.table)
-#' dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
+#' dat <- data.table(ptid,case,sex,byear,case.Index,control.Index)
 #' # Very simple match without reuse - no dates to control for
 #' out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 #' out[]
 #' # Risk set matching without reusing cases/controls - Some cases have no controls
-#' out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-#'   controlIndex="controlIndex")
+#' out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="case.Index",
+#'   controlIndex="control.Index")
 #' out2[]   
 #' # Risk set matching with reuse of cases (control prior to case) and reuse of 
 #' # controls - more cases get controls
 #' out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
-#'   "caseIndex",controlIndex="controlIndex"
+#'   "case.Index",controlIndex="control.Index"
 #'   ,reuseCases=TRUE,reuseControls=TRUE)
 #' out3[]   
 #' # Same with 2 cores
 #' out4 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
-#'   "caseIndex",controlIndex="controlIndex"
+#'   "case.Index",controlIndex="control.Index"
 #'   ,reuseCases=TRUE,reuseControls=TRUE,cores=2)  
 #' out4[]           
 riskSetMatch <- function(ptid     # Unique patient identifier
@@ -222,7 +232,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     setnames(FINAL,".ptid",ptid)
     setkeyv(FINAL,c(caseid,".event"))
     #Add relevant caseid to controls
-    if (!NoIndex) FINAL[,caseIndex:=caseIndex[.N],by=caseid]
+    if (!NoIndex) FINAL[,(caseIndex):=.SD[.N],by=caseid,.SDcols=caseIndex]
     setnames(FINAL,".event",event)
     FINAL 
 }

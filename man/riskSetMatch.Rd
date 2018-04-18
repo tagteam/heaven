@@ -80,26 +80,26 @@ case <- c(rep(0,40),rep(1,15))
 ptid <- paste0("P",1:55)
 sex <- c(rep("fem",20),rep("mal",20),rep("fem",8),rep("mal",7))
 byear <- c(rep(c(2020,2030),20),rep(2020,7),rep(2030,8))
-caseIndex <- c(seq(1,40,1),seq(5,47,3))
-controlIndex <- caseIndex
+case.Index <- c(seq(1,40,1),seq(5,47,3))
+control.Index <- case.Index
 library(data.table)
-dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
+dat <- data.table(ptid,case,sex,byear,case.Index,control.Index)
 # Very simple match without reuse - no dates to control for
 out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 out[]
 # Risk set matching without reusing cases/controls - Some cases have no controls
-out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-  controlIndex="controlIndex")
+out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="case.Index",
+  controlIndex="control.Index")
 out2[]   
 # Risk set matching with reuse of cases (control prior to case) and reuse of 
 # controls - more cases get controls
 out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
-  "caseIndex",controlIndex="controlIndex"
+  "case.Index",controlIndex="control.Index"
   ,reuseCases=TRUE,reuseControls=TRUE)
 out3[]   
 # Same with 2 cores
 out4 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
-  "caseIndex",controlIndex="controlIndex"
+  "case.Index",controlIndex="control.Index"
   ,reuseCases=TRUE,reuseControls=TRUE,cores=2)  
 out4[]           
 }
