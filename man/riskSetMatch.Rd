@@ -46,10 +46,19 @@ Variables in the original dataset are preserved. The final dataset includes all 
 controls that were selected.
 }
 \description{
-Risk set matching - also termed incidence density sampling - matches cases to control in such a way that only 
-controls with event later than the case are accepted.  The current program is based on exact matching and allows 
+Risk set matching is common term to represent "incidence density sampling" or "exposure density sampling". In both cases
+the request is to match by a series of variables such that the outcome or exposure data of "controls" are later than the outcome or 
+exposure for cases.
+
+The current program is based on exact matching and allows 
 the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
 reuse controls and to allow cases to be controls prior to being a case.
+
+To provide necessary speed for large samples the general technique used is to create a series of risk-groups that have the 
+fixed matching variables identical (such as birthyear and gender).  The available controls are then sorted by a random number
+and selected for consecutive cases if the "case-date" is later than the corresponding "control-date". The consecutive selection
+can in theory cause bias and the result of the function needs careful attention when the number of controls is small compared to
+the number of cases.
 }
 \details{
 The function does exact matching and keeps 2 dates (indices) apart such that the date for controls is larger than 

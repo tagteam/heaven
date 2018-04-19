@@ -34,7 +34,7 @@
 #'                 start=c(0,100,0,100,0,100,0,100),
 #'                 end=c(100,200,100,200,100,200,100,200),
 #'                 event=c(0,1,0,0,0,1,0,1))
-#' split <- data.table (id=c("A","B","C","D"),date1=c(0,NA,150,300),date2=c(25,75,175,325),date3=c(30,30,30,30),
+#' split <- data.table (id=c("A","B","C","D"),date1=c(0,NA,150,300),date2=c(25,75,175,325),date3=c(30,30,175,325),
 #'                     date4=c(0,1,0,1))
 #' temp <- lexisTwo(dat # inddato with id/in/out/event
 #'        ,split # Data with id and dates
@@ -48,7 +48,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                      ,splitvars #Names var date-vars to split by
                      ){
   #Tests of data
-browser()  
+
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")
   copyindat <- copy(indat) # leave original dataset intact
   copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr

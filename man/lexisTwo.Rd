@@ -43,7 +43,7 @@ dat <- data.table(id=c("A","A","B","B","C","C","D","D"),
                 start=c(0,100,0,100,0,100,0,100),
                 end=c(100,200,100,200,100,200,100,200),
                 event=c(0,1,0,0,0,1,0,1))
-split <- data.table (id=c("A","B","C","D"),date1=c(0,NA,150,300),date2=c(25,75,175,325),date3=c(30,30,30,30),
+split <- data.table (id=c("A","B","C","D"),date1=c(0,NA,150,300),date2=c(25,75,175,325),date3=c(30,30,175,325),
                     date4=c(0,1,0,1))
 temp <- lexisTwo(dat # inddato with id/in/out/event
        ,split # Data with id and dates
