@@ -63,24 +63,26 @@ patientProfile <- function(dt, primary.cov, ...) {
       You either entered too many or too few column arguments"
     )
   
-  if (any(sapply(arguments, is.numeric)))
+  if (any(sapply(dt, is.double)))
     stop(
-      "Columns of class numeric are not allowed, please convert all columns to integer, character, or factor"
+      "One of the supplied columns is of class 'double'; these are not allowed.\n
+      Please convert all columns to integer, character, or factor"
     )
+ 
   
   # Allows us to generalize the primary covariate to group by
   setnames(dt, arguments[[1]], "primary.cov")
   # Move primary.cov to front of dt
+  
   dt.col.names <- colnames(dt)
   setcolorder(dt, c("primary.cov", dt.col.names[!(dt.col.names %in% c("primary.cov"))]))
   
   setkeyv(dt, "primary.cov") # Order by primary covariate.
+  
   n.by.primary.cov <-
     data.table(dt[, table(primary.cov)]) # frequency by primary cov.
+  n.by.primary.cov[, primary.cov := as.integer(primary.cov)]
   
-  
-  if (dt[, is.integer(primary.cov)])
-    n.by.primary.cov[, primary.cov := as.integer(primary.cov)]
   
   setkey(n.by.primary.cov, "primary.cov")
   setnames(n.by.primary.cov, old = "N", new = "N.in.primary.cov.group")
@@ -89,7 +91,7 @@ patientProfile <- function(dt, primary.cov, ...) {
   # Make sure arguments are supplied in correct order. Cannot do this earlier
   # becasue the fun() allows primary.cov to be anywhere in data table, but this
   # variable is always moved to front to standardize operations
-  setnames(dt, "primary.cov", arguments[[1]])
+  setnames(dt, "primary.cov", arguments[[1]]) # why does this affect dt.col.names??
   if (!all(sapply(seq_along(arguments), function(i)
     arguments[i] == dt.col.names[i])))
     stop(
@@ -125,6 +127,7 @@ patientProfile <- function(dt, primary.cov, ...) {
   # Join age group count
   setkeyv(out.grid, arguments[[1]])
   out.grid[, N.in.primary.cov := 0L]
+  
   out.grid[n.by.primary.cov, N.in.primary.cov := N.in.primary.cov.group]
   
   # Calculate proportion of patients in each covariate grouping by age.

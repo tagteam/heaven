@@ -23,21 +23,21 @@ DataFrame split2 (IntegerVector   pnr, //ID
   Odead.reserve(dim*1.8);
     
   for(int i=0; i<dim; i++ ){
-    if (dato(i)<=inn(i)){
+    if (dato(i)<=inn(i)){ // date prior to period or touching period - set Odato to 1
       Opnr.push_back(pnr[i]);
       Oin.push_back(inn(i));
       Oout.push_back(out(i));
       Odato.push_back(1);
       Odead.push_back(dead(i));
     }
-      else if(dato(i)>out(i)){
+      else if(dato(i)>out(i)){ // date later than period - set Odato to zero
         Opnr.push_back(pnr[i]);
         Oin.push_back(inn(i));
         Oout.push_back(out(i));
         Odato.push_back(0);
         Odead.push_back(dead(i));
       }
-        else if((dato(i)>inn(i)) & (dato(i)<=out(i))){
+        else if((dato(i)>inn(i)) && (dato(i)<out(i))){ // date IN period create 2 records
           Opnr.push_back(pnr[i]);
           Oin.push_back(inn(i));
           Oout.push_back(dato(i));
@@ -49,7 +49,27 @@ DataFrame split2 (IntegerVector   pnr, //ID
           Odato.push_back(1);
           Odead.push_back(dead(i));
         }
-    
+         else if(dato(i)==out(i)) { // date eq end of period - create 2 records with event, otherwise create as if date>period
+           if (dead(i)==0 || inn(i)==out(i)){ // No changes
+             Opnr.push_back(pnr[i]);
+             Oin.push_back(inn(i));
+             Oout.push_back(out(i));
+             Odato.push_back(1);
+             Odead.push_back(dead(i));
+           }
+            else{
+              Opnr.push_back(pnr[i]);
+              Oin.push_back(inn(i));
+              Oout.push_back(dato(i));
+              Odato.push_back(0);
+              Odead.push_back(0);
+              Opnr.push_back(pnr[i]);
+              Oin.push_back(dato(i));
+              Oout.push_back(out(i));
+              Odato.push_back(1);
+              Odead.push_back(dead(i));
+            }
+         }
   }
   OUT=DataFrame::create(_["pnrnum"]=Opnr, _["inn"]=Oin, _["out"]=Oout, _["dato"]=Odato, _["dead"]=Odead );
   return(OUT);

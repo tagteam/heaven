@@ -21,11 +21,12 @@ test_that("Output is correct", {
   set.seed(13)
   x <- data.frame(
     v2 = sample(c("yes", "no"), n, replace = TRUE),
-    age = sample(20:22, size = n, replace = TRUE),
+    age = runif(n = n, min = 20, max = 22),
     v3 = sample(c("yes", "no"), n, replace = TRUE, prob = c(0.2, 0.8))
   )
   setDT(x)
   x[,v2 := as.character(v2)]
+  x[, age := as.integer(round(age))]
   out <- data.table(patientProfile(dt = x, primary.cov = "age", "v2", "v3"))
 
 
@@ -34,9 +35,9 @@ test_that("Output is correct", {
                          age = c(21,21,22,22),
                          v2 = as.factor(c("no", "yes", "no", "yes")),
                          v3 = as.factor(c(rep("no", 4))),
-                         count = c(4,2,1,3),
-                         N.in.primary.cov = c(6,6,4,4),
-                         prop.by.primary.cov = c(2/3, 1/3, 0.25, 0.75))
+                         count = c(4,3,1,2),
+                         N.in.primary.cov = c(7,7,3,3),
+                         prop.by.primary.cov = c(4/7, 3/7, 1/3, 2/3))
   setkey(true_out, "age")
   all.equal(true_out, out)
   expect_equal(out, true_out)

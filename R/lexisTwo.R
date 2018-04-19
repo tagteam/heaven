@@ -34,7 +34,7 @@
 #'                 start=c(0,100,0,100,0,100,0,100),
 #'                 end=c(100,200,100,200,100,200,100,200),
 #'                 event=c(0,1,0,0,0,1,0,1))
-#' split <- data.table (id=c("A","B","C","D"),date1=c(0,50,150,300),date2=c(25,75,175,325),date3=c(30,30,30,30),
+#' split <- data.table (id=c("A","B","C","D"),date1=c(0,NA,150,300),date2=c(25,75,175,325),date3=c(30,30,175,325),
 #'                     date4=c(0,1,0,1))
 #' temp <- lexisTwo(dat # inddato with id/in/out/event
 #'        ,split # Data with id and dates
@@ -48,6 +48,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                      ,splitvars #Names var date-vars to split by
                      ){
   #Tests of data
+
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")
   copyindat <- copy(indat) # leave original dataset intact
   copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
@@ -57,7 +58,11 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
   setnames(RESTDAT,invars[1],"pnr")
   OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
+  MAX <- INDAT[,max(out,na.rm=TRUE)] # find max date - to handle missing dates
   setnames(copysplitdat,invars[1],"pnr")
+  # Replace missing dates with MAX+1:
+  for (j in seq_len(ncol(copysplitdat)))
+    set(copysplitdat,which(is.na(copysplitdat[[j]])),j,MAX+1)
   for(name in splitvars){
     selected <- copysplitdat[,c("pnr",name),with=FALSE]
     toSplit <- merge(INDAT,selected,by="pnr",all.x=TRUE)
