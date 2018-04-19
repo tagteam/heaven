@@ -4,8 +4,6 @@
 ##' The user selects which columns and rows to import. See examples.
 ##' @title importSAS
 ##' @aliases importSAS contentSAS
-##' @usage importSAS(filename,wd=NULL,keep=NULL,drop = NULL,where = NULL,obs = NULL,filter = NULL,savefile = NULL,overwrite = TRUE,save.tmp = FALSE,prerun = FALSE)
-##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
 ##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. Use SAS syntax (see examples).
@@ -200,13 +198,24 @@ importSAS <- function(filename,
             append = TRUE)
         fprog <- paste("\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" -batch -nosplash -noenhancededitor",
                        "-sysin", tmp.SASproccont)
-        shell(fprog)
+        if (Sys.info()["sysname"]=="Linux"){
+            try(system(fprog))
+        }else{
+            try(shell(fprog))
+        }
         # Read the created file
-        dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
-        # Should the filter also be compared with BOTH the keep/drop statements?
-        var.names <- tolower(dt.content$Variable)
-        var.format <- dt.content$Informat
-        var.type <- dt.content$Type
+        try.content <- try(dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1])
+        if ("try-error" %in% class(try.content)){
+            message("Failed to read results of proc content")
+            var.names <- NULL
+            var.format <- NULL
+            var.type <- NULL
+        }else{
+            # Should the filter also be compared with BOTH the keep/drop statements?
+            var.names <- tolower(dt.content$Variable)
+            var.format <- dt.content$Informat
+            var.type <- dt.content$Type
+        }
         is.date <- grepl("date",var.format,ignore.case=TRUE)
         is.num <- grepl("num",var.type,ignore.case=TRUE)
         is.num <- is.num & !is.date
@@ -312,7 +321,11 @@ importSAS <- function(filename,
             }else{ # Exucute the sas file
                 fprog <- paste("\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" -batch -nosplash -noenhancededitor",
                                "-sysin", tmp.SASfile)
-                shell(fprog) # Collect this if it fails?
+                if (Sys.info()["sysname"]=="Linux"){
+                    try(system(fprog))
+                }else{
+                    try(shell(fprog))
+                }
                 ### Read the data
                 if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
                 tryread <- try(df <- data.table::fread(file = outfile, header = TRUE))

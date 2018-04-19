@@ -37,7 +37,7 @@ simpoisson <- function(N,            # sample size
                        pxz=0,        # effect of Z on X (log odds ratio)
                        const="none") # see above
 {
-    requireNamespace("lava")
+    loadNamespace("lava")
     changepoints <- sort(changepoints)
     NT <- length(changepoints) # number of time intervals
     stopifnot(all(c(length(baseline),length(beta),length(gamma))==NT))
