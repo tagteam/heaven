@@ -4,6 +4,8 @@
 ##' The user selects which columns and rows to import. See examples.
 ##' @title importSAS
 ##' @aliases importSAS contentSAS
+##' @usage importSAS(filename,wd=NULL,keep=NULL,drop = NULL,where = NULL,obs = NULL,filter = NULL,savefile = NULL,overwrite = TRUE,save.tmp = FALSE,prerun = FALSE)
+##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
 ##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. Use SAS syntax (see examples).
@@ -133,6 +135,17 @@ importSAS <- function(filename,
                       show.sas.code=TRUE,
                       save.tmp = FALSE,
                       content = FALSE){
+    # {{{ Clean up.
+    on.exit({
+        if(!save.tmp){
+            for (file in files[!files==outfile]) {
+                if(file.exists(file)) file.remove(file)
+            }
+            if(length(savefile)==0) if(file.exists(outfile)) file.remove(outfile)
+        }
+        setwd(olddir)
+    })
+    # }}}
     # {{{ Setup tmp file structure
     existing.files <- NULL
     olddir <- getwd() # remember old wd
@@ -157,199 +170,177 @@ importSAS <- function(filename,
     }
     # Check if files to be generated already exist
     files <- c(tmp.SASfile,tmp.log,tmp.filterfile,outfile,tmp.SASproccont,tmp.proccontout,tmp.proccontlog)
-    try({
-        for (file in files){
-            if(file.exists(file)) existing.files <- c(existing.files, basename(file))
-        }
-        if(length(existing.files)>0 & overwrite == FALSE){
-            stop(paste("Aborted to not overwrite the file(s):",
-                       paste(" ", existing.files, collapse = "\n"),
-                       "in the directory:",
-                       paste(" ", wd),
-                       "Set the argument \"overwrite\" equal to \"TRUE\" to allow overwriting.",
-                       sep = "\n"))
-        }
-        for (file in files){
-            if(file.exists(file)) file.remove(file)
-        }
-        # }}}
-        # {{{ Conditions
-        cond <- ""
-        ## if(length(keep)+length(drop)+length(where)+length(obs)){
-        if(length(keep) >0) {cond <- paste(cond, "keep=", paste(keep, collapse=" "), " ", sep="")}
-        if(length(drop) >0) {cond <- paste(cond, "drop=", paste(drop, collapse=" "), " ", sep="")}
-        if(length(where)>0) {cond <- paste(cond, "where=(", where, ") ", sep="")}
-        if(length(obs)  >0) {cond <- paste(cond, "obs=", obs, " ", sep="")}
-        if (length(cond)>0){
-            if (length(set.hook)>0 & is.character(set.hook))
-                cond <- paste("(",cond, set.hook, ")", sep=" ")
-            else
-                cond <- paste("(",cond,")", sep=" ")
-        }
-        # }}}
-        # {{{ Proc content
-        file.create(tmp.SASproccont)
-        cat("ods listing close;\nODS OUTPUT variables=dcontent; \n proc contents data='",
-            filename, "';\nrun;\nproc sort data=dcontent;\nby num;\nrun; \ndata _NULL_; \nset dcontent; \n file '",
-            tmp.proccontout,
-            "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;",
-            sep = "",
-            file = tmp.SASproccont,
-            append = TRUE)
-        fprog <- paste("\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" -batch -nosplash -noenhancededitor",
-                       "-sysin", tmp.SASproccont)
-        if (Sys.info()["sysname"]=="Linux"){
-            try(system(fprog))
-        }else{
-            try(shell(fprog))
-        }
-        # Read the created file
-        try.content <- try(dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1])
-        if ("try-error" %in% class(try.content)){
-            message("Failed to read results of proc content")
-            var.names <- NULL
-            var.format <- NULL
-            var.type <- NULL
-        }else{
-            # Should the filter also be compared with BOTH the keep/drop statements?
-            var.names <- tolower(dt.content$Variable)
-            var.format <- dt.content$Informat
-            var.type <- dt.content$Type
-        }
-        is.date <- grepl("date",var.format,ignore.case=TRUE)
-        is.num <- grepl("num",var.type,ignore.case=TRUE)
-        is.num <- is.num & !is.date
-        filter.names <- tolower(names(filter))
-        keep.check <- drop.check <- filter.check <- TRUE
-        if(length(keep)>0)   {keep.check <- tolower(keep) %in% var.names}
-        if(length(drop)>0)   {drop.check <- tolower(drop) %in% var.names}
-        if(length(filter)>0) {filter.check <- filter.names %in% var.names}
-        if (length(keep)>0) is.date[!(var.names %in% keep)] <- FALSE
-        if (length(drop)>0) is.date[(var.names %in% drop)] <- FALSE
-        format.statement <- if (sum(is.date)==0) "" else paste("format ",paste(var.names[is.date],collapse=" ")," yymmdd10.;")
-        # }}}
-        # {{{ Write SAS program, import filterfile if present
-        if (length(pre.hook)>0 & is.character(pre.hook)){
-            cat(pre.hook,
-                file = tmp.SASfile,
-                append = TRUE)
-        }
-        if(length(filter)>0){
-            data.table::fwrite(filter, quote = TRUE, file = tmp.filterfile)
-            ### Import the csv file
-            cat("proc import datafile='",
-                tmp.filterfile,
-                "' \n",
-                "out = csv_import \ndbms =csv; \nrun; \n",
-                sep = "",
-                file = tmp.SASfile,
-                append = TRUE)
-        }
-        ### Import filename data set
-        cat("data df; \nset '", filename, "'", cond, ";",
-            format.statement,
-            sep = "",
-            file =tmp.SASfile,
-            append =TRUE)
-        if (length(step.hook)>0 & is.character(step.hook)){
-            cat(step.hook,
-                sep = "",
-                file =tmp.SASfile,
-                append =TRUE)
-        }
-        cat("\nrun;\n",
-            sep = "",
-            file =tmp.SASfile,
-            append =TRUE)
-        if(length(filter)>0){
-            ### Sort
-            cat("proc sort data=csv_import; \nby ",
-                paste(filter.names, collapse=" "),
-                "; \nrun; \nproc sort data=df; \nby ",
-                paste(filter.names, collapse=" "),
-                "; \nrun; ",
-                sep = "",
-                file = tmp.SASfile,
-                append=TRUE)
-            ### Merge the files
-            cat("data df; \nmerge csv_import(IN=a) df(IN=b); \nby ",
-                paste(filter.names, collapse=" "),
-                ";\nif a AND b;\nrun;\n",
-                sep = "",
-                file=tmp.SASfile,
-                append=TRUE)
-        }
-        if (length(post.hook)>0 & is.character(post.hook)){
-            cat(post.hook,
-                file = tmp.SASfile,
-                append = TRUE)
-        }
-        if (show.sas.code==TRUE){
-            cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
-            file.show(tmp.SASfile)
-        }else{
-            cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
-        }
-        tmp.lines <- paste("data _NULL_; \nset df; \n file '",
-                           outfile,
-                           "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;")
-        cat(tmp.lines,
+    for (file in files){
+        if(file.exists(file)) existing.files <- c(existing.files, basename(file))
+    }
+    if(length(existing.files)>0 & overwrite == FALSE){
+        stop(paste("Aborted to not overwrite the file(s):",
+                   paste(" ", existing.files, collapse = "\n"),
+                   "in the directory:",
+                   paste(" ", wd),
+                   "Set the argument \"overwrite\" equal to \"TRUE\" to allow overwriting.",
+                   sep = "\n"))
+    }
+    for (file in files){
+        if(file.exists(file)) file.remove(file)
+    }
+    # }}}
+    # {{{ Conditions
+    cond <- ""
+    ## if(length(keep)+length(drop)+length(where)+length(obs)){
+    if(length(keep) >0) {cond <- paste(cond, "keep=", paste(keep, collapse=" "), " ", sep="")}
+    if(length(drop) >0) {cond <- paste(cond, "drop=", paste(drop, collapse=" "), " ", sep="")}
+    if(length(where)>0) {cond <- paste(cond, "where=(", where, ") ", sep="")}
+    if(length(obs)  >0) {cond <- paste(cond, "obs=", obs, " ", sep="")}
+    if (length(cond)>0){
+        if (length(set.hook)>0 & is.character(set.hook))
+            cond <- paste("(",cond, set.hook, ")", sep=" ")
+        else
+            cond <- paste("(",cond,")", sep=" ")
+    }
+    # }}}
+    # {{{ Proc content
+    file.create(tmp.SASproccont)
+    cat("ods listing close;\nODS OUTPUT variables=dcontent; \n proc contents data='",
+        filename, "';\nrun;\nproc sort data=dcontent;\nby num;\nrun; \ndata _NULL_; \nset dcontent; \n file '",
+        tmp.proccontout,
+        "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;",
+        sep = "",
+        file = tmp.SASproccont,
+        append = TRUE)
+    fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
+                    "-batch -nosplash -noenhancededitor -sysin \"",
+                    tmp.SASproccont,
+                    "\"\"")
+    shell(fprog)
+    # Read the created file
+    dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
+    # Should the filter also be compared with BOTH the keep/drop statements?
+    var.names <- tolower(dt.content$Variable)
+    var.format <- dt.content$Informat
+    var.type <- dt.content$Type
+    is.date <- grepl("date",var.format,ignore.case=TRUE) | grepl("dato",var.format,ignore.case=TRUE)
+    is.num <- grepl("num",var.type,ignore.case=TRUE)
+    is.num <- is.num & !is.date
+    filter.names <- tolower(names(filter))
+    keep.check <- drop.check <- filter.check <- TRUE
+    if(length(keep)>0)   {keep.check <- tolower(keep) %in% var.names}
+    if(length(drop)>0)   {drop.check <- tolower(drop) %in% var.names}
+    if(length(filter)>0) {filter.check <- filter.names %in% var.names}
+    if (length(keep)>0) is.date[!(var.names %in% keep)] <- FALSE
+    if (length(drop)>0) is.date[(var.names %in% drop)] <- FALSE
+    format.statement <- if (sum(is.date)==0) "" else paste("format ",paste(var.names[is.date],collapse=" ")," yymmdd10.;")
+    # }}}
+    # {{{ Write SAS program, import filterfile if present
+    if (length(pre.hook)>0 & is.character(pre.hook)){
+        cat(pre.hook,
             file = tmp.SASfile,
             append = TRUE)
-        # }}}
-        # {{{ Check for content or run the SAS file
-        # construct error message
-        if(!(prod(keep.check)*prod(drop.check)*prod(filter.check))){ # Check if ok.
-            error.mes <- "Some of the variables specified in the keep or drop statement or in the filter file is not found in the import file.\n"
-            if(length(keep)>0) error.mes <- paste(error.mes, "The KEEP argument(s): \n  ", paste(tolower(keep[!keep.check]), collapse="\n"),"\nare not found in the import file.\n", sep="")
-            if(length(drop)>0) error.mes <- paste(error.mes, "The DROP argument(s): \n  ", paste(tolower(drop[!drop.check]), collapse="\n"),"\nare not found in the import file.\n", sep="")
-            if(length(filter)>0) error.mes <- paste(error.mes, "The FILTER argument(s): \n  ", paste(filter.names[!filter.check], collapse="\n"),"\nare not found in the import file.\n", sep="")
-            error.mes <- paste(error.mes, "\nThe content of the import file is:\n", sep="")
-        }
-        if(content==TRUE){
-            df <- dt.content
-            if(!(prod(keep.check)*prod(drop.check)*prod(filter.check))) {
-                cat(paste("Warning:\n", error.mes, sep=""))
-                print(df)
-                cat("\nThis will give an error when content=FALSE.\n")
-            }
-        }else{
-            if(!(prod(keep.check)*prod(drop.check)*prod(filter.check))) {
-                cat(paste("Error:\n", error.mes, sep=""))
-                print(dt.content)
-                stop("Aborted.")
-            }else{ # Exucute the sas file
-                fprog <- paste("\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" -batch -nosplash -noenhancededitor",
-                               "-sysin", tmp.SASfile)
-                if (Sys.info()["sysname"]=="Linux"){
-                    try(system(fprog))
-                }else{
-                    try(shell(fprog))
-                }
-                ### Read the data
-                if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
-                tryread <- try(df <- data.table::fread(file = outfile, header = TRUE))
-                if ("try-error" %in% class(tryread)){
-                    warning("Something went wrong during SAS program execution. ")
-                    df <- NULL
-                }
-                if (!is.null(df) & sum(is.date)>0){
-                    date.vars <- var.names[is.date]
-                    #df[,(date.vars):=lapply(.SD,fasttime::fastPOSIXct),.SDcols=date.vars]
-                    df[,(date.vars):=lapply(.SD,lubridate::ymd),.SDcols=date.vars]
-                }
-            }
-        }
-        # }}}
-        # {{{ Clean up.
-    })
-    if(!save.tmp){
-        for (file in files[!files==outfile]) {
-            if(file.exists(file)) file.remove(file)
-        }
-        if(length(savefile)==0) if(file.exists(outfile)) file.remove(outfile)
     }
-    setwd(olddir)
+    if(length(filter)>0){
+        data.table::fwrite(filter, quote = TRUE, file = tmp.filterfile)
+        ### Import the csv file
+        cat("proc import datafile='",
+            tmp.filterfile,
+            "' \n",
+            "out = csv_import \ndbms =csv; \nrun; \n",
+            sep = "",
+            file = tmp.SASfile,
+            append = TRUE)
+    }
+    ### Import filename data set
+    cat("data df; \nset '", filename, "'", cond, ";\n",
+        format.statement,
+        sep = "",
+        file =tmp.SASfile,
+        append =TRUE)
+    if (length(step.hook)>0 & is.character(step.hook)){
+        cat(step.hook,
+            sep = "",
+            file =tmp.SASfile,
+            append =TRUE)
+    }
+    cat("\nrun;\n",
+        sep = "",
+        file =tmp.SASfile,
+        append =TRUE)
+    if(length(filter)>0){
+        ### Sort
+        cat("proc sort data=csv_import; \nby ",
+            paste(filter.names, collapse=" "),
+            "; \nrun; \nproc sort data=df; \nby ",
+            paste(filter.names, collapse=" "),
+            "; \nrun; ",
+            sep = "",
+            file = tmp.SASfile,
+            append=TRUE)
+        ### Merge the files
+        cat("data df; \nmerge csv_import(IN=a) df(IN=b); \nby ",
+            paste(filter.names, collapse=" "),
+            ";\nif a AND b;\nrun;\n",
+            sep = "",
+            file=tmp.SASfile,
+            append=TRUE)
+    }
+    if (length(post.hook)>0 & is.character(post.hook)){
+        cat(post.hook,
+            file = tmp.SASfile,
+            append = TRUE)
+    }
+    if (show.sas.code==TRUE){
+        cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
+        file.show(tmp.SASfile)
+    }else{
+        cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
+    }
+    tmp.lines <- paste("data _NULL_; \nset df; \n file '",
+                       outfile,
+                       "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;")
+    cat(tmp.lines,
+        file = tmp.SASfile,
+        append = TRUE)
+    # }}}
+    # {{{ Check for content or run the SAS file
+    # construct error message
+    if(!(prod(keep.check)*prod(drop.check)*prod(filter.check))){ # Check if ok.
+        error.mes <- "Some of the variables specified in the keep or drop statement or in the filter file is not found in the import file.\n"
+        if(length(keep)>0) error.mes <- paste(error.mes, "The KEEP argument(s): \n  ", paste(tolower(keep[!keep.check]), collapse="\n"),"\nare not found in the import file.\n", sep="")
+        if(length(drop)>0) error.mes <- paste(error.mes, "The DROP argument(s): \n  ", paste(tolower(drop[!drop.check]), collapse="\n"),"\nare not found in the import file.\n", sep="")
+        if(length(filter)>0) error.mes <- paste(error.mes, "The FILTER argument(s): \n  ", paste(filter.names[!filter.check], collapse="\n"),"\nare not found in the import file.\n", sep="")
+        error.mes <- paste(error.mes, "\nThe content of the import file is:\n", sep="")
+    }
+    if(content==TRUE){
+        df <- dt.content
+        if(!(prod(keep.check)*prod(drop.check)*prod(filter.check))) {
+            cat(paste("Warning:\n", error.mes, sep=""))
+            print(df)
+            cat("\nThis will give an error when content=FALSE.\n")
+        }
+    }else{
+        if(!(prod(keep.check)*prod(drop.check)*prod(filter.check))) {
+            cat(paste("Error:\n", error.mes, sep=""))
+            print(dt.content)
+            stop("Aborted.")
+        }else{ # Exucute the sas file
+            fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
+                            "-batch -nosplash -noenhancededitor -sysin \"",
+                            tmp.SASfile,
+                            "\"\"")
+            shell(fprog) # Collect this if it fails?
+            ### Read the data
+            if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
+            tryread <- try(df <- data.table::fread(file = outfile, header = TRUE))
+            if ("try-error" %in% class(tryread)){
+                warning("Something went wrong during SAS program execution. ")
+                df <- NULL
+            }
+            if (!is.null(df) & sum(is.date)>0){
+                date.vars <- var.names[is.date]
+                #df[,(date.vars):=lapply(.SD,fasttime::fastPOSIXct),.SDcols=date.vars]
+                df[,(date.vars):=lapply(.SD,lubridate::ymd),.SDcols=date.vars]
+            }
+        }
+    }
     # }}}
     return(try(df[],silent=TRUE))
 }
