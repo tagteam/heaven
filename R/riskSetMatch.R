@@ -1,71 +1,96 @@
 #' @title riskSetMatch - Risk set matching
 #' 
 #' @description 
-#' Risk set matching is common term to represent "incidence density sampling" or "exposure density sampling". In both cases
-#' the request is to match by a series of variables such that the outcome or exposure data of "controls" are later than the outcome or 
-#' exposure for cases.
+#' Risk set matching is common term to represent "incidence density sampling" 
+#' or "exposure density sampling". In both cases the request is to match by 
+#' a series of variables such that the outcome or exposure data of "controls" 
+#' are later than the outcome or exposure for cases.
 #' 
-#' The current program is based on exact matching and allows 
-#' the user to specify a "greedy" approach where controls are only used once as well as allowing the program to
-#' reuse controls and to allow cases to be controls prior to being a case.
+#' The current program is based on exact matching and allows the user to 
+#' specify a "greedy" approach where controls are only used once as well as 
+#' allowing the program to reuse controls and to allow cases to be controls 
+#' prior to being a case.
 #' 
-#' To provide necessary speed for large samples the general technique used is to create a series of risk-groups that have the 
-#' fixed matching variables identical (such as birthyear and gender).  The available controls are then sorted by a random number
-#' and selected for consecutive cases if the "case-date" is later than the corresponding "control-date". The consecutive selection
-#' can in theory cause bias and the result of the function needs careful attention when the number of controls is small compared to
-#' the number of cases.
+#' To provide necessary speed for large samples the general technique used is 
+#' to create a series of risk-groups that have the fixed matching variables 
+#' identical (such as birthyear and gender).  The available controls are then 
+#' sorted by a random number and selected for consecutive cases if the 
+#' "case-date" is later than the corresponding "control-date". The consecutive 
+#' selection can in theory cause bias and the result of the function needs 
+#' careful attention when the number of controls is small compared to the 
+#' number of cases.
 #' 
 #' @usage
-#'   riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent",caseid="caseid",
-#'   reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,controlIndex=NULL,NoIndex=FALSE,cores=1) 
+#'   riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent",
+#'   caseid="caseid",reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL,
+#'   controlIndex=NULL,NoIndex=FALSE,cores=1) 
 #' @author Christian Torp-Pedersen
 #' 
 #' @param ptid  Personal ID variable defining participant
 #' @param event Defining cases/controls MUST be 0/1 - 0 for controls, 1 for case
-#' @param terms c(.....) Specifies the variables that should be matched by - enclosed in ".."
+#' @param terms c(.....) Specifies the variables that should be matched by - 
+#' enclosed in ".."
 #' @param dat The single dataset with all information - must be data.table
 #' @param Ncontrols  Number of controls sought for each case
-#' @param oldevent Holds original value of event - distinguishes cases used as controls
-#' @param caseid - variable holding grouping variable for cases/controls (=case-ptid)
-#' @param reuseCases Logical. If \code{TRUE} a case can be a control prior to being a case
-#' @param reuseControls Logical. If \code{TRUE} a control can be reused for several cases
-#' @param caseIndex Date variable defining the date where a case becomes a case. For a case control study this
-#'        is the date of event of interest, for a cohort study the date where a case enters an analysis
-#' @param controlIndex date variable defining the date from which a controls can no longer be selected.  The controlIndex
-#'        must be larger than the caseIndex.  For a case control study this would be the date where a control has the 
-#'        event of interest or is censored.  For a cohort study it would be the date where the control disappears from 
-#'        the analysis, e.g. due to death or censoring.
+#' @param oldevent Holds original value of event - distinguishes cases used as 
+#' controls
+#' @param caseid Character. Variable holding grouping variable for 
+#' cases/controls (=case-ptid)
+#' @param reuseCases Logical. If \code{TRUE} a case can be a control prior to 
+#' being a case
+#' @param reuseControls Logical. If \code{TRUE} a control can be reused for 
+#' several cases
+#' @param caseIndex Integer/Date. Date variable defining the date where a case 
+#' becomes a case. For a case control study this is the date of event of 
+#' interest, for a cohort study the date where a case enters an analysis.
+#' @param controlIndex Integer/Date. date variable defining the date from which 
+#' a controls can no longer be selected.  The controlIndex must be larger than 
+#' the caseIndex.  For a case control study this would be the date where a 
+#' control has the event of interest or is censored.  For a cohort study it 
+#' would be the date where the control disappears from the analysis, e.g. due to 
+#' death or censoring.
 #' @param NoIndex Logical. If \code{TRUE} caseIndex/controlIndex are ignored
 #' @param cores number of cores to use, default is one
 #' 
 #' @details 
-#' The function does exact matching and keeps 2 dates (indices) apart such that the date for controls is larger than 
-#' that for cases. Because the matching is exact all matching variables must be integer or character. Make sure that
-#' sufficient rounding is done on continuous and semicontinuous variables to ensure a decent number of controls for 
-#' each case. For example it may be difficult to find controls for cases of very high age and age should therefore
-#' often be rounded by 2,3 or 5 years - and extreme ages further aggregated.
+#' The function does exact matching and keeps 2 dates (indices) apart such that 
+#' the date for controls is larger than that for cases. Because the matching 
+#' is exact all matching variables must be integer or character. Make sure that
+#' sufficient rounding is done on continuous and semicontinuous variables to 
+#' ensure a decent number of controls for each case. For example it may be 
+#' difficult to find controls for cases of very high age and age should 
+#' therefore often be rounded by 2,3 or 5 years - and extreme ages further 
+#' aggregated.
 #' 
-#' For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is
-#' more relevant since the age of a control varies with time.
+#' For case control studies age may be a relevant matching parameter - for most 
+#' cohort studies year of birth is more relevant since the age of a control 
+#' varies with time.
 #' 
-#' For many purposes controls should be reused and cases allowed to be controls prior to being cases. By default,
-#' there is no reuse and this can be adjusted with "reuseCases" and "reuseControls"
+#' For many purposes controls should be reused and cases allowed to be controls 
+#' prior to being cases. By default, there is no reuse and this can be adjusted 
+#' with "reuseCases" and "reuseControls"
 #' 
-#' The function can be used for standard matching without the caseIndex/controlIndex (with "NoIndex"), but other packages
-#' such as MatchIt are more likely to be optimal for these cases.
+#' The function can be used for standard matching without the caseIndex/
+#' controlIndex (with "NoIndex"), but other packages such as MatchIt are more 
+#' likely to be optimal for these cases.
 #' 
-#' It may appear tempting always to use multiple cores, but this comes with a costly overhead because the function
-#' machinery has to be distributed to each defined "worker".  With very large numbers of cases and controls, multiple
-#' cores can save substantial amounts of time. When a single core is used a progress shows progress of matching. 
-#' There is no progress bar with multiple cores
+#' It may appear tempting always to use multiple cores, but this comes with a 
+#' costly overhead because the function machinery has to be distributed to each 
+#' defined "worker".  With very large numbers of cases and controls, multiple
+#' cores can save substantial amounts of time. When a single core is used a 
+#' progress shows progress of matching. There is no progress bar with multiple 
+#' cores
 #' 
-#' The function matchReport may afterwards be used to provide simple summaries of use of cases and controls
+#' The function matchReport may afterwards be used to provide simple summaries 
+#' of use of cases and controls
 #'
-#' @return data.table with cases and controls. After matching, a new variable "caseid" links controls to cases.
-#' Further, a variable "oldevent" holds the orginal value of "event" - to be used to identify cases functioning
+#' @return data.table with cases and controls. After matching, a new variable 
+#' "caseid" links controls to cases. Further, a variable "oldevent" holds the 
+#' orginal value of "event" - to be used to identify cases functioning
 #' as controls prior to being cases.
-#' Variables in the original dataset are preserved. The final dataset includes all original cases but only the 
-#' controls that were selected.
+#' 
+#' Variables in the original dataset are preserved. The final dataset includes 
+#' all original cases but only the controls that were selected.
 #' 
 #' @seealso matchReport Matchit
 #' 
@@ -84,7 +109,8 @@
 #' # Very simple match without reuse - no dates to control for
 #' out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 #' out[]
-#' # Risk set matching without reusing cases/controls - Some cases have no controls
+#' # Risk set matching without reusing cases/controls - 
+#' # Some cases have no controls
 #' out2 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="case.Index",
 #'   controlIndex="control.Index")
 #' out2[]   
@@ -115,6 +141,8 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     options(warn=-1)
     # copy input data
     datt <- copy(dat)
+    # remember name of caseIndex
+    RcaseIndex <- caseIndex
     datt[,"oldevent":=eval(as.name(event))]
     if (NoIndex) noindex <- 1L else noindex <- 0L # allows omitting index vectors
     # Check data.table
@@ -232,7 +260,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     setnames(FINAL,".ptid",ptid)
     setkeyv(FINAL,c(caseid,".event"))
     #Add relevant caseid to controls
-    if (!NoIndex) FINAL[,(caseIndex):=.SD[.N],by=caseid,.SDcols=caseIndex]
+    if (!NoIndex) FINAL[,(RcaseIndex):=.SD[.N],by=caseid,.SDcols=RcaseIndex]
     setnames(FINAL,".event",event)
     FINAL 
 }

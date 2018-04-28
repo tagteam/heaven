@@ -15,20 +15,22 @@ matchReport(dat, id, case, caseid,oldcase="oldevent")
 
 \item{caseid}{- variable defining the groups of matching cases/controls}
 
-\item{oldcase}{- Variable holding case/control=0/1 prior to matching. Distinguishes
-cases reused as controls}
+\item{oldcase}{- Variable holding case/control=0/1 prior to matching. 
+Distinguishes cases reused as controls}
 }
 \value{
-Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
+Three small tables - Number of controls for cases, use/reuse of 
+controls, use/reuse of cases
 }
 \description{
-The function provides very simple tables of the success of finding controls and
-the reuse of cases and controls. Designed to deal with the results of function
-riskSetMatch
+The function provides very simple tables of the success of finding controls 
+and the reuse of cases and controls. Designed to deal with the results of 
+function riskSetMatch
 }
 \details{
-This function can be helpful to define matching options.  If there is excessive reuse of controls or many
-cases do not find controls it may be desirable to do further rounding of matching variables.
+This function can be helpful to define matching options.  If there is 
+excessive reuse of controls or many cases do not find controls it may be 
+desirable to do further rounding of matching variables.
 }
 \examples{
 require(data.table)
@@ -41,8 +43,9 @@ controlIndex <- caseIndex
 library(data.table)
 dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
-dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-  controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
+dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,
+caseIndex="caseIndex",controlIndex="controlIndex",reuseCases=TRUE,
+reuseControls=TRUE)
 matchReport(dataout,"ptid","case","caseid")   
 }
 \seealso{

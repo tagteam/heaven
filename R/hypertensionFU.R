@@ -1,24 +1,34 @@
 #' @title Hypertension during follow up
-#'
-#' @param data Data set with drugs indicated by atc codes and date of drugs, e.g. lmdb 
+#' @description 
+#'  This function defines start of the presence of arterial hypertension. This
+#' is assumed present when at least two different antihypertensive drugs have
+#' been claims for two successive periods of 90 days.
+#' @param data Data set with drugs indicated by atc codes and date of drugs, 
+#'  e.g. lmdb 
+#' @usage 
+#' hypertensionFU(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd')  
 #' @param dateBL Baseline date "YYYY-MM-DD"
 #' @param dateFU Follow up date "YYYY-MM-DD"
 #' @param pnr Variable with ID for each subject/group. Default name: pnr 
 #' @param atc Variable with atc codes. Must be type character. Default name: atc 
-#' @param eksd Variable with dates. Must be type Date or numeric. Default name: eksd
+#' @param eksd Variable with dates. Must be type Date or numeric. 
+#' Default name: eksd
 #'
-#' @return A variable indicating whether there is hypertension during follow up. The variable hypertension during follow up is one if 
-#' the person has received two or more types of anti-hypertensive medications within 90 days in two quarters in a row. 
-#' Devision in quaters (90 days) from the baseline date.
+#' @return A variable indicating whether there is hypertension during follow up. 
+#' The variable hypertension during follow up is one if the person has received 
+#' two or more types of anti-hypertensive medications within 90 days in two 
+#' quarters in a row. Devision in quaters (90 days) from the baseline date.
 #' The codes for hypertension are currently defined in the function.
 #' Output: A data set with pnr and hypertension variable
-#' 
 #' @export
-#'
 #' @examples
 #' library(data.table)
-#' dat<-data.table(pnr=rep(1:20, each=4), atc=c("C09CA04", "C04AD03", "C07D", "C07FB02", "C01DA02"), eksd=c("2002-01-23" ,"2001-02-15", "2001-05-10", "2001-02-15", "2001-05-15","2001-04-10","2001-05-01"))
-#' datadd<-data.table(pnr=rep(21:22, each=4), atc=c("C09CA04", "C04AD03", "C08DB01", "C07FB02", "C01DA02"), eksd=c("2002-01-23" ,"2001-02-15", "2001-03-10"))
+#' dat<-data.table(pnr=rep(1:20, each=4), atc=c("C09CA04", "C04AD03", "C07D", 
+#'     "C07FB02", "C01DA02"), eksd=c("2002-01-23" ,"2001-02-15", "2001-05-10", 
+#'     "2001-02-15", "2001-05-15","2001-04-10","2001-05-01"))
+#' datadd<-data.table(pnr=rep(21:22, each=4), atc=c("C09CA04", "C04AD03", 
+#'     "C08DB01", "C07FB02", "C01DA02"), eksd=c("2002-01-23" ,"2001-02-15", 
+#'     "2001-03-10"))
 #' datn<-merge(dat, datadd, all=TRUE)
 #' datn$eksd<-as.Date(datn$eksd)
 #' datn
@@ -28,10 +38,13 @@
 #' ht<-hypertensionFU(datn,baseline,followup)
 #' ht
 #' #With custom names
-#' dat2<-data.table(MyID=c(1,1,1,1), MyAtcCodes=c("C07FB02", "C07FB02", "C09CA04", "C02A"), MyDates=c("2001-01-23" ,"2001-05-23", "2001-10-23", "2001-10-23"))
+#' dat2<-data.table(MyID=c(1,1,1,1), MyAtcCodes=c("C07FB02", "C07FB02", 
+#'  "C09CA04", "C02A"), MyDates=c("2001-01-23" ,"2001-05-23", "2001-10-23", 
+#'  "2001-10-23"))
 #' dat2$MyDates<-as.Date(dat2$MyDates)
-#' ht2<-hypertensionFU(dat2,"2001-02-15","2002-01-30", pnr='MyID', atc='MyAtcCodes', eksd='MyDates')
-#' ht2
+#' ht2<-hypertensionFU(dat2,"2001-02-15","2002-01-30", pnr='MyID', 
+#'   atc='MyAtcCodes', eksd='MyDates')
+#' ht2[]
 #' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 hypertensionFU<- function(data,dateBL,dateFU,pnr='pnr',atc='atc',eksd='eksd'){
   

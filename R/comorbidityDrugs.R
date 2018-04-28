@@ -1,37 +1,51 @@
 #' @title Comorbidity with drugs
-#'
-#' @param data Raw data with atc codes, eksd needs specific variables: pnr, atc, eksd
+#' @description 
+#' This function defines presence of conditions such as comorbidites based on 
+#' the first occurrence of claimed prescriptions.
+#' @usage 
+#' comorbidityDrugs(data=NULL,pnr='pnr',atc='atc',eksd='eksd',code=NULL,
+#' date=NULL,interval=NULL)
+#' @param data Raw data with atc codes, eksd needs specific variables: 
+#' pnr, atc, eksd
 #' @param pnr Variable with ID for each subject/group. Default name: pnr 
 #' @param atc Variable with atc codes. Must be type character. Default name: atc 
-#' @param eksd Variable with dates. Must be type Date or numeric. Default name: eksd
-#' @param code Vector with ATC codes for the drugs where the first-instance-date is desired
+#' @param eksd Variable with dates. Must be type Date or numeric. 
+#' Default name: eksd
+#' @param code Vector with ATC codes for the drugs where the first-instance-date 
+#' is desired
 #' @param date Date of end of search "YYYY-MM-DD"
-#' @param interval Length of the interval to search (days before the argument 'date')
-#'
-#' @return The function returns the date for the first drug with any of the ATC codes in a 
-#' data.table with pnr, ATC and first date. If a date and interval are given, the first date in 
-#' the interval before the date are returned.
+#' @param interval Length of the interval to search 
+#' (days before the argument 'date')
+#' @return The function returns the date for the first drug with any of the ATC 
+#' codes in a data.table with pnr, ATC and first date. If a date and interval 
+#' are given, the first date in the interval before the date are returned.
 #' @export
 #'
 #' @examples
 #' library(data.table)
 #' dat<-data.table(pnr=1:22, 
-#'                 atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"), each=5), 
-#'                 eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+#'   atc=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20")
+#'     , each=5), 
+#'   eksd=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
 #' dat[,eksd:=as.Date(eksd)]
 #'                
-#' #Find patients who have received drugs with atc codes starting with 'S01' or 'R03' and report the date of the first occurrence for each patient
+#' #Find patients who have received drugs with atc codes starting with 'S01' or 
+#' #'R03' and report the date of the first occurrence for each patient
 #' comorbidityDrugs(dat, code=c('S01', 'R03'))
 #' 
-#' #Find patients who have received drugs with atc codes starting with 'N' or 'M' in the period from "2001-03-01" to "2002-03-01" and report the date of the first occurrence
+#' #Find patients who have received drugs with atc codes starting with 'N' or 
+#' #'M' in the period from "2001-03-01" to "2002-03-01" and report the date of 
+#' #the first occurrence
 #' comorbidityDrugs(dat, code=c('N', 'M'), date="2002-03-21", interval=365)
 #' 
 #' #With custom names
 #' dat2<-data.table(MyID=1:22, 
-#'                  MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", "R03CC02", "S01XA20"), each=5), 
-#'                  MyDates=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
+#'  MyAtcCodes=rep(c("A01AB04", "A03AA04", "N02BE01", "M01AE01", 
+#'      "R03CC02", "S01XA20"), each=5), 
+#'  MyDates=c("2001-01-18","2002-02-20","2002-01-10","2001-09-10","1999-09-10"))
 #' dat2[,MyDates:=as.Date(MyDates)]
-#' comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes', eksd='MyDates', code=c('S01', 'R03'))
+#' comorbidityDrugs(dat2, pnr='MyID', atc='MyAtcCodes', eksd='MyDates', 
+#'  code=c('S01', 'R03'))
 #' 
 #' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 

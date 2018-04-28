@@ -1,16 +1,28 @@
 #' @title Hypertension at baseline
-#'
-#' @param data Data set with drugs indicated by atc codes and date of drugs, e.g. lmdb 
+#' @description 
+#' This function defines whether hypertension is present at a defined date. 
+#' Hypertension is assumed present if the individual has made claims for at
+#' least to different antihypertensive drugs within the last 180 days before
+#' the index data
+#' @usage 
+#' hypertensionBaseline(data, pnr='pnr',atc='atc',eksd='eksd',
+#'   baseline='baseline')
+#' @param data Data set with drugs indicated by atc codes and date of drugs, 
+#'  e.g. lmdb 
 #' @param pnr Variable with ID for each subject/group. Default name: pnr 
 #' @param atc Variable with atc codes. Must be type character. Default name: atc 
-#' @param eksd Variable with dates. Must be type Date or numeric. Default name: eksd
-#' @param baseline Variable with dates. Must be type Date or numeric. Default name: baseline
+#' @param eksd Variable with dates. Must be type Date or numeric. 
+#'   Default name: eksd
+#' @param baseline Variable with dates. Must be type Date or numeric. 
+#'   Default name: baseline
 #'
-#' @return List containing two datasets. First contains data with hypertension information. 
-#' The second contains all rows with missing data that were removed before hypertension where calculated.
-#' The variable hypertension at baseline is one if the person has received two or more types of anti-hypertensive
-#' medications within 180 days before the baseline date (and 7 days after due to data errors). 
-#' The codes for hypertension are currently defined in the function.
+#' @return List containing two datasets. First contains data with hypertension 
+#' information. The second contains all rows with missing data that were removed 
+#' before hypertension where calculated. The variable hypertension at baseline 
+#' is one if the person has received two or more types of anti-hypertensive
+#' medications within 180 days before the baseline date (and 7 days after due 
+#' to data errors). The codes for hypertension are currently defined in the 
+#' function.
 #'
 #' @export
 #'
@@ -19,14 +31,13 @@
 #' library(data.table)
 #' 
 #' #Load data
-#' \dontrun{
 #' data(Hypertension) 
-#' ht<-hypertensionBaseline(data=Hypertension,pnr='myID',atc='myAtc',eksd='myEksd',baseline='myBaseline')
+#' ht<-hypertensionBaseline(data=Hypertension,pnr='myID',atc='myAtc',
+#'   eksd='myEksd',baseline='myBaseline')
 #' 
 #' # A list is returned which contains two data.tables
 #' htData  <- ht[[1]]
 #' htError <- ht[[2]]
-#' }
 #' @author Helle Hoejmark Eriksen <helle.e@@rn.dk>
 hypertensionBaseline<- function(data,
                                 pnr='pnr',

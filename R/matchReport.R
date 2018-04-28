@@ -1,22 +1,24 @@
 #' @title matchReport - report of matching from riskSetMatch
 #' 
 #' @description  
-#' The function provides very simple tables of the success of finding controls and
-#' the reuse of cases and controls. Designed to deal with the results of function
-#' riskSetMatch
+#' The function provides very simple tables of the success of finding controls 
+#' and the reuse of cases and controls. Designed to deal with the results of 
+#' function riskSetMatch
 #' @usage
 #' matchReport(dat, id, case, caseid,oldcase="oldevent") 
 #' @param dat - data.table with result from riskSetMatch
 #' @param id - variable with participant id
 #' @param case - 0=control, 1=case
 #' @param caseid - variable defining the groups of matching cases/controls
-#' @param oldcase - Variable holding case/control=0/1 prior to matching. Distinguishes
-#' cases reused as controls
+#' @param oldcase - Variable holding case/control=0/1 prior to matching. 
+#' Distinguishes cases reused as controls
 #' @author Christian Torp-Pedersen
 #' @details 
-#' This function can be helpful to define matching options.  If there is excessive reuse of controls or many
-#' cases do not find controls it may be desirable to do further rounding of matching variables.
-#' @return Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
+#' This function can be helpful to define matching options.  If there is 
+#' excessive reuse of controls or many cases do not find controls it may be 
+#' desirable to do further rounding of matching variables.
+#' @return Three small tables - Number of controls for cases, use/reuse of 
+#' controls, use/reuse of cases
 #' @seealso riskSetMatch
 #' @export
 #' @examples
@@ -30,8 +32,9 @@
 #' library(data.table)
 #' dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 #' # Very simple match without reuse - no dates to control for
-#' dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-#'   controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
+#' dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,
+#' caseIndex="caseIndex",controlIndex="controlIndex",reuseCases=TRUE,
+#' reuseControls=TRUE)
 #' matchReport(dataout,"ptid","case","caseid")   
 matchReport <- function(dat, # Datatable with matches
                         id, # Participant identification
@@ -46,7 +49,7 @@ matchReport <- function(dat, # Datatable with matches
  controls <- datt[,.N,by=caseid]
  controls <- as.vector(controls[,N]-1)
  controls <- table(controls)
- cat("\n", "Line 1, number of controls found - Line 2, number of occurrences")
+ cat("\n", "Line 1, number of controls - Line 2, number of ocurrences","\n")
  print(controls)
  cat("\n","------------------------------------------------------------------")
  #Reuse of controls

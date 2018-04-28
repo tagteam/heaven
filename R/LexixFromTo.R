@@ -1,30 +1,36 @@
 #' @title lexisFromTo
 #' @description 
-#' lexixFromTo is a specialised version of lexis splitting.  In handling drug treatment, employment
-#' and similar factors the individual may move in and out of conditions.  This function splits 
-#' according such a situation.  The input is first "base data" id/in/out/event (and other variables) that
-#' may already have been split by other functions.  The other data is a sequence of 
-#' id/from/to/value/name - that may represent multiple conditions with from/to and with "name" to
-#' distinguish.
+#' lexixFromTo is a specialised version of lexis splitting.  In handling drug 
+#' treatment, employment and similar factors the individual may move in and out 
+#' of conditions.  This function splits according such a situation.  The input 
+#' is first "base data" id/in/out/event (and other variables) that may already 
+#' have been split by other functions.  The other data is a sequence of 
+#' id/from/to/value/name - that may represent multiple conditions with from/to 
+#' and with "name" to distinguish.
 #' @usage
 #' lexisFromTo(indat,splitdat,invars,splitvars)
 #' @author Christian Torp-Pedersen
-#' @param indat - base data with id, start, end, event and other data - possibly already split
+#' @param indat - base data with id, start, end, event and other data - possibly 
+#' already split
 #' @param splitdat - Data with splitting guide - id/from/to/value/name 
-#' @param invars - vector of colum names for id/entry/exit/event - in that order, 
-#' example: c("id","start","end","event")
+#' @param invars - vector of colum names for id/entry/exit/event - in that 
+#' order, example: c("id","start","end","event")
 #' @param splitvars - vector of column names containing dates to split by.
 #' example: c("id","start","end","value","name") - must be in that order!
 #' @return
-#' The function returns a new data table where records have been split according to the splittingguide dataset. Variables
-#' unrelated to the splitting are left unchanged.
+#' The function returns a new data table where records have been split according 
+#' to the splittingguide dataset. Variables unrelated to the splitting are left 
+#' unchanged.
 #' @details 
-#' The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
-#' This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
-#' The other table contains possibly multiple records for each participants with id/from/to/value/name.
-#' The program checks that intervals are not negative and that intervals for each "name" and each individual
-#' do not overlap.  Violation stops the program with error. Overlaps may occur in real situations, but the
-#' user needs to make decisions regarding this prior to this function.
+#' The input to this function are two data.tables and two lists of the critical 
+#' variables.  The base data it the data to be split. This data must have a 
+#' variable to identify participants, start/end times and a variable to indicate 
+#' event after last interval. The other table contains possibly multiple records 
+#' for each participants with id/from/to/value/name. The program checks that 
+#' intervals are not negative and that intervals for each "name" and each 
+#' individual do not overlap.  Violation stops the program with error. Overlaps 
+#' may occur in real situations, but the user needs to make decisions regarding 
+#' this prior to this function.
 #' @examples
 #' library(data.table)
 #' dat <- data.table(id=c("A","A","B","B"),
@@ -38,8 +44,10 @@
 #'                     name=c("d1","d1","d2","d1","d1","d2"))
 #' temp <- lexisFromTo(dat # inddato with id/in/out/event
 #'                    ,split # Data with id and dates
-#'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
-#'                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
+#'                    ,c("id","start","end","event") 
+#'                     #names of id/in/out/event - in that order
+#'                    ,c("id","start","end","value","name")) 
+#'                     #names var date-vars to split by
 #' temp[]
 #' @export
 lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
