@@ -5,6 +5,7 @@ context("Matching")
 
 
 test_that("Risk set matching",{
+    library(data.table)
     n <- 55
     d=data.table(pnr=1:n,
                  case=rbinom(n,1,.23),
