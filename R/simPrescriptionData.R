@@ -2,6 +2,7 @@
 ##' 
 ##' Simulate prescription data alike the Danish medical registry
 ##' @title Prescription data simulation function
+##' @aliases simPrescriptionData simLMDB
 ##' @param n Number of patients
 ##' @param m Maximal number of prescription dates per patient
 ##' @param packages Named list of association lists. The names of the
@@ -62,3 +63,5 @@ simPrescriptionData <- function(n,
     data.table::setcolorder(out,c("pnr","atc","eksd","strnum","packsize","apk"))
     out
 }
+#' @export
+simLMDB <- simPrescriptionData

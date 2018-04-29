@@ -2,6 +2,7 @@
 ##' 
 ##' Simulate admission data alike the Danish medical registry
 ##' @title Admission data simulation function
+##' @aliases simLPR simAdmissionData
 ##' @param n Number of patients
 ##' @param m Maximal number of admission dates per patient
 ##' @param diagnoses List of diagnoses. Defaults to all possible ICD10 codes: http://www.icd10data.com/ICD10CM/Codes
@@ -27,15 +28,17 @@ simAdmissionData <- function(n,
         ind <- startDate + runif(M,0,20*365.25)
         udd <- pmin(ind + runif(M,0,45), startDate + 20*365.25)
         dat.i = data.table::data.table(pnr=i,
-                           inddto = ind,
-                           uddto  = udd,
-                           diag = sample(diagnoses,size=M))
+                                       inddto = ind,
+                                       uddto  = udd,
+                                       diag = sample(diagnoses,size=M),
+                                       pattype=sample(1:4,size=M,replace=TRUE))
         dat.i
     }))
     data.table::setkey(out, pnr, inddto)
-    data.table::setcolorder(out,c("pnr","inddto","uddto","diag"))
+    data.table::setcolorder(out,c("pnr","inddto","uddto","diag","pattype"))
     out
 }
-
+#' @export
+simLPR <- simAdmissionData
 
 

@@ -2,6 +2,7 @@
 % Please edit documentation in R/simAdmissionData.R
 \name{simAdmissionData}
 \alias{simAdmissionData}
+\alias{simLPR}
 \title{Admission data simulation function}
 \usage{
 simAdmissionData(n, m = 5, diagnoses = paste0(toupper(letters), rep(0:99,
