@@ -42,6 +42,7 @@ matchReport <- function(dat, # Datatable with matches
                         caseid, # grouping variable
                         oldcase="oldevent" # remember whether a case used as control was originally a case
                         ){
+ requireNamespace(data.table)  
  datt <- dat[,.SD,.SDcols=c(id,case,caseid,oldcase)] # select relevant data
  setnames(datt,c("id","case","caseid","oldcase"))
  cat("\n","------------------------------------------------------------------","\n","Matching success")

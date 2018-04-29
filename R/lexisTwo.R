@@ -59,6 +59,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                      ,invars #names of id/in/out/event - in that order
                      ,splitvars #Names var date-vars to split by
                      ){
+  requireNamespace(data.table)
   #Tests of data
 
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Input not data tables")

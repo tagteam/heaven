@@ -139,6 +139,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                          , NoIndex=FALSE      # If T ignore index
                          , cores=1){          # Number of cores to use, default 1
     options(warn=-1)
+    requireNamespace(data.table)
     # copy input data
     datt <- copy(dat)
     # remember name of caseIndex
