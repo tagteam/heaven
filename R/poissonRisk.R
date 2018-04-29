@@ -1,3 +1,5 @@
+#' Predicting absolute risks from poisson regression
+#' 
 #' @title Predicting absolute risk from poisson regression model
 #' @param model glm object of fitted poisson model
 #' @param interval risk interval within time scale of the poisson model 

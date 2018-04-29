@@ -5,7 +5,11 @@
 \alias{contentSAS}
 \title{importSAS}
 \usage{
-importSAS(filename,wd=NULL,keep=NULL,drop = NULL,where = NULL,obs = NULL,filter = NULL,savefile = NULL,overwrite = TRUE,save.tmp = FALSE,prerun = FALSE)
+importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
+                 where = NULL,obs = NULL,filter = NULL,
+                 set.hook=NULL,step.hook=NULL,pre.hook=NULL,
+                 post.hook=NULL,savefile = NULL,overwrite = TRUE,
+                 show.sas.code=TRUE,save.tmp = FALSE,content=FALSE)
        contentSAS(filename,wd=NULL)
 }
 \arguments{

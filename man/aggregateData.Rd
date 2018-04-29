@@ -11,3 +11,6 @@ aggregateData(data, timegrid)
 
 \item{timegrid}{vector of times the data is aggregated by}
 }
+\description{
+Aggregate data for poisson regression
+}

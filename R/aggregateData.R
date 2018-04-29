@@ -1,8 +1,9 @@
+#' Aggregate data for poisson regression
+#' 
 #' @title Aggregation of data - useful for poisson regression
 #' @param data dataset containing the variables "interval" and "event".
 #' @param timegrid vector of times the data is aggregated by
 #' @export
-
 aggregateData <- function(data,timegrid){
   if (class(data)[1]!="data.table") data <- data.table(data)
   data[,time:=interval]

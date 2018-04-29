@@ -29,6 +29,9 @@ whatToDo(FUN, B = 10, K = 10, mydata, myargs, myargsBoot, myargsPart,
 \value{
 nothing
 }
+\description{
+decide between data splitting/combine and bootstrap
+}
 \author{
 Paul Blanche
 }

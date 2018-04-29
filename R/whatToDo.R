@@ -3,9 +3,9 @@
 ## Author: Paul Blanche
 ## Created: Feb 23 2018 (14:45) 
 ## Version: 
-## Last-Updated: Feb 23 2018 (17:18) 
-##           By: Paul Blanche
-##     Update #: 20
+## Last-Updated: Apr 29 2018 (10:20) 
+##           By: Thomas Alexander Gerds
+##     Update #: 21
 ##----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -14,7 +14,8 @@
 ##----------------------------------------------------------------------
 ## 
 ### Code:
-
+#' decide between data splitting/combine and bootstrap
+#' 
 ##' @title What to do: split and combine or bootstrap?
 ##' @param FUN  Name of function to call.
 ##' @param B Number of bootstrap replications.
