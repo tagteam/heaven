@@ -4,14 +4,14 @@
 \alias{subtract_procedures}
 \title{Extraction of simple procedures}
 \usage{
-subtract_procedures(data, time_frame = NULL, procedure = NULL,
+subtract_procedures(data, time.frame = NULL, procedure = NULL,
   incombination = NULL, record.id = "RECNUM", procedure.codes = "OPR",
   out.date = "ODTO")
 }
 \arguments{
 \item{data}{Input data with containing procedures}
 
-\item{time_frame}{An integer value setting time-window in number of days between procedures in 
+\item{time.frame}{An integer value setting time-window in number of days between procedures in 
 order to denote them as simple. Default is one day.}
 
 \item{procedure}{A list of procedure codes to be extracted. 
@@ -22,6 +22,8 @@ CT hjerte and CT Thorax}
 \item{incombination}{indikator of whether combined or simple procedures are sought. Default is Null.}
 
 \item{record.id}{Name of patient identifier. Default is RECNUM corresponding to the name in OPR.}
+
+\item{procedure.codes}{Name of procedure codes}
 
 \item{out.date}{Name of procedure date. Default is ODTO corresponding to the name in OPR.}
 }

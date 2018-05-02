@@ -3,9 +3,9 @@
 ## Author: Paul Blanche
 ## Created: Feb  2 2018 (15:02) 
 ## Version: 
-## Last-Updated: Feb 22 2018 (15:10) 
-##           By: Paul Blanche
-##     Update #: 345
+## Last-Updated: Apr  4 2018 (08:48) 
+##           By: Thomas Alexander Gerds
+##     Update #: 347
 ##----------------------------------------------------------------------
 ## 
 ### Commentary:
@@ -30,7 +30,7 @@
 ## 62.3 (2006): 847-854.
 ##
 ## Fay, Michael P., Michael A. Proschan, and Erica Brittain. "Combining
-## one‐sample confidence procedures for inference in the two‐sample case."
+## one-sample confidence procedures for inference in the two-sample case."
 ## Biometrics 71.1 (2015): 146-156.
 ##
 ## Interesting other approaches, to avaoid inconsistencies between

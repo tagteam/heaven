@@ -25,6 +25,7 @@
 #' \dontrun{
 #' 
 #' # Simulated LPR-registry data
+#' lpr.data = simAdmissionData(39)
 #' data(lpr.data)
 #' 
 #' # Extract diagnoses related to heart failure
@@ -63,7 +64,6 @@
 #' }
 #' @export
 #' @author Regitze Kuhr Skals <r.skals@rn.dk>
-
 extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
                   keep='',pat=NULL,prefix='',entryvar='inddto',id='PNR',codevar='diag',
                   patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,lmdb=FALSE){
@@ -138,7 +138,6 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
                      adp_inhibitors=c("B01AC04", "B01AC22", "B01AC24"))
   
   ##  Make into data.table 
-  require(data.table)
   d <- as.data.table(dat)
   
   if(is.null(indexvar)&lmdb==FALSE){

@@ -59,6 +59,7 @@ Extracts specific selected ICD- or ATC codes, or predefined diseases by diagnose
 \dontrun{
 
 # Simulated LPR-registry data
+lpr.data = simAdmissionData(39)
 data(lpr.data)
 
 # Extract diagnoses related to heart failure

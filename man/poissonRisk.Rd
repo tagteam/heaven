@@ -13,6 +13,9 @@ poissonRisk(model, interval, newdata)
 
 \item{newdata}{values of the covariates in the poisson model for which the absolute risks are calculated.}
 }
+\description{
+Predicting absolute risks from poisson regression
+}
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>, Regitze Kuhr Skals <r.skals@rn.dk>
 }
