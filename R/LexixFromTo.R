@@ -55,7 +55,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                      ,invars #names of id/in/out/event - in that order
                      ,splitvars #Names in splitdat with pnr/from/to/value/name
                      ){
-  requireNamespace(data.table)
+  requireNamespace('data.table')
   copyindat <- copy(indat)
   #Tests of data
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Error - Input tables must both be data tables")

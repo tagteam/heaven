@@ -88,7 +88,10 @@ dat.extracted <- extractCode(lpr.data,disease="cancer",keep='first',pat=3)
 dat.extracted <- extractCode(lpr.data,inclusions='DI',exclusions=c('DI21','DI8'),prefix='i')
 
 # Extract ischemic heart disease without DI21 and DI22:
-dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('DI21','DI22'),prefix='ihd_excl_ami')
+dat.extracted <- extractCode(lpr.data,
+                             disease='ihd',
+                             exclusions=c('DI21','DI22'),
+                             prefix='ihd_excl_ami')
 
 # Extract ischemic heart disease diagnoses within three years after index date
 dat.extracted <- extractCode(lpr.data,disease=c("ihd"),indexvar='indexdate',index.int=365*3)
@@ -98,5 +101,5 @@ dat.extracted <- extractCode(lpr.data,disease=c("bleeding"),indexvar='indexdate'
 }
 }
 \author{
-Regitze Kuhr Skals <r.skals@rn.dk>
+Regitze Kuhr Skals <r.skals@rn.dk
 }

@@ -68,7 +68,7 @@ lexisSeq <- function(indat # inddata with id/in/out/event - and possibly other v
                          ,format # "seq" for loop (3 values) and "vector" for list of values
                          ,value="value" #Name of output variable holding sequence number
                         ){
-  requireNamespace(data.table)
+  requireNamespace('data.table')
   #Tests of data
   if (!is.data.table(indat)) stop("Input not data tables")
   if (class(invars) != "character") stop("Varnames in c(..) not character")

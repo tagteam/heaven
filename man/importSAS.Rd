@@ -139,10 +139,6 @@ df3 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 str(df3)
 df3
 
-# Save all the output and the csv file in a specific file named "savedfile.csv" in the directory "dir".
-#df <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,savefile="savedfile.csv",
-#                save.tmp=TRUE,overwrite=FALSE)
-
 # Because the "overwrite" argument is FALSE, running the above code again will abort the import
 # to not overwrite the temporary files.
 # Setting "overwrite=TRUE" will allow the function to overwrite the files.

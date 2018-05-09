@@ -54,7 +54,10 @@
 #' dat.extracted <- extractCode(lpr.data,inclusions='DI',exclusions=c('DI21','DI8'),prefix='i')
 #'
 #' # Extract ischemic heart disease without DI21 and DI22:
-#' dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('DI21','DI22'),prefix='ihd_excl_ami')
+#' dat.extracted <- extractCode(lpr.data,
+#'                              disease='ihd',
+#'                              exclusions=c('DI21','DI22'),
+#'                              prefix='ihd_excl_ami')
 #' 
 #' # Extract ischemic heart disease diagnoses within three years after index date
 #' dat.extracted <- extractCode(lpr.data,disease=c("ihd"),indexvar='indexdate',index.int=365*3)
@@ -63,7 +66,7 @@
 #' dat.extracted <- extractCode(lpr.data,disease=c("bleeding"),indexvar='indexdate',index.int=-365)
 #' }
 #' @export
-#' @author Regitze Kuhr Skals <r.skals@rn.dk>
+#' @author Regitze Kuhr Skals <r.skals@rn.dk
 extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
                   keep='',pat=NULL,prefix='',entryvar='inddto',id='PNR',codevar='diag',
                   patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,lmdb=FALSE){

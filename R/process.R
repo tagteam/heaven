@@ -86,7 +86,7 @@
             baddata <- paste(baddata, paste(paste(" : No doses specified for ",drugname, paste(unique(dpp1$strength[dosesmissing]), collapse=", ")),"\n"))
         }
         if (baddata!="") {
-            cat("Bad data for treatment ", drugname, "(will terminate):\n",baddata,"\n")
+            message("Bad data for treatment ", drugname, "(will terminate):\n",baddata,"\n")
         } else {
             if (length(id) == 0) {
                 dpp1 <- dpp1[id %in% idunique]
