@@ -195,7 +195,7 @@ importSAS <- function(filename,
     if(length(keep) >0) {cond <- paste(cond, "keep=", paste(keep, collapse=" "), " ", sep="")}
     if(length(drop) >0) {cond <- paste(cond, "drop=", paste(drop, collapse=" "), " ", sep="")}
     if(length(where)>0) {cond <- paste(cond, "where=(", where, ") ", sep="")}
-    if(length(obs)  >0) {cond <- paste(cond, "obs=", obs, " ", sep="")}
+    if(length(obs)  >0) {cond <- paste(cond, "obs=", format(obs, scientific=FALSE), " ", sep="")}
     if (length(cond)>0){
         if (length(set.hook)>0 & is.character(set.hook))
             cond <- paste("(",cond, set.hook, ")", sep=" ")
@@ -333,10 +333,16 @@ importSAS <- function(filename,
             shell(fprog) # Collect this if it fails?
             ### Read the data
             if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
-            tryread <- try(df <- data.table::fread(file = outfile, header = TRUE))
-            if ("try-error" %in% class(tryread)){
-                warning("Something went wrong during SAS program execution. ")
+            info <- file.info(outfile)
+            if(info$size==1){  # Check if outfile is empty
+                warning("The constructed dataset is empty.")
                 df <- NULL
+            }else{
+                tryread <- try(df <- data.table::fread(file = outfile, header = TRUE))
+                if ("try-error" %in% class(tryread)){
+                    warning("Could not read the constructed dataset into R. \nSomething probably went wrong during SAS program execution. ")
+                    df <- NULL
+                }
             }
             if (!is.null(df) & sum(is.date)>0){
                 date.vars <- var.names[is.date]

@@ -35,8 +35,10 @@
                         treatments = NULL,
                         id = NULL,
                         trace = FALSE,
-                        collapse = TRUE){
-    
+                      collapse = TRUE){
+    # Set the right structure for processed object
+    dpp$processed <- structure(list(),
+                                 class = "dppout")
     if (length(treatments) == 0) treatments <- names(dpp$drugs)
     for (drugname in treatments){ 
         ## treatfun <- function(drugname) {
@@ -92,6 +94,14 @@
             }else{
                 admdat <- dpp$admdb
             }
+            if (length(admdat)==0) { # Put in empty object
+                # Quick way to make empty admdb object. (Hack to allow that no admdata is given.)
+                a <- simAdmissionData(1)
+                a <- a[pnr==2]
+                tmpd <- dpp()
+                admdb(tmpd) <- a                
+                admdat <- tmpd$admdb
+            }
             ## save(testlist3,file="~/tmp/testlist3.rda")
             out <- rbindlist(innerprocess(dat=dpp1,
                                           admdat=admdat,
@@ -106,4 +116,3 @@
     }
     dpp
 }
-  
