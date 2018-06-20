@@ -57,7 +57,8 @@
         cat('see help("drugdb<-") for more details')
     } else {  
         newdata <- subset(value, select = varnames)
-        setnames(newdata,c("id", "atc", "pdate", "strength", "npack", "ppp"))
+        # Could the following be a bug if the order of the columns are not as expected?
+        setnames(newdata,c("id", "atc", "pdate", "strength", "npack", "ppp")) 
         if (!inherits(newdata$pdate, "Date")) {
             cat("ERROR: Dates must be in date format. Use as.Date()")
         } else {

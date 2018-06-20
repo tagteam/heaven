@@ -5,7 +5,7 @@
 \title{Process to estimate prescription lengths and averages}
 \usage{
 process(dpp, treatments = NULL, id = NULL, trace = FALSE,
-  collapse = TRUE)
+  collapse = TRUE, tasks = 3)
 }
 \arguments{
 \item{dpp}{Data preprocessing object}
@@ -21,6 +21,8 @@ these individuals.}
 \item{collapse}{Logical. If \code{TRUE}, collapse contiguous
 exposure periods with same computed exposure strength to one
 and add periods with zero exposure.}
+
+\item{tasks}{1, 2 or 3. 1 means calculate only the exposure periods; 2 means calculate only the baseline exposure; and 3 means calculate both.}
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.
