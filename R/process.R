@@ -38,7 +38,7 @@
                       id = NULL,
                       trace = FALSE,
                       collapse = TRUE,
-                      tasks = 3,
+                      tasks = 1,
                       splitting = TRUE){
     # Set the right structure for processed object
     dpp$processed <- structure(list(),
@@ -111,12 +111,24 @@
             ## if (length(interval)<=0) {
             ##     baddata2 <- paste(baddata2, "- No interval specified.\n")
             ## }
-            if(attr(dpp$comorbperiods,"status")=="empty"){
+            if(length(dpp$comorbperiods)==0){
                 baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
             }
             else{
-                dpp$comorbperiods <- .internalLoadData(dpp$comorbperiods)
-            }                
+                if(attr(dpp$comorbperiods,"status")=="empty"){
+                    baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
+                }
+                else{
+                    if(attr(dpp$comorbperiods,"status")=="nominal"){
+                        message(paste0("Loading data for ", drugname, ".\n"))
+                    }
+                    .tmpLoad <- .internalLoadData(dpp$comorbperiods)
+                    dpp$comorbperiods <- .tmpLoad$dppObject
+                    if(.tmpLoad$prob.status==T){
+                        baddata2 <- paste0(baddata2, .tmpLoad$message)
+                    }
+                }
+            }
             if (baddata2!="") {
                 message("Bad data for treatment ", drugname,
                         "\nBaseline exposure cannot be estimated because of the following:\n",baddata2,"\n")
@@ -218,3 +230,4 @@
     }
     dpp
 }
+  
