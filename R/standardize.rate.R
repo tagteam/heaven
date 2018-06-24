@@ -65,8 +65,9 @@ standardize.rate <- function(vars,
         }
         print(stdpop/sum(stdpop))
         out[[v]] <- data[,{
-            std <- epitools::ageadjust.direct(count=.SD[[1]],
-                                              pop=.SD[[2]],stdpop=stdpop)
+            std <- dsr(count1=.SD[[1]], count2=.SD[[1]],
+                       pop1=.SD[[2]],
+                       stdpop=stdpop)
             .(crude.rate=std[[1]],adj.rate=std[[2]],lower=std[[3]],upper=std[[4]])
         },.SDcols=vars[[v]],by=c(byvar)]
     }
@@ -87,7 +88,8 @@ standardize.rate <- function(vars,
 ##' @param pop0 number of subjects of person-years in group 0 
 ##' @param stdpop number of subjects of person-years in reference population 
 ##' @param conf.level confidence level of confidence intervals
-##' @param method method for calculating confidence intervals 
+##' @param method method for calculating confidence intervals
+##' @param crude logical. if \code{TRUE} also calculate crude rates 
 ##' @param NMC number of Monte Carlo simulation to compute Melted intervals
 ##' @param seed seed for reproducibility of melted confidence intervals
 ##' @references
@@ -114,22 +116,7 @@ standardize.rate <- function(vars,
 ##' for discrete data." R journal 2.1 (2010): 53-58.
 ##' 
 ##' @return 
-##'
-##' crude.Rates                : crude rates
-##' DSR                        : DSR, i.e. Directly Standardized Rates
-##' exact.CI.crude.Rates       : Exact confidence intervals for crude rates
-##' raw.Wald.CI.crude.Rates    : raw Wald confidence intervals for crude rates
-##' log.Wald.CI.crude.Rates    : Wald confidence intervals for crude rates, using the log for the normal approximation
-##' raw.Wald.CI.DSR            : raw Wald confidence intervals for DSR
-##' log.Wald.CI.DSR            : Wald confidence intervals for DSR, using the log for the normal approximation
-##' gamma.CI.DSR               : Gamma confidence intervals for DSR
-##' crude.Ratio                : crude rates ratio
-##' log.Wald.CI.crude.Ratio    : Wald confidence intervals for the crude rate ratio, using the log for the normal approximation
-##' exact.CI.crude.Ratio       : Exact confidence intervals for the crude rate ratio
-##' DSR.Ratio                  : DSR ratio
-##' log.Wald.CI.DSR.Ratio      : Wald confidence intervals for the DSR ratio, using the log for the normal approximation
-##' F.dist.CI.DSR.Ratio        : F distribution based confidence intervals for the DSR ratio
-##' melted.CI.DSR.Ratio        : Melted gamma confidence intervals for the DSR ratio
+##' List with crude and standardized rates and rate ratios. 
 ##'
 ##' @seealso epitools::ageadjust.direct
 ##' @examples
@@ -310,20 +297,20 @@ dsr <- function(count1,
         std.rr.lower <- CI.DSR.Ratio[1]
         std.rr.upper <- CI.DSR.Ratio[2]
     }
-    out <- list(crude=data.table(group=c(0,1),
-                                 rate=c(R0,R1),
-                                 rate.lower=crude.lower,
-                                 rate.upper=crude.upper,
-                                 ratio=c(1,crudeRatio),
-                                 ratio.lower=c(1,crude.rr.lower),
-                                 ratio.upper=c(1,crude.rr.upper)),
-                standardized=data.table(group=c(0,1),
+    out <- list(standardized=data.table(group=c(0,1),
                                         rate=c(DSR0,DSR1),
                                         rate.lower=std.lower,
                                         rate.upper=std.upper,
                                         ratio=c(1,DSRRatio),
                                         ratio.lower=c(1,std.rr.lower),
                                         ratio.upper=c(1,std.rr.upper)))
+    if (crude) out <- c(out,list(crude=data.table(group=c(0,1),
+                                                  rate=c(R0,R1),
+                                                  rate.lower=crude.lower,
+                                                  rate.upper=crude.upper,
+                                                  ratio=c(1,crudeRatio),
+                                                  ratio.lower=c(1,crude.rr.lower),
+                                                  ratio.upper=c(1,crude.rr.upper))))
     out[]
 }
 

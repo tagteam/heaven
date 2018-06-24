@@ -111,12 +111,17 @@
             ## if (length(interval)<=0) {
             ##     baddata2 <- paste(baddata2, "- No interval specified.\n")
             ## }
-            if(attr(dpp$comorbperiods,"status")=="empty"){
+            if(length(dpp$comorbperiods)==0){
                 baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
             }
             else{
-                dpp$comorbperiods <- .internalLoadData(dpp$comorbperiods)
-            }                
+                if(attr(dpp$comorbperiods,"status")=="empty"){
+                    baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
+                }
+                else{
+                    dpp$comorbperiods <- .internalLoadData(dpp$comorbperiods)
+                }
+            }
             if (baddata2!="") {
                 message("Bad data for treatment ", drugname,
                         "\nBaseline exposure cannot be estimated because of the following:\n",baddata2,"\n")
@@ -218,3 +223,4 @@
     }
     dpp
 }
+  

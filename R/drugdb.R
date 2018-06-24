@@ -29,21 +29,15 @@
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 `drugdb<-` <- function(dpp,
-                       id       = pnr,
-                       atc      = atc,
-                       pdate    = eksd,
-                       strength = strnum,
-                       npack    = apk,
-                       ppp      = packsize,
+                       id       = "pnr",
+                       atc      = "atc",
+                       pdate    = "eksd",
+                       strength = "strnum",
+                       npack    = "apk",
+                       ppp      = "packsize",
                        add = FALSE,
                        value) {
-    
-    varnames <- c(deparse(substitute(id)),
-                  deparse(substitute(atc)),
-                  deparse(substitute(pdate)),
-                  deparse(substitute(strength)),
-                  deparse(substitute(npack)), deparse(substitute(ppp)))
-
+    varnames <- c(id,atc,pdate,strength,npack,ppp)
     varTF <- sapply(varnames, function(x) {
         any(names(value) == x)
     })
@@ -62,14 +56,11 @@
         if (!inherits(newdata$pdate, "Date")) {
             cat("ERROR: Dates must be in date format. Use as.Date()")
         } else {
-            if (add) {
-                dpp$drugdb <- rbindlist(list(dpp$drugdb, newdata),use.names=TRUE)
-            } else {
-                dpp$drugdb <- newdata
-            }
-            setkey(dpp$drugdb,id,pdate)
-            return(dpp)
+            dpp$drugdb <- newdata
         }
+        setkeyv(dpp$drugdb,c("id","pdate"))
+        return(dpp)
     }
+    ## }
 }
 

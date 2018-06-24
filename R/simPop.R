@@ -17,6 +17,7 @@
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 simPop <- function(n,min.age=20,max.age=90,sex=.5,mortality=.05){
+    doddate=status=birthdate=NULL
     pop <- data.table::data.table(pnr=1:n,
                                   sex=factor(rbinom(n,1,sex),levels=0:1,labels=c("female","male")),
                                   birthdate=Sys.Date()-365.25*runif(n,min.age,max.age),status=rbinom(n,1,mortality))
