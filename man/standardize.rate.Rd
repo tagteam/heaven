@@ -5,23 +5,25 @@
 \title{Standardize proportions and absolute risks to a given age
     distribution}
 \usage{
-standardize.rate(vars, agevar, byvar, reference, data, level = 0.95, ...)
+standardize.rate(x, age = "agegroups", exposure, by,
+  standardize.to = "ref.level", data, method = "f", level = 0.95,
+  crude = TRUE, ...)
 }
 \arguments{
-\item{vars}{Names of variable(s) which contain the rate(s) to be
-standardized.}
+\item{age}{Name of categorical age variable}
 
-\item{agevar}{Name of categorical age variable}
+\item{by}{Name(s) of categorical strata variable(s)}
 
-\item{byvar}{Name(s) of categorical strata variable(s)}
-
-\item{reference}{what reference population to use for standardization.}
+\item{standardize.to}{what population to use for standardization.}
 
 \item{data}{Data set which contains all variables}
 
 \item{level}{Confidence level}
 
 \item{...}{Not (yet) used}
+
+\item{vars}{Names of variable(s) which contain the rate(s) to be
+standardized.}
 }
 \value{
 Data table with standardized rates
@@ -47,14 +49,14 @@ d[,year:=rep(2001:2010,n/10)]
 D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
-standardize.rate(vars=list(c("e1","rt1")),
-                 agevar="agegroups",byvar="sex",data=D,reference="f")
-standardize.rate(vars=list(c("e1","rt1")),
-                 agevar="agegroups",byvar="sex",data=D,reference="m")
-standardize.rate(vars=list(c("e1","rt1")),
-                 agevar="agegroups",byvar="sex",data=D,reference="mean")
-standardize.rate(vars=list(c("e1","rt1"),c("e2","rt2")),
-                 agevar="agegroups",byvar="sex",data=d)
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="sex",data=D,standardize.to="f")
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="sex",data=D,standardize.to="m")
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="sex",data=D,standardize.to="mean")
+standardize.rate(x=list(c("e1","rt1"),c("e2","rt2")),
+                 age="agegroups",exposure="sex",data=d)
 
 }
 \seealso{

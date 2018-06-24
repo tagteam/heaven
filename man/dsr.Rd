@@ -5,7 +5,7 @@
 \title{Confidence intervals for age standardized rates and rate ratios}
 \usage{
 dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
-  NMC = 50000, seed = 1234)
+  NMC = 50000, seed = 1234, crude = TRUE)
 }
 \arguments{
 \item{count1}{counts for group 1 (e.g. exposed)}
@@ -16,7 +16,7 @@ dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
 
 \item{pop0}{number of subjects of person-years in group 0}
 
-\item{stdpop}{number of subjects of person-years in reference population}
+\item{stdpop}{number of subjects of person-years in stdpop population}
 
 \item{conf.level}{confidence level of confidence intervals}
 
@@ -25,8 +25,11 @@ dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
 \item{NMC}{number of Monte Carlo simulation to compute Melted intervals}
 
 \item{seed}{seed for reproducibility of melted confidence intervals}
+
+\item{crude}{logical. if \code{TRUE} also calculate crude rates}
 }
 \value{
+List with crude and standardized rates and rate ratios.
 }
 \description{
 Function to Compute confidence interval for directly standardized rates and rate ratios

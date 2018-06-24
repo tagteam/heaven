@@ -6,9 +6,9 @@
 ##'     distribution
 ##' @param vars Names of variable(s) which contain the rate(s) to be
 ##'     standardized.
-##' @param agevar Name of categorical age variable
-##' @param byvar Name(s) of categorical strata variable(s)
-##' @param reference what reference population to use for standardization.
+##' @param age Name of categorical age variable
+##' @param by Name(s) of categorical strata variable(s)
+##' @param standardize.to what population to use for standardization.
 ##' @param data Data set which contains all variables
 ##' @param level Confidence level
 ##' @param ... Not (yet) used
@@ -28,49 +28,75 @@
 ##' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 ##' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 ##' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
-##' standardize.rate(vars=list(c("e1","rt1")),
-##'                  agevar="agegroups",byvar="sex",data=D,reference="f")
-##' standardize.rate(vars=list(c("e1","rt1")),
-##'                  agevar="agegroups",byvar="sex",data=D,reference="m")
-##' standardize.rate(vars=list(c("e1","rt1")),
-##'                  agevar="agegroups",byvar="sex",data=D,reference="mean")
-##' standardize.rate(vars=list(c("e1","rt1"),c("e2","rt2")),
-##'                  agevar="agegroups",byvar="sex",data=d)
+##' standardize.rate(x=list(c("e1","rt1")),
+##'                  age="agegroups",exposure="sex",data=D,standardize.to="f")
+##' standardize.rate(x=list(c("e1","rt1")),
+##'                  age="agegroups",exposure="sex",data=D,standardize.to="m")
+##' standardize.rate(x=list(c("e1","rt1")),
+##'                  age="agegroups",exposure="sex",data=D,standardize.to="mean")
+##' standardize.rate(x=list(c("e1","rt1"),c("e2","rt2")),
+##'                  age="agegroups",exposure="sex",data=d)
 ##' 
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
-standardize.rate <- function(vars,
-                             agevar,
-                             byvar,
-                             reference,
+standardize.rate <- function(x,
+                             age="agegroups",
+                             exposure,
+                             by,
+                             standardize.to="ref.level",
                              data,
+                             method="f",
                              level=0.95,
+                             crude=TRUE,
                              ...){
     requireNamespace("data.table")
     .N=N=.SD=weight=NULL
-    if (!is.factor(data[[byvar]])){
-        data[[byvar]] <- factor(data[[byvar]])
-    }
-    if (missing(reference)) {
-        reference <- levels(data[[byvar]])[1]
-    }
     setDT(data)
-    N <- NROW(data)
-    out <- vector(length(vars),mode="list")
-    for (v in 1:length(vars)){
-        if (reference=="mean"){
-            stdpop <- data[,mean(.SD[[1]]),.SDcols=vars[[v]][[2]],by=c(agevar)][[2]]
-        } else{
-            stdpop <- data[data[[byvar]]==reference][[vars[[v]][[2]]]]
-        }
-        print(stdpop/sum(stdpop))
-        out[[v]] <- data[,{
-            std <- dsr(count1=.SD[[1]], count2=.SD[[1]],
-                       pop1=.SD[[2]],
-                       stdpop=stdpop)
-            .(crude.rate=std[[1]],adj.rate=std[[2]],lower=std[[3]],upper=std[[4]])
-        },.SDcols=vars[[v]],by=c(byvar)]
+    ## data <- copy(data)
+    nnn <- colnames(data)
+    if (!is.list(x) || any(sapply(x,length)!=2)){
+        stop("Argument 'x' has to be a list where each element contains two variable names:\n1. number of events\n2. number at risk (or person-years)")
     }
+    if (!is.character(age) || match(age,nnn,nomatch=0)==0) stop("Argument 'age' has to be the name of the age group variable in the dataset.")
+    if (!is.character(exposure) || match(exposure,nnn,nomatch=0)==0) stop("Argument 'exposure' has to be the name of the exposure group variable in the dataset.")
+    if (!missing(by)){
+        if (length(by)>=N) stop("Length of 'by' argument exceeds length of data.")
+        if (!all(sapply(by,is.character)) || any(match(by,nnn,nomatch=0)==0)) stop("Argument 'by' has to be a vector of variable names in the dataset.")
+    }
+    if (!is.factor(data[[age]])){
+        stop("Age variable has to be grouped as factor in the dataset.")
+    }
+    if (!is.factor(data[[exposure]])){
+        data[[exposure]] <- factor(data[[exposure]])
+    }
+    exposure.levels <- levels(data[[exposure]])
+    if (length(exposure.levels)>2) stop("Can only handle two exposure groups at a time.")
+    if (missing(standardize.to)) {
+        standardize.to <- "ref.level"
+    } else{
+        if (!is.character(standardize.to)) stop("Argument 'standardize.to' is not character. It has characterize the standard population.")        
+    }
+    N <- NROW(data)
+    out <- data[,{
+        xout <- rbindlist(lapply(1:length(x),function(v){
+            counts <- .SD[[x[[v]][[1]]]]
+            pops <- .SD[[x[[v]][[2]]]]
+            egroups <- .SD[[exposure]]
+            e1 <- egroups==exposure.levels[[1]]
+            e2 <- egroups==exposure.levels[[2]]
+            stdpop <- switch(standardize.to,
+                             "ref.level"={pops[e1]},
+                             "mean"={(pops[e1]+pops[e2])/2},
+                             pops[e2])
+            std.x <- dsr(count0=counts[e1],
+                         count1=counts[e2],
+                         pop0=pops[e1],
+                         pop1=pops[e2],
+                         stdpop=stdpop,method=method,crude=crude)
+            std.x[,x:=x[[v]][1]]
+        }))
+        xout
+    },.SDcols=c(unlist(x),exposure),by = by]
     out
 }
 
@@ -86,7 +112,7 @@ standardize.rate <- function(vars,
 ##' @param pop1 number of subjects of person-years in group 1 
 ##' @param count0 counts for group 1 (e.g. exposed)
 ##' @param pop0 number of subjects of person-years in group 0 
-##' @param stdpop number of subjects of person-years in reference population 
+##' @param stdpop number of subjects of person-years in stdpop population 
 ##' @param conf.level confidence level of confidence intervals
 ##' @param method method for calculating confidence intervals
 ##' @param crude logical. if \code{TRUE} also calculate crude rates 
@@ -147,7 +173,7 @@ dsr <- function(count1,
                 conf.level = 0.95,
                 method="gamma",
                 NMC=50000,
-                seed=1234){
+                seed=1234,crude=TRUE){
     alpha <- (1-conf.level)
     qalpha <- qnorm(1-alpha/2)
     ## {{{ point estimates
@@ -297,20 +323,23 @@ dsr <- function(count1,
         std.rr.lower <- CI.DSR.Ratio[1]
         std.rr.upper <- CI.DSR.Ratio[2]
     }
-    out <- list(standardized=data.table(group=c(0,1),
-                                        rate=c(DSR0,DSR1),
-                                        rate.lower=std.lower,
-                                        rate.upper=std.upper,
-                                        ratio=c(1,DSRRatio),
-                                        ratio.lower=c(1,std.rr.lower),
-                                        ratio.upper=c(1,std.rr.upper)))
-    if (crude) out <- c(out,list(crude=data.table(group=c(0,1),
-                                                  rate=c(R0,R1),
-                                                  rate.lower=crude.lower,
-                                                  rate.upper=crude.upper,
-                                                  ratio=c(1,crudeRatio),
-                                                  ratio.lower=c(1,crude.rr.lower),
-                                                  ratio.upper=c(1,crude.rr.upper))))
+    out <- data.table(group=c(0,1),
+                      rate=c(DSR0,DSR1),
+                      rate.lower=std.lower,
+                      rate.upper=std.upper,
+                      ratio=c(1,DSRRatio),
+                      ratio.lower=c(1,std.rr.lower),
+                      ratio.upper=c(1,std.rr.upper))
+    if (crude) {
+        out <- cbind(type="standardized",out)
+        out <- rbindlist(list(out,data.table(type="crude",group=c(0,1),
+                                             rate=c(R0,R1),
+                                             rate.lower=crude.lower,
+                                             rate.upper=crude.upper,
+                                             ratio=c(1,crudeRatio),
+                                             ratio.lower=c(1,crude.rr.lower),
+                                             ratio.upper=c(1,crude.rr.upper))))
+    }
     out[]
 }
 
