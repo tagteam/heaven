@@ -27,7 +27,6 @@ dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
 \item{seed}{seed for reproducibility of melted confidence intervals}
 }
 \value{
-List with crude and standardized rates and rate ratios.
 }
 \description{
 Function to Compute confidence interval for directly standardized rates and rate ratios

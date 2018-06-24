@@ -38,7 +38,7 @@
                       id = NULL,
                       trace = FALSE,
                       collapse = TRUE,
-                      tasks = 3,
+                      tasks = 1,
                       splitting = TRUE){
     # Set the right structure for processed object
     dpp$processed <- structure(list(),
@@ -119,7 +119,14 @@
                     baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
                 }
                 else{
-                    dpp$comorbperiods <- .internalLoadData(dpp$comorbperiods)
+                    if(attr(dpp$comorbperiods,"status")=="nominal"){
+                        message(paste0("Loading data for ", drugname, ".\n"))
+                    }
+                    .tmpLoad <- .internalLoadData(dpp$comorbperiods)
+                    dpp$comorbperiods <- .tmpLoad$dppObject
+                    if(.tmpLoad$prob.status==T){
+                        baddata2 <- paste0(baddata2, .tmpLoad$message)
+                    }
                 }
             }
             if (baddata2!="") {
