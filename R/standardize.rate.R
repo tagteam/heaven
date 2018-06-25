@@ -263,8 +263,8 @@ dsr <- function(count1,
     }
     if (tolower(method)=="gamma"){
         CIDSR <- CIgamma(alpha)
-        std.lower <- CIDSR[1]
-        std.upper <- CIDSR[2]
+        std.lower <- CIDSR[,"lower"]
+        std.upper <- CIDSR[,"upper"]
     }
     ## Wald CI for crude and directly standardized Rate Ratio
 
