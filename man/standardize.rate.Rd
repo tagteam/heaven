@@ -65,7 +65,7 @@ standardize.rate(x=list(c("e1","rt1")),
                  age="agegroups",exposure="sex",data=D,standardize.to="m")
 standardize.rate(x=list(c("e1","rt1")),
                  age="agegroups",exposure="sex",data=D,standardize.to="mean")
-standardize.rate(x=list(c("e1","rt1"),c("e2","rt2")),
+standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
                  age="agegroups",exposure="sex",data=d)
 
 }

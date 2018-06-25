@@ -41,7 +41,7 @@
 ##'                  age="agegroups",exposure="sex",data=D,standardize.to="m")
 ##' standardize.rate(x=list(c("e1","rt1")),
 ##'                  age="agegroups",exposure="sex",data=D,standardize.to="mean")
-##' standardize.rate(x=list(c("e1","rt1"),c("e2","rt2")),
+##' standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
 ##'                  age="agegroups",exposure="sex",data=d)
 ##' 
 ##' @export 
@@ -100,7 +100,8 @@ standardize.rate <- function(x,
                          pop0=pops[e1],
                          pop1=pops[e2],
                          stdpop=stdpop,method=method,crude=crude)
-            std.x[,x:=x[[v]][1]]
+            xname <- ifelse(length(names(x)[v])==0,x[[v]][1],names(x)[v])
+            std.x <- cbind(x=xname,std.x)
         }))
         xout
     },.SDcols=c(unlist(x),exposure),by = by]
