@@ -35,8 +35,10 @@ standardize.proportion <- function(vars,
                                    times,
                                    level=0.95,
                                    ...){
+    requireNamespace("data.table")
+    .N=N=.SD=weight=NULL
     N <- NROW(data)
-    agedist <- data[,.(weight=.N/N),by=c(agevar)]
+    agedist <- data[,data.table(weight=.N/N),by=c(agevar)]
     setkeyv(agedist,agevar)
     if (missing(cause)) cause <- 1
     if (!missing(formula)){
@@ -47,7 +49,7 @@ standardize.proportion <- function(vars,
                 c(m,v)
             }))
             names(varout) <- paste0(c("prop.","varprop."),rep(vars,rep(2,length(vars))))
-            fit <- prodlim(formula)
+            fit <- prodlim::prodlim(formula)
             tind <- predict(fit,times=times,type="list")$indices$time
             fout <- unlist(lapply(cause,function(cr){
                 if (!(cr %in% attr(fit$model.response,"states"))){

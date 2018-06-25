@@ -2,11 +2,10 @@
 % Please edit documentation in R/simAdmissionData.R
 \name{simAdmissionData}
 \alias{simAdmissionData}
-\alias{simLPR}
 \title{Admission data simulation function}
 \usage{
-simAdmissionData(n, m = 5, diagnoses = paste0(toupper(letters), rep(0:99,
-  length(letters))), startDate = "1995-01-01")
+simAdmissionData(n, m = 5, diagnoses = paste0("D", toupper(letters),
+  rep(0:99, length(letters))), startDate = "1995-01-01")
 }
 \arguments{
 \item{n}{Number of patients}

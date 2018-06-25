@@ -4,20 +4,17 @@
 \alias{poissonregression}
 \title{Poisson regression by aggregated data using glm}
 \usage{
-poissonregression(formula, data, timegrid, effectZgrid)
+poissonregression(formula, data, aggvars, byvars)
 }
 \arguments{
 \item{formula}{The formula as specified in glm.}
 
-\item{data}{dataset containing the variables "interval" and "event".}
+\item{data}{dataset.}
 
-\item{timegrid}{vector of times the data should be aggregated by.}
+\item{aggvars}{vector of variables in data to be aggregated (summarized).}
 
-\item{effectZgrid}{levels of Z variable}
+\item{byvars}{vector of variables in data to aggregate by.}
 }
 \description{
-Poisson regression applied to aggregated data using glm
-}
-\details{
-Poisson regression applied to aggregated data using glm
+Aggregates data and performs poisson regression using GLM.
 }

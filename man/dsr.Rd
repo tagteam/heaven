@@ -5,7 +5,7 @@
 \title{Confidence intervals for age standardized rates and rate ratios}
 \usage{
 dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
-  NMC = 50000, seed = 1234)
+  crude = TRUE)
 }
 \arguments{
 \item{count1}{counts for group 1 (e.g. exposed)}
@@ -16,32 +16,16 @@ dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
 
 \item{pop0}{number of subjects of person-years in group 0}
 
-\item{stdpop}{number of subjects of person-years in reference population}
+\item{stdpop}{number of subjects of person-years in stdpop population}
 
 \item{conf.level}{confidence level of confidence intervals}
 
 \item{method}{method for calculating confidence intervals}
 
-\item{NMC}{number of Monte Carlo simulation to compute Melted intervals}
-
-\item{seed}{seed for reproducibility of melted confidence intervals}
+\item{crude}{logical. if \code{TRUE} also calculate crude rates}
 }
 \value{
-crude.Rates                : crude rates
-DSR                        : DSR, i.e. Directly Standardized Rates
-exact.CI.crude.Rates       : Exact confidence intervals for crude rates
-raw.Wald.CI.crude.Rates    : raw Wald confidence intervals for crude rates
-log.Wald.CI.crude.Rates    : Wald confidence intervals for crude rates, using the log for the normal approximation
-raw.Wald.CI.DSR            : raw Wald confidence intervals for DSR
-log.Wald.CI.DSR            : Wald confidence intervals for DSR, using the log for the normal approximation
-gamma.CI.DSR               : Gamma confidence intervals for DSR
-crude.Ratio                : crude rates ratio
-log.Wald.CI.crude.Ratio    : Wald confidence intervals for the crude rate ratio, using the log for the normal approximation
-exact.CI.crude.Ratio       : Exact confidence intervals for the crude rate ratio
-DSR.Ratio                  : DSR ratio
-log.Wald.CI.DSR.Ratio      : Wald confidence intervals for the DSR ratio, using the log for the normal approximation
-F.dist.CI.DSR.Ratio        : F distribution based confidence intervals for the DSR ratio
-melted.CI.DSR.Ratio        : Melted gamma confidence intervals for the DSR ratio
+List with crude and standardized rates and rate ratios.
 }
 \description{
 Function to Compute confidence interval for directly standardized rates and rate ratios
@@ -50,7 +34,7 @@ Function to Compute confidence interval for directly standardized rates and rate
 Function to Compute confidence interval for directly standardized rates
 and rate ratios for sparse data. Method implemented include gamma confidence
 intervals (for DSR), exact confidence intervals (for crude rates),
-the inverse of the F distribution (for DSR ratio), melted confidence (for DSR ratios)
+the inverse of the F distribution (for DSR ratio)
 and some Wald confidence interval (also on log-scale) for comparison purpose.
 }
 \examples{

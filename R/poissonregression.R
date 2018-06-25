@@ -1,19 +1,13 @@
-#' Poisson regression applied to aggregated data using glm
-#'
-#' Poisson regression applied to aggregated data using glm
+#' Aggregates data and performs poisson regression using GLM.
 #' @title Poisson regression by aggregated data using glm
 #' @param formula The formula as specified in glm.
-#' @param data dataset containing the variables "interval" and "event".
-#' @param timegrid vector of times the data should be aggregated by.
-#' @param effectZgrid levels of Z variable
+#' @param data dataset.
+#' @param aggvars vector of variables in data to be aggregated (summarized).
+#' @param byvars vector of variables in data to aggregate by.
 #' @export
-poissonregression <- function(formula,data,timegrid,effectZgrid){
-  aggdata <- aggregateData(data=data,timegrid=timegrid)
-  if (!missing(effectZgrid)){
-    aggdata[,Ztime:=factor(time)]
-    levels(aggdata$Ztime) <- effectZgrid
-  }
-  fit <- glm(formula,data=aggdata,family=poisson())
+poissonregression <- function(formula,data,aggvars,byvars){
+  if (class(data)[1]!="data.table") data <- data.table(data)
+    aggdata <- data[,lapply(.SD,sum),by=byvars,.SDcols=aggvars]
+  fit <- stats::glm(formula,data=aggdata,family=stats::poisson())
   fit
 }
-

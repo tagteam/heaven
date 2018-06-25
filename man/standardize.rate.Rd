@@ -5,26 +5,38 @@
 \title{Standardize proportions and absolute risks to a given age
     distribution}
 \usage{
-standardize.rate(vars, agevar, byvar, reference, data, level = 0.95, ...)
+standardize.rate(x, age = "agegroups", exposure, by,
+  standardize.to = "ref.level", data, method = "gamma", level = 0.95,
+  crude = TRUE, ...)
 }
 \arguments{
-\item{vars}{Names of variable(s) which contain the rate(s) to be
-standardized.}
+\item{x}{List of names of variable names used to calculate the rates.
+Each element of the list contains the names of two variables in the
+dataset: the first variable contains the number of events and the second
+variable contains the number of subjects or person years.}
 
-\item{agevar}{Name of categorical age variable}
+\item{age}{Name of categorical age variable.}
 
-\item{byvar}{Name(s) of categorical strata variable(s)}
+\item{exposure}{Name of the exposure variable for rate ratios.}
 
-\item{reference}{what reference population to use for standardization.}
+\item{by}{Vector of names of further categorical strata variables}
 
-\item{data}{Data set which contains all variables}
+\item{standardize.to}{what population to use for standardization.}
+
+\item{data}{Data set which contains all the variables}
+
+\item{method}{Character. The method for calculating confidence intervals.
+If "gamma" use gamma distribution (see Fay et al.). If "wald" or "wald-log" use
+normal or log-normal approximation.}
 
 \item{level}{Confidence level}
+
+\item{crude}{Logical. If \code{TRUE} calculate crude rates too.}
 
 \item{...}{Not (yet) used}
 }
 \value{
-Data table with standardized rates
+Data table with standardized rates (and crude rates if asked for)
 }
 \description{
 Standardize proportions and absolute risks to a given age distribution
@@ -47,18 +59,18 @@ d[,year:=rep(2001:2010,n/10)]
 D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
-standardize.rate(vars=list(c("e1","rt1")),
-                 agevar="agegroups",byvar="sex",data=D,reference="f")
-standardize.rate(vars=list(c("e1","rt1")),
-                 agevar="agegroups",byvar="sex",data=D,reference="m")
-standardize.rate(vars=list(c("e1","rt1")),
-                 agevar="agegroups",byvar="sex",data=D,reference="mean")
-standardize.rate(vars=list(c("e1","rt1"),c("e2","rt2")),
-                 agevar="agegroups",byvar="sex",data=d)
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="sex",data=D,standardize.to="f")
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="sex",data=D,standardize.to="m")
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="sex",data=D,standardize.to="mean")
+standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
+                 age="agegroups",exposure="sex",data=d)
 
 }
 \seealso{
-standardize.prodlim standardize.proportion
+standardize.prodlim standardize.proportion epitools::ageadjust.direct
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>
