@@ -4,16 +4,23 @@
 ##' distribution
 ##' @title Standardize proportions and absolute risks to a given age
 ##'     distribution
-##' @param vars Names of variable(s) which contain the rate(s) to be
-##'     standardized.
-##' @param age Name of categorical age variable
-##' @param by Name(s) of categorical strata variable(s)
+##' @param x List of names of variable names used to calculate the rates.
+##'          Each element of the list contains the names of two variables in the
+##'          dataset: the first variable contains the number of events and the second
+##'          variable contains the number of subjects or person years.
+##' @param age Name of categorical age variable. 
+##' @param exposure Name of the exposure variable for rate ratios.
+##' @param by Vector of names of further categorical strata variables
 ##' @param standardize.to what population to use for standardization.
-##' @param data Data set which contains all variables
+##' @param data Data set which contains all the variables
+##' @param method Character. The method for calculating confidence intervals.
+##'        If "gamma" use gamma distribution (see Fay et al.). If "wald" or "wald-log" use
+##'        normal or log-normal approximation. 
 ##' @param level Confidence level
+##' @param crude Logical. If \code{TRUE} calculate crude rates too.
 ##' @param ... Not (yet) used
-##' @return Data table with standardized rates
-##' @seealso standardize.prodlim standardize.proportion
+##' @return Data table with standardized rates (and crude rates if asked for) 
+##' @seealso standardize.prodlim standardize.proportion epitools::ageadjust.direct
 ##' @examples
 ##' library(riskRegression)
 ##' set.seed(84)
@@ -45,7 +52,7 @@ standardize.rate <- function(x,
                              by,
                              standardize.to="ref.level",
                              data,
-                             method="f",
+                             method="gamma",
                              level=0.95,
                              crude=TRUE,
                              ...){
@@ -105,7 +112,7 @@ standardize.rate <- function(x,
 ##' Function to Compute confidence interval for directly standardized rates
 ##' and rate ratios for sparse data. Method implemented include gamma confidence
 ##' intervals (for DSR), exact confidence intervals (for crude rates),
-##' the inverse of the F distribution (for DSR ratio), melted confidence (for DSR ratios)
+##' the inverse of the F distribution (for DSR ratio)
 ##' and some Wald confidence interval (also on log-scale) for comparison purpose.
 ##' @title Confidence intervals for age standardized rates and rate ratios
 ##' @param count1 counts for group 1 (e.g. exposed)
@@ -116,8 +123,6 @@ standardize.rate <- function(x,
 ##' @param conf.level confidence level of confidence intervals
 ##' @param method method for calculating confidence intervals
 ##' @param crude logical. if \code{TRUE} also calculate crude rates 
-##' @param NMC number of Monte Carlo simulation to compute Melted intervals
-##' @param seed seed for reproducibility of melted confidence intervals
 ##' @references
 ##' Fay, Michael P., and Eric J. Feuer. "Confidence intervals for directly
 ##' standardized rates: a method based on the gamma distribution." Statistics
@@ -166,14 +171,13 @@ standardize.rate <- function(x,
 ##' @author Paul F Blanche  <pabl@@sund.ku.dk> and Thomas A. Gerds <tag@@biostat.ku.dk>
 ### Code:
 dsr <- function(count1,
-                pop1,  
+                pop1,
                 count0,
-                pop0,  
-                stdpop, 
+                pop0,
+                stdpop,
                 conf.level = 0.95,
                 method="gamma",
-                NMC=50000,
-                seed=1234,crude=TRUE){
+                crude=TRUE){
     alpha <- (1-conf.level)
     qalpha <- qnorm(1-alpha/2)
     ## {{{ point estimates
@@ -202,7 +206,7 @@ dsr <- function(count1,
         ## }}}
     }
     ## {{{ compute raw (plain) Wald interval of each crude rates
-    if (substr(tolower(method),0,4)=="wald"|tolower(method)=="f"){
+    if (substr(tolower(method),0,4)=="wald"){
         varR1 <- sum(count1)/sum(pop1)^2 # usual formula for poisson
         varR0 <- sum(count0)/sum(pop0)^2
         if (tolower(method)=="wald.log"){
@@ -216,7 +220,7 @@ dsr <- function(count1,
     ## }}}
 
     ## {{{ compute raw (plain) Wald interval of each DSR
-    if (substr(tolower(method),0,4)=="wald"|tolower(method)=="f"){
+    if (substr(tolower(method),0,4)=="wald"){
         # estimator of the variance of the Directly standardized Rates
         varDSR1 <- sum(count1*(w/pop1)^2)
         varDSR0 <- sum(count0*(w/pop0)^2)
@@ -285,7 +289,7 @@ dsr <- function(count1,
         crude.rr.upper <- CI.crude.Ratio[2]
     }
     ## using the inverse of the F distribution
-    if (tolower(method)=="f"){
+    if (tolower(method)=="gamma"){
         w1 <- w/pop1
         w0 <- w/pop0
         index1 <- which(count1<(count1+count0))
@@ -300,28 +304,6 @@ dsr <- function(count1,
         nu0star <- (2*(DSR0 + wMRR0)^2)/(varDSR0+wMRR0^2)
         std.rr.lower <- (DSR1 / (DSR0 + wMRR0) )*stats::qf(p=alpha/2, df1=nu1, df2=nu0star)
         std.rr.upper <- ((DSR1 + wMRR1)/DSR0)*stats::qf(p=1-alpha/2, df1=nu1star, df2=nu0)
-    }
-
-    ## melted Gamma intervals
-    if (tolower(method)=="gamma"){
-        set.seed(seed)
-        allsimu <- lapply(1:NMC,function(x){CIgamma(runif(1))})
-        ## allsimu
-        alllci0 <- unlist(lapply(allsimu,"[",1))
-        alluci0 <- unlist(lapply(allsimu,"[",3))
-        alllci1 <- unlist(lapply(allsimu,"[",2))
-        alluci1 <- unlist(lapply(allsimu,"[",4))
-        gGreater <- alllci1/alluci0
-        gGreater[is.na(gGreater)] <- Inf   
-        gLess <- alluci1/alllci0   
-        gLess[is.na(gLess)] <- 0
-        ## pgr <- length(gGreater[gGreater <= 1])/NMC
-        ## pless <- length(gLess[gLess >= 1])/NMC
-        ## pvalueMelted <- min(1, 2 * pgr, 2 * pless)
-        CI.DSR.Ratio <- c(stats::quantile(gGreater, probs = alpha),
-                          stats::quantile(gLess, probs = 1 - alpha))
-        std.rr.lower <- CI.DSR.Ratio[1]
-        std.rr.upper <- CI.DSR.Ratio[2]
     }
     out <- data.table(group=c(0,1),
                       rate=c(DSR0,DSR1),
