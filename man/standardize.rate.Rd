@@ -6,27 +6,37 @@
     distribution}
 \usage{
 standardize.rate(x, age = "agegroups", exposure, by,
-  standardize.to = "ref.level", data, method = "f", level = 0.95,
+  standardize.to = "ref.level", data, method = "gamma", level = 0.95,
   crude = TRUE, ...)
 }
 \arguments{
-\item{age}{Name of categorical age variable}
+\item{x}{List of names of variable names used to calculate the rates.
+Each element of the list contains the names of two variables in the
+dataset: the first variable contains the number of events and the second
+variable contains the number of subjects or person years.}
 
-\item{by}{Name(s) of categorical strata variable(s)}
+\item{age}{Name of categorical age variable.}
+
+\item{exposure}{Name of the exposure variable for rate ratios.}
+
+\item{by}{Vector of names of further categorical strata variables}
 
 \item{standardize.to}{what population to use for standardization.}
 
-\item{data}{Data set which contains all variables}
+\item{data}{Data set which contains all the variables}
+
+\item{method}{Character. The method for calculating confidence intervals.
+If "gamma" use gamma distribution (see Fay et al.). If "wald" or "wald-log" use
+normal or log-normal approximation.}
 
 \item{level}{Confidence level}
 
-\item{...}{Not (yet) used}
+\item{crude}{Logical. If \code{TRUE} calculate crude rates too.}
 
-\item{vars}{Names of variable(s) which contain the rate(s) to be
-standardized.}
+\item{...}{Not (yet) used}
 }
 \value{
-Data table with standardized rates
+Data table with standardized rates (and crude rates if asked for)
 }
 \description{
 Standardize proportions and absolute risks to a given age distribution
@@ -60,7 +70,7 @@ standardize.rate(x=list(c("e1","rt1"),c("e2","rt2")),
 
 }
 \seealso{
-standardize.prodlim standardize.proportion
+standardize.prodlim standardize.proportion epitools::ageadjust.direct
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>
