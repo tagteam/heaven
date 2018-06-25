@@ -55,13 +55,16 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                      ,invars #names of id/in/out/event - in that order
                      ,splitvars #Names in splitdat with pnr/from/to/value/name
                      ){
-  requireNamespace(data.table)
+  requireNamespace("data.table")
   copyindat <- copy(indat)
   #Tests of data
   if (!is.data.table(indat) | !is.data.table(splitdat)) stop("Error - Input tables must both be data tables")
   INDAT <- copyindat[,invars,with=FALSE] # Necessary variables for split
   INDAT[,mergevar:=1:.N] # Variable to merge by after split;
   setnames(INDAT,invars,c("pnr","inn","out","event"))
+  if(!tolower(tolower(class(INDAT[,inn]))) %in% c("date","Integer","numeric") | 
+     !tolower( class(INDAT[,out])) %in% c("date","Integer","numeric"))
+    stop(paste("Variables in",indat," that should be dates are not numeric"))
   setkey(INDAT,pnr)
   INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
   pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=FALSE]) 
@@ -71,21 +74,26 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   #Prepare splitdat
   csplit <- copy(splitdat)
   csplit[,splitvars,with=FALSE] # necessary variables
-  setnames(csplit,c("pnr","start","slut","val","name"))
+  setnames(csplit,splitvars,c("pnr","start","slut","val","name"))
+  if(!tolower(tolower(class(csplit[,start]))) %in% c("date","Integer","numeric") | 
+     !tolower( class(csplit[,slut])) %in% c("date","Integer","numeric"))
+    stop(paste("Variables in",splitdat," that should be dates are not numeric"))
   setkey(csplit,"pnr")
+  # check dates
+  
   csplit <- merge(csplit,pnrgrp,by="pnr",all.x=TRUE)
   csplit[,pnr:=NULL] # identify only by pnrnum
   setkeyv(csplit,c("name","pnrnum","start","slut")) 
   ## Check csplit content
   temp <- csplit[start>slut,sum(start>slut)]
-  if (temp>0) stop("Error - Attempt to split with negative date intervals")
+  if (temp>0) stop(paste("Error in ",splitdat, " - Attempt to split with negative date intervals"))
   temp <- copy(csplit)
   cols = c("start","slut")
   precols = paste("prior", cols, sep="_")
   temp[, (precols) := shift(.SD, 1, 0, "lag"), .SDcols=cols,by=c("name","pnrnum")]
   temp[,dif1 := start-prior_slut]
   temp <- temp[,sum(dif1<0)]
-  if (temp>0) stop("Error - Intervals overlapping within individual and group")
+  if (temp>0) stop(paste("Error in" ,splitdat, "- Intervals overlapping in consecutive records"))
   #Separate tables for each value of name
   namelist <- unique(csplit[["name"]])
   OUT <- INDAT[,c("pnrnum","mergevar","inn","out","event"),with=FALSE] # Prepare output start

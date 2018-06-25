@@ -37,9 +37,9 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
   std::vector<std::string> Oval; // output value
   Oval.reserve(pnrnum.size()*2);
   
-  unsigned int l1=pnrnum.size(); // length of base data
-  unsigned int l2=Spnrnum.size(); // length of split guide
-  unsigned int counter=0; // counts through split guide
+  int l1=pnrnum.size(); // length of base data
+  int l2=Spnrnum.size(); // length of split guide
+  int counter=0; // counts through split guide
   int START=0; //marks start of splitting guide to pnr-range
   int SLUT=0; // End of splitting guide for pnr-range
   int INN=-1; // start of pnr-range in output data
@@ -55,7 +55,7 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
       noSplit=0; // Splitting guide expected as default
       INN=OUT+1;  // Start of next pnr-sequence except for firt record
       FIRST=1;
-      while (Spnrnum(counter)<pnrnum(i) && counter<l2-2) counter+=1;
+      while (counter<(l2-2) && Spnrnum(counter)<pnrnum(i)) counter+=1;
       //Searching in splitting guide until match found or passed
       if (Spnrnum(counter)>pnrnum(i) || Spnrnum(counter)<pnrnum(i)) {noSplit=1;
       //passed or reached end without splitting guide
@@ -68,7 +68,8 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
             counter+=1; 
             SLUT=counter;
             if (counter>=l2-1){
-              SLUT=l2-1;
+              SLUT=l2-1; 
+              counter -=1; //Counter should not exceed l1-2
               break; // Reached end;  
             } 
             else
@@ -81,8 +82,9 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
         } //end  Spnrnum==pnrnum
       } // end found one - or some
     } // end new pnr - START, SLUT, INN, OUT have been identified
-    if (FIRST==1 || (i !=0 && pnrnum(i)==pnrnum[i-1])){ // in series of identical pnr-s
-      // collect pnr-series
+    if (FIRST==1 || (i !=0 && pnrnum(i)==pnrnum(i-1))){ // in series of identical pnr-s
+      // Start always by pushing the original record and then add new records - and adjust original record
+      // This "push" takes place once per record in base data prior to split or no-split
       OUT+=1;
       Opnrnum.push_back(pnrnum(i));
       Omergevar.push_back(mergevar(i));
@@ -95,7 +97,7 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
     if (i==l1-1 || (i<l1-1 && pnrnum(i) != pnrnum(i+1))){
     // End consecutive pnrnumbers - start splitting
       if (noSplit==1){ //Nothing to split
-      }
+      } 
       else{ // Something to split
         for (int ii=START; ii<=SLUT; ii++){ // Outer loop - splitting guide
           OUT=OUT+OUText; // Extension of OUT from splitting by prior split guide record;
@@ -124,7 +126,7 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
               Oevent[iii]=0;
             } 
             else
-            if (end(ii)>=Oout[iii] && Oinn[iii]<=start(ii) && start(ii)<=Oout[iii]){ 
+            if (end(ii)>=Oout[iii] && Oinn[iii]<=start(ii) && start(ii)<=Oout[iii]){
             // split in 2 records - right overlap
             // New record start at start and ends with original end
               OUText +=1;
@@ -159,12 +161,12 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
               Oval[iii]=val[ii]; // and gets the value from the interval
               Oevent[iii]=0;  
             }
-          }// end iii-loop - base data
+           }// end iii-loop - base data
         } // End ii-loop - splitting guide
       } // end else-something to split
     } // end consecutive pnr 
   } // End i-for loop
-//Rcout << "Create return" << "\n";    
+//Rcout << "Create return" << "\n";  
   return (Rcpp::List::create(Rcpp::Named("pnrnum") = Opnrnum,
                             Rcpp::Named("merge")=Omergevar, 
                             Rcpp::Named("inn") = Oinn,
@@ -186,7 +188,7 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
 //mergevar <- 1:10
 //
 //#Spnrnum <- c(1,2,2,3,4,4,5,5,5,6) # 
-//val <- as.character(1:10)
+//#val <- as.character(1:10)
 //#           1   2   2    3   4   4   5   5   5   6
 //#start <- c(190, 90,189,132,100,200,110,120,130,90)
 //#end <-  c( 210,110,210,166,100,200,115,130,210,210)
@@ -194,11 +196,15 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
 //#val <- c("ost","kaffe","brød","forårsrulle")
 //#start <- c(20,50,150,180)
 //#end <- c(30,150,180,199)
-//Spnrnum <- c(1  , 1,  1,  2,  2,  2,  3,  3,  3,  6)
-//start <- c(  50,  110,199,125,126,250,100,133,166,98)
-//end <-   c(  101, 188,218,125,150,170,133,166,167,250)
-
-
+//#Spnrnum <- c(1  , 1,  1,  2,  2,  2,  3,  3,  3,  6)
+//#start <- c(  50,  110,199,125,126,250,100,133,166,98)
+//#end <-   c(  101, 188,218,125,150,170,133,166,167,250)
+//val <- "1"
+//Spnrnum <- 2
+//start <- 125
+//end <- 175
+//
+//
 //temp <- splitFT(pnrnum,inn,out,event,mergevar,Spnrnum,val,start,end)
 //setDT(temp)
 //setkey(temp,pnrnum,inn,out)
