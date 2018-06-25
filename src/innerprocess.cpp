@@ -19,7 +19,7 @@ using namespace arma;
 Rcpp::List innerprocess(Rcpp::DataFrame dat,
 			Rcpp::DataFrame admdat,
 			Rcpp::List doses, 
-			Rcpp::IntegerVector idunique,
+			NumericVector idunique,
 			double N, 
 			double maxdepot,
 			bool collapse
@@ -32,13 +32,13 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
   arma::vec dmax = Rcpp::as<arma::vec>(doses["max"]);
   arma::vec ddef = Rcpp::as<arma::vec>(doses["def"]);
 
-  arma::uvec INid = Rcpp::as<arma::uvec>(dat["id"]);
+  arma::vec INid = Rcpp::as<arma::vec>(dat["id"]); 
   arma::vec INpdate = Rcpp::as<arma::vec>(dat["pdate"]);
   arma::vec INstrength = Rcpp::as<arma::vec>(dat["strength"]);
   arma::vec INnpack = Rcpp::as<arma::vec>(dat["npack"]);
   arma::vec INppp = Rcpp::as<arma::vec>(dat["ppp"]);
   
-  arma::uvec INaid = Rcpp::as<arma::uvec>(admdat["id"]);
+  arma::vec INaid = Rcpp::as<arma::vec>(admdat["id"]); 
   arma::vec INadmin = Rcpp::as<arma::vec>(admdat["inddto"]);
   arma::vec INadmax = Rcpp::as<arma::vec>(admdat["uddto"]);
   
@@ -48,9 +48,10 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
     // if (i == 1000 || i == 2000 || i==3000){
     // Rcout << "==============i = " << i << "===============\n\n"<< std::endl;
     // }
-    arma::uword thisid = idunique(i);
-    arma::uvec did = find(INid==thisid);
-    arma::uvec aid = find(INaid==thisid);
+
+    double thisid = idunique(i); 
+    arma::uvec did = find(INid==thisid); //OK, index (?)
+    arma::uvec aid = find(INaid==thisid); //OK, index (?)
     
     // subset data //
     // aid.print();
@@ -59,7 +60,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
     
     // Rcout << "d id's" << std::endl;
     // did.print();
-    arma::uvec id = INid.elem(did);
+    arma::vec id = INid.elem(did); 
     arma::vec pdate = INpdate.elem(did);
     arma::vec strength = INstrength.elem(did);
     arma::vec npack = INnpack.elem(did);
@@ -82,7 +83,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
     arma::vec M(K);
     arma::vec i0(K);
   
-    arma::uvec idout(K);
+    arma::vec idout(K);
     Rcpp::DateVector B(K);
     Rcpp::DateVector E(K);
     arma::vec Enum(K);
@@ -220,7 +221,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
       if (k < K-1 && Enum(k) > T(k+1)-1)
 	Enum(k) = T(k+1)-1;
 
-      idout(k) = id(0);
+      idout(k) = id(0); // ?
       
       // check if periods can be concatenated
       if (k > 0 && collapse) {
@@ -272,7 +273,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
 				       Rcpp::Named("i0")     = i0,
 				       Rcpp::Named("yj")     = yk);
     } else {
-      arma::uvec id1(ylength,fill::zeros);
+      arma::vec id1(ylength,fill::zeros);
       // Rcout << " ylength "  << ylength << std::endl;
       // id1+=id(0);
       Rcpp::DateVector B1(ylength); 

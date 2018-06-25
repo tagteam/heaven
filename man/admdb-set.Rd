@@ -4,7 +4,7 @@
 \alias{admdb<-}
 \title{Update admission dates database}
 \usage{
-admdb(dpp, id = pnr, inddto = inddto, uddto = uddto,
+admdb(dpp, id = "pnr", inddto = "inddto", uddto = "uddto",
   add = FALSE) <- value
 }
 \arguments{

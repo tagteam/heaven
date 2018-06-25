@@ -14,10 +14,9 @@
 #' @param id Name of the variable in data that contains patient id.
 #' @param codevar Name of the variable in data that contains diagnoses or atc codes.
 #' @param patvar Name of the variable in data that contains the type of patient.
-#' @param record.id Name of the variable in data that contains the record number for each patient.
 #' @param indexvar Name of the variable in data that contains the index date.
 #' @param index.int Numeric. Number of days before or after an index date to search for specific diagnoses/atc codes. If negative, days before index date. If positve, days after index date (i.e. outcome).
-#' @param lmdb Logical. If true, data with atc codes is expected, and record.id and patvar are not expected to be in the data.
+#' @param lmdb Logical. If true, data with atc codes is expected, and and patvar are not expected to be in the data.
 #' @details Extracts specific selected ICD- or ATC codes, or predefined diseases by diagnoses. If specified by keep, only the first or last occurrence of the code is extracted.
 #' @return A list of three elements. data: the extracted data. codes: contains the codes specified 
 #' to be extracted. unique.codes: contains every unique code extracted. If exclusions are specified, these are contained in an additional list element: excl. 
@@ -25,11 +24,11 @@
 #' \dontrun{
 #' 
 #' # Simulated LPR-registry data
-#' lpr.data = simAdmissionData(39)
-#' data(lpr.data)
+#' set.seed(2976)
+#' lpr.data <- simAdmissionData(100)
 #' 
 #' # Extract diagnoses related to heart failure
-#' dat.extracted <- extractCode(lpr.data,disease=c("hf"))
+#' dat.extracted <- extractCode(lpr.data,disease=c("hf"),id='pnr')
 #' 
 #' # View first 6 lines of extracted data 
 #' head(dat.extracted$data)
@@ -40,34 +39,35 @@
 #' # Unique codes extracted
 #' dat.extracted$unique.codes
 #'
-#' # Extract diagnoses related to heart failure after the date 01-01-2007.
-#' dat.extracted <- extractCode(lpr.data,disease=c("hf"),p.in='2007-01-01')
+#' # Extract diagnoses related to cancer after the date 01-01-2007.
+#' dat.extracted <- extractCode(lpr.data,disease=c("cancer"),p.in='2007-01-01',id='pnr')
 #'
-#' # Extract diagnoses related to liver disease or cancer, and only include first
-#' # diagnosis of each disease for each patient.
-#' dat.extracted <- extractCode(lpr.data,disease=c("liver","cancer"),keep='first',prefix='diag')
+#' # Extract diagnoses related to liver disease or cancer.
+#' dat.extracted <- extractCode(lpr.data,disease=c("liver","cancer"),prefix='diag',id='pnr')
 #' 
-#' # Extract cancer diagnoses, and keep only first diagnosis and patients of type 3
-#' dat.extracted <- extractCode(lpr.data,disease="cancer",keep='first',pat=3)
+#' # Extract cancer diagnoses, and keep only diagnosis of patients of type 3
+#' dat.extracted <- extractCode(lpr.data,disease="cancer",pat=3,id='pnr')
 #'
-#' # Extract all diagnoses begining with an 'DI', and exclude all diagnoses with 'DI21' and 'DI8'.
-#' dat.extracted <- extractCode(lpr.data,inclusions='DI',exclusions=c('DI21','DI8'),prefix='i')
+#' # Extract all diagnoses begining with 'DI', and exclude all diagnoses with 'DI22' and 'DI9'.
+#' dat.extracted <- extractCode(lpr.data,inclusions='DI',
+#'                              exclusions=c('DI22','DI9'),prefix='i',id='pnr')
 #'
-#' # Extract ischemic heart disease without DI21 and DI22:
-#' dat.extracted <- extractCode(lpr.data,disease='ihd',exclusions=c('DI21','DI22'),prefix='ihd_excl_ami')
-#' 
 #' # Extract ischemic heart disease diagnoses within three years after index date
-#' dat.extracted <- extractCode(lpr.data,disease=c("ihd"),indexvar='indexdate',index.int=365*3)
+#' dat.extracted <- extractCode(lpr.data,inclusions=c("DI"),indexvar='indexdate',
+#'                               index.int=365*3,id='pnr')
 #' 
-#' # Extract bleeding diagnoses within one month before index date
-#' dat.extracted <- extractCode(lpr.data,disease=c("bleeding"),indexvar='indexdate',index.int=-365)
+#' # Extract bleeding diagnoses within one year before index date
+#' dat.extracted <- extractCode(lpr.data,inclusions=c("DN"),indexvar='indexdate',
+#'                              index.int=-365,id='pnr')
 #' }
 #' @export
 #' @author Regitze Kuhr Skals <r.skals@rn.dk>
+
 extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
-                  keep='',pat=NULL,prefix='',entryvar='inddto',id='PNR',codevar='diag',
-                  patvar='pattype',record.id='recnum',indexvar=NULL,index.int=NULL,lmdb=FALSE){
-  
+                        keep='',pat=NULL,prefix='',entryvar='inddto',id='PNR',codevar='diag',
+                        patvar='pattype',indexvar=NULL,index.int=NULL,lmdb=FALSE){
+    .I = row1=.N=rowN=entrydate=index=pattype=pnr=dis=.SD=NULL
+    
   # definition of diseases
   
   disease_defs <- list(af=c("DI48","42793", "42794"),rheumvalve=c(as.character(c(39400, 39401, 39402, 
@@ -138,40 +138,16 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
                      adp_inhibitors=c("B01AC04", "B01AC22", "B01AC24"))
   
   ##  Make into data.table 
-  d <- as.data.table(dat)
+  requireNamespace("data.table")
+  d <- copy(dat)
+  data.table::setDT(d)
   
-  if(is.null(indexvar)&lmdb==FALSE){
-    d <- d[,c(id,record.id,entryvar,codevar,patvar),with=FALSE]
-    setnames(d,codevar,'diag')
-    setnames(d,id,'pnr')
-    setnames(d,entryvar,'entrydate')
-    setnames(d,patvar,'pattype')
-    setnames(d,record.id,'recnum')
+  data.table::setnames(d,old=c(codevar,id,entryvar,patvar),
+                       new=c('diag','pnr','entrydate','pattype'))
+  if(!is.null(indexvar)){
+    data.table::setnames(d,indexvar,'index')
   }
-  if(!is.null(indexvar)&lmdb==FALSE){
-    d <- d[,c(id,record.id,entryvar,codevar,patvar,indexvar),with=FALSE]
-    setnames(d,codevar,'diag')
-    setnames(d,id,'pnr')
-    setnames(d,entryvar,'entrydate')
-    setnames(d,patvar,'pattype')
-    setnames(d,record.id,'recnum')
-    setnames(d,indexvar,'index')
-  }
-  if(is.null(indexvar)&lmdb==TRUE){
-    d <- d[,c(id,entryvar,codevar),with=FALSE]
-    setnames(d,codevar,'diag')
-    setnames(d,id,'pnr')
-    setnames(d,entryvar,'entrydate')
-  }
-  
-  if(!is.null(indexvar)&lmdb==TRUE){
-    d <- d[,c(id,entryvar,codevar,indexvar),with=FALSE]
-    setnames(d,codevar,'diag')
-    setnames(d,id,'pnr')
-    setnames(d,entryvar,'entrydate')
-    setnames(d,indexvar,'index')
-  }
-
+    
   if(!is.null(p.in)){ 
     if(class(try(as.Date(p.in),silent=TRUE))=='try-error'){
       warning("Argument 'p.in' is not a date") 
@@ -198,7 +174,7 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   }
   
   setkey(d,diag) #Sort by key
-  icdcodes <- d[.(unique(diag)),.(diag),mult="first"] #unique diagnoses
+  icdcodes <- d[data.table::data.table(unique(diag)),data.table::data.table(diag),mult="first"] #unique diagnoses
   icdcodes <- icdcodes[unlist(lapply(paste('^?',diags_for_extraction,sep=''),grep,diag))] #the unique diagnoses of interest
   if(!is.null(exclusions)){
     ex.diag <- grep(paste(paste('^?',exclusions,sep=''),collapse='|'),icdcodes$diag)
@@ -245,20 +221,38 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
   }
 
   #Take first diagnosis if more than one for each patient
-  if(keep=="first"&length(disease)==1){
+  if(keep=="first"& is.null(disease)){
     #Order data by pnr and increasing entrydate
     setkey(out,pnr,entrydate)
-    out <- out[.(unique(pnr)),,mult="first"] 
+    #out <- out[data.table::data.table(unique(pnr)),,mult="first"] 
+    out <- out[,.SD[1],by="pnr"] 
   }
   
   #Take last diagnosis if more than one for each patient
-  if(keep=="last"&length(disease)==1){
+  if(keep=="last"& is.null(disease)){
     #Order data by pnr and increasing entrydate
     setkey(out,pnr,entrydate)
-    out <- out[.(unique(pnr)),,mult="last"] 
+    #out <- out[data.table::data.table(unique(pnr)),,mult="last"] 
+    out <- out[,.SD[.N],by="pnr"] 
   }
   
-  # Takes first diagnosis of each disease if multiple diseases are chosen for each patient.
+  #Take first diagnosis if more than one for each patient
+  if(keep=="first"&length(disease)==1){
+    #Order data by pnr and increasing entrydate
+    setkey(out,pnr,entrydate)
+    #out <- out[data.table::data.table(unique(pnr)),,mult="first"] 
+    out <- out[,.SD[1],by="pnr"] 
+  }
+  
+    #Take last diagnosis if more than one for each patient
+    if(keep=="last"&length(disease)==1){
+        #Order data by pnr and increasing entrydate
+        setkey(out,pnr,entrydate)
+        #out <- out[data.table::data.table(unique(pnr)),,mult="last"] 
+        out <- out[,.SD[.N],by="pnr"] 
+    }
+  
+    # Takes first diagnosis of each disease if multiple diseases are chosen for each patient.
   if(keep=="first"&length(disease)>1){
     
     # Mark different diseases
@@ -269,11 +263,11 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     idx <- lapply(sygdomme,function(var){grep(paste(paste('^?',unlist(var),sep=''),collapse='|'),out$diag)})
     
     for(x in seq_along(idx)){
-      set(out,i=idx[[x]],j='dis',value=names_dis[x])
+      data.table::set(out,i=idx[[x]],j='dis',value=names_dis[x])
     }
     
     # Order data by pnr, disease and increasing entrydate
-    setkey(out,pnr,dis,entrydate)
+    data.table::setkey(out,pnr,dis,entrydate)
     
     # For each patient keeps only first diagnosis of each different disease.
     out <- out[out[,list(row1=.I[1]),by=list(pnr,dis)][,row1]] 
@@ -290,11 +284,11 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     idx <- lapply(sygdomme,function(var){grep(paste(paste('^?',unlist(var),sep=''),collapse='|'),out$diag)})
     
     for(x in seq_along(idx)){
-      set(out,i=idx[[x]],j='dis',value=names_dis[x])
+      data.table::set(out,i=idx[[x]],j='dis',value=names_dis[x])
     }
     
     # Order data by pnr, disease and increasing entrydate
-    setkey(out,pnr,dis,entrydate)
+    data.table::setkey(out,pnr,dis,entrydate)
     
     # For each patient keeps only last diagnosis of each different disease.
     out <- out[out[,list(rowN=.I[.N]),by=list(pnr,dis)][,rowN]] 
@@ -310,50 +304,30 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     
     idx <- lapply(sygdomme,function(var){grep(paste(paste('^?',unlist(var),sep=''),collapse='|'),out$diag)})
     for(x in seq_along(idx)){
-      set(out,i=idx[[x]],j='dis',value=names_dis[x])
+      data.table::set(out,i=idx[[x]],j='dis',value=names_dis[x])
     }
   }
   
+  setkey(out,pnr,entrydate)
+  
   if(!is.null(disease)&length(disease)==1&prefix==''){
   date_name <- paste(disease,'date',sep='_')
-  }
-  
-  else{
+  } 
+  else if(prefix!=""){
     date_name <- paste(prefix,'date',sep='_')
-  }
+  } 
+  else{date_name <- entryvar}
   
   unique.codes=as.character(unique(out$diag))
   
-  if(is.null(indexvar)&lmdb==FALSE){
-    setnames(out,'entrydate',date_name)
-    setnames(out,'diag',codevar)
-    setnames(out,'pnr',id)
-    setnames(out,'pattype',patvar)
-    setnames(out,'recnum',record.id)
-  }
-  if(!is.null(indexvar)&lmdb==FALSE){
-    setnames(out,'entrydate',date_name)
-    setnames(out,'diag',codevar)
-    setnames(out,'pnr',id)
-    setnames(out,'pattype',patvar)
-    setnames(out,'recnum',record.id)
-    setnames(out,'index',indexvar)
-  }
-  if(is.null(indexvar)&lmdb==TRUE){
-    setnames(out,'entrydate',date_name)
-    setnames(out,'diag',codevar)
-    setnames(out,'pnr',id)
-  }
-  
-  if(!is.null(indexvar)&lmdb==TRUE){
-    setnames(out,'entrydate',date_name)
-    setnames(out,'diag',codevar)
-    setnames(out,'pnr',id)
-    setnames(out,'index',indexvar)
+  data.table::setnames(out,new=c(codevar,id,date_name,patvar),
+                       old=c('diag','pnr','entrydate','pattype'))
+  if(!is.null(indexvar)){
+    data.table::setnames(out,new=indexvar,old='index')
   }
   
   names(diags_for_extraction) <- NULL
-
+  
   if(!is.null(exclusions)){
     return(list(data=out,codes=diags_for_extraction,unique.codes=unique.codes,excl=exclusions))
   }

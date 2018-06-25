@@ -10,51 +10,48 @@ patientProfile(dt, primary.cov, ...)
 \item{dt}{Data.table object where each row represents a patient and each row
 represents a covariates (or risk factor)}
 
-\item{primary.cov}{Integer, character, or factor vector. The primary covariate
-to group by and calculate proportions for (usually age)}
+\item{primary.cov}{An integer, character, or factor vector. The primary
+covariate to group by and calculate proportions for (usually age)}
 
-\item{...}{Additional covariates to group by - e.g. gender, status of previous
-exposures/events, etc. Accepts vectors of integers, characters or factors}
+\item{...}{Additional covariates to group by - e.g. gender, status of
+previous exposures/events, etc. Accepts vectors of integers, characters or
+factors}
 }
 \value{
-Returns Returns a patient_profile object that inherits from
- data.table. The table has with four more columns than the input data table.
- where each row is a covariate combination. \code{N.in.primary.cov} records
- the number of patients in the data set with the specified primary covariate.
- E.g. using the "age" example from the "details" section, this column would
- record how many patients are 20, 21, 22....50. \code{prop.by.primary.cov}
- records the proportion of patients with the same primary covariate
- (\code{primary.cov}) with that parameter combination.
+Returns a data.table object where each row is a covariate
+  combination. \code{N.in.primary.cov} records the number of patients in the
+  data set with the specified primary covariate. E.g. using the "age" example
+  from the "details" section, this column would record how many patients are
+  20, 21, 22....50. \code{prop.by.primary.cov} records the proportion of patients with the
+  same primary covariate (\code{primary.cov}) with that parameter
+  combination.
 }
 \description{
 Profile of common covariate combinations among patients
 }
 \details{
 The function is designed to show how many patients exists in the
- dataset that have each combination of risk factors.
+  dataset that have each combination of risk factors.
 
- Covariate combinations will that conatin 0 patients will return a 0 value
- for that covariate combination. However, this assumes that all possible
- outcomes for each variable are found in at least one patient in the dataset.
- For example, using "age" as a covariate, if the dataset ranges from 20 to 50
- years olds, it is assumed that at least one patient from every interger age
- is present i.e. 20, 21, 22....50. If there are no patients aged 22, for
- example, then no covariate combinations with patients aged 22 will be
- created.
+  Covariate combinations will that conatin 0 patients will return a 0 value
+  for that covariate combination. However, this assumes that all possible
+  outcomes for each variable are found in at least one patient in the
+  dataset. For example, using "age" as a covariate, if the dataset ranges
+  from 20 to 50 years olds, it is assumed that at least one patient from
+  every interger age is present i.e. 20, 21, 22....50. If there are no
+  patients aged 22, for example, then no covariate combinations with patients
+  aged 22 will be created.
 }
 \examples{
-\dontrun{
-library(data.table)
   n <- 1e2
   set.seed(13)
-  x <- data.frame(
+  x <- data.table::data.table(
     age = sample(20:35, size = n, replace = TRUE),
     v2 = sample(c("yes", "no"), n, replace = TRUE),
     v3 = sample(c("yes", "no"), n, replace = TRUE, prob = c(0.2, 0.8))
   )
-  setDT(x)
   out <- patientProfile(dt = x, primary.cov = "age", "v2", "v3")
-}
+
 }
 \author{
 Matthew Phelps \email{mphelps@hjerteforeningen.dk}

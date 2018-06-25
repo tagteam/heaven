@@ -21,11 +21,12 @@
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 plot.dpp <- function(x, drug=NULL,...) {
-  
-  if (length(drug) == 0) {
-    j <- (1:length(x$drugs))
-  } else
-    j <- (1:length(x$drugs))[names(x$drugs) == drug]
+    pdate=idorder=inddto=uddto=NULL
+    requireNamespace("ggplot2")
+    if (length(drug) == 0) {
+        j <- (1:length(x$drugs))
+    } else
+        j <- (1:length(x$drugs))[names(x$drugs) == drug]
   
   if (j[length(j)] > 0) {
     atc <- unlist(sapply(j, function(j) x$drugs[[j]]$atc))

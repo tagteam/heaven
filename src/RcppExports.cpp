@@ -22,7 +22,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // innerprocess
-Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, Rcpp::IntegerVector idunique, double N, double maxdepot, bool collapse);
+Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, double N, double maxdepot, bool collapse);
 RcppExport SEXP _heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP NSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -30,7 +30,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP);
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type admdat(admdatSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type doses(dosesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type idunique(iduniqueSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type idunique(iduniqueSEXP);
     Rcpp::traits::input_parameter< double >::type N(NSEXP);
     Rcpp::traits::input_parameter< double >::type maxdepot(maxdepotSEXP);
     Rcpp::traits::input_parameter< bool >::type collapse(collapseSEXP);

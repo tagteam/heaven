@@ -37,6 +37,7 @@ standardize.prodlim <- function(object,
                                 data,
                                 weights,
                                 ...){
+    .SD=NULL
     X <- data.table(object$X)
     data.table::setkeyv(X,c(var1,var2))
     stopifnot(NCOL(X)==2)

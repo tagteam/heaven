@@ -2,7 +2,6 @@
 % Please edit documentation in R/simPrescriptionData.R
 \name{simPrescriptionData}
 \alias{simPrescriptionData}
-\alias{simLMDB}
 \title{Prescription data simulation function}
 \usage{
 simPrescriptionData(n, m = 10, packages = list(A07 = list(c(200, 30), c(400,

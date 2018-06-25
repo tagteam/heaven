@@ -41,7 +41,8 @@
 ##' @author Helene Charlotte Rytgaard
 ##' @export
 plot.dppout <- function(x, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FALSE, normalize=FALSE,...) {
-
+    B=E=final=pdate=y=treatment=B1=NULL
+    requireNamespace("ggplot2")
   if (length(drug) == 0) {
     j <- (1:length(x)) 
   } else
@@ -73,15 +74,14 @@ plot.dppout <- function(x, drug=NULL, id=NULL, idmax=9, trace=FALSE, fix_x=FALSE
   } else 
     title <- "final estimated doses"
 
-  drugout$idname <- paste("id =", drugout$id)
-      
-  if (attr(x, "out_data")) {
+    drugout$idname <- paste("id =", drugout$id)
     
-    if (normalize) {
-      drugout$final <- sapply(1:dim(drugout)[1], function(i)
-        drugout$X[i] / max(drugout$X[drugout$drug == drugout$drug[i]]))
-    } else
-      drugout$final <- drugout$X
+    if (length(attr(x, "out_data"))>0) {
+        if (normalize) {
+            drugout$final <- sapply(1:dim(drugout)[1], function(i)
+                drugout$X[i] / max(drugout$X[drugout$drug == drugout$drug[i]]))
+        } else
+            drugout$final <- drugout$X
     
     ylab <- "estimated dosis per day"
     

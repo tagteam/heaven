@@ -2,7 +2,6 @@
 ##' 
 ##' Simulate prescription data alike the Danish medical registry
 ##' @title Prescription data simulation function
-##' @aliases simPrescriptionData simLMDB
 ##' @param n Number of patients
 ##' @param m Maximal number of prescription dates per patient
 ##' @param packages Named list of association lists. The names of the
@@ -46,6 +45,7 @@ simPrescriptionData <- function(n,
                                               "A12B"=list(c(750,100),c(750,250),c(75,500))),
                                 max.packages=3,
                                 startDate = "1995-01-01"){
+   pnr=eksd=NULL
     startDate <- as.Date(startDate)
     out <- data.table::rbindlist(lapply(1:n,function(i){
         pat.i <- data.table::rbindlist(lapply(1:length(packages),function(p){
@@ -63,5 +63,3 @@ simPrescriptionData <- function(n,
     data.table::setcolorder(out,c("pnr","atc","eksd","strnum","packsize","apk"))
     out
 }
-#' @export
-simLMDB <- simPrescriptionData
