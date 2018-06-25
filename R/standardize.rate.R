@@ -42,7 +42,7 @@
 ##' standardize.rate(x=list(c("e1","rt1")),
 ##'                  age="agegroups",exposure="sex",data=D,standardize.to="mean")
 ##' standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
-##'                  age="agegroups",exposure="sex",data=d)
+##'                  age="agegroups",exposure="sex",data=d,by="year")
 ##' 
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
@@ -67,7 +67,7 @@ standardize.rate <- function(x,
     if (!is.character(age) || match(age,nnn,nomatch=0)==0) stop("Argument 'age' has to be the name of the age group variable in the dataset.")
     if (!is.character(exposure) || match(exposure,nnn,nomatch=0)==0) stop("Argument 'exposure' has to be the name of the exposure group variable in the dataset.")
     if (!missing(by)){
-        if (length(by)>=N) stop("Length of 'by' argument exceeds length of data.")
+        if (length(by)>=NROW(data)) stop("Length of 'by' argument exceeds length of data.")
         if (!all(sapply(by,is.character)) || any(match(by,nnn,nomatch=0)==0)) stop("Argument 'by' has to be a vector of variable names in the dataset.")
     }
     if (!is.factor(data[[age]])){
