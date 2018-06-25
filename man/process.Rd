@@ -5,7 +5,7 @@
 \title{Process to estimate prescription lengths and averages}
 \usage{
 process(dpp, treatments = NULL, id = NULL, trace = FALSE,
-  collapse = TRUE, tasks = 1, splitting = TRUE)
+  collapse = TRUE, tasks = 3, splitting = TRUE)
 }
 \arguments{
 \item{dpp}{Data preprocessing object}

@@ -49,7 +49,7 @@ dt <- simPrescriptionData(n, startDate="2005-01-01")
 ## Look at the data
 dt
 
-## See how many individuals purchased something with 2006-06-01 and 100 days back.
+## See how many individuals purchased something within 2006-06-01 and 100 days back.
 searchEvent(dt=dt,periods=as.Date("2006-06-01"),interval=100, date="eksd")
 
 ## Searching with indivual periods for subsample of individuals

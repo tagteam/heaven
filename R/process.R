@@ -38,7 +38,7 @@
                       id = NULL,
                       trace = FALSE,
                       collapse = TRUE,
-                      tasks = 1,
+                      tasks = 3,
                       splitting = TRUE){
     # Set the right structure for processed object
     dpp$processed <- structure(list(),
@@ -122,7 +122,7 @@
                     if(attr(dpp$comorbperiods,"status")=="nominal"){
                         message(paste0("Loading data for ", drugname, ".\n"))
                     }
-                    .tmpLoad <- .internalLoadData(dpp$comorbperiods)
+                    .tmpLoad <- internalLoadData(dpp$comorbperiods)
                     dpp$comorbperiods <- .tmpLoad$dppObject
                     if(.tmpLoad$prob.status==T){
                         baddata2 <- paste0(baddata2, .tmpLoad$message)
@@ -141,8 +141,10 @@
                 message(paste0("Data for baseline exposure OK for ",
                                drugname, ", processing..."))
                 baseline.out <- searchEvent(dpp1[,.(id,atc,pdate)],
-                                            periods=baseline,
-                                            atc=dpp$baseline$atcs)
+                                            periods=dpp$comorbperiods$data,
+                                            pnr="id",
+                                            date="pdate",
+                                            atcs=dpp$comorbperiods$atcs.codes)
                 ## out.comor <- comorbidityDrugs(dpp1.baseline[,.(id,atc,pdate)],
                 ##                               code=atcs,
                 ##                               date=baseline,
