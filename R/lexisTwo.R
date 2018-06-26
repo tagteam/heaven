@@ -43,7 +43,7 @@
 #'        ,split # Data with id and dates
 #'        ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'        ,c("date1","date2","date3","date4")) #Names var date-vars to split by
-#' temp[]
+#' temp
 #' @export
 lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
                     ,splitdat # Data with id and dates
@@ -59,7 +59,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
     copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
     INDAT <- copyindat[,c("pnrnum",invars),with=FALSE] # Ncessary variables for split
     setnames(INDAT,invars,c("pnr","inn","out","dead"))
-    if (!class(tolower(INDAT[inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[out])) %in% c("numeric","date","integer")) stop(paste("dates in",indat,"not numeric")) 
+    ## if (!class(tolower(INDAT[,inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[,out])) %in% c("numeric","date","integer")) stop(paste("dates in",indat,"not numeric")) 
     RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
     setnames(RESTDAT,invars[1],"pnr")
     OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
@@ -83,5 +83,5 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
     OUT <- merge(OUT,RESTDAT,by="pnrnum")
     OUT[,pnrnum:=NULL] # remove number version of pnr
     setnames(OUT,c("pnr","inn","out","dead"),invars)
-    OUT
+    OUT[]
 }

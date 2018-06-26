@@ -24,7 +24,7 @@
 #' @name heaven
 #' @useDynLib heaven
 #' @importFrom Rcpp sourceCpp evalCpp
-#' @importFrom data.table data.table ":=" setnames setorder setcolorder setkey rbindlist setkeyv set copy shift setDT
+#' @importFrom data.table as.data.table setkeyv data.table ":=" setnames setorder setcolorder setkey rbindlist setkeyv set copy shift setDT
 #' @importFrom foreach "%dopar%" foreach
 #' @importFrom grDevices colorRampPalette topo.colors
 #' @importFrom graphics points title

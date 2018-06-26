@@ -50,7 +50,7 @@
 #'                    ,split # Data with id and dates
 #'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-#' temp[]
+#' temp
 #' @export
 lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
                        ,splitdat # Data with from/to/Value
@@ -66,7 +66,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     INDAT <- copyindat[,invars,with=FALSE] # Necessary variables for split
     INDAT[,mergevar:=1:.N] # Variable to merge by after split;
     setnames(INDAT,invars,c("pnr","inn","out","event"))
-    if (!class(tolower(INDAT[inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[out])) %in% c("numeric","date","integer")) stop(paste("dates in",indat,"not numeric")) 
+    ## if (!(class(tolower(INDAT[,inn])) %in% c("numeric","date","integer")) | !(class(tolower(INDAT[,out])) %in% c("numeric","date","integer"))) stop(paste("dates in",indat,"not numeric")) 
     setkey(INDAT,pnr)
     INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
     pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=FALSE]) 
@@ -80,8 +80,8 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     setkey(csplit,"pnr")
     csplit <- merge(csplit,pnrgrp,by="pnr",all.x=TRUE)
     csplit[,pnr:=NULL] # identify only by pnrnum
-    setkeyv(csplit,splitvars,c("name","pnrnum","start","slut")) 
-    if (!(class(tolower(csplit[start])) %in% c("numeric","date","integer")) | !(class(tolower(csplit[slut])) %in% c("numeric","date","integer"))) stop(paste("dates in",indat,"not numeric")) 
+    setkeyv(csplit,c("name","pnrnum","start","slut")) 
+    ## if (!(class(tolower(csplit[,start])) %in% c("numeric","date","integer")) | !(class(tolower(csplit[,slut])) %in% c("numeric","date","integer"))) stop(paste("dates in",indat,"not numeric")) 
     ## Check csplit content
     temp <- csplit[start>slut,sum(start>slut)]
     if (temp>0) stop(paste("Error",indat," - Attempt to split with negative date intervals"))
@@ -124,5 +124,5 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=TRUE)
   setnames(OUT,c("pnr","inn","out","event"),invars) 
   OUT[,c("mergevar","mergevar2","pnrnum"):=NULL]
-  OUT
+  OUT[]
 }
