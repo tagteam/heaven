@@ -21,7 +21,7 @@ simAdmissionData <- function(n,
                              m = 5,
                              diagnoses=paste0('D',toupper(letters),rep(0:99,length(letters))),
                              startDate = "1995-01-01"){
-  pnr=inddto=NULL
+  pnr=inddto=recnum=NULL
   startDate <- as.Date(startDate)
   out <- data.table::rbindlist(lapply(1:n,function(i){
     M = sample(1:m,size=1)
