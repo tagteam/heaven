@@ -7,18 +7,21 @@
 lexisFromTo(indat,splitdat,invars,splitvars)
 }
 \arguments{
-\item{indat}{- base data with id, start, end, event and other data - possibly already split}
+\item{indat}{- base data with id, start, end, event and other data - possibly 
+already split}
 
 \item{splitdat}{- Data with splitting guide - id/from/to/value/name}
 
-\item{invars}{- vector of colum names for id/entry/exit/event - in that order, 
+\item{invars}{- vector of colum names for id/entry/exit/event - in that 
+order, 
 example: c("id","start","end","event")}
 
 \item{splitvars}{- vector of column names containing dates to split by.
 example: c("id","start","end","value","name") - must be in that order!}
 }
 \value{
-The function returns a new data table where records have been split according to the splittingguide dataset. Variables
+The function returns a new data table where records have been split according 
+to the splittingguide dataset. Variables
 unrelated to the splitting are left unchanged.
 }
 \description{
@@ -30,12 +33,19 @@ id/from/to/value/name - that may represent multiple conditions with from/to and 
 distinguish.
 }
 \details{
-The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
-This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
-The other table contains possibly multiple records for each participants with id/from/to/value/name.
-The program checks that intervals are not negative and that intervals for each "name" and each individual
-do not overlap.  Violation stops the program with error. Overlaps may occur in real situations, but the
-user needs to make decisions regarding this prior to this function.
+The input to this function are two data.tables and two lists of the critical 
+variables.  The BASE data it the data to be split.
+This data must have a variable to identify participants, start/end times and 
+a variable to indicate event after last interval.
+The other table (SPLITTINGUIDE) contains possibly multiple records for each 
+participants with id/from/to/value/name.
+The program checks that intervals are not negative and that intervals for 
+each "name" and each individual do not overlap.  Violation stops the program 
+with error. Overlaps may occur in real situations, but the user needs to make 
+decisions regarding this prior to this function.
+
+It is required that the splittingguide contains at least one record.  
+Missing data for key variables are not allowed and will cause errors.
 }
 \examples{
 library(data.table)
@@ -52,7 +62,7 @@ temp <- lexisFromTo(dat # inddato with id/in/out/event
                    ,split # Data with id and dates
                    ,c("id","start","end","event") #names of id/in/out/event - in that order
                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-temp[]
+temp
 }
 \author{
 Christian Torp-Pedersen

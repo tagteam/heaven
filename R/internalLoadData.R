@@ -10,7 +10,7 @@
 ##' ##' @author Anders Munch
 internalLoadData <- function(dppObject){
     stopifnot(attr(dppObject,"status")%in%c("loaded","nominal"))
-    update.names <- NULL
+    update.names= .SD= NULL
     if(attr(dppObject,"status")!="loaded"){
         .nom <- dppObject$nominal
         update.names <- .nom$names

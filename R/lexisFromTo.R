@@ -9,22 +9,32 @@
 #' @usage
 #' lexisFromTo(indat,splitdat,invars,splitvars)
 #' @author Christian Torp-Pedersen
-#' @param indat - base data with id, start, end, event and other data - possibly already split
+#' @param indat - base data with id, start, end, event and other data - possibly 
+#' already split
 #' @param splitdat - Data with splitting guide - id/from/to/value/name 
-#' @param invars - vector of colum names for id/entry/exit/event - in that order, 
+#' @param invars - vector of colum names for id/entry/exit/event - in that 
+#' order, 
 #' example: c("id","start","end","event")
 #' @param splitvars - vector of column names containing dates to split by.
 #' example: c("id","start","end","value","name") - must be in that order!
 #' @return
-#' The function returns a new data table where records have been split according to the splittingguide dataset. Variables
+#' The function returns a new data table where records have been split according 
+#' to the splittingguide dataset. Variables
 #' unrelated to the splitting are left unchanged.
 #' @details 
-#' The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
-#' This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
-#' The other table contains possibly multiple records for each participants with id/from/to/value/name.
-#' The program checks that intervals are not negative and that intervals for each "name" and each individual
-#' do not overlap.  Violation stops the program with error. Overlaps may occur in real situations, but the
-#' user needs to make decisions regarding this prior to this function.
+#' The input to this function are two data.tables and two lists of the critical 
+#' variables.  The BASE data it the data to be split.
+#' This data must have a variable to identify participants, start/end times and 
+#' a variable to indicate event after last interval.
+#' The other table (SPLITTINGUIDE) contains possibly multiple records for each 
+#' participants with id/from/to/value/name.
+#' The program checks that intervals are not negative and that intervals for 
+#' each "name" and each individual do not overlap.  Violation stops the program 
+#' with error. Overlaps may occur in real situations, but the user needs to make 
+#' decisions regarding this prior to this function.
+#' 
+#' It is required that the splittingguide contains at least one record.  
+#' Missing data for key variables are not allowed and will cause errors.
 #' @examples
 #' library(data.table)
 #' dat <- data.table(id=c("A","A","B","B"),
@@ -40,7 +50,7 @@
 #'                    ,split # Data with id and dates
 #'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-#' temp[]
+#' temp
 #' @export
 lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
                        ,splitdat # Data with from/to/Value
@@ -56,6 +66,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     INDAT <- copyindat[,invars,with=FALSE] # Necessary variables for split
     INDAT[,mergevar:=1:.N] # Variable to merge by after split;
     setnames(INDAT,invars,c("pnr","inn","out","event"))
+    ## if (!(class(tolower(INDAT[,inn])) %in% c("numeric","date","integer")) | !(class(tolower(INDAT[,out])) %in% c("numeric","date","integer"))) stop(paste("dates in",indat,"not numeric")) 
     setkey(INDAT,pnr)
     INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
     pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=FALSE]) 
@@ -70,16 +81,17 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     csplit <- merge(csplit,pnrgrp,by="pnr",all.x=TRUE)
     csplit[,pnr:=NULL] # identify only by pnrnum
     setkeyv(csplit,c("name","pnrnum","start","slut")) 
+    ## if (!(class(tolower(csplit[,start])) %in% c("numeric","date","integer")) | !(class(tolower(csplit[,slut])) %in% c("numeric","date","integer"))) stop(paste("dates in",indat,"not numeric")) 
     ## Check csplit content
     temp <- csplit[start>slut,sum(start>slut)]
-    if (temp>0) stop("Error - Attempt to split with negative date intervals")
+    if (temp>0) stop(paste("Error",indat," - Attempt to split with negative date intervals"))
     temp <- copy(csplit)
     cols = c("start","slut")
     precols = paste("prior", cols, sep="_")
     temp[, (precols) := shift(.SD, 1, 0, "lag"), .SDcols=cols,by=c("name","pnrnum")]
     temp[,dif1 := start-prior_slut]
     temp <- temp[,sum(dif1<0)]
-    if (temp>0) stop("Error - Intervals overlapping within individual and group")
+    if (temp>0) stop(paste("Error in",splitdat," - Intervals overlapping"))
     #Separate tables for each value of name
     namelist <- unique(csplit[["name"]])
     OUT <- INDAT[,c("pnrnum","mergevar","inn","out","event"),with=FALSE] # Prepare output start
@@ -112,5 +124,5 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=TRUE)
   setnames(OUT,c("pnr","inn","out","event"),invars) 
   OUT[,c("mergevar","mergevar2","pnrnum"):=NULL]
-  OUT
+  OUT[]
 }

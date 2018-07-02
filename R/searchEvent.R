@@ -48,6 +48,7 @@
 ##' @export
 searchEvent <- function(dt,periods,atcs=NULL,interval=NULL,
                         pnr='pnr',atc='atc',date='date',startdate='startdate',enddate='enddate'){
+    .SD=NULL
     ## Make internal tmp names
     iN <- list(pnr=quote(InternalTmpPNR),
                date=quote(InternalTmpDATE),
@@ -111,7 +112,7 @@ searchEvent <- function(dt,periods,atcs=NULL,interval=NULL,
             }
         }
         if(length(atcs)>0){
-            tmp.text <- ".("
+            tmp.text <- "data.table::data.table("
             for (j in atcs){
                 tmp.text <- paste0(tmp.text, j,
                                    "=sum(eval(iN$enddate)<eval(iN$date) & eval(iN$date) <eval(iN$startdate) & ",
@@ -128,14 +129,14 @@ searchEvent <- function(dt,periods,atcs=NULL,interval=NULL,
             out <- tmp.merge[,eval(tmp.expression),by=eval(as.character(iN$pnr))]
         }else{
             tmp.merge <- merge(x=tmp.base, y=tmp.periods, all.x = TRUE, by=as.character(iN$pnr))
-            out <- tmp.merge[,.(event=sum(eval(iN$enddate)<eval(iN$date) & eval(iN$date) <eval(iN$startdate))>0),
+            out <- tmp.merge[,data.table::data.table(event=sum(eval(iN$enddate)<eval(iN$date) & eval(iN$date) <eval(iN$startdate))>0),
                              by=eval(as.character(iN$pnr))] 
         }
     }else{
         if(length(interval)==0){stop("No 'interval' specified.")}
         if(!inherits(periods,"Date")){stop("'periods' should be either a data.table or a single date. \nWhen specifying a single date, use as.Date().")}
         if(length(atcs)>0){
-            tmp.text <- ".("
+            tmp.text <- "data.table::data.table("
             for (j in atcs){
                 tmp.text <- paste0(tmp.text, j,
                                    "=sum(",
@@ -152,7 +153,7 @@ searchEvent <- function(dt,periods,atcs=NULL,interval=NULL,
             tmp.text <- paste0(tmp.text, ")")
             tmp.expression <- parse(text=tmp.text)
         }else{
-            tmp.text <- paste0(".(event=sum(",
+            tmp.text <- paste0("data.table::data.table(event=sum(",
                               as.numeric(periods-interval),
                               "<eval(iN$date) & eval(iN$date)<",
                               as.numeric(periods),

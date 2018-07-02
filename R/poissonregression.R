@@ -6,8 +6,9 @@
 #' @param byvars vector of variables in data to aggregate by.
 #' @export
 poissonregression <- function(formula,data,aggvars,byvars){
-  if (class(data)[1]!="data.table") data <- data.table(data)
+    .SD=NULL
+    if (class(data)[1]!="data.table") data <- data.table(data)
     aggdata <- data[,lapply(.SD,sum),by=byvars,.SDcols=aggvars]
-  fit <- stats::glm(formula,data=aggdata,family=stats::poisson())
-  fit
+    fit <- stats::glm(formula,data=aggdata,family=stats::poisson())
+    fit
 }

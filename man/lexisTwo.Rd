@@ -36,6 +36,8 @@ The other table contains a single record for each participant and columns to ide
 intervals preceding the date will have a variable identified by each column with the value "0". After the date the value i "1".
 In the example the columns are dat1-date4 - but it is most useful to provide names that identify the condition which changes by
 the date rather than a names which indicates a date.
+
+Please check that no key variables are missing and that the "dates" in the split-data.table are numeric
 }
 \examples{
 library(data.table)
@@ -50,7 +52,7 @@ temp <- lexisTwo(dat # inddato with id/in/out/event
        ,split # Data with id and dates
        ,c("id","start","end","event") #names of id/in/out/event - in that order
        ,c("date1","date2","date3","date4")) #Names var date-vars to split by
-temp[]
+temp
 }
 \seealso{
 lexisSeq lexisFromTo

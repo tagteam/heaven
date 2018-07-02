@@ -40,6 +40,7 @@
                       collapse = TRUE,
                       tasks = 3,
                       splitting = TRUE){
+    pdate=pnr=NULL
     # Set the right structure for processed object
     dpp$processed <- structure(list(),
                                class = "dppout")
@@ -140,12 +141,12 @@
             if(baddata2=="" & tasks!=1){
                 message(paste0("Data for baseline exposure OK for ",
                                drugname, ", processing..."))
-                baseline.out <- searchEvent(dpp1[,.(id,atc,pdate)],
+                baseline.out <- searchEvent(dpp1[,data.table::data.table(id,atc,pdate)],
                                             periods=dpp$comorbperiods$data,
                                             pnr="id",
                                             date="pdate",
                                             atcs=dpp$comorbperiods$atcs.codes)
-                ## out.comor <- comorbidityDrugs(dpp1.baseline[,.(id,atc,pdate)],
+                ## out.comor <- comorbidityDrugs(dpp1.baseline[,data.table::data.table(id,atc,pdate)],
                 ##                               code=atcs,
                 ##                               date=baseline,
                 ##                               interval=interval,
@@ -162,7 +163,7 @@
                 ##     baseline.out <- rbind(out.comor,tmp.dt,fill=TRUE)
                 ## }else{
                 ##     baseline.out <- rbind(out.comor,tmp.dt,fill=TRUE)
-                ##     baseline.out <- baseline.out[,.(id,exposure)]
+                ##     baseline.out <- baseline.out[,data.table::data.table(id,exposure)]
                 ## }
                 dpp$baseline[[drugname]] <- baseline.out
                 message("done.\n")

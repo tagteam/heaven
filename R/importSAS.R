@@ -140,6 +140,7 @@ importSAS <- function(filename,
                       content = FALSE,
                       na.strings=".",
                       ...){
+    .SD=NULL
     # {{{ Clean up.
     on.exit({
         if(!save.tmp){
