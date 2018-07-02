@@ -8,7 +8,8 @@
 ##'                  where = NULL,obs = NULL,filter = NULL,
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
-##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE)
+##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
+##'                  na.strings=".",...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
@@ -26,6 +27,8 @@
 ##' @param show.sas.code Logical. If \code{TRUE} show sas code in R console before running it.
 ##' @param save.tmp Logical. Option to save all temporary files. Even though this is set to FALSE, the csv file will be saved if there is given a filename in "savefile". Default value is FALSE.
 ##' @param content Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.
+##' @param na.strings A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information. 
+##' @param ... Arguments parsed to \code{fread} for reading the created .csv file. 
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
 ##' @references This function is based on pioneering work by Jesper Lindhardsen.
@@ -134,7 +137,9 @@ importSAS <- function(filename,
                       overwrite = TRUE,
                       show.sas.code=TRUE,
                       save.tmp = FALSE,
-                      content = FALSE){
+                      content = FALSE,
+                      na.strings=".",
+                      ...){
     # {{{ Clean up.
     on.exit({
         if(!save.tmp){
@@ -287,18 +292,18 @@ importSAS <- function(filename,
             file = tmp.SASfile,
             append = TRUE)
     }
-    if (show.sas.code==TRUE){
-        cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
-        file.show(tmp.SASfile)
-    }else{
-        cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
-    }
     tmp.lines <- paste("data _NULL_; \nset df; \n file '",
                        outfile,
                        "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;")
     cat(tmp.lines,
         file = tmp.SASfile,
         append = TRUE)
+    if (show.sas.code==TRUE){
+        cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
+        file.show(tmp.SASfile)
+    }else{
+        cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
+    }
     # }}}
     # {{{ Check for content or run the SAS file
     # construct error message
@@ -334,7 +339,7 @@ importSAS <- function(filename,
                 warning("The constructed dataset is empty.")
                 df <- NULL
             }else{
-                tryread <- try(df <- data.table::fread(file = outfile, header = TRUE))
+                tryread <- try(df <- data.table::fread(file = outfile, header = TRUE, na.strings=na.strings, ...))
                 if ("try-error" %in% class(tryread)){
                     warning("Could not read the constructed dataset into R. \nSomething probably went wrong during SAS program execution. ")
                     df <- NULL

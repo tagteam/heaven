@@ -9,7 +9,8 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  where = NULL,obs = NULL,filter = NULL,
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
-                 show.sas.code=TRUE,save.tmp = FALSE,content=FALSE)
+                 show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
+                 na.strings=".",...)
        contentSAS(filename,wd=NULL)
 }
 \arguments{
@@ -44,6 +45,10 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 \item{save.tmp}{Logical. Option to save all temporary files. Even though this is set to FALSE, the csv file will be saved if there is given a filename in "savefile". Default value is FALSE.}
 
 \item{content}{Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.}
+
+\item{na.strings}{A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information.}
+
+\item{...}{Arguments parsed to \code{fread} for reading the created .csv file.}
 }
 \value{
 The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
