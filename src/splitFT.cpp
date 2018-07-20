@@ -107,9 +107,6 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
             if (start(ii)>Oout[iii] || Oinn[iii]>end(ii)) continue; // no overlap, no action
             else
             if (start(ii)<=Oinn[iii] && end(ii)>=Oout[iii]) Oval[iii]=val[ii]; // surrounded 
-            else
-            if (start(ii)<=Oinn[iii] && end(ii)>=Oout[iii] && Oout[iii]==Oinn[iii])
-              Oval[iii]=val[ii]; // Record length zero
             else  
             if (end(ii)>=Oinn[iii] && end(ii) <= Oout[iii] && start(ii)<=Oinn[iii]){ 
               // Split in 2 records - left overlap
