@@ -25,12 +25,21 @@ to the splittingguide dataset. Variables
 unrelated to the splitting are left unchanged.
 }
 \description{
-lexixFromTo is a specialised version of lexis splitting.  In handling drug treatment, employment
-and similar factors the individual may move in and out of conditions.  This function splits 
-according such a situation.  The input is first "base data" id/in/out/event (and other variables) that
-may already have been split by other functions.  The other data is a sequence of 
-id/from/to/value/name - that may represent multiple conditions with from/to and with "name" to
-distinguish.
+LexisFromTo is one of 3 lexis functions in heaven.  The purpose is to split 
+observations according to possibly temporary changes. Typical situations
+are drug therapy, pregnancy, a period after surgery etc. The input is two
+data.tables.  The "base" data are the data to be split. They may contain
+much information, but the key is "id","start","end" and "event". These des-
+cribe the participant's id, start of time period, end of time period and the
+event of interest (must be 0/1).
+
+The other dataset is the "splittingguide". This may include information to 
+guide splitting from multiple sources (multiple difference medications, se-
+veral pregnancies etc). This should have the following variables: "id",
+"start","end","value","name". It is the participant id, start/end of next
+interval, a "value" (character, dose of drug, presence of pregnancy etc), and
+finally a "name" which defines the column in the output data with information
+from that particular split.
 }
 \details{
 The input to this function are two data.tables and two lists of the critical 
@@ -42,10 +51,23 @@ participants with id/from/to/value/name.
 The program checks that intervals are not negative and that intervals for 
 each "name" and each individual do not overlap.  Violation stops the program 
 with error. Overlaps may occur in real situations, but the user needs to make 
-decisions regarding this prior to this function.
+decisions regarding this prior to using this function.
 
 It is required that the splittingguide contains at least one record.  
 Missing data for key variables are not allowed and will cause errors.
+
+A note of caution: This function works with dates as integers. R has a de-
+fault origina of dates as 1 January 1970, but other programs have different
+default origins - and this includes SAS and Excell. It is therefor important
+for decent results that care is taken that all dates are defined similarly.
+
+The output will always have the "next" period starting on the day where the
+last period ended. This is to ensure that period lengths are calculated pro-
+perly. The program will also allow periods of zero lengths which is a conse-
+quence when multiple splits are made on the same day. When there is an event
+on a period with zero length it is important to keep that period not to 
+loose events for calculations. Whether other zero length records should be
+kept in calculations depend on context.
 }
 \examples{
 library(data.table)

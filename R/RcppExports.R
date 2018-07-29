@@ -28,8 +28,8 @@ split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
 
-splitDate <- function(inn, out, event, mergevar, seq) {
-    .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, seq)
+splitDate <- function(inn, out, event, mergevar, seq, varname) {
+    .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, seq, varname)
 }
 
 splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end) {

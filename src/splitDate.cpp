@@ -7,15 +7,10 @@ List splitDate(IntegerVector inn, // Starttimes - base data
                IntegerVector out, // Endtimes - base data
                IntegerVector event, // Event at end of interval 0/1 - base data
                IntegerVector mergevar, // Merge variable, multiple records can have same pnr - base data
-               IntegerVector seq // Vector of date values to split by
+               IntegerVector seq, // Vector of date values to split by
+               IntegerVector varname // Value to be added to each split date (such as birthdate)     
 ) 
 { 
-  // This function is intended for creating split data for lexis survival analyses. It handles
-  // splitting by a defined sequence of dates from R - age, calender time, time since a key event etc.
-  // The sequence number is expected to be zero prior to first split.  The variable .
-  
-  // Define output vectors
-  
   std::vector<int> Omergevar;  
   Omergevar.reserve(mergevar.size()*seq.size());
   std::vector<int> Oinn;  // Starttimes output
@@ -26,12 +21,15 @@ List splitDate(IntegerVector inn, // Starttimes - base data
   Oevent.reserve(mergevar.size()*seq.size());
   std::vector<int> Ovalue; // Value for output 0.1,2...
   Ovalue.reserve(mergevar.size()*seq.size());
+  std::vector<int> seq_plus(seq.size()); // seq+value for each case
+  
   
   for (int i=0; i<mergevar.size(); i++){ // Loop along base data
     int seq_num=0; // Number in seq of the first record to create for each record in input
+    for (int j=0; j<seq.size(); j++)  seq_plus[j]=seq(j)+varname[i];
     for (int ii=0; ii<seq.size(); ii++){// Create records
       seq_num++;// next seq starts with one
-      if(seq(ii)>=out(i)){//Not reached seq
+      if(seq_plus[ii]>=out(i)){//Not reached seq
         Omergevar.push_back(mergevar(i));
         Oinn.push_back(inn(i));
         Ovalue.push_back(seq_num-1);
@@ -40,7 +38,7 @@ List splitDate(IntegerVector inn, // Starttimes - base data
         break; //Done with base record
       }   
       else
-        if(inn(i)>seq(ii) && ii==(seq.size()-1)){//past seq AND last seq
+        if(inn(i)>seq_plus[ii] && ii==(seq.size()-1)){//past seq AND last seq
           Omergevar.push_back(mergevar(i));
           Oinn.push_back(inn(i));
           Ovalue.push_back(seq_num); // final seq-value
@@ -49,14 +47,14 @@ List splitDate(IntegerVector inn, // Starttimes - base data
           break;
         } 
         else
-          if(inn(i)<seq(ii) && out(i)>seq(ii)){ //split situation - duration at least 1 day
+          if(inn(i)<seq_plus[ii] && out(i)>seq_plus[ii]){ //split situation - duration at least 1 day
             Omergevar.push_back(mergevar(i));
             Oinn.push_back(inn(i));
             Ovalue.push_back(seq_num-1); //value prior to seq
-            Oout.push_back(seq(ii));
+            Oout.push_back(seq_plus[ii]);
             Oevent.push_back(0); // no event
             // and reset start of base record
-            inn(i)=seq(ii);
+            inn(i)=seq_plus[ii];
             if(ii==seq.size()-1){
               Omergevar.push_back(mergevar(i));
               Oinn.push_back(inn(i));
@@ -67,14 +65,14 @@ List splitDate(IntegerVector inn, // Starttimes - base data
             }  
           }
           else
-            if(out(i)==seq(ii) && event(i)==1){ // Also split with zero record in case of event 
+            if(out(i)==seq_plus[ii] && event(i)==1){ // Also split with zero record in case of event 
               Omergevar.push_back(mergevar(i));
               Oinn.push_back(inn(i));
               Ovalue.push_back(seq_num-1); //value prior to seq
-              Oout.push_back(seq(ii));
+              Oout.push_back(seq_plus[ii]);
               Oevent.push_back(0); // no event
               // and reset start of base record
-              inn(i)=seq(ii);
+              inn(i)=seq_plus[ii];
               if(ii==seq.size()-1){
                 Omergevar.push_back(mergevar(i));
                 Oinn.push_back(inn(i));
