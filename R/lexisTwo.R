@@ -1,34 +1,60 @@
 #' @title lexisTwo
 #' 
 #' @description 
-#' lexixTwo is a specialised version of lexis splitting.  While preparing data for time dependent analyses with e.g.
-#' Cox org Poisson regression records need to be "split" at selected times.  For practical use there are often
-#' multiple conditions such as comorbidities that will cause either a single split or no splitting.  This function
-#' is designed to receive base data with start/end/event and another set of data where patient id is accompanied with 
-#' one column per condition with these columns containing the time where split should occur.
+#' lexixTwo is one of 3 splitting functions in heaven.  This particular function
+#' is designed for possibly multiple splits in a before-after situation. A typi-
+#' cal use is splitting by the time before and after the time of conditions 
+#' such as multiple comorbidities.
+#' 
+#' The input are 2 data.tables.  The "base" data are the data to be split. They 
+#' may contain much information, but the key is "id","start","end" and "event". 
+#' These describe the participant's id, start of time period, end of time period 
+#' and the event of interest (must be 0/1).
+#' 
+#' The other input is a data.table with the splittingguide. This data.table 
+#' should have one record pr. individual.  One column defined the same id as in
+#' the "base" table. The other columns contain dates for each condition where 
+#' the split should occur.  These column names will also appear in the output
+#' data, but on output the values are zero before the dates and 1 after.  When
+#' dates are NA output has zero. 
 #' @usage
 #' lexisTwo(indat,splitdat,invars,splitvars)
 #' @author Christian Torp-Pedersen
-#' @param indat - base data with id, start, end, event and other data - possibly already split
-#' @param splitdat - Data with splitting guide - id and columns with dates to split by 
-#' @param invars - vector of colum names for id/entry/exit/event - in that order, 
-#' example: c("id","start","end","event")
-#' @param splitvars - vector of column names of columns containing dates to split by.
-#' example: c("date1","date2","date3","date4")
+#' @param indat - base data with id, start, end, event and other data - possibly 
+#' already split
+#' @param splitdat - Data with splitting guide - id and columns with dates to 
+#' split by 
+#' @param invars - vector of colum names for id/entry/exit/event - in that 
+#' order, example: c("id","start","end","event")
+#' @param splitvars - vector of column names of columns containing dates to 
+#' split by. example: c("date1","date2","date3","date4")
 #' The name of the id column must be the same in both datasets
 #' @return
-#' The function returns a new data table where records have been split according to the splittingguide dataset. Variables
-#' unrelated to the splitting are left unchanged.
+#' The function returns a new data table where records have been split according 
+#' to the splittingguide dataset. Variables #' unrelated to the splitting are 
+#' left unchanged. The names of columns from "splitvars" are also in output
+#' data, but now they have the value zero before the dates and 1 after.
 #' @export
 #' @details 
-#' The input to this function are two data.tables and two lists of the critical variables.  The base data it the data to be split.
-#' This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval.
-#' The other table contains a single record for each participant and columns to identify dates to split by.  After splitting all
-#' intervals preceding the date will have a variable identified by each column with the value "0". After the date the value i "1".
-#' In the example the columns are dat1-date4 - but it is most useful to provide names that identify the condition which changes by
-#' the date rather than a names which indicates a date.
+#' #' The program checks that intervals are not negative. Violation stops  
+#' with error. Overlaps may occur in real situations, but the user needs to make 
+#' decisions regarding this prior to using this function.
 #' 
-#' Please check that no key variables are missing and that the "dates" in the split-data.table are numeric
+#' It is required that the splittingguide contains at least one record.  
+#' Missing data for key variables are not allowed and will cause errors.
+#' 
+#' A note of caution: This function works with dates as integers. R has a de-
+#' fault origina of dates as 1 January 1970, but other programs have different
+#' default origins - and this includes SAS and Excell. It is therefor important
+#' for decent results that care is taken that all dates are defined similarly.
+#' 
+#' The output will always have the "next" period starting on the day where the
+#' last period ended. This is to ensure that period lengths are calculated pro-
+#' perly. The program will also allow periods of zero lengths which is a conse-
+#' quence when multiple splits are made on the same day. When there is an event
+#' on a period with zero length it is important to keep that period not to 
+#' loose events for calculations. Whether other zero length records should be
+#' kept in calculations depend on context.
 #' @seealso lexisSeq lexisFromTo
 #' @examples
 #' library(data.table)

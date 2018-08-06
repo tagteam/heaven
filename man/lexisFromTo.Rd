@@ -61,8 +61,8 @@ split <- data.table (id=c("A","A","A","B","B","B"),
 temp <- lexisFromTo(dat # inddato with id/in/out/event
                    ,split # Data with id and dates
                    ,c("id","start","end","event") #names of id/in/out/event - in that order
-                   ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-temp
+                  ,c("id","start","end","value","name")) #Nmes var date-vars to split by
+temp[]
 }
 \author{
 Christian Torp-Pedersen

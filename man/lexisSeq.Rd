@@ -7,43 +7,79 @@
 lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
 }
 \arguments{
-\item{indat}{- base data with id, start, end, event and other data - possibly already split}
+\item{indat}{- base data with id, start, end, event and other data - possibly 
+already split}
 
-\item{invars}{- vector of colum names for id/entry/exit/event - in that order, 
-example: c("id","start","end","event")}
+\item{invars}{- vector of colum names for id/entry/exit/event - in that 
+order, example: c("id","start","end","event")}
 
 \item{varname}{- name of variable to be added to vector}
 
-\item{splitvector}{- A vector of calender times (integer). Splitvector can be a sequence of fixed times
-with format="vector" or generate a sequence of from-to-by if given 3 values and format="seq"}
+\item{splitvector}{- A vector of calender times (integer). Splitvector can be 
+a sequence of fixed times with format="vector" or generate a sequence of 
+from-to-by if given 3 values and format="seq"}
 
-\item{format}{- either "vector" for fixed times or "seq" to generate a sequence of from-to-by}
+\item{format}{- either "vector" for fixed times or "seq" to generate a 
+sequence of from-to-by}
 
-\item{value}{- 0 to the left of the vector, increase of 1 as each element of vector is passed}
+\item{value}{- 0 to the left of the vector, increase of 1 as each element of 
+vector is passed}
 }
 \value{
-The function returns a new data table where records have been split according to the provided vector. Variables
-unrelated to the splitting are left unchanged.
+The function returns a new data table where records have been split according 
+to the provided vector. Variables unrelated to the splitting are left 
+unchanged.
 }
 \description{
-lexisSeq is used to split by a sequence of dates - typical use is a sequence of calender dates (time periods) or
-a sequence of times after birth to split by age in a time dependent manner. Splitting times is provided by "splitvector"
-and "varname".  If all subjects are to be split by the same times "varname" should be "NULL".  If "varname" is a number
-it is added to the vector.  A typical use for this adding is to split by age. The vector identifies a series of times after birth and
-"varname" is the date of birth.
+LexisSeq is one of three split functions defined in heaven. The purpose is to
+split according a vector of dates. Typical situations are age (e.g. 5 year
+periods), calender time (e.g. 2 year periods) and selected times after a si-
+tuation of interes (e.g. three selected time periods after onset of a disea-
+se). The input is a data.table and splitting guide.  The "base" data are the 
+data to be split. They may contain much information, but the key is "id",
+"start","end" and "event". These describe the participant's id, start of time 
+period, end of time period and the event of interest (must be 0/1).
 
-The vector can be provided as a series of fixed times with format="vector".  It can also be provided as from-to-by, three
-values with format="seq".  In that case a vector is defined with all values between "from" and "to" by each interval of "by".
+The other input is data to define splitvector and name. The splitvector may
+be a fixed vector (format="vector", e.g. a series of fixed calender dates) or 
+a list of 3 integers defining start, end and intervel to split by 
+(format="seq", for a split on age between 20 and 80 by 5 years a splitvector 
+could be defined as:
+splitvector <- c(20,80,5)*365.25 and provided to the function as a variable).
+"varname" is a name of a variable in the data.table the defines a value to be
+added to the splitvector.  For the age split just used as an example it would
+be a variable containing the birthdate. For a split after onset of a conditi-
+on it should be the date of the condition and NA when the condition does not
+occur.  When no value should be added to the vector (e.g. split by calender
+time) "varname" should keep its default value of NULL.
 
-The variable with default name "value" takes a value of zero to the left of the first interval and increased by 1 as each 
-element in the vector is passed.
+On output a new variable with default name "value" defines the result of 
+splitting. The variable can be renamed to a user defined name (e.g.
+value="myvalue"). This variable will contain zero when time is before the
+first value of the splitting vector (added the "varname") and then increased
+by one as each value of the splitting vector is reached.
 
 Overall the function provides identical usefulness as the SAS lexis macro
 }
 \details{
-The input must be data.table.  This data.table is assumed already to be split by other functions with multiple
-records having identical participant id. The function extracts thos variables necessary for splitting, splits
-by the provided vector and finally merges other variable onto the final result.
+The input must be data.table.  This data.table is assumed already to be split 
+by other functions with multiple records having identical participant id. 
+The function extracts those variables necessary for splitting, splits
+by the provided vector and finally merges other variable onto the final 
+result.
+
+A note of caution: This function works with dates as integers. R has a de-
+fault origina of dates as 1 January 1970, but other programs have different
+default origins - and this includes SAS and Excell. It is therefor important
+for decent results that care is taken that all dates are defined similarly.
+
+The output will always have the "next" period starting on the day where the
+last period ended. This is to ensure that period lengths are calculated pro-
+perly. The program will also allow periods of zero lengths which is a conse-
+quence when multiple splits are made on the same day. When there is an event
+on a period with zero length it is important to keep that period not to 
+loose events for calculations. Whether other zero length records should be
+kept in calculations depend on context.
 }
 \examples{
 library(data.table)
@@ -53,10 +89,10 @@ dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
                 dead=c(0,1,0,0,0,1,0,1),
                 Bdate=c(-5000,-5000,-2000,-2000,0,0,100,100))
 out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-               varname="Bdate",c(0,1000,5000),format="vector")
+               varname="Bdate",c(0,150,5000),format="vector")
 out[]
 out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-                 varname=NULL,c(0,200,50),format="seq")
+                 varname=NULL,c(0,200,50),format="seq",value="myvalue")
 out2[]
 }
 \seealso{

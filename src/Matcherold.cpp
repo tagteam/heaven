@@ -3,7 +3,7 @@
 #include <string>
 using namespace Rcpp;
 // [[Rcpp::export]]
-List Matcher(int Ncontrols, // Desired number of controls
+List Matcherold(int Ncontrols, // Desired number of controls
              int Tcontrols, // Total number of controls
              int Ncases,    // Total number of cases
              int reuseControls,  // Integer logical 0/1
@@ -11,10 +11,8 @@ List Matcher(int Ncontrols, // Desired number of controls
              IntegerVector caseIndex, // Cases dates for risk-set
              IntegerVector controls, // controls ID
              IntegerVector cases, // cases ID
-             int Ndateterms, // number of dateterm variables - zero=0
-             IntegerMatrix datescases, // case dates 
-             IntegerMatrix datescontrols, // control dates   
              int NoIndex){ // Ignore index if 1 - match without regard to risk-set - essentially simple match 
+  
   int ii; // while counter - number of selected controls
   int controlCounter=0;// Sequencer through list of controls - controlIndex
   bool IsCoEl;  // preliminary test of selectability
@@ -24,23 +22,17 @@ List Matcher(int Ncontrols, // Desired number of controls
     selectedCases.reserve(Ncontrols*(Ncases+1));
   std::vector<int> haveTried(Tcontrols+1,0); // Have tried and failed - or is-taken if 1
   std::vector<int> usedControls(Tcontrols+1,0);  // Have already been used
-  for (int i=0; i<Ncases; i++){ // Loop through each case to identify controls
+  for (int i=0; i<Ncases; i++){
     if (Ncases<1 || Tcontrols<1) break; // allows for groups to have no controls or no cases
     for (int j=0; j<Tcontrols; j++) haveTried[j]=0; //Initialize to "have not tried"
     ii=1; // while counter - number of selected cases for a control
     while (ii<=Ncontrols){
       //Is control eligible - variable
       if (NoIndex==1) IsCoEl=controlCounter<Tcontrols;  // Simply end of controls has not been reached
-      else  // comnparison of case index and control index
-      IsCoEl=  controlCounter<Tcontrols && (controlIndex[controlCounter]<-2000000000 || caseIndex[i]<-2000000000 || 
-               caseIndex[i]<controlIndex[controlCounter]);// End has not been reached && (no dates to compare || case-date prior to controldate) 
-      if(IsCoEl && Ndateterms>0) // Additional logic with time varying conditions to be before case date
-       for (int k=0; k<Ndateterms; k++){ 
-         IsCoEl= IsCoEl && ((datescases(i,k)<-2000000000 && (datescontrols(controlCounter,k)<-2000000000 || datescontrols(controlCounter,k)> caseIndex[i])) || // Both missing or case missing and control greater than caseIndex
-                            (datescontrols(controlCounter,k)>caseIndex[i] && datescases(i,k)> caseIndex[i]) || // Both beyond caseIndex
-                            (datescases(i,k)>-2000000000 && datescontrols(controlCounter,k)>-2000000000 && datescases(i,k)<=caseIndex[i] && datescontrols(controlCounter,k)<=caseIndex[i])); //both before caseIndex
-       }   
-        // case date missing or controldate missing or contraldate>casedate for all covariates
+      else  
+      IsCoEl=  controlCounter<Tcontrols && (controlIndex[controlCounter]==NA || caseIndex[i]==NA || 
+               caseIndex[i]<controlIndex[controlCounter]);
+       // Above: End has not been reached && (no dates to compare || case-date prior to controldate) 
       if ((reuseControls==0 && usedControls[controlCounter]==0 && haveTried[controlCounter]==0 && IsCoEl) 
             || (reuseControls==1 && haveTried[controlCounter]==0 && IsCoEl )) { //foundOne
         selectedControls.push_back(controls[controlCounter]); //next selected control
@@ -100,30 +92,27 @@ return List::create(Named("selectedCases") = selectedCases,
                     Named("selectedControls") = selectedControls);
 }  
 
-// /*** R
-// 
-// Ncontrols <- 3 # desired number of controls
-// Tcontrols <- 20 # total number of controls
-// Ncases <- 5 #Total number of cases
-// reuseControls <- 1 # 0 do not, 1 do reuse
-// controlIndex <- c(rep(0,5),rep(5,5),rep(10,5),rep(15,5)) #control dates
-// caseIndex <- c(0,4,9,NA,10) # case dates
-// controls <- c(paste0('A',1:5),paste0('B',1:5),paste0('C',1:5),paste0('D',1:5)) #control ids
-// controls <- as.integer(factor(controls))
-// cases <- LETTERS[1:5] #case ids
-// cases <- as.integer(factor(cases))
-// NoIndex <- 0
-// dcases <-matrix(c(rep(NA,5),8:12,12:16), nrow=5, ncol=3)
-// #dcontrols <-matrix(c(seq(2,40,2),seq(3,41,2),seq(4,42,2)), nrow=20, ncol=3)
-// dcontrols <- matrix(c(rep(4,60)), nrow=20, ncol=3)
-// 
-// temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,
-//                         controlIndex, caseIndex,
-//                          controls,  cases,3,dcases,dcontrols,NoIndex)
-//  library(data.table)
-//   setDT(temp)[]
-// 
-// */
+///*** R
 
+//Ncontrols <- 3 # desired number of controls
+//Tcontrols <- 20 # total number of controls
+//Ncases <- 5 #Total number of cases
+//reuseControls <- 1 # 0 do not, 1 do reuse
+//controlIndex <- c(rep(0,5),rep(5,5),rep(10,5),rep(15,5)) #control dates
+//caseIndex <- c(0,4,9,14,10) # case dates
+//controls <- c(paste0('A',1:5),paste0('B',1:5),paste0('C',1:5),paste0('D',1:5)) #control ids
+//controls <- as.integer(factor(controls))
+//cases <- LETTERS[1:5] #case ids
+//cases <- as.integer(factor(cases))
+//NoIndex <- 0
+
+// temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,  
+//                        controlIndex, caseIndex,
+//                         controls,  cases,NoIndex)
+// library(data.table)
+//  setDT(temp)[]
+
+//*/
+  
  
  

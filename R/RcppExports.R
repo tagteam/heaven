@@ -20,16 +20,20 @@ innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
     .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
 }
 
-Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
-    .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
+Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex) {
+    .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex)
+}
+
+Matcherold <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
+    .Call('_heaven_Matcherold', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
 }
 
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
 
-splitDate <- function(inn, out, event, mergevar, value, seq) {
-    .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, value, seq)
+splitDate <- function(inn, out, event, mergevar, seq, varname) {
+    .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, seq, varname)
 }
 
 splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end) {

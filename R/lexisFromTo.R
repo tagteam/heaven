@@ -49,8 +49,8 @@
 #' temp <- lexisFromTo(dat # inddato with id/in/out/event
 #'                    ,split # Data with id and dates
 #'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
-#'                    ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-#' temp
+#'                   ,c("id","start","end","value","name")) #Nmes var date-vars to split by
+#' temp[]
 #' @export
 lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
                        ,splitdat # Data with from/to/Value
@@ -78,20 +78,18 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     csplit[,splitvars,with=FALSE] # necessary variables
     setnames(csplit,c("pnr","start","slut","val","name"))
     setkey(csplit,"pnr")
-    csplit <- merge(csplit,pnrgrp,by="pnr",all.x=TRUE)
+    csplit <- merge(csplit,pnrgrp,by="pnr")
     csplit[,pnr:=NULL] # identify only by pnrnum
     setkeyv(csplit,c("name","pnrnum","start","slut")) 
-    ## if (!(class(tolower(csplit[,start])) %in% c("numeric","date","integer")) | !(class(tolower(csplit[,slut])) %in% c("numeric","date","integer"))) stop(paste("dates in",indat,"not numeric")) 
     ## Check csplit content
     temp <- csplit[start>slut,sum(start>slut)]
-    if (temp>0) stop(paste("Error",indat," - Attempt to split with negative date intervals"))
-    temp <- copy(csplit)
-    cols = c("start","slut")
-    precols = paste("prior", cols, sep="_")
-    temp[, (precols) := shift(.SD, 1, 0, "lag"), .SDcols=cols,by=c("name","pnrnum")]
-    temp[,dif1 := start-prior_slut]
-    temp <- temp[,sum(dif1<0)]
-    if (temp>0) stop(paste("Error in",splitdat," - Intervals overlapping"))
+    if (temp>0) stop(paste("Error - Attempt to split with negative date intervals in splitting guide"))
+    precols = paste("prior", c("start","slut"), sep="_")
+    cols <-c("start","slut")
+    csplit[, (precols) := shift(.SD, 1, 0, "lag"), .SDcols=cols,by=c("name","pnrnum")]
+    error <-dim(csplit[start-prior_slut<0,])[1]
+    if (error>0) stop("Error in splitting guide data - Intervals overlapping - unpredictable results")
+    suppressWarnings(csplit[,precols:=NULL])#remove extra variables
     #Separate tables for each value of name
     namelist <- unique(csplit[["name"]])
     OUT <- INDAT[,c("pnrnum","mergevar","inn","out","event"),with=FALSE] # Prepare output start
@@ -109,7 +107,8 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     .val <- as.character(csplit[name==nam][["val"]])
     .start <- csplit[name==nam][["start"]]
     .slut <- csplit[name==nam][["slut"]]
-    OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut) # Call c++
+    #OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut) # Call c++
+    OUT2 <- splitFT(.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut)
     setDT(OUT2) # which now has more records and a new colume named after name
     setnames(OUT2,c("merge","val"),c("mergevar2",nam))
     setkeyv(OUT2,c("mergevar2","inn"))
