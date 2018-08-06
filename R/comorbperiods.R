@@ -20,6 +20,7 @@
     args <- list(...)
     update.names <- list(id=id,atc=atc,startdate=startdate,enddate=enddate)
     if(is.character(value)){
+        value <- paste0(getwd(),"/",value)
         dpp$comorbperiods$nominal <- list(path=value,
                                           names=update.names,
                                           import.info = args)
