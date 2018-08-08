@@ -1,17 +1,6 @@
 #' @title riskSetMatch - Risk set matching
 #' 
 #' @description 
-#' THIS IS A NEW VERSION OF THE FUNCTION WITH ADDITIONAL FACILITIES FOR MATCHING
-#' ON TIME DEPENDENT VARIABLES - TO ONLY SELECT SUCH CASES WHERE TIME OF CO-
-#' VARIATES ARE MISSING FOR BOTH CASES AND CONTROLS, ARE BOTH BEFORE CASE INDEX,
-#' ARE BOTH AFTER CASE INDEX - OR MISSING FOR CASE INDEX AND AFTER CASEINDEX FOR
-#' CONTROLS.
-#' 
-#' THE ORIGINAL FUNCTION IS MAINTAINED - FOR A WHILE - IN CASE OF PROBLEMS - 
-#' WITH THE NAME riskSetMatch_old
-#' 
-#' 
-#' 
 #' Risk set matching is common term to represent "incidence density sampling" 
 #' or "exposure density sampling". In both cases the request is to match by 
 #' a series of variables such that the outcome or exposure data of "controls" 
@@ -137,7 +126,7 @@
 #' diabetes <- c(rep(1,55))
 #' heartdis <- c(rep(100,55))
 #' library(data.table)
-#' dat <- data.table(case,ptid,sex,byear,case.Index,control.Index,diabetes,heartdis)
+#' dat <- data.table(case,ptid,sex,byear,diabetes,heartdis,case.Index,control.Index)
 #' # Very simple match without reuse - no dates to control for
 #' out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 #' out[]
@@ -188,7 +177,9 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                          ,NoIndex=FALSE      # If T ignore index
                          ,cores=1 # Number of cores to use, default 1
                          ,dateterms=NULL # character list of date variables
-                         ){          
+                         ){ 
+    .SD=Internal.ptid=pnrnum=cterms=Internal.event=Internal.cterms=label=Internal.event=pnrnum=
+    random=.N=Internal.controlIndex=Internal.caseIndex=random=Internal.controlIndex=Internal.caseIndex=NULL
     #check
     if (!is.character(ptid) | !is.character(event) | (!is.null(caseIndex) & !is.character (caseIndex)) |
         (!is.null(dateterms) & !is.character(dateterms))   |
@@ -200,11 +191,11 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     datt <- copy(dat)
     datt[,"oldevent":=.SD,.SDcols=event]  #Remeber status of event before match - when cases can turn out as controls
     if (NoIndex) noindex <- 1L else noindex <- 0L # allows omitting index vectors
-    setnames(datt,ptid,".ptid")
+    setnames(datt,ptid,"Internal.ptid")
     #Check that patient IDs are unique:
-    repetitians <- length(datt[,.ptid])-length(unique(datt[,.ptid]))
+    repetitians <- length(datt[,Internal.ptid])-length(unique(datt[,Internal.ptid]))
     if (repetitians>0) stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
-    datt[, pnrnum:=as.integer(factor(.ptid))] # numeric sequence of ID
+    datt[, pnrnum:=as.integer(factor(Internal.ptid))] # numeric sequence of ID
     # combine matching variables to single term - cterms
     datt[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
     # Select relevant part of table for matching
@@ -214,19 +205,19 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     alldata <- datt[,.SD,.SDcols=cols]
     # Rename variables
     if(!NoIndex) RcaseIndex <- caseIndex # remember name of caseIndex
-    if(NoIndex) setnames(alldata,cols,c("pnrnum",".event",".cterms"))
+    if(NoIndex) setnames(alldata,cols,c("pnrnum","Internal.event","Internal.cterms"))
     else
-    if (!NoIndex & is.null(dateterms)) setnames(alldata,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
+    if (!NoIndex & is.null(dateterms)) setnames(alldata,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
     else
     if (!NoIndex & !is.null(dateterms)){
-      .dateterms <- paste0("V",seq(1,length(dateterms)))
-      setnames(alldata,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms",.dateterms))                   
+      Internal.dateterms <- paste0("V",seq(1,length(dateterms)))
+      setnames(alldata,c("pnrnum","Internal.caseIndex","InternalInternal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))                   
     }
     #last check
-    if (min(as.numeric(unique(alldata[,.event])==c(0,1)))!=1) stop (" Event not 0 or 1 ")
+    if (min(as.numeric(unique(alldata[,Internal.event])==c(0,1)))!=1) stop (" Event not 0 or 1 ")
     # prepare to split 
-    setkey(alldata,.cterms)
-    split.alldata <- split(alldata,by=".cterms") # Now a list aplit by .cterms
+    setkey(alldata,Internal.cterms)
+    split.alldata <- split(alldata,by="Internal.cterms") # Now a list aplit by Internal.cterms
     if (cores<2){
         # Prepare progress bar
         totalprogress <-as.numeric(length(split.alldata)/1000)
@@ -236,17 +227,17 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         # Select controls - rbind of each split-member that selects controls
         selected.controls <- do.call("rbind",lapply(split.alldata,function(controls){ # Function handles each split-group, afterward rbind
             # Setnames because data.table called from function
-            if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
+            if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
             else
-            if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms",.dateterms))
+            if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))
             else
-            if (NoIndex) setnames(controls,c("pnrnum",".event",".cterms"))
-            setkey(controls,.event,pnrnum)
+            if (NoIndex) setnames(controls,c("pnrnum","Internal.event","Internal.cterms"))
+            setkey(controls,Internal.event,pnrnum)
             # Define cases in selected match-group
-            cases <- controls[.event==1]
+            cases <- controls[Internal.event==1]
             setkey(cases,pnrnum)
             # If cases cannot become controls they are removed from controls
-            if (!reuseCases) controls <- subset(controls,.event==0)
+            if (!reuseCases) controls <- subset(controls,Internal.event==0)
             #find lengths of controls and cases
             Tcontrols<-dim(controls)[1]
             Ncases<-dim(cases)[1]
@@ -258,16 +249,16 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             #Length of dateterm vector
             if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
             if(!NoIndex){
-                control.date <- controls[,.controlIndex]
-                case.date <- cases[,.caseIndex]
+                control.date <- controls[,Internal.controlIndex]
+                case.date <- cases[,Internal.caseIndex]
             } else {
                 control.date <- 0L
                 case.date <- 0L
             }
             #dateterm matrix
             if(!is.null(dateterms)){
-              dates.cases <- as.matrix(cases[,...dateterms])
-              dates.controls <- as.matrix(controls[,...dateterms])
+              dates.cases <- as.matrix(cases[,.SD,.SDcols=Internal.dateterms])
+              dates.controls <- as.matrix(controls[,.SD,.SDcols=Internal.dateterms])
             } 
             else {
               dates.cases <- as.matrix(0)
@@ -289,17 +280,17 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         ## print(CLUST)
         selected.controls <- do.call(rbind,foreach::foreach(controls=split.alldata,.packages=c("heaven"),.export=c("reuseControls")) %dopar% {
           # Setnames because data.table called from function
-          if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms"))
+          if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
           else
-            if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum",".caseIndex",".controlIndex",".event",".cterms",.dateterms))
+            if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))
           else
-            if (NoIndex) setnames(controls,c("pnrnum",".event",".cterms"))
-          setkey(controls,.event,pnrnum)
+            if (NoIndex) setnames(controls,c("pnrnum","Internal.event","Internal.cterms"))
+          setkey(controls,Internal.event,pnrnum)
           # Define cases in selected match-group
-          cases <- controls[.event==1]
+          cases <- controls[Internal.event==1]
           setkey(cases,pnrnum)
           # If cases cannot become controls they are removed from controls
-          if (!reuseCases) controls <- subset(controls,.event==0)
+          if (!reuseCases) controls <- subset(controls,Internal.event==0)
           #find lengths of controls and cases
           Tcontrols<-dim(controls)[1]
           Ncases<-dim(cases)[1]
@@ -311,16 +302,16 @@ riskSetMatch <- function(ptid     # Unique patient identifier
           #Length of dateterm vector
           if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
           if(!NoIndex){
-            control.date <- controls[,.controlIndex]
-            case.date <- cases[,.caseIndex]
+            control.date <- controls[,Internal.controlIndex]
+            case.date <- cases[,Internal.caseIndex]
           } else {
             control.date <- 0L
             case.date <- 0L
           }
           #dateterm matrix
           if(!is.null(dateterms)){
-            dates.cases <- as.matrix(cases[,...dateterms])
-            dates.controls <- as.matrix(controls[,...dateterms])
+            dates.cases <- as.matrix(cases[,.SD,.SDcols=Internal.dateterms])
+            dates.controls <- as.matrix(controls[,.SD,.SDcols=Internal.dateterms])
           } 
           else {
             dates.cases <- as.matrix(0)
@@ -336,25 +327,21 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         setDT(selected.controls)
       }  #end cores>1
     setnames(selected.controls,c(caseid,"pnrnum"))
-    selected.controls[,.event:=0]
-    setkey(alldata,.event)
-    cases <- alldata[.event==1]
+    selected.controls[,Internal.event:=0]
+    setkey(alldata,Internal.event)
+    cases <- alldata[Internal.event==1]
     cases[,caseid:=pnrnum]
     # Create final dataset with cases and controls
-    FINAL <- rbind(cases[,.(pnrnum,caseid,.event)],selected.controls[,.(pnrnum,caseid,.event)])
+    FINAL <- rbind(cases[,list(pnrnum,caseid,Internal.event)],selected.controls[,.(pnrnum,caseid,Internal.event)])
     setkey(FINAL)
     #output
     datt[,(event):=NULL]
     FINAL <- merge(FINAL,datt,by="pnrnum")
     FINAL[,c("cterms","pnrnum"):=NULL] # remove cterms - aggregated terms
-    setnames(FINAL,".ptid",ptid)
-    setkeyv(FINAL,c(caseid,".event"))
+    setnames(FINAL,"Internal.ptid",ptid)
+    setkeyv(FINAL,c(caseid,"Internal.event"))
     #Add relevant caseid to controls
-    if (!NoIndex) {
-       FINAL[,.newcaseindex:=case.Index[.N],by=caseid]
-       FINAL[,(RcaseIndex):=NULL]
-       setnames(FINAL,".newcaseindex",RcaseIndex)
-    } 
-    setnames(FINAL,".event",event)
+    if (!NoIndex) FINAL[,eval(caseIndex):=.SD[.N],.SDcols=c(caseIndex),by=caseid]
+    setnames(FINAL,"Internal.event",event)
     FINAL 
 }

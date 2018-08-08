@@ -24,10 +24,6 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex)
 }
 
-Matcherold <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex) {
-    .Call('_heaven_Matcherold', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, NoIndex)
-}
-
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
