@@ -332,7 +332,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     cases <- alldata[Internal.event==1]
     cases[,caseid:=pnrnum]
     # Create final dataset with cases and controls
-    FINAL <- rbind(cases[,list(pnrnum,caseid,Internal.event)],selected.controls[,.(pnrnum,caseid,Internal.event)])
+    FINAL <- rbind(cases[,list(pnrnum,caseid,Internal.event)],selected.controls[,data.table::data.table(pnrnum,caseid,Internal.event)])
     setkey(FINAL)
     #output
     datt[,(event):=NULL]
