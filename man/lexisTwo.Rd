@@ -7,8 +7,11 @@
 lexisTwo(indat,splitdat,invars,splitvars)
 }
 \arguments{
-\item{indat}{- base data with id, start, end, event and other data - possibly 
-already split}
+\item{indat}{A data.table or data.frame whose first 4 columns are in that order:
+\item{id}{person identification variable such as PNR. The data may contain multiple lines per subject.}
+\item{start}{Start of time period. Either in date format or given as numeric/integer.}
+\item{end}{End of time period. Either in date format or given as numeric/integer.}
+\item{event}{Event}}
 
 \item{splitdat}{- Data with splitting guide - id and columns with dates to 
 split by}
@@ -22,17 +25,19 @@ The name of the id column must be the same in both datasets}
 }
 \value{
 The function returns a new data table where records have been split according 
-to the splittingguide dataset. Variables #' unrelated to the splitting are 
+to the splittingguide dataset. Variables unrelated to the splitting are 
 left unchanged. The names of columns from "splitvars" are also in output
 data, but now they have the value zero before the dates and 1 after.
 }
 \description{
-lexixTwo is one of 3 splitting functions in heaven.  This particular function
-is designed for possibly multiple splits in a before-after situation. A typi-
-cal use is splitting by the time before and after the time of conditions 
-such as multiple comorbidities.
+lexixTwo is one of 3 splitting functions in heaven.
+This particular function (lexixTwo) is useful to add
+the time-dynamic occurrence of comorbidities and other events
+to an existing data set which contains person specific information
+about periods in time. The person specific time periods are split 
+according to the occurrence dates of the comorbidities and other events.
 
-The input are 2 data.tables.  The "base" data are the data to be split. They 
+The "base" data are the data to be split. They 
 may contain much information, but the key is "id","start","end" and "event". 
 These describe the participant's id, start of time period, end of time period 
 and the event of interest (must be 0/1).

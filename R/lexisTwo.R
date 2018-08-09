@@ -1,12 +1,14 @@
 #' @title lexisTwo
 #' 
 #' @description 
-#' lexixTwo is one of 3 splitting functions in heaven.  This particular function
-#' is designed for possibly multiple splits in a before-after situation. A typi-
-#' cal use is splitting by the time before and after the time of conditions 
-#' such as multiple comorbidities.
+#' lexixTwo is one of 3 splitting functions in heaven.
+#' This particular function (lexixTwo) is useful to add
+#' the time-dynamic occurrence of comorbidities and other events
+#' to an existing data set which contains person specific information
+#' about periods in time. The person specific time periods are split 
+#' according to the occurrence dates of the comorbidities and other events.
 #' 
-#' The input are 2 data.tables.  The "base" data are the data to be split. They 
+#' The "base" data are the data to be split. They 
 #' may contain much information, but the key is "id","start","end" and "event". 
 #' These describe the participant's id, start of time period, end of time period 
 #' and the event of interest (must be 0/1).
@@ -20,18 +22,23 @@
 #' @usage
 #' lexisTwo(indat,splitdat,invars,splitvars)
 #' @author Christian Torp-Pedersen
-#' @param indat - base data with id, start, end, event and other data - possibly 
-#' already split
+#' @param indat A data.table or data.frame whose first 4 columns are in that order:
+#' \itemize{
+#' \item{id}{person identification variable such as PNR. The data may contain multiple lines per subject.}
+#' \item{start}{Start of time period. Either in date format or given as numeric/integer.}
+#' \item{end}{End of time period. Either in date format or given as numeric/integer.}
+#' \item{event}{Event}
+#' }
 #' @param splitdat - Data with splitting guide - id and columns with dates to 
 #' split by 
-#' @param invars - vector of colum names for id/entry/exit/event - in that 
+#' @param invars - vector of column names for id/entry/exit/event - in that 
 #' order, example: c("id","start","end","event")
 #' @param splitvars - vector of column names of columns containing dates to 
 #' split by. example: c("date1","date2","date3","date4")
 #' The name of the id column must be the same in both datasets
 #' @return
 #' The function returns a new data table where records have been split according 
-#' to the splittingguide dataset. Variables #' unrelated to the splitting are 
+#' to the splittingguide dataset. Variables unrelated to the splitting are 
 #' left unchanged. The names of columns from "splitvars" are also in output
 #' data, but now they have the value zero before the dates and 1 after.
 #' @export
@@ -43,9 +50,9 @@
 #' It is required that the splittingguide contains at least one record.  
 #' Missing data for key variables are not allowed and will cause errors.
 #' 
-#' A note of caution: This function works with dates as integers. R has a de-
-#' fault origina of dates as 1 January 1970, but other programs have different
-#' default origins - and this includes SAS and Excell. It is therefor important
+#' A note of caution: This function works with dates as integers. R has a default
+#' original of dates as 1 January 1970, but other programs have different
+#' default origins - and this includes SAS and Excel. It is therefor important
 #' for decent results that care is taken that all dates are defined similarly.
 #' 
 #' The output will always have the "next" period starting on the day where the
