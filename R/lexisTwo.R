@@ -86,8 +86,8 @@
 #'                     como4.onset=c(0,1,0,1))
 #' lexisTwo(dat # inddato with id/in/out/event
 #'        ,split # Data with id and dates
-#'        ,c("id","start","end","event") #names of id/in/out/event - in that order
-#'        ,c("date1","date2","date3","date4")) #Names of date-vars to split by
+#'        ,c("pnr","start","end","event") #names of id/in/out/event - in that order
+#'        ,c("como1.onset","como2.onset","como3.onset","como4.onset")) #Names of date-vars to split by
 #' 
 #'
 #' 
