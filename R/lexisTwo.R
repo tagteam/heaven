@@ -7,14 +7,15 @@
 #' lexixTwo is useful to add the time-dynamic information about comorbidities
 #' and other events in binary (yes/no) format 
 #' to an existing data set which readily contains person specific information
-#' in start-stop-event format. A person specific time interval (start-stop) of the existing data
-#' set is split according to the occurrence dates of the comorbidities and other
-#' events whenever the comorbidity status (event status) changes within the time interval.
+#' in start-stop-event format. A person specific time interval (start-stop) of 
+#' the existing data set is split according to the occurrence dates of the 
+#' comorbidities and other events whenever the comorbidity status (event status)
+#' changes within the time interval.
 #' 
 #' The "base" data are the data to be split. They 
 #' may contain much information, but the key is "id","start","end" and "event". 
-#' These describe the participant's id, start of time interval, end of time interval
-#' and the event of interest (must be 0/1).
+#' These describe the participant's id, start of time interval, end of time
+#' interval and the event of interest (must be 0/1).
 #' 
 #' The other input is a data.table with the splittingguide. This data.table 
 #' should have one record pr. individual.  One column defined the same id as in
@@ -25,22 +26,30 @@
 #' @usage
 #' lexisTwo(indat,splitdat,invars,splitvars)
 #' @author Christian Torp-Pedersen
-#' @param indat A data.table or data.frame whose first 4 columns are in that order:
+#' @param indat A data.table or data.frame whose first 4 columns are in that 
+#' order:
 #' \itemize{
-#' \item{id}{ Person identification variable such as PNR. The data may contain multiple lines per subject.}
+#' \item{id}{ Person identification variable such as PNR. The data may contain 
+#' multiple lines per subject.}
 #' \item{start}{ Start of time interval. Either a date or an integer/numeric.}
-#' \item{end}{ End of time interval. Either in date format or given as numeric/integer.}
-#' \item{event}{ Binary 0-1 variable indicating if an event occurred at end of interval}
+#' \item{end}{ End of time interval. Either in date format or given as 
+#' numeric/integer.}
+#' \item{event}{ Binary 0-1 variable indicating if an event occurred at end of 
+#' interval}
 #' }
-#' @param splitdat The splittingguide. A data.table which contains person specific
-#'                 information about the onset dates of comorbidities and other events.
+#' @param splitdat The splittingguide. A data.table which contains person 
+#' specific information about the onset dates of comorbidities and other events.
 #' \itemize{
-#' \item{id}{ Person identification variable such as PNR. The data may contain multiple lines per subject.}
-#' \item{Date 1}{ Either a date or an integer/numeric. Format must match that of the start and stop of arguments \code{indat}.
-#'                The onset date of comorbidity 1 or other event.
-#'                If integer/numeric it can be time since a baseline date on project specific scale (e.g., days or months).}
-#' \item{Date 2}{ Either a date or an integer/numeric. The onset date of comorbidity 2 or other event.
-#'                If integer/numeric it can be time since a baseline date on project specific scale (e.g., days or months).}
+#' \item{id}{ Person identification variable such as PNR. The data may contain 
+#' multiple lines per subject.}
+#' \item{Date 1}{ Either a date or an integer/numeric. Format must match that of 
+#' the start and stop of arguments 
+#' \code{indat} The onset date of comorbidity 1 or other event. If 
+#' integer/numeric it can be time since a baseline date on project specific 
+#' scale (e.g., days or months).}
+#' \item{Date 2}{ Either a date or an integer/numeric. The onset date of 
+#' comorbidity 2 or other event. If integer/numeric it can be time since a 
+#' baseline date on project specific scale (e.g., days or months).}
 #' }
 #' @param invars vector of column names for id/entry/exit/event - in that 
 #' order, example: c("id","start","end","event")
@@ -77,20 +86,19 @@
 #' @examples
 #' library(data.table)
 #' 
-#' dat <- data.table(pnr=c("123456","123456","234567","234567","345678","345678","456789","456789"),
+#' dat <- data.table(pnr=c("123456","123456","234567","234567","345678","345678"
+#' ,"456789","456789"),
 #'                 start=c(0,100,0,100,0,100,0,100),
 #'                 end=c(100,200,100,200,100,200,100,200),
 #'                 event=c(0,1,0,0,0,1,0,1))
-#' split <- data.table (pnr=c("123456","234567","345678","456789"),como1.onset=c(0,50,150,300),
-#'                  como2.onset=c(25,75,175,325),como3.onset=c(30,30,30,30),
-#'                     como4.onset=c(0,1,0,1))
+#' split <- data.table (pnr=c("123456","234567","345678","456789"),
+#' como1.onset=c(0,50,150,300), como2.onset=c(25,75,175,325),
+#' como3.onset=c(30,30,30,30), como4.onset=c(0,1,0,1))
 #' lexisTwo(dat # inddato with id/in/out/event
-#'        ,split # Data with id and dates
-#'        ,c("pnr","start","end","event") #names of id/in/out/event - in that order
-#'        ,c("como1.onset","como2.onset","como3.onset","como4.onset")) #Names of date-vars to split by
-#' 
-#'
-#' 
+#'    ,split # Data with id and dates
+#'    ,c("pnr","start","end","event") #names of id/in/out/event - in that order
+#'    ,c("como1.onset","como2.onset","como3.onset","como4.onset")) 
+#'    #Names of date-vars to split by
 #' @export
 lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
                     ,splitdat # Data with id and dates
