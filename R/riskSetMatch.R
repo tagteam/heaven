@@ -34,7 +34,8 @@
 #' @param event Defining cases/controls MUST be 0/1 - 0 for controls, 1 for case
 #' @param terms c(.....) Specifies the variables that should be matched by - 
 #' enclosed in ".."
-#' @param dat The single dataset with all information - must be data.table
+#' @param dat The single dataset with all information - coerced to data.table
+#' if data.frame
 #' @param Ncontrols  Number of controls sought for each case
 #' @param oldevent Holds original value of event - distinguishes cases used as 
 #' controls
@@ -164,184 +165,184 @@
 #' #out5[,numControls:=.N,by=caseid] # adds a column with the number of controls
 #'                                  # for each case-ID     
 riskSetMatch <- function(ptid     # Unique patient identifier
-                         ,event   # 0=Control, 1=case
-                         ,terms   # terms c("n1","n2",...) - list of vairables to match by
-                         ,dat     # dataset with all variables
-                         ,Ncontrols  # number of controls to provide
-                         ,oldevent="oldevent" # To distinguish cases used as controls
-                         ,caseid="caseid" # variable to group cases and controls (case-ptid)
-                         ,reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
-                         ,reuseControls=FALSE # T or F or NULL - can controls be reused?
-                         ,caseIndex=NULL      # Integer or date, date where controls must be prior
-                         ,controlIndex=NULL   # controlIndex - Index date for controls
-                         ,NoIndex=FALSE      # If T ignore index
-                         ,cores=1 # Number of cores to use, default 1
-                         ,dateterms=NULL # character list of date variables
-                         ){ 
-    .SD=Internal.ptid=pnrnum=cterms=Internal.event=Internal.cterms=label=Internal.event=pnrnum=
+                          ,event   # 0=Control, 1=case
+                          ,terms   # terms c("n1","n2",...) - list of vairables to match by
+                          ,dat     # dataset with all variables
+                          ,Ncontrols  # number of controls to provide
+                          ,oldevent="oldevent" # To distinguish cases used as controls
+                          ,caseid="caseid" # variable to group cases and controls (case-ptid)
+                          ,reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
+                          ,reuseControls=FALSE # T or F or NULL - can controls be reused?
+                          ,caseIndex=NULL      # Integer or date, date where controls must be prior
+                          ,controlIndex=NULL   # controlIndex - Index date for controls
+                          ,NoIndex=FALSE      # If T ignore index
+                          ,cores=1 # Number of cores to use, default 1
+                          ,dateterms=NULL # character list of date variables
+){ 
+  .SD=Internal.ptid=pnrnum=cterms=Internal.event=Internal.cterms=label=Internal.event=pnrnum=
     random=.N=Internal.controlIndex=Internal.caseIndex=random=Internal.controlIndex=Internal.caseIndex=NULL
-    #check
-    if (!is.character(ptid) | !is.character(event) | (!is.null(caseIndex) & !is.character (caseIndex)) |
-        (!is.null(dateterms) & !is.character(dateterms))   |
-        (!is.null(controlIndex) & !is.character(controlIndex))) stop (" Variables names must be character")
-    setDT(dat) # coerce to data.table if necessary
-    if(!is.integer(cores) & !(is.numeric(cores))) stop("cores must be integer, default 1")
-    cores <- as.integer(cores)
-    # copy input data
-    datt <- copy(dat)
-    datt[,"oldevent":=.SD,.SDcols=event]  #Remeber status of event before match - when cases can turn out as controls
-    if (NoIndex) noindex <- 1L else noindex <- 0L # allows omitting index vectors
-    setnames(datt,ptid,"Internal.ptid")
-    #Check that patient IDs are unique:
-    repetitians <- length(datt[,Internal.ptid])-length(unique(datt[,Internal.ptid]))
-    if (repetitians>0) stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
-    datt[, pnrnum:=as.integer(factor(Internal.ptid))] # numeric sequence of ID
-    # combine matching variables to single term - cterms
-    datt[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
-    # Select relevant part of table for matching
-    cols <-c("pnrnum",event,"cterms")
-    if(!NoIndex) cols <-c("pnrnum",caseIndex,controlIndex,event,"cterms")
-    if(!NoIndex & !is.null(dateterms)) cols <- c("pnrnum",caseIndex,controlIndex,event,"cterms",dateterms)
-    alldata <- datt[,.SD,.SDcols=cols]
-    # Rename variables
-    if(!NoIndex) RcaseIndex <- caseIndex # remember name of caseIndex
-    if(NoIndex) setnames(alldata,cols,c("pnrnum","Internal.event","Internal.cterms"))
-    else
+  #check
+  if (!is.character(ptid) | !is.character(event) | (!is.null(caseIndex) & !is.character (caseIndex)) |
+      (!is.null(dateterms) & !is.character(dateterms))   |
+      (!is.null(controlIndex) & !is.character(controlIndex))) stop (" Variables names must be character")
+  setDT(dat) # coerce to data.table if necessary
+  if(!is.integer(cores) & !(is.numeric(cores))) stop("cores must be integer, default 1")
+  cores <- as.integer(cores)
+  # copy input data
+  datt <- copy(dat)
+  datt[,"oldevent":=.SD,.SDcols=event]  #Remeber status of event before match - when cases can turn out as controls
+  if (NoIndex) noindex <- 1L else noindex <- 0L # allows omitting index vectors
+  setnames(datt,ptid,"Internal.ptid")
+  #Check that patient IDs are unique:
+  repetitians <- length(datt[,Internal.ptid])-length(unique(datt[,Internal.ptid]))
+  if (repetitians>0) stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
+  datt[, pnrnum:=as.integer(factor(Internal.ptid))] # numeric sequence of ID
+  # combine matching variables to single term - cterms
+  datt[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
+  # Select relevant part of table for matching
+  cols <-c("pnrnum",event,"cterms")
+  if(!NoIndex) cols <-c("pnrnum",caseIndex,controlIndex,event,"cterms")
+  if(!NoIndex & !is.null(dateterms)) cols <- c("pnrnum",caseIndex,controlIndex,event,"cterms",dateterms)
+  alldata <- datt[,.SD,.SDcols=cols]
+  # Rename variables
+  if(!NoIndex) RcaseIndex <- caseIndex # remember name of caseIndex
+  if(NoIndex) setnames(alldata,cols,c("pnrnum","Internal.event","Internal.cterms"))
+  else
     if (!NoIndex & is.null(dateterms)) setnames(alldata,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
-    else
+  else
     if (!NoIndex & !is.null(dateterms)){
       Internal.dateterms <- paste0("V",seq(1,length(dateterms)))
-      setnames(alldata,c("pnrnum","Internal.caseIndex","InternalInternal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))                   
+      setnames(alldata,c("pnrnum","Internal.caseIndex","InternalInternal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms)) 
+      alldata[,(Internal.dateterms):=lapply(.SD,as.integer),.SDcols=Internal.dateterms]
     }
-    #last check
-    if (min(as.numeric(unique(alldata[,Internal.event])==c(0,1)))!=1) stop (" Event not 0 or 1 ")
-    # prepare to split 
-    setkey(alldata,Internal.cterms)
-    split.alldata <- split(alldata,by="Internal.cterms") # Now a list aplit by Internal.cterms
-    if (cores<2){
-        # Prepare progress bar
-        totalprogress <-as.numeric(length(split.alldata)/1000)
-        pb <-txtProgressBar(min = 0, max = 1000, initial = 0, char = "=",
-                            width = NA, title, label, style = 1, file = "")
-        progress <- 0;
-        # Select controls - rbind of each split-member that selects controls
-        selected.controls <- do.call("rbind",lapply(split.alldata,function(controls){ # Function handles each split-group, afterward rbind
-            # Setnames because data.table called from function
-            if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
-            else
-            if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))
-            else
-            if (NoIndex) setnames(controls,c("pnrnum","Internal.event","Internal.cterms"))
-            setkey(controls,Internal.event,pnrnum)
-            # Define cases in selected match-group
-            cases <- controls[Internal.event==1]
-            setkey(cases,pnrnum)
-            # If cases cannot become controls they are removed from controls
-            if (!reuseCases) controls <- subset(controls,Internal.event==0)
-            #find lengths of controls and cases
-            Tcontrols<-dim(controls)[1]
-            Ncases<-dim(cases)[1]
-            # sort controls by random number - so that they can be selected sequentially
-            set.seed(17)
-            controls[,random:=runif(.N,1,Ncontrols*10)]
-            setkey(controls,random)
-            NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
-            #Length of dateterm vector
-            if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
-            if(!NoIndex){
-                control.date <- controls[,Internal.controlIndex]
-                case.date <- cases[,Internal.caseIndex]
-            } else {
-                control.date <- 0L
-                case.date <- 0L
-            }
-            #dateterm matrix
-            if(!is.null(dateterms)){
-              dates.cases <- as.matrix(cases[,.SD,.SDcols=Internal.dateterms])
-              dates.controls <- as.matrix(controls[,.SD,.SDcols=Internal.dateterms])
-            } 
-            else {
-              dates.cases <- as.matrix(0)
-              dates.controls <- as.matrix(0)
-            }
-            Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,
-                             control.date,case.date,controls[,pnrnum],cases[,pnrnum],
-                             Ndateterms,dates.cases,dates.controls,noindex)
-            setDT(Output)
-            progress <<- progress+1/totalprogress
-            #Progress bar
-            setTxtProgressBar(pb,progress)
-            flush(stdout())
-            Output
-        })) # end function and do.call
-    } #end if cores<2
-    else {
-        CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
-        ## print(CLUST)
-        selected.controls <- do.call(rbind,foreach::foreach(controls=split.alldata,.packages=c("heaven"),.export=c("reuseControls")) %dopar% {
-          # Setnames because data.table called from function
-          if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
-          else
-            if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))
-          else
-            if (NoIndex) setnames(controls,c("pnrnum","Internal.event","Internal.cterms"))
-          setkey(controls,Internal.event,pnrnum)
-          # Define cases in selected match-group
-          cases <- controls[Internal.event==1]
-          setkey(cases,pnrnum)
-          # If cases cannot become controls they are removed from controls
-          if (!reuseCases) controls <- subset(controls,Internal.event==0)
-          #find lengths of controls and cases
-          Tcontrols<-dim(controls)[1]
-          Ncases<-dim(cases)[1]
-          # sort controls by random number - so that they can be selected sequentially
-          set.seed(17)
-          controls[,random:=runif(.N,1,Ncontrols*10)]
-          setkey(controls,random)
-          NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
-          #Length of dateterm vector
-          if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
-          if(!NoIndex){
-            control.date <- controls[,Internal.controlIndex]
-            case.date <- cases[,Internal.caseIndex]
-          } else {
-            control.date <- 0L
-            case.date <- 0L
-          }
-          #dateterm matrix
-          if(!is.null(dateterms)){
-            dates.cases <- as.matrix(cases[,.SD,.SDcols=Internal.dateterms])
-            dates.controls <- as.matrix(controls[,.SD,.SDcols=Internal.dateterms])
-          } 
-          else {
-            dates.cases <- as.matrix(0)
-            dates.controls <- as.matrix(0)
-          }
-          Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,
-                          control.date,case.date,controls[,pnrnum],cases[,pnrnum],
-                          Ndateterms,dates.cases,dates.controls,noindex)
-          setDT(Output)
-          Output
-        })  
-        parallel::stopCluster(CLUST)
-        setDT(selected.controls)
-      }  #end cores>1
-    setnames(selected.controls,c(caseid,"pnrnum"))
-    selected.controls[,Internal.event:=0]
-    setkey(alldata,Internal.event)
-    cases <- alldata[Internal.event==1]
-    cases[,caseid:=pnrnum]
-    # Create final dataset with cases and controls
-    FINAL <- rbind(cases[,list(pnrnum,caseid,Internal.event)],selected.controls[,data.table::data.table(pnrnum,caseid,Internal.event)])
-    setkey(FINAL)
-    #output
-    datt[,(event):=NULL]
-    FINAL <- merge(FINAL,datt,by="pnrnum")
-    FINAL[,c("cterms","pnrnum"):=NULL] # remove cterms - aggregated terms
-    setnames(FINAL,"Internal.ptid",ptid)
-    setkeyv(FINAL,c(caseid,"Internal.event"))
-    #Add relevant caseid to controls
-    if (!NoIndex) FINAL[,eval(caseIndex):=.SD[.N],.SDcols=c(caseIndex),by=caseid]
-    setnames(FINAL,"Internal.event",event)
-    FINAL 
+  #last check
+  if (min(as.numeric(unique(alldata[,Internal.event])==c(0,1)))!=1) stop (" Event not 0 or 1 ")
+  # prepare to split 
+  setkey(alldata,Internal.cterms)
+  split.alldata <- split(alldata,by="Internal.cterms") # Now a list aplit by Internal.cterms
+  if (cores<2){
+    # Prepare progress bar
+    totalprogress <-as.numeric(length(split.alldata)/1000)
+    pb <-txtProgressBar(min = 0, max = 1000, initial = 0, char = "=",
+                        width = NA, title, label, style = 1, file = "")
+    progress <- 0;
+    # Select controls - rbind of each split-member that selects controls
+    selected.controls <- do.call("rbind",lapply(split.alldata,function(controls){ # Function handles each split-group, afterward rbind
+      # Setnames because data.table called from function
+      if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
+      else
+        if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))
+      else
+        if (NoIndex) setnames(controls,c("pnrnum","Internal.event","Internal.cterms"))
+      setkey(controls,Internal.event,pnrnum)
+      # Define cases in selected match-group
+      cases <- controls[Internal.event==1]
+      setkey(cases,pnrnum)
+      # If cases cannot become controls they are removed from controls
+      if (!reuseCases) controls <- subset(controls,Internal.event==0)
+      #find lengths of controls and cases
+      Tcontrols<-dim(controls)[1]
+      Ncases<-dim(cases)[1]
+      # sort controls by random number - so that they can be selected sequentially
+      set.seed(17)
+      controls[,random:=runif(.N,1,Ncontrols*10)]
+      setkey(controls,random)
+      NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
+      #Length of dateterm vector
+      if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
+      if(!NoIndex){
+        control.date <- controls[,Internal.controlIndex]
+        case.date <- cases[,Internal.caseIndex]
+      } else {
+        control.date <- 0L
+        case.date <- 0L
+      }
+      #dateterm matrix
+      if(!is.null(dateterms)){
+        dates.cases <- as.matrix(cases[,.SD,.SDcols=Internal.dateterms])
+        dates.controls <- as.matrix(controls[,.SD,.SDcols=Internal.dateterms])
+      } 
+      else {
+        dates.cases <- as.matrix(0)
+        dates.controls <- as.matrix(0)
+      }
+      Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,
+                      control.date,case.date,controls[,pnrnum],cases[,pnrnum],
+                      Ndateterms,dates.cases,dates.controls,noindex)
+      setDT(Output)
+      progress <<- progress+1/totalprogress
+      #Progress bar
+      setTxtProgressBar(pb,progress)
+      flush(stdout())
+      Output
+    })) # end function and do.call
+  } #end if cores<2
+  else {
+    CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
+    selected.controls <- do.call(rbind,foreach::foreach(controls=split.alldata,.packages=c("heaven"),.export=c("reuseControls")) %dopar% {
+      # Setnames because data.table called from function
+      if (!NoIndex & is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms"))
+      else
+        if (!NoIndex & !is.null(dateterms)) setnames(controls,c("pnrnum","Internal.caseIndex","Internal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms))
+      else
+        if (NoIndex) setnames(controls,c("pnrnum","Internal.event","Internal.cterms"))
+      setkey(controls,Internal.event,pnrnum)
+      # Define cases in selected match-group
+      cases <- controls[Internal.event==1]
+      setkey(cases,pnrnum)
+      # If cases cannot become controls they are removed from controls
+      if (!reuseCases) controls <- subset(controls,Internal.event==0)
+      #find lengths of controls and cases
+      Tcontrols<-dim(controls)[1]
+      Ncases<-dim(cases)[1]
+      # sort controls by random number - so that they can be selected sequentially
+      set.seed(17)
+      controls[,random:=runif(.N,1,Ncontrols*10)]
+      setkey(controls,random)
+      NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
+      #Length of dateterm vector
+      if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
+      if(!NoIndex){
+        control.date <- controls[,Internal.controlIndex]
+        case.date <- cases[,Internal.caseIndex]
+      } else {
+        control.date <- 0L
+        case.date <- 0L
+      }
+      #dateterm matrix
+      if(!is.null(dateterms)){
+        dates.cases <- as.matrix(cases[,.SD,.SDcols=Internal.dateterms])
+        dates.controls <- as.matrix(controls[,.SD,.SDcols=Internal.dateterms])
+      } 
+      else {
+        dates.cases <- as.matrix(0)
+        dates.controls <- as.matrix(0)
+      }
+      Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,
+                      control.date,case.date,controls[,pnrnum],cases[,pnrnum],
+                      Ndateterms,dates.cases,dates.controls,noindex)
+      setDT(Output)
+      Output
+    })  
+    parallel::stopCluster(CLUST)
+    setDT(selected.controls)
+  }  #end cores>1
+  setnames(selected.controls,c(caseid,"pnrnum"))
+  selected.controls[,Internal.event:=0]
+  setkey(alldata,Internal.event)
+  cases <- alldata[Internal.event==1]
+  cases[,caseid:=pnrnum]
+  # Create final dataset with cases and controls
+  FINAL <- rbind(cases[,list(pnrnum,caseid,Internal.event)],selected.controls[,data.table::data.table(pnrnum,caseid,Internal.event)])
+  setkey(FINAL)
+  #output
+  datt[,(event):=NULL]
+  FINAL <- merge(FINAL,datt,by="pnrnum")
+  FINAL[,c("cterms","pnrnum"):=NULL] # remove cterms - aggregated terms
+  setnames(FINAL,"Internal.ptid",ptid)
+  setkeyv(FINAL,c(caseid,"Internal.event"))
+  #Add relevant caseid to controls
+  if (!NoIndex) FINAL[,eval(caseIndex):=.SD[.N],.SDcols=c(caseIndex),by=caseid]
+  setnames(FINAL,"Internal.event",event)
+  FINAL 
 }

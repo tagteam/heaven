@@ -129,7 +129,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
         setDT(INDAT)
         INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=TRUE)
         OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=TRUE) 
-        OUT <- OUT[,tail(.SD,1),by=c("pnrnum","inn","out")]
+        OUT <- OUT[,.SD[.N],by=c("pnrnum","inn","out")]
         OUT[,"pnr":=NULL]
         INDAT[,dato:=NULL]
         setnames(OUT,"dato",name)

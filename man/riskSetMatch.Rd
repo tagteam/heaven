@@ -16,7 +16,8 @@ riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
 \item{terms}{c(.....) Specifies the variables that should be matched by - 
 enclosed in ".."}
 
-\item{dat}{The single dataset with all information - must be data.table}
+\item{dat}{The single dataset with all information - coerced to data.table
+if data.frame}
 
 \item{Ncontrols}{Number of controls sought for each case}
 
