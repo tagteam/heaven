@@ -107,8 +107,8 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     .val <- as.character(csplit[name==nam][["val"]])
     .start <- csplit[name==nam][["start"]]
     .slut <- csplit[name==nam][["slut"]]
-    #OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut) # Call c++
-    OUT2 <- splitFT(.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut)
+    OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut) # Call c++
+    #OUT2 <- splitFT(.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut)
     setDT(OUT2) # which now has more records and a new colume named after name
     setnames(OUT2,c("merge","val"),c("mergevar2",nam))
     setkeyv(OUT2,c("mergevar2","inn"))
