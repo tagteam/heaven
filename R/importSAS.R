@@ -13,11 +13,13 @@
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
-##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. Use SAS syntax (see examples).
-##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables. Use SAS syntax (see examples).
+##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. 
+##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.
 ##' @param where Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).
 ##' @param obs Number of observations to read from the dataset.
 ##' @param filter Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.
+##' @param filter.by Vector of arguments to filter by. Default is all variables present in the filter file. 
+##' @param filter.cond Vector of two arguments equal to one of the values: -1,0,1. The first argument conditions on values from the filter file, the second on the SAS dataset. 1 means that an observation is only included if it is present in the corresponding dataset, -1 means it is excluded in this case, and 0 has no effect. Default is c(1,1).
 ##' @param set.hook Quoted SAS statments (within use single quotes) to be placed in addition to set options (where, keep, drop, obs) when setting the data set \code{filename}. See examples.
 ##' @param step.hook Quoted SAS statments (within use single quotes) to be placed after setting the data set \code{filename}. See examples.
 ##' @param pre.hook Quoted SAS code (within use single quotes) to be set in the beginning of the SAS program. For example, it maybe useful to specify options such as \code{'options obs=100;'} in combination with a where statement.
@@ -28,6 +30,7 @@
 ##' @param save.tmp Logical. Option to save all temporary files. Even though this is set to FALSE, the csv file will be saved if there is given a filename in "savefile". Default value is FALSE.
 ##' @param content Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.
 ##' @param na.strings A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information. 
+##' @param date.vars Vector of variables to read as date variables. 
 ##' @param ... Arguments parsed to \code{fread} for reading the created .csv file. 
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
@@ -129,6 +132,8 @@ importSAS <- function(filename,
                       where = NULL,
                       obs = NULL,
                       filter = NULL,
+                      filter.by=NULL,
+                      filter.cond = c(1,1),
                       set.hook=NULL,
                       step.hook=NULL,
                       pre.hook=NULL,
@@ -139,6 +144,7 @@ importSAS <- function(filename,
                       save.tmp = FALSE,
                       content = FALSE,
                       na.strings=".",
+                      date.vars=NULL,
                       ...){
     .SD=NULL
     # {{{ Clean up.
@@ -228,14 +234,26 @@ importSAS <- function(filename,
     is.date <- grepl("date",var.format,ignore.case=TRUE) | grepl("dato",var.format,ignore.case=TRUE)
     is.num <- grepl("num",var.type,ignore.case=TRUE)
     is.num <- is.num & !is.date
-    filter.names <- tolower(names(filter))
+    if(length(filter.by)==0){
+        filter.names <- tolower(names(filter))
+    }
+    else{
+        filter.names <- tolower(filter.by)
+    }
     keep.check <- drop.check <- filter.check <- TRUE
     if(length(keep)>0)   {keep.check <- tolower(keep) %in% var.names}
     if(length(drop)>0)   {drop.check <- tolower(drop) %in% var.names}
     if(length(filter)>0) {filter.check <- filter.names %in% var.names}
     if (length(keep)>0) is.date[!(var.names %in% keep)] <- FALSE
     if (length(drop)>0) is.date[(var.names %in% drop)] <- FALSE
-    format.statement <- if (sum(is.date)==0) "" else paste("format ",paste(var.names[is.date],collapse=" ")," yymmdd10.;")
+    if(is.null(date.vars))
+        for(name in date.vars){
+            if(!(name %in% dt.content$Variable))
+                warning(paste(name, "not found in dataset."))
+            else
+                is.date[which(name==dt.content$Variable)] <- TRUE
+        }
+    format.statement <- if (!any(is.date)) "" else paste("format ",paste(var.names[is.date],collapse=" ")," yymmdd10.;")
     # }}}
     # {{{ Write SAS program, import filterfile if present
     if (length(pre.hook)>0 & is.character(pre.hook)){
@@ -270,23 +288,50 @@ importSAS <- function(filename,
         sep = "",
         file =tmp.SASfile,
         append =TRUE)
-    if(length(filter)>0){
-        ### Sort
+    ## if(length(filter)>0){
+    ##     ### Sort
+    ##     cat("proc sort data=csv_import; \nby ",
+    ##         paste(filter.names, collapse=" "),
+    ##         "; \nrun; \nproc sort data=df; \nby ",
+    ##         paste(filter.names, collapse=" "),
+    ##         "; \nrun; ",
+    ##         sep = "",
+    ##         file = tmp.SASfile,
+    ##         append=TRUE)
+    ##     ### Merge the files
+    ##     cat("data df; \nmerge csv_import(IN=a) df(IN=b); \nby ",
+    ##         paste(filter.names, collapse=" "),
+    ##         ";\nif a AND b;\nrun;\n",
+    ##         sep = "",
+    ##         file=tmp.SASfile,
+    ##         append=TRUE)
+    ## }
+    if (length(filter) > 0) {
         cat("proc sort data=csv_import; \nby ",
-            paste(filter.names, collapse=" "),
-            "; \nrun; \nproc sort data=df; \nby ",
-            paste(filter.names, collapse=" "),
-            "; \nrun; ",
-            sep = "",
-            file = tmp.SASfile,
-            append=TRUE)
-        ### Merge the files
+            paste(filter.names,collapse = " "), "; \nrun; \nproc sort data=df; \nby ",
+            paste(filter.names, collapse = " "), "; \nrun; ",
+            sep = "", file = tmp.SASfile, append = TRUE)
+        ## Setup the merge statement based on the input from filter.cond
+        tmp.merge.statement <- matrix(
+            paste(c("( NOT", "( "),rep(letters[1:2],each=2),")"),
+            ncol=2)
+        tmp.merge.statement <- rbind(tmp.merge.statement[1,],
+                                     rep("",2),
+                                     tmp.merge.statement[2,])
+        if(any(filter.cond==0)){
+            if(all(filter.cond==0)) {
+                merge.cond.statement <- ""
+            }
+            else{
+                merge.cond.statement <- paste("if", tmp.merge.statement[(filter.cond[filter.cond!=0]+2),which(filter.cond!=0)],";\n")
+            }
+        }
+        else{
+            merge.cond.statement <- paste("if", tmp.merge.statement[(filter.cond[1]+2),1], "AND", tmp.merge.statement[(filter.cond[2]+2),2],";\n")
+        }
         cat("data df; \nmerge csv_import(IN=a) df(IN=b); \nby ",
-            paste(filter.names, collapse=" "),
-            ";\nif a AND b;\nrun;\n",
-            sep = "",
-            file=tmp.SASfile,
-            append=TRUE)
+            paste(filter.names, collapse = " "), ";\n", merge.cond.statement,"run;\n",
+            sep = "", file = tmp.SASfile, append = TRUE)
     }
     if (length(post.hook)>0 & is.character(post.hook)){
         cat(post.hook,
@@ -347,9 +392,8 @@ importSAS <- function(filename,
                 }
             }
             if (!is.null(df) & sum(is.date)>0){
-                date.vars <- var.names[is.date]
-                #df[,(date.vars):=lapply(.SD,fasttime::fastPOSIXct),.SDcols=date.vars]
-                df[,(date.vars):=lapply(.SD,lubridate::ymd),.SDcols=date.vars]
+                tmp.date.vars <- dt.content$Variables[is.date]
+                df[,(tmp.date.vars):=lapply(.SD,lubridate::ymd),.SDcols=tmp.date.vars]
             }
         }
     }
