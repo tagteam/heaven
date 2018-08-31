@@ -16,7 +16,8 @@ riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
 \item{terms}{c(.....) Specifies the variables that should be matched by - 
 enclosed in ".."}
 
-\item{dat}{The single dataset with all information - must be data.table}
+\item{dat}{The single dataset with all information - coerced to data.table
+if data.frame}
 
 \item{Ncontrols}{Number of controls sought for each case}
 
@@ -67,17 +68,6 @@ If cases without controls should be removed, this is done by setting the
 variable removeNoControls to TRUE
 }
 \description{
-THIS IS A NEW VERSION OF THE FUNCTION WITH ADDITIONAL FACILITIES FOR MATCHING
-ON TIME DEPENDENT VARIABLES - TO ONLY SELECT SUCH CASES WHERE TIME OF CO-
-VARIATES ARE MISSING FOR BOTH CASES AND CONTROLS, ARE BOTH BEFORE CASE INDEX,
-ARE BOTH AFTER CASE INDEX - OR MISSING FOR CASE INDEX AND AFTER CASEINDEX FOR
-CONTROLS.
-
-THE ORIGINAL FUNCTION IS MAINTAINED - FOR A WHILE - IN CASE OF PROBLEMS - 
-WITH THE NAME riskSetMatch_old
-
-
-
 Risk set matching is common term to represent "incidence density sampling" 
 or "exposure density sampling". In both cases the request is to match by 
 a series of variables such that the outcome or exposure data of "controls" 
@@ -153,7 +143,7 @@ heartdis <- seq(110,2,-2)
 diabetes <- c(rep(1,55))
 heartdis <- c(rep(100,55))
 library(data.table)
-dat <- data.table(case,ptid,sex,byear,case.Index,control.Index,diabetes,heartdis)
+dat <- data.table(case,ptid,sex,byear,diabetes,heartdis,case.Index,control.Index)
 # Very simple match without reuse - no dates to control for
 out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 out[]

@@ -16,11 +16,11 @@ DataFrame split2 (IntegerVector   pnr, //ID
   Rcpp::DataFrame OUT; // result!
  
   dim=pnr.size();
-  Opnr.reserve(dim*1.8); // Allow 80% split before vector is moved
-  Oin.reserve(dim*1.8);
-  Oout.reserve(dim*1.8);
-  Odato.reserve(dim*1.8);
-  Odead.reserve(dim*1.8);
+  Opnr.reserve(dim*2); // Allow 80% split before vector is moved
+  Oin.reserve(dim*2);
+  Oout.reserve(dim*2);
+  Odato.reserve(dim*2);
+  Odead.reserve(dim*2);
     
   for(int i=0; i<dim; i++ ){
     if (dato(i)<=inn(i)){ // date prior to period or touching period - set Odato to 1
