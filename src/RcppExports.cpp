@@ -60,6 +60,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// na_locf
+IntegerVector na_locf(IntegerVector x);
+RcppExport SEXP _heaven_na_locf(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(na_locf(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // split2
 DataFrame split2(IntegerVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dato, IntegerVector dead);
 RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP datoSEXP, SEXP deadSEXP) {
@@ -115,6 +126,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 12},
+    {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 5},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 9},

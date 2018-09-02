@@ -101,42 +101,44 @@
 #'    #Names of date-vars to split by
 #' @export
 lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
-                    ,splitdat # Data with id and dates
-                    ,invars #names of id/in/out/event - in that order
-                    ,splitvars #Names var date-vars to split by
-                     ){
-    .N=inn=out=dead=.SD=dato=pnrnum=NULL
-    #Tests of data
-    copyindat <- copy(indat) # leave original dataset intact
-    setDT(copyindat)
-    copysplitdat <- copy(splitdat)
-    setDT(copysplitdat)
-    copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
-    INDAT <- copyindat[,c("pnrnum",invars),with=FALSE] # Ncessary variables for split
-    setnames(INDAT,invars,c("pnr","inn","out","dead"))
-    ## if (!class(tolower(INDAT[,inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[,out])) %in% c("numeric","date","integer")) stop(paste("dates in",indat,"not numeric")) 
-    RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
-    setnames(RESTDAT,invars[1],"pnr")
-    OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
-    setnames(copysplitdat,invars[1],"pnr")
-    for(name in splitvars){
-        selected <- copysplitdat[,c("pnr",name),with=FALSE]
-        toSplit <- merge(INDAT,selected,by="pnr",all.x=TRUE)
-        pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=FALSE])# relation between pnr and pnrnum
-        if (name != splitvars[1]) OUT[,(c("out","dead")):=NULL]
-        # INDAT <- heaven::split2(.pnr,.in,.out,.dato,.event) 
-        INDAT <- toSplit[,.Call('_heaven_split2',PACKAGE = 'heaven',pnrnum,inn,out,eval(as.name(name)),dead)]  # Call to c++ split-function
-        setDT(INDAT)
-        INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=TRUE)
-        OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=TRUE) 
-        OUT <- OUT[,.SD[.N],by=c("pnrnum","inn","out")]
-        OUT[,"pnr":=NULL]
-        INDAT[,dato:=NULL]
-        setnames(OUT,"dato",name)
-    }
-    OUT[,(splitvars) := zoo::na.locf(.SD, na.rm = F), by = "pnrnum", .SDcols = splitvars]  
-    OUT <- merge(OUT,RESTDAT,by="pnrnum")
-    OUT[,pnrnum:=NULL] # remove number version of pnr
-    setnames(OUT,c("pnr","inn","out","dead"),invars)
-    OUT[]
+                      ,splitdat # Data with id and dates
+                      ,invars #names of id/in/out/event - in that order
+                      ,splitvars #Names var date-vars to split by
+){
+  .N=inn=out=dead=.SD=dato=pnrnum=NULL
+  #Tests of data
+  copyindat <- copy(indat) # leave original dataset intact
+  setDT(copyindat)
+  copysplitdat <- copy(splitdat)
+  setDT(copysplitdat)
+  copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
+  INDAT <- copyindat[,c("pnrnum",invars),with=FALSE] # Ncessary variables for split
+  setnames(INDAT,invars,c("pnr","inn","out","dead"))
+  ## if (!class(tolower(INDAT[,inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[,out])) %in% c("numeric","date","integer")) stop(paste("dates in",indat,"not numeric")) 
+  RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
+  setnames(RESTDAT,invars[1],"pnr")
+  OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
+  setnames(copysplitdat,invars[1],"pnr")
+  for(name in splitvars){
+    selected <- na.omit(copysplitdat[,c("pnr",name),with=FALSE])
+    toSplit <- merge(INDAT,selected,by="pnr",all.x=TRUE)
+    pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=FALSE])# relation between pnr and pnrnum
+    if (name != splitvars[1]) OUT[,(c("out","dead")):=NULL]
+    #INDAT <- toSplit[,split22(pnrnum,inn,out,eval(as.name(name)),dead)]   
+    INDAT <- toSplit[,.Call('_heaven_split2',PACKAGE = 'heaven',pnrnum,inn,out,eval(as.name(name)),dead)]  # Call to c++ split-function
+    setDT(INDAT)
+    INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=TRUE)
+    OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=TRUE) 
+    OUT <- OUT[,.SD[.N],by=c("pnrnum","inn","out")]
+    OUT[,"pnr":=NULL]
+    INDAT[,dato:=NULL]
+    setnames(OUT,"dato",name)
+  }
+#  OUT[,(splitvars):=lapply(.SD,.Call('_heaven_na_locf',PACKAGE = 'heaven',.SD)), 
+#      by = "pnrnum", .SDcols = splitvars ]
+  OUT[,(splitvars):=lapply(.SD,na_locf),by = "pnrnum", .SDcols = splitvars ]
+  OUT <- merge(OUT,RESTDAT,by="pnrnum")
+  OUT[,pnrnum:=NULL] # remove number version of pnr
+  setnames(OUT,c("pnr","inn","out","dead"),invars)
+  OUT[]
 }

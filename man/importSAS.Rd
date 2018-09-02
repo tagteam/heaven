@@ -18,15 +18,19 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{wd}{The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).}
 
-\item{keep}{Specifies the variables (columns) to include from the dataset. Default is to include all variables. Use SAS syntax (see examples).}
+\item{keep}{Specifies the variables (columns) to include from the dataset. Default is to include all variables.}
 
-\item{drop}{Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables. Use SAS syntax (see examples).}
+\item{drop}{Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.}
 
 \item{where}{Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).}
 
 \item{obs}{Number of observations to read from the dataset.}
 
 \item{filter}{Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.}
+
+\item{filter.by}{Vector of arguments to filter by. Default is all variables present in the filter file.}
+
+\item{filter.cond}{Vector of two arguments equal to one of the values: -1,0,1. The first argument conditions on values from the filter file, the second on the SAS dataset. 1 means that an observation is only included if it is present in the corresponding dataset, -1 means it is excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{set.hook}{Quoted SAS statments (within use single quotes) to be placed in addition to set options (where, keep, drop, obs) when setting the data set \code{filename}. See examples.}
 
@@ -47,6 +51,8 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 \item{content}{Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.}
 
 \item{na.strings}{A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information.}
+
+\item{date.vars}{Vector of variables to read as date variables.}
 
 \item{...}{Arguments parsed to \code{fread} for reading the created .csv file.}
 }

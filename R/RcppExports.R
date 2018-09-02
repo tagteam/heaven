@@ -24,6 +24,10 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, c
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex)
 }
 
+na_locf <- function(x) {
+    .Call('_heaven_na_locf', PACKAGE = 'heaven', x)
+}
+
 split2 <- function(pnr, inn, out, dato, dead) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
 }
