@@ -10,7 +10,7 @@
 #' in start-stop-event format. A person specific time interval (start-stop) of 
 #' the existing data set is split according to the occurrence dates of the 
 #' comorbidities and other events whenever the comorbidity status (event status)
-#' changes within the time interval.
+#' changes within the time interval. 
 #' 
 #' The "base" data are the data to be split. They 
 #' may contain much information, but the key is "id","start","end" and "event". 

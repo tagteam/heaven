@@ -55,7 +55,7 @@ DataFrame split2  (IntegerVector   pnr, //ID
         Opnr.push_back(pnr[i]);
         Oin.push_back(inn(i));
         Oout.push_back(out(i));
-        Odato.push_back(1);
+        Odato.push_back(0);
         Odead.push_back(dead(i));
       }
       else{
