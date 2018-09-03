@@ -114,6 +114,10 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   copyindat[,pnrnum:=1:.N] # var to merge RESTDAT on later - assuming data have been presplit with multiple lines with pnr
   INDAT <- copyindat[,c("pnrnum",invars),with=FALSE] # Ncessary variables for split
   setnames(INDAT,invars,c("pnr","inn","out","dead"))
+  ## TEST
+  if (!class(INDAT[,inn]) %in% c("integer","Date") | !class(INDAT[,out]) %in% c("integer","Date")) 
+         stop("inpute date not Date or integer")
+  if (!class(INDAT[,dead])=="integer") stop ("Event variable not integer")
   ## if (!class(tolower(INDAT[,inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[,out])) %in% c("numeric","date","integer")) stop(paste("dates in",indat,"not numeric")) 
   RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
   setnames(RESTDAT,invars[1],"pnr")
@@ -125,7 +129,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
     pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=FALSE])# relation between pnr and pnrnum
     if (name != splitvars[1]) OUT[,(c("out","dead")):=NULL]
     #INDAT <- toSplit[,split22(pnrnum,inn,out,eval(as.name(name)),dead)]   
-    INDAT <- toSplit[,.Call('_heaven_split2',PACKAGE = 'heaven',pnrnum,inn,out,eval(as.name(name)),dead)]  # Call to c++ split-function
+    INDAT <- toSplit[,.Call('_heaven_split2',PACKAGE = 'heaven',pnrnum,inn,out,dead,eval(as.name(name)))]  # Call to c++ split-function
     setDT(INDAT)
     INDAT <- merge(INDAT,pnrmerge,by="pnrnum",all.x=TRUE)
     OUT <- merge(INDAT,OUT,by=c("pnrnum","inn"),all=TRUE) 
@@ -134,9 +138,9 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
     INDAT[,dato:=NULL]
     setnames(OUT,"dato",name)
   }
-#  OUT[,(splitvars):=lapply(.SD,.Call('_heaven_na_locf',PACKAGE = 'heaven',.SD)), 
-#      by = "pnrnum", .SDcols = splitvars ]
-  OUT[,(splitvars):=lapply(.SD,na_locf),by = "pnrnum", .SDcols = splitvars ]
+  OUT[,(splitvars):=lapply(.SD,function(x){.Call('_heaven_na_locf',PACKAGE = 'heaven',x)}), 
+      by = "pnrnum", .SDcols = splitvars ]
+#  OUT[,(splitvars):=lapply(.SD,heaven::na_locf),by = "pnrnum", .SDcols = splitvars ]
   OUT <- merge(OUT,RESTDAT,by="pnrnum")
   OUT[,pnrnum:=NULL] # remove number version of pnr
   setnames(OUT,c("pnr","inn","out","dead"),invars)

@@ -7,8 +7,8 @@ using namespace Rcpp;
 DataFrame split2  (IntegerVector   pnr, //ID
                    IntegerVector   inn,  //Start intervals
                    IntegerVector   out, //End intervals
-                   IntegerVector   dato, // Split dates - NA interpreted as zero
-                   IntegerVector   dead // Event at end of interval 0/1
+                   IntegerVector   dead, // Event at end of interval 0/1
+                   IntegerVector   dato // Split dates - NA interpreted as zero
 ){
   std::vector<int> Opnr; //ID output
   std::vector<int> Oin, Oout, Odato, Odead; // Output: in/out/split date, event
@@ -16,14 +16,13 @@ DataFrame split2  (IntegerVector   pnr, //ID
   Rcpp::DataFrame OUT; // result!
   
   dim=pnr.size();
-  Opnr.reserve(dim*2); // Allow 80% split before vector is moved
+  Opnr.reserve(dim*2); // Allow 100% split before vector is moved
   Oin.reserve(dim*2);
   Oout.reserve(dim*2);
   Odato.reserve(dim*2);
   Odead.reserve(dim*2);
   
   for(int i=0; i<dim; i++ ){
-    
     if(dato(i)>out(i) || dato(i)<-2000000000){ // date later than period or integer missing - set Odato to zero
       Opnr.push_back(pnr[i]);
       Oin.push_back(inn(i));
@@ -78,11 +77,11 @@ DataFrame split2  (IntegerVector   pnr, //ID
 
 
 
-//*** R
-//pnr <- c("A","A","B","B") #ID
-//inn <-  c(0,100,100,200) #Start intervals
-//out <- c(100,200,200,300) #End intervals
-//dato <- c(100,100,250,250) # Split dates - NA interpreted as zero
-//dead <- c(0,1,0,1) # Event at end of interval 0/1
-//split2(pnr,inn,out,dato,dead)
-//*/
+// *** R
+// pnr <- c("A","A","B","B") #ID
+// inn <-  c(0,100,100,200) #Start intervals
+// out <- c(100,200,200,300) #End intervals
+// dato <- c(100,100,250,250) # Split dates - NA interpreted as zero
+// dead <- c(0,1,0,1) # Event at end of interval 0/1
+// split2(pnr,inn,out,dato,dead)
+// */

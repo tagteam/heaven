@@ -72,17 +72,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // split2
-DataFrame split2(IntegerVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dato, IntegerVector dead);
-RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP datoSEXP, SEXP deadSEXP) {
+DataFrame split2(IntegerVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dead, IntegerVector dato);
+RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP deadSEXP, SEXP datoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type pnr(pnrSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dato(datoSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type dead(deadSEXP);
-    rcpp_result_gen = Rcpp::wrap(split2(pnr, inn, out, dato, dead));
+    Rcpp::traits::input_parameter< IntegerVector >::type dato(datoSEXP);
+    rcpp_result_gen = Rcpp::wrap(split2(pnr, inn, out, dead, dato));
     return rcpp_result_gen;
 END_RCPP
 }

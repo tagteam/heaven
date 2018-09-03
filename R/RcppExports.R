@@ -28,8 +28,8 @@ na_locf <- function(x) {
     .Call('_heaven_na_locf', PACKAGE = 'heaven', x)
 }
 
-split2 <- function(pnr, inn, out, dato, dead) {
-    .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dato, dead)
+split2 <- function(pnr, inn, out, dead, dato) {
+    .Call('_heaven_split2', PACKAGE = 'heaven', pnr, inn, out, dead, dato)
 }
 
 splitDate <- function(inn, out, event, mergevar, seq, varname) {
