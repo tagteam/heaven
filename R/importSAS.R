@@ -31,6 +31,7 @@
 ##' @param content Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.
 ##' @param na.strings A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information. 
 ##' @param date.vars Vector of variables to read as date variables. 
+##' @param linux Makes it possible to run on linux. Default is FALSE. Mostly used for testing. 
 ##' @param ... Arguments parsed to \code{fread} for reading the created .csv file. 
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
@@ -145,6 +146,7 @@ importSAS <- function(filename,
                       content = FALSE,
                       na.strings=".",
                       date.vars=NULL,
+                      linux=FALSE,
                       ...){
     .SD=NULL
     # {{{ Clean up.
@@ -220,11 +222,18 @@ importSAS <- function(filename,
         sep = "",
         file = tmp.SASproccont,
         append = TRUE)
-    fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
-                    "-batch -nosplash -noenhancededitor -sysin \"",
-                    tmp.SASproccont,
-                    "\"\"")
-    shell(fprog)
+    if(linux){
+        fprog <- paste0("sas ",
+                        tmp.SASproccont)
+        system(fprog)
+    }
+    else{
+        fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
+                        "-batch -nosplash -noenhancededitor -sysin \"",
+                        tmp.SASproccont,
+                        "\"\"")
+        shell(fprog)
+    }
     # Read the created file
     dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
     # Should the filter also be compared with BOTH the keep/drop statements?
@@ -246,7 +255,7 @@ importSAS <- function(filename,
     if(length(filter)>0) {filter.check <- filter.names %in% var.names}
     if (length(keep)>0) is.date[!(var.names %in% keep)] <- FALSE
     if (length(drop)>0) is.date[(var.names %in% drop)] <- FALSE
-    if(is.null(date.vars))
+    if(!is.null(date.vars))
         for(name in date.vars){
             if(!(name %in% dt.content$Variable))
                 warning(paste(name, "not found in dataset."))
@@ -373,11 +382,18 @@ importSAS <- function(filename,
             print(dt.content)
             stop("Aborted.")
         }else{ # Exucute the sas file
-            fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
-                            "-batch -nosplash -noenhancededitor -sysin \"",
-                            tmp.SASfile,
-                            "\"\"")
-            shell(fprog) # Collect this if it fails?
+            if(linux){
+                fprog <- paste0("sas ",
+                                tmp.SASfile)
+                system(fprog)
+            }
+            else{
+                fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
+                                "-batch -nosplash -noenhancededitor -sysin \"",
+                                tmp.SASfile,
+                                "\"\"")
+                shell(fprog) # Collect this if it fails?
+            }
             ### Read the data
             if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
             info <- file.info(outfile)
@@ -392,7 +408,7 @@ importSAS <- function(filename,
                 }
             }
             if (!is.null(df) & sum(is.date)>0){
-                tmp.date.vars <- dt.content$Variables[is.date]
+                tmp.date.vars <- dt.content$Variable[is.date]
                 df[,(tmp.date.vars):=lapply(.SD,lubridate::ymd),.SDcols=tmp.date.vars]
             }
         }
@@ -401,6 +417,6 @@ importSAS <- function(filename,
     return(try(df[],silent=TRUE))
 }
 ##' @export
-contentSAS <- function(filename,wd=NULL){
-    importSAS(filename=filename,wd=wd,content = TRUE)
+contentSAS <- function(filename,wd=NULL,linux=FALSE){
+    importSAS(filename=filename,wd=wd,content = TRUE,linux=linux)
 }
