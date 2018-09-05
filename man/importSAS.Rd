@@ -54,6 +54,8 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{date.vars}{Vector of variables to read as date variables.}
 
+\item{linux}{Makes it possible to run on linux. Default is FALSE. Mostly used for testing.}
+
 \item{...}{Arguments parsed to \code{fread} for reading the created .csv file.}
 }
 \value{

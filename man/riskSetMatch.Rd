@@ -11,7 +11,7 @@ riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
 \arguments{
 \item{ptid}{Personal ID variable defining participant}
 
-\item{event}{Defining cases/controls MUST be 0/1 - 0 for controls, 1 for case}
+\item{event}{Defining cases/controls MUST be integer 0/1 - 0 for controls, 1 for case}
 
 \item{terms}{c(.....) Specifies the variables that should be matched by - 
 enclosed in ".."}
