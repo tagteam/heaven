@@ -31,7 +31,7 @@
 #'    ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL)
 #' @author Christian Torp-Pedersen
 #' @param ptid  Personal ID variable defining participant
-#' @param event Defining cases/controls MUST be 0/1 - 0 for controls, 1 for case
+#' @param event Defining cases/controls MUST be integer 0/1 - 0 for controls, 1 for case
 #' @param terms c(.....) Specifies the variables that should be matched by - 
 #' enclosed in ".."
 #' @param dat The single dataset with all information - coerced to data.table
@@ -196,7 +196,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
   #Check that patient IDs are unique:
   repetitians <- length(datt[,Internal.ptid])-length(unique(datt[,Internal.ptid]))
   if (repetitians>0) stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
-  datt[, pnrnum:=as.integer(factor(Internal.ptid))] # numeric sequence of ID
+  datt[,pnrnum:=1:.N]
   # combine matching variables to single term - cterms
   datt[, cterms :=do.call(paste0,.SD),.SDcols=terms] 
   # Select relevant part of table for matching
@@ -215,8 +215,6 @@ riskSetMatch <- function(ptid     # Unique patient identifier
       setnames(alldata,c("pnrnum","Internal.caseIndex","InternalInternal.controlIndex","Internal.event","Internal.cterms",Internal.dateterms)) 
       alldata[,(Internal.dateterms):=lapply(.SD,as.integer),.SDcols=Internal.dateterms]
     }
-  #last check
-  if (min(as.numeric(unique(alldata[,Internal.event])==c(0,1)))!=1) stop (" Event not 0 or 1 ")
   # prepare to split 
   setkey(alldata,Internal.cterms)
   split.alldata <- split(alldata,by="Internal.cterms") # Now a list aplit by Internal.cterms
