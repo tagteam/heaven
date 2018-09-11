@@ -36,6 +36,7 @@
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
 ##' @references This function is based on pioneering work by Jesper Lindhardsen.
+##' @details As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all variable names are converted to lower case. 
 ##' @examples
 ##' # We first set a working directory in which we have read and write permission
 ##' # These functions will produce temporary files which, if save.tmp is not set to TRUE, will
@@ -149,6 +150,9 @@ importSAS <- function(filename,
                       linux=FALSE,
                       ...){
     .SD=NULL
+    keep <- tolower(keep)
+    drop <- tolower(drop)
+    date.vars <- tolower(date.vars)
     # {{{ Clean up.
     on.exit({
         if(!save.tmp){
@@ -408,8 +412,9 @@ importSAS <- function(filename,
                 }
             }
             if (!is.null(df) & sum(is.date)>0){
-                tmp.date.vars <- dt.content$Variable[is.date]
-                df[,(tmp.date.vars):=lapply(.SD,lubridate::ymd),.SDcols=tmp.date.vars]
+                names(df) <- tolower(names(df))
+                ## tmp.date.vars <- dt.content$Variable[is.date]
+                df[,(date.vars):=lapply(.SD,lubridate::ymd),.SDcols=date.vars]
             }
         }
     }
