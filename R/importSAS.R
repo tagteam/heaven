@@ -261,10 +261,10 @@ importSAS <- function(filename,
     if (length(drop)>0) is.date[(var.names %in% drop)] <- FALSE
     if(!is.null(date.vars))
         for(name in date.vars){
-            if(!(name %in% dt.content$Variable))
+            if(!(name %in% var.names))
                 warning(paste(name, "not found in dataset."))
             else
-                is.date[which(name==dt.content$Variable)] <- TRUE
+                is.date[which(name==var.names)] <- TRUE
         }
     format.statement <- if (!any(is.date)) "" else paste("format ",paste(var.names[is.date],collapse=" ")," yymmdd10.;")
     # }}}
@@ -413,8 +413,8 @@ importSAS <- function(filename,
             }
             if (!is.null(df) & sum(is.date)>0){
                 names(df) <- tolower(names(df))
-                ## tmp.date.vars <- dt.content$Variable[is.date]
-                df[,(date.vars):=lapply(.SD,lubridate::ymd),.SDcols=date.vars]
+                try(df[,(date.vars):=lapply(.SD,lubridate::ymd),.SDcols=date.vars],
+                    silent=FALSE)
             }
         }
     }
