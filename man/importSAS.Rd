@@ -67,6 +67,8 @@ Selective import of sas7bdat files into R data.table format
 \details{
 This function first writes SAS code, then runs the SAS code, and finally data.table::freads the results into R.
 The user selects which columns and rows to import. See examples.
+
+As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all variable names are converted to lower case.
 }
 \examples{
 # We first set a working directory in which we have read and write permission

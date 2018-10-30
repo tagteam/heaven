@@ -41,6 +41,7 @@ simAdmissionData <- function(n,
   out[,recnum:=1:nrow(out)]
   data.table::setkey(out, pnr, inddto)
   data.table::setcolorder(out,c("pnr","recnum","inddto","uddto","indexdate","diag","pattype"))
+  out[]
 }
 
 

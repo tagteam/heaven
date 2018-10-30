@@ -32,9 +32,8 @@ Processing function, to perform calculations according to the data and variables
 \examples{
 set.seed(05021992)
 N=2
-da=heaven:::simPrescriptionData(N)
-a=heaven:::simAdmissionData(N)
-library(heaven)
+da=simPrescriptionData(N)
+a=simAdmissionData(N)
 d=dpp()
 drugdb(d) <- da
 admdb(d) <- a

@@ -154,10 +154,10 @@ searchEvent <- function(dt,periods,atcs=NULL,interval=NULL,
             tmp.expression <- parse(text=tmp.text)
         }else{
             tmp.text <- paste0("data.table::data.table(event=sum(",
-                              as.numeric(periods-interval),
-                              "<eval(iN$date) & eval(iN$date)<",
-                              as.numeric(periods),
-                              ")>0)")
+                               as.numeric(periods-interval),
+                               "<eval(iN$date) & eval(iN$date)<",
+                               as.numeric(periods),
+                               ")>0)")
             tmp.expression <- parse(text=tmp.text)
         }
         out <- tmp.base[,eval(tmp.expression),
