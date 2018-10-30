@@ -53,11 +53,11 @@ dat <- data.table(id=c("A","A","B","B"),
                  start=c(0,100,0,100),
                  end=c(100,200,100,200),
                  event=c(0,1,0,0))
-split <- data.table (id=c("A","A","A","B","B","B"),
-                    start=c(0,50,25,110,150,400),
-                    end= c(25,75,150,120,250,500),
-                    value=c(1,2,3,1,2,3),
-                    name=c("d1","d1","d2","d1","d1","d2"))
+split <- data.table (id=c("A","A","A","A","B","B","B"),
+                    start=c(0,50,25,150,110,150,400),
+                    end= c(25,75,150,151,120,250,500),
+                    value=c(1,2,3,4,1,2,3),
+                    name=c("d1","d1","d2","d2","d1","d1","d2"))
 temp <- lexisFromTo(dat # inddato with id/in/out/event
                    ,split # Data with id and dates
                    ,c("id","start","end","event") #names of id/in/out/event - in that order

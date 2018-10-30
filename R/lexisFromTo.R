@@ -41,11 +41,11 @@
 #'                  start=c(0,100,0,100),
 #'                  end=c(100,200,100,200),
 #'                  event=c(0,1,0,0))
-#' split <- data.table (id=c("A","A","A","B","B","B"),
-#'                     start=c(0,50,25,110,150,400),
-#'                     end= c(25,75,150,120,250,500),
-#'                     value=c(1,2,3,1,2,3),
-#'                     name=c("d1","d1","d2","d1","d1","d2"))
+#' split <- data.table (id=c("A","A","A","A","B","B","B"),
+#'                     start=c(0,50,25,150,110,150,400),
+#'                     end= c(25,75,150,151,120,250,500),
+#'                     value=c(1,2,3,4,1,2,3),
+#'                     name=c("d1","d1","d2","d2","d1","d1","d2"))
 #' temp <- lexisFromTo(dat # inddato with id/in/out/event
 #'                    ,split # Data with id and dates
 #'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
@@ -57,7 +57,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,invars #names of id/in/out/event - in that order
                        ,splitvars #Names in splitdat with pnr/from/to/value/name
                         ){
-    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=NULL
+    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=NULL
     copyindat <- copy(indat)
     setDT(copyindat)
     splitdat <- copy(splitdat)
@@ -77,6 +77,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     csplit <- copy(splitdat)
     csplit[,splitvars,with=FALSE] # necessary variables
     setnames(csplit,c("pnr","start","slut","val","name"))
+    csplit[,val:=as.character(val)] # Character necessary for c-program - 21.oct 2018
     setkey(csplit,"pnr")
     csplit <- merge(csplit,pnrgrp,by="pnr")
     csplit[,pnr:=NULL] # identify only by pnrnum
@@ -97,18 +98,18 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     PRIOR <- OUT[,c("mergevar","mergevar2")]
   
   for(nam in namelist){ # Separate splitting for each "name"
-    .pnrnum <- OUT[["pnrnum"]]
-    .inn <- OUT[["inn"]]
-    .out <- OUT[["out"]]
-    .event <- OUT[["event"]]
-    .mergevar2 <- OUT[["mergevar2"]]
+    i.pnrnum <- OUT[["pnrnum"]]
+    i.inn <- OUT[["inn"]]
+    i.out <- OUT[["out"]]
+    i.event <- OUT[["event"]]
+    i.mergevar2 <- OUT[["mergevar2"]]
     
-    .Spnrnum <- csplit[name==nam][["pnrnum"]]
-    .val <- as.character(csplit[name==nam][["val"]])
-    .start <- csplit[name==nam][["start"]]
-    .slut <- csplit[name==nam][["slut"]]
-    OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut) # Call c++
-    #OUT2 <- splitFT(.pnrnum, .inn, .out, .event, .mergevar2,.Spnrnum, .val, .start, .slut)
+    i.Spnrnum <- csplit[name==nam][["pnrnum"]]
+    i.val <- as.character(csplit[name==nam][["val"]])
+    i.start <- csplit[name==nam][["start"]]
+    i.slut <- csplit[name==nam][["slut"]]
+    OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',i.pnrnum, i.inn, i.out, i.event, i.mergevar2,i.Spnrnum, i.val, i.start, i.slut) # Call c++
+    #OUT2 <- splitFT(i.pnrnum, i.inn, i.out, i.event, i.mergevar2,i.Spnrnum, i.val, i.start, i.slut)
     setDT(OUT2) # which now has more records and a new colume named after name
     setnames(OUT2,c("merge","val"),c("mergevar2",nam))
     setkeyv(OUT2,c("mergevar2","inn"))
