@@ -3,19 +3,21 @@
 \docType{data}
 \name{d_codes}
 \alias{d_codes}
-\title{Danish ICD-10 codes}
-\format{A data table with 20739 rows and 2 variables
+\alias{sks_codes}
+\title{SKS codes}
+\format{A data table with 27864 rows and 2 variables
 \describe{
    \item{kode}{A character vector of the code}
-   \item{tekst}{A description of the diagnosis (in Danish)}
+   \item{tekst}{A description of the code (in Danish)}
    }}
 \source{
 http://medinfo.dk/sks/
 }
 \usage{
-d_codes
+sks_codes
 }
 \description{
-The Danish version of the ICD-10 codes, part of the Sygehusvaesnets Klassifikationssystem (SKS). Retrieved from SKS in October 2018
+Several sections of the Sygehusvaesnets Klassifikationssystem (SKS).
+Retrieved from SKS in October 2018. Consists of B, D, K, M, and U codes.
 }
 \keyword{datasets}

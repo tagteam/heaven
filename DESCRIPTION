@@ -34,3 +34,4 @@ Suggests:
 License: GPL (>= 3)
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr
+LazyData: true
