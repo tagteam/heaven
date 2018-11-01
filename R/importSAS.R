@@ -9,7 +9,8 @@
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
 ##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-##'                  na.strings=".",...)
+##'                  na.strings=".",date.vars,sas.program,sas.switches,
+##'                  sas.runner,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
