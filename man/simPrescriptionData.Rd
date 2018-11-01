@@ -28,6 +28,7 @@ Simulate prescription data alike the Danish medical registry
 
 
 
+http://medinfo.dk/sks/brows.php
 http://www.medicinpriser.dk/
 http://pro.medicin.dk/
 https://www.whocc.no/atc_ddd_index/

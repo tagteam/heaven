@@ -24,7 +24,7 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{where}{Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).}
 
-\item{obs}{Number of observations to read from the dataset.}
+\item{obs}{Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.}
 
 \item{filter}{Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.}
 
@@ -54,9 +54,13 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{date.vars}{Vector of variables to read as date variables.}
 
-\item{linux}{Makes it possible to run on linux. Default is FALSE. Mostly used for testing.}
+\item{sas.program}{sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"}
 
-\item{...}{Arguments parsed to \code{fread} for reading the created .csv file.}
+\item{sas.switches}{On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
+
+\item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
+
+\item{...}{Arguments passed to \code{fread} for reading the created .csv file.}
 }
 \value{
 The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.

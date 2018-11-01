@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 14 2018 (13:53) 
 ## Version: 
-## Last-Updated: Oct 22 2018 (07:42) 
+## Last-Updated: Nov  1 2018 (11:01) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 31
+##     Update #: 51
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -46,7 +46,7 @@ dpp <- function(study=NULL,raw=NULL,id="pnr",baseline.date) {
 ##'        of id variable if the input is a \code{data.table}.
 ##' @param variables select variables from register.
 ##' @param value either a data.table or path to a file.
-##' @param ... additional arguments passed to \code{read.regis} for
+##' @param ... additional arguments passed to \code{addData} for
 ##'     reading register from file.
 ##' @export
 'addData<-' <- function(x,name="Register",id="pnr",variables=NULL,value,...){
@@ -142,7 +142,11 @@ read.register <- function(file,id,variables,...){
 ## an inclusion criterion selects pnr numbers from one or several
 ## of the registered data sets
 ##' @export
-'addInclusion' <- function(x,name,target="all",value,priority=c("late","early")){
+'addInclusion<-'  <- function(x,
+                          name,
+                          target="all",
+                          value,
+                          priority=c("late","early")){
     priority=match.arg(priority)
     inc <- list(value)
     names(inc) <- name
@@ -151,6 +155,7 @@ read.register <- function(file,id,variables,...){
     } else{
         x$inclusion <- c(x$inclusion,inc)
     }
+    return(x)
 }
 ## an exclusion criterion removes pnr numbers from one or several
 ## of the processed data sets
@@ -167,19 +172,51 @@ read.register <- function(file,id,variables,...){
 }
 
 ##' @export
-firstAdmission <- function(data,var,expression,sortkey,by="pnr",...){
-    d <- data[grepl(expression,data[[var]],...)]
-    if (NROW(d)>0){
-        setkeyv(d,c(by,sortkey))
-        d[d[,.I[1],by=c(by,sortkey)]]
+firstAdmission <- function(data,
+                           var="diag",
+                           expression,
+                           sortkey="uddto",
+                           by="pnr",
+                           ...){
+    ## this function will be evaluated in an environment that contains
+    ## lpr
+    if (missing(data)){
+        data= as.character(substitute(data))
     }else{
-        NULL
+        data="lpr"
     }
+    f <- function(data,var,expression,sortkey,by="pnr",...){
+        if (is.character(data) && data!="lpr"){
+            lpr <- eval(as.name(data))
+        }
+        d <- lpr[grepl(expression,lpr[[var]],...),.SD,.SDcols=c(by,var,sortkey)]
+        if (NROW(d)>0){
+            ## select first 
+            setkeyv(d,c(by,sortkey))
+            d <- d[d[,.I[1],by=c(by,sortkey)]$V1]
+            return(d)
+        }else{
+            return(NULL)
+        }
+    }
+    attr(f,"arguments") <- list(data=data,
+                                var=var,
+                                expression=expression,
+                                sortkey=sortkey,
+                                by=by,...=...)
+    return(f)
 }
 
 ##' @export 
 do <- function(x,n=Inf,...){
-    
+    ## inclusion
+    for (Inc in x$inclusion){
+        x$study <- with(x$regis,do.call(Inc,attr(Inc,"arguments")))
+    }
+    ## exclusion
+    ## baseline
+    ## followup
+    x
 }
 
 ######################################################################
