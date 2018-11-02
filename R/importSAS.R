@@ -191,7 +191,7 @@ importSAS <- function(filename,
             sas.program <- "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
         }
         if(missing(sas.switches)){
-            sas.switches <- "-batch -nosplash -noenhancededitor -sysin"
+            sas.switches <- "-batch -nosplash -noenhancededitor -sysin "
         }
         if(missing(sas.runner)){
             sas.runner  <- "shell"
@@ -392,7 +392,8 @@ importSAS <- function(filename,
         append = TRUE)
     if (show.sas.code==TRUE){
         cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
-        file.show(tmp.SASfile)
+        cat(readChar(tmp.SASfile,file.info(tmp.SASfile)$size))
+        ## file.show(tmp.SASfile)
     }else{
         cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
     }
