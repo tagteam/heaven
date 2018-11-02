@@ -16,13 +16,33 @@
 ### Code:
 ## this file can only run when sas is installed. currently it only works in
 ## tag's file system on doob:
+library(testthat)
 library(heaven)
-Source(heaven)
-testA <- try(importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",obs=10))
-testB <- try(importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",obs=10,date.vars="eksd"))
-testC <- try(importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",
-                       obs=10,
-                       colClasses=list(character=c("pnr","packsize"),"numeric"="apk","factor"="eksd")))
+library(data.table)
+context("importSAS")
+
+sas.exists <- (!(Sys.which("sas")=="") | !(Sys.which("C:/Program Files/SASHome/SASFoundation/9.4/sas.exe")==""))
+if(!sas.exists){
+    cat("SAS not available so skipping SAS tests.")
+}else{
+    test_that("importSAS loads test dataset",{
+        sas.file <- system.file("testdata/lmdb.sas7bdat", package="heaven")
+        testA <- try(importSAS(file=sas.file,obs=10))
+        testB <- try(importSAS(file=sas.file,obs=10,date.vars="eksd"))
+        testC <- try(importSAS(file=sas.file,
+                               obs=10,
+                               colClasses=list(character=c("pnr","packsize"),"numeric"="apk","factor"="eksd")))
+    })
+}   
+
+## ## Old way:
+## library(heaven)
+## Source(heaven)
+## testA <- try(importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",obs=10))
+## testB <- try(importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",obs=10,date.vars="eksd"))
+## testC <- try(importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",
+##                        obs=10,
+##                        colClasses=list(character=c("pnr","packsize"),"numeric"="apk","factor"="eksd")))
 
 
 ######################################################################
