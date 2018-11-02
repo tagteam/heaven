@@ -10,7 +10,8 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-                 na.strings=".",...)
+                 na.strings=".",date.vars,sas.program,sas.switches,
+                 sas.runner,...)
        contentSAS(filename,wd=NULL)
 }
 \arguments{

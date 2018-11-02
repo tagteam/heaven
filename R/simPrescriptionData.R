@@ -41,19 +41,25 @@
 ##' 
 ##' @export
 simPrescriptionData <- function(n,
-                                m=10,
-                                packages=list("A07"=list(c(200,30),c(400,100),c(400,300),c(500,60)),
-                                              "A12B"=list(c(750,100),c(750,250),c(75,500))),
+                                max.prescriptions=37,
+                                packages=list(list(c(200,30),c(400,100),c(400,300),c(500,60)),
+                                              list(c(750,100),c(750,250),c(75,500))),
                                 max.packages=3,
                                 startDate = "1995-01-01"){
-   pnr=eksd=NULL
+    pnr=eksd=NULL
     startDate <- as.Date(startDate)
+    if (is.null(names(packages))) {
+        data(atccodes)
+        atc <- atccodes$ATC
+    }else{
+        atc <- names(packages)
+    }
     out <- data.table::rbindlist(lapply(1:n,function(i){
         pat.i <- data.table::rbindlist(lapply(1:length(packages),function(p){
             pack <- unlist(packages[p],recursive=FALSE)
-            M=sample(1:m,size=1) ## number of prescription dates
+            M=sample(1:max.prescriptions,size=1) ## number of prescription dates
             data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*runif(M,0,5*365.25),
-                                   atc = names(packages)[p],
+                                   atc = sample(atc,size=M),
                                    packsize = sample(sapply(pack,"[",2),size=M,replace=TRUE),
                                    apk=sample(1:max.packages,size=M,replace=TRUE),
                                    strnum = sample(sapply(pack,"[",1),size=M,replace=TRUE))

@@ -44,6 +44,7 @@
 ##' # We first set a working directory in which we have read and write permission
 ##' # These functions will produce temporary files which, if save.tmp is not set to TRUE, will
 ##' # be removed afterwards.
+##'
 ##' \dontrun{
 ##' setwd("v:/Data/Workdata/704791/AndersMunch/readSAS/R")
 ##'
@@ -57,6 +58,11 @@
 ##' # and to examine the result
 ##' str(df101)
 ##' df101
+##'
+##' # Format, dates, numeric, character, colClasses
+##' df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
+##'                    save.tmp=TRUE,date.vars="inddto",colClasses=list("numeric"="pnr","factor"=packsize))
+##' 
 ##' # we can also use the pre.hook to limit the number of observations via sas options:
 ##' importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 ##'           pre.hook="options obs=17;",where="diag='DN899'",keep=c("PNR","diag"),show.sas.code=1L)
@@ -252,11 +258,21 @@ importSAS <- function(filename,
         sep = "",
         file = tmp.SASproccont,
         append = TRUE)
-    fprog <- paste0("\"\"",sas.program,"\" ",sas.switches,"\"",tmp.SASproccont,"\"\"")
-    do.call("sas.runner",fprog)
+    if(.Platform$OS.type=="unix")
+        fprog <- paste0(sas.program," ",sas.switches," ",tmp.SASproccont)
+    else
+        fprog <- paste0("\"\"",sas.program,"\" ",sas.switches,"\"",tmp.SASproccont,"\"\"")
 
-    # Read the created file
-    dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
+    runcontents <- try(do.call(sas.runner,list(fprog)),silent=FALSE)
+    if (class(runcontents)[1]=="try-error"){
+        warning(paste("Running sas on",fprog,"yielded the error shown above."))
+    }
+    if (file.exists(tmp.proccontout)){
+        # Read the created file
+        dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
+    } else {
+        stop(paste("Running sas on",fprog,"did not produce the expected output file."))
+    }
     # Should the filter also be compared with BOTH the keep/drop statements?
     var.names <- tolower(dt.content$Variable)
     var.format <- dt.content$Informat
@@ -403,10 +419,19 @@ importSAS <- function(filename,
             print(dt.content)
             stop("Aborted.")
         }else{ # Exucute the sas file
-            fprog <- paste0("\"\"",sas.program,"\" ",sas.switches,"\"",tmp.SASfile,"\"\"")
-            do.call("sas.runner",fprog)
+            if(.Platform$OS.type=="unix"){
+                fprog <- paste0(sas.program," ",sas.switches," ",tmp.SASfile)
+            } else{
+                fprog <- paste0("\"\"",sas.program,"\" ",sas.switches,"\"",tmp.SASfile,"\"\"")
+            }
+            runSAS <- try(do.call(sas.runner,list(fprog)),silent=FALSE)
+            if (class(runSAS)[1]=="try-error"){
+                warning(paste("Running sas on",fprog,"yielded the error shown above."))
+            }
             ### Read the data
-            if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
+            if (!file.exists(outfile)){
+                stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))
+            }
             info <- file.info(outfile)
             if(info$size==1){  # Check if outfile is empty
                 warning("The constructed dataset is empty.")

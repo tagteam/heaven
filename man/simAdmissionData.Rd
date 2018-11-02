@@ -4,8 +4,7 @@
 \alias{simAdmissionData}
 \title{Admission data simulation function}
 \usage{
-simAdmissionData(n, m = 5, diagnoses = paste0("D", toupper(letters),
-  rep(0:99, length(letters))), startDate = "1995-01-01")
+simAdmissionData(n, m = 5, diagnoses, startDate = "1995-01-01")
 }
 \arguments{
 \item{n}{Number of patients}
