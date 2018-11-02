@@ -7,6 +7,7 @@
 \usage{
 importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  where = NULL,obs = NULL,filter = NULL,
+                 filter.by = NULL, filter.cond = c(1,1),
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
@@ -79,6 +80,7 @@ As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all va
 # We first set a working directory in which we have read and write permission
 # These functions will produce temporary files which, if save.tmp is not set to TRUE, will
 # be removed afterwards.
+
 \dontrun{
 setwd("v:/Data/Workdata/704791/AndersMunch/readSAS/R")
 
@@ -92,6 +94,12 @@ df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,sa
 # and to examine the result
 str(df101)
 df101
+
+# Format, dates, numeric, character, colClasses
+df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
+                   save.tmp=TRUE,date.vars="inddto",
+                   colClasses=list("numeric"="pnr","factor"=packsize))
+
 # we can also use the pre.hook to limit the number of observations via sas options:
 importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
           pre.hook="options obs=17;",where="diag='DN899'",keep=c("PNR","diag"),show.sas.code=1L)

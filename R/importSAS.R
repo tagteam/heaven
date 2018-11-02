@@ -6,6 +6,7 @@
 ##' @aliases importSAS contentSAS
 ##' @usage importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 ##'                  where = NULL,obs = NULL,filter = NULL,
+##'                  filter.by = NULL, filter.cond = c(1,1),
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
 ##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
@@ -61,7 +62,8 @@
 ##'
 ##' # Format, dates, numeric, character, colClasses
 ##' df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
-##'                    save.tmp=TRUE,date.vars="inddto",colClasses=list("numeric"="pnr","factor"=packsize))
+##'                    save.tmp=TRUE,date.vars="inddto",
+##'                    colClasses=list("numeric"="pnr","factor"=packsize))
 ##' 
 ##' # we can also use the pre.hook to limit the number of observations via sas options:
 ##' importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
@@ -455,6 +457,6 @@ importSAS <- function(filename,
     return(try(df[],silent=TRUE))
 }
 ##' @export
-contentSAS <- function(filename,wd=NULL,linux=FALSE){
-    importSAS(filename=filename,wd=wd,content = TRUE,linux=linux)
+contentSAS <- function(filename,wd=NULL){
+    importSAS(filename=filename,wd=wd,content = TRUE)
 }
