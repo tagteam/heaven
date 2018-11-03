@@ -3,7 +3,7 @@
 ##' Simulate prescription data alike the Danish medical registry
 ##' @title Prescription data simulation function
 ##' @param n Number of patients
-##' @param m Maximal number of prescription dates per patient
+##' @param max.prescriptions Maximal number of prescription dates per patient
 ##' @param packages Named list of association lists. The names of the
 ##'     list are ATC codes, the value associates strengths of one unit and package sizes.
 ##' @param max.packages Integer. Upper bound for number of packages purchased on a single date
