@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 15 2018 (09:30) 
 ## Version: 
-## Last-Updated: Nov  1 2018 (15:02) 
+## Last-Updated: Nov  3 2018 (18:03) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 19
+##     Update #: 39
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -15,11 +15,13 @@
 ## 
 ### Code:
 library(heaven)
+library(profvis)
+library(profmem)
 library(data.table)
 pop <- simPop(100)
-lpr <- simAdmissionData(10000)
-lmdb <- simPrescriptionData(10000)
 
+lpr <- simAdmissionData(1000)
+lmdb <- simPrescriptionData(1000)
 
 Source(heaven)
 
@@ -27,10 +29,11 @@ x <- dpp()
 addData(x,name="pop") <- pop
 addData(x,name="lmdb") <- lmdb
 addData(x,name="lpr") <- lpr
-addInclusion(x,name="firstAF") <- firstAdmission(data=lpr,var="diag",expression="DM62",sortkey="uddto",by="pnr")
-addVariable(x,name="gender",target="baseline") <- function(pop){function(pop)pop$sex}
-x <- do(x,nobs=10)
-
+## addInclusion(x,name="firstAF") <- firstAdmission(data=lpr,var="diag",expression="DM9|DM6",sortkey="uddto",by="pnr")
+addInclusion(x,name="firstAF") <- selector(data="lpr",var="diag",search.term="DM",sortkey="uddto",by="pnr")
+addVariable(x,name="N07",target="baseline") <- selector(data="lmdb",var="atc",search.term="N07",sortkey="eksd",by="pnr")
+addVariable(x,name="gender",target="baseline") <- selector(data="pop",var="sex",search.term=NULL,sortkey=NULL,by=NULL,select="all")
+X <- do(x,nobs=10)
 
 addVariable(x,name="Asacol",target="baseline") <- function(data=lmdb){}
 

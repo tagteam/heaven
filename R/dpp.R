@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 14 2018 (13:53) 
 ## Version: 
-## Last-Updated: Nov  1 2018 (11:01) 
+## Last-Updated: Nov  3 2018 (18:04) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 51
+##     Update #: 90
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -128,13 +128,13 @@ read.register <- function(file,id,variables,...){
     if(missing(name)){
         stop("Sigh. Of course, a variable needs a name.")
     }
-    var <- list(value,"target"=target,"depends"=depends,"by"=by)
-    names(var)[1] <- name
-    if (priority=="early"){
-        x$variable <- c(var,x$variable)
-    } else{
-        x$variable <- c(x$variable,var)
-    }
+    var <- list(list(instructions=value,
+                "target"=target,
+                "depends"=depends,
+                priority=priority,
+                "by"=by))
+    names(var) <- name
+    x$variable <- c(x$variable,var)
     return(x)
 }
 
@@ -171,50 +171,153 @@ read.register <- function(file,id,variables,...){
     }
 }
 
+
 ##' @export
-firstAdmission <- function(data,
-                           var="diag",
-                           expression,
-                           sortkey="uddto",
-                           by="pnr",
-                           ...){
+selector <- function(data,
+                     var,
+                     by="pnr",
+                     search.term,
+                     sortkey, # "uddto",
+                     period=NULL, # =list(variable=sortkey,start=as.Date("1970-01-01"),stop=NULL),
+                     backward=NULL, #  = list(data, reference, variable, length)
+                     forward=NULL,
+                     select="first",
+                     ...){
     ## this function will be evaluated in an environment that contains
     ## lpr
     if (missing(data)){
-        data= as.character(substitute(data))
+        stop(paste0(sample(c("Sorry","Honey","Sweety","Attagirl","Attaboy","My dear"),size=1),
+                    ", we cannot search thin air. Need data to work with."))
     }else{
-        data="lpr"
-    }
-    f <- function(data,var,expression,sortkey,by="pnr",...){
-        if (is.character(data) && data!="lpr"){
-            lpr <- eval(as.name(data))
+        if (!is.character(data)){
+            stop(paste0(sample(c("I told you that",
+                                 "Looking at the help page shows that",
+                                 "Reading the docs would reveal that",
+                                 "You forgot that",
+                                 "Nice try, but"),size=1),
+                        " data has\nto be the name of a data set, i.e., a character."))
         }
-        d <- lpr[grepl(expression,lpr[[var]],...),.SD,.SDcols=c(by,var,sortkey)]
+        data= as.character(substitute(data))
+    }
+    ## TODO: check arguments (period should be dates etc)
+    f <- function(data,
+                  var,
+                  by,
+                  search.term,
+                  sortkey,
+                  period,
+                  backward,
+                  forward,
+                  select,
+                  ...){
+        try.d <- try(d <- eval(as.name(data)))
+        if (class(try.d)[1]=="try-error"){
+            stop(paste0(sample(c("Very sorry, but",
+                                 "This is messed up somehow,",
+                                 "Damn it,",
+                                 "May I kindly remind you that",
+                                 "Impossible to proceed, because"),size=1),
+                        " data ",data," has not been checked in yet."))
+        }
         if (NROW(d)>0){
-            ## select first 
-            setkeyv(d,c(by,sortkey))
-            d <- d[d[,.I[1],by=c(by,sortkey)]$V1]
-            return(d)
-        }else{
-            return(NULL)
+            ## apply period
+            if (!missing(period) && !is.null(period)){
+                if (is.null(period$stop)){
+                    if (is.null(period$start)){
+                        # nothing happens
+                    }else{ # start only
+                        d <- d[(d[[period$variable]]>=period$start)]
+                    }
+                }else{
+                    if (is.null(period$start)){ # stop only
+                        d <- d[(d[[period$variable]]<=period$stop)]
+                    }else{ # both
+                        d <- d[(d[[period$variable]]>=period$start)&(d[[period$variable]]<=period$stop)]
+                    }
+                }
+            }
+            ## apply backward
+            if (!missing(backward) && !is.null(backward)){
+                if (is.null(backward$data)) {
+                    bd="study"
+                } 
+                bd =eval(as.name(backward$data))
+                if (!(by %in%names(bd))){
+                    stop(paste0(sample(c("Oooh",
+                                         "Uups",
+                                         "Beginner mistake",
+                                         "No no no no no",
+                                         "Try again"),size=1),
+                                ", the variable ",by," is not in reference data for backward search."))
+                }
+                # TODO: should check if bd has no duplicated by values
+                setkeyv(bd,by)
+                setkeyv(d,by)
+                ## merge
+                if (backward$reference%in% names(d)){
+                    setnames(bd,backward$reference,"canttouchthis")
+                    backward$reference <- "canttouchthis"
+                }
+                d <- bd[d,.(by,backward$reference)]
+                ## select younger than this
+                d <- d[d[[backward$reference]]-d[[period$variable]]>length]
+            }
+            if (NROW(d)>0){
+                ## now sort  
+                setkeyv(d,c(by,sortkey))
+                ## filter
+                if (!is.null(search.term)){
+                    d <- d[grepl(search.term,d[[var]],...),.SD,.SDcols=c(by,var,sortkey)]
+                }
+                ## now select
+                if (NROW(d)>0){
+                    d <- switch(select,
+                                "first"={
+                                    d[d[,.I[1],by=c(by,sortkey)]$V1]},
+                                "last"= {
+                                    d[d[,.I[.N],by=c(by,sortkey)]$V1]
+                                }, {
+                                    d
+                                })
+                }
+            }
         }
+        return(d)
     }
-    attr(f,"arguments") <- list(data=data,
-                                var=var,
-                                expression=expression,
-                                sortkey=sortkey,
-                                by=by,...=...)
+    ## maybe switch to match.call at some pont
+    ## attr(f,"arguments") <- match.call(expand.dots=TRUE)
+    attr(f,"arguments") <- c(list(data=data,
+                                  var=var,
+                                  by=by,
+                                  search.term=search.term,
+                                  sortkey=sortkey,
+                                  period=period,
+                                  backward=backward,
+                                  forward=forward,
+                                  select=select), 
+                             ...)
     return(f)
 }
+    
 
 ##' @export 
-do <- function(x,n=Inf,...){
+do <- function(x,n=Inf,verbose=TRUE,...){
     ## inclusion
     for (Inc in x$inclusion){
         x$study <- with(x$regis,do.call(Inc,attr(Inc,"arguments")))
+        if (is.null(x$study)){
+            message(paste0("\nWell, for some reason your search did not match any subject.\nPlease investigate the particularities of your inclusion criteri",ifelse(length(x$inclusion)>1,"a.","on."),"\n"))
+        }else{
+            message(paste0("\n",sample(c("Nice","Coolio","Well done","Wow","Not bad"),size=1),
+                           ", your search matched ",NROW(x$study)," subjects."))
+        }
     }
     ## exclusion
     ## baseline
+    for (V in x$variable){
+        x[[V$target]] <- with(x$regis,do.call(V$instructions,attr(V$instructions,"arguments")))    
+    }
+    browser()
     ## followup
     x
 }

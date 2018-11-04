@@ -12,14 +12,14 @@ simPrescriptionData(n, max.prescriptions = 37,
 \arguments{
 \item{n}{Number of patients}
 
+\item{max.prescriptions}{Maximal number of prescription dates per patient}
+
 \item{packages}{Named list of association lists. The names of the
 list are ATC codes, the value associates strengths of one unit and package sizes.}
 
 \item{max.packages}{Integer. Upper bound for number of packages purchased on a single date}
 
 \item{startDate}{start date}
-
-\item{m}{Maximal number of prescription dates per patient}
 }
 \description{
 Simulate prescription data

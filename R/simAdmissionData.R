@@ -23,24 +23,24 @@ simAdmissionData <- function(n,
                              startDate = "1995-01-01"){
     if (missing(diagnoses)) {
         data(icdcodes)
+        data.table::setDT(icdcodes)
         diagnoses <- icdcodes$diag
     }
     pnr=inddto=recnum=NULL
     startDate <- as.Date(startDate)
-    out <- data.table::rbindlist(lapply(1:n,function(i){
+    ## out <- foreach::foreach(i=1:n,.combine="rbind") %dopar% {
+    out <- NULL
+    ## out <- foreach::foreach(i=1:n,.combine="rbind") %dopar% {
+    for(i in 1:n){
+        ## out <- data.table::rbindlist(lapply(1:n,function(i){
         M = sample(1:m,size=1)
         ind <- startDate + runif(M,0,20*365.25)
         udd <- pmin(ind + runif(M,0,45), startDate + 20*365.25)
         pattype <- sample(1:3,size=1,replace=TRUE)
         indexdate <- startDate+runif(M,0,20*365.25)
-        dat.i = data.table::data.table(pnr=i,
-                                       inddto = ind,
-                                       uddto  = udd,
-                                       diag = sample(diagnoses,size=M,replace = TRUE),
-                                       indexdate,
-                                       pattype)
-        dat.i
-    }))
+        dat.i = data.table::data.table(pnr=i,inddto = ind,uddto  = udd,diag = sample(diagnoses,size=M,replace = TRUE),indexdate,pattype)
+        out <- rbindlist(list(dat.i,out))
+    }
     data.table::setkey(out, inddto)
     out[,recnum:=1:nrow(out)]
     data.table::setkey(out, pnr, inddto)

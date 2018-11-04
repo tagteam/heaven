@@ -3,9 +3,9 @@
 ## Author: Paul Blanche
 ## Created: Feb 23 2018 (14:45) 
 ## Version: 
-## Last-Updated: Apr 29 2018 (10:20) 
+## Last-Updated: Nov  4 2018 (08:34) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 21
+##     Update #: 23
 ##----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -84,7 +84,7 @@ whatToDo <- function(FUN,
                 timeunit=timeunit,
                 todo=ToDO
                 )
-    class(out) <- "BootorSplit"
+    class(out) <- "whattodo"
     out
 }
 
