@@ -4,7 +4,8 @@
 \alias{innerprocess}
 \title{The heart of the medicin macro}
 \usage{
-innerprocess(dat, admdat, doses, idunique, N, maxdepot, collapse)
+innerprocess(dat, admdat, doses, idunique, prescriptionwindow, maxdepot,
+  collapse)
 }
 \arguments{
 \item{dat}{data set}
@@ -15,7 +16,7 @@ innerprocess(dat, admdat, doses, idunique, N, maxdepot, collapse)
 
 \item{idunique}{unique subject ids}
 
-\item{N}{sample size}
+\item{prescriptionwindow}{prescription window}
 
 \item{maxdepot}{see medicine macro}
 
@@ -25,5 +26,5 @@ innerprocess(dat, admdat, doses, idunique, N, maxdepot, collapse)
 Inner process of medicin macro
 }
 \author{
-Helene Charlotte Rytgaard
+Helene Charlotte Rytgaard and Thomas Alexander Gerds
 }

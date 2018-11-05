@@ -97,16 +97,17 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     }
   }
   
-  ## extraction of diagnoses
-  if(!is.null(disease)){
-    diags_for_extraction <- unlist(disease_defs[disease])
-    if(!is.null(inclusions)){
-      diags_for_extraction <- c(diags_for_extraction,inclusions)
+    ## extraction of diagnoses
+    utils::data(diseasecode)
+    if(!is.null(disease)){
+        diags_for_extraction <- unlist(diseasecode[disease])
+        if(!is.null(inclusions)){
+            diags_for_extraction <- c(diags_for_extraction,inclusions)
+        }
     }
-  }
-  else{
-    diags_for_extraction <- inclusions
-  }
+    else{
+        diags_for_extraction <- inclusions
+    }
   
   setkey(d,diag) #Sort by key
   icdcodes <- d[data.table::data.table(unique(diag)),data.table::data.table(diag),mult="first"] #unique diagnoses
@@ -192,8 +193,8 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     
     # Mark different diseases
     out[,dis:=""]
-    names_dis <- names(disease_defs[disease])
-    sygdomme <- disease_defs[disease]
+    names_dis <- names(diseasecode[disease])
+    sygdomme <- diseasecode[disease]
     
     idx <- lapply(sygdomme,function(var){grep(paste(paste('^?',unlist(var),sep=''),collapse='|'),out$diag)})
     
@@ -213,8 +214,8 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
     
     # Mark different diseases
     out[,dis:=""]
-    names_dis <- names(disease_defs[disease])
-    sygdomme <- disease_defs[disease]
+    names_dis <- names(diseasecode[disease])
+    sygdomme <- diseasecode[disease]
     
     idx <- lapply(sygdomme,function(var){grep(paste(paste('^?',unlist(var),sep=''),collapse='|'),out$diag)})
     
@@ -234,8 +235,8 @@ extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NU
    if(keep==''&length(disease)>1){
     # Mark different diseases
     out[,dis:='']
-    names_dis <- names(disease_defs[disease])
-    sygdomme <- disease_defs[disease]
+    names_dis <- names(diseasecode[disease])
+    sygdomme <- diseasecode[disease]
     
     idx <- lapply(sygdomme,function(var){grep(paste(paste('^?',unlist(var),sep=''),collapse='|'),out$diag)})
     for(x in seq_along(idx)){

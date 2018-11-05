@@ -111,19 +111,19 @@
             ## if (length(interval)<=0) {
             ##     baddata2 <- paste(baddata2, "- No interval specified.\n")
             ## }
-            if(length(comorbperiods)==0){
+            if(length(dpp$comorbperiods)==0){
                 baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
             }
             else{
-                if(attr(comorbperiods,"status")=="empty"){
+                if(attr(dpp$comorbperiods,"status")=="empty"){
                     baddata2 <- paste(baddata2, "- No comorbidity periods specified.\n")
                 }
                 else{
-                    if(attr(comorbperiods,"status")=="nominal"){
+                    if(attr(dpp$comorbperiods,"status")=="nominal"){
                         message(paste0("Loading data for ", drugname, ".\n"))
                     }
-                    .tmpLoad <- internalLoadData(comorbperiods)
-                    comorbperiods <- .tmpLoad$dppObject
+                    .tmpLoad <- internalLoadData(dpp$comorbperiods)
+                    dpp$comorbperiods <- .tmpLoad$dppObject
                     if(.tmpLoad$prob.status==T){
                         baddata2 <- paste0(baddata2, .tmpLoad$message)
                     }
@@ -141,10 +141,10 @@
                 message(paste0("Data for baseline exposure OK for ",
                                drugname, ", processing..."))
                 baseline.out <- searchEvent(dpp1[,data.table::data.table(id,atc,pdate)],
-                                            periods=comorbperiods$data,
+                                            periods=dpp$comorbperiods$data,
                                             pnr="id",
                                             date="pdate",
-                                            atcs=comorbperiods$atcs.codes)
+                                            atcs=dpp$comorbperiods$atcs.codes)
                 ## out.comor <- comorbidityDrugs(dpp1.baseline[,data.table::data.table(id,atc,pdate)],
                 ##                               code=atcs,
                 ##                               date=baseline,

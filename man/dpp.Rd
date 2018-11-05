@@ -4,7 +4,10 @@
 \alias{dpp}
 \title{Create data preprocessing object (dpp)}
 \usage{
-dpp(study = NULL, raw = NULL, id = "pnr", baseline.date)
+dpp(id = "pnr")
+}
+\arguments{
+\item{id}{Character. Name of subject id variable. Default is \code{"pnr"}}
 }
 \description{
 Create data preprocessing object
@@ -13,5 +16,6 @@ Create data preprocessing object
 Create data preprocessing object (dpp)
 }
 \author{
-Helene Charlotte Rytgaard, Anders Munch & Thomas Alexander Gerds
+Helene Charlotte Rytgaard, Anders Munch & Thomas Alexander
+    Gerds
 }

@@ -11,13 +11,28 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @param admdat admission data
 #' @param doses doses
 #' @param idunique unique subject ids
-#' @param N sample size
+#' @param prescriptionwindow prescription window
 #' @param maxdepot see medicine macro
 #' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
-#' @author Helene Charlotte Rytgaard
+#' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 #' @export
-innerprocess <- function(dat, admdat, doses, idunique, N, maxdepot, collapse) {
-    .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, N, maxdepot, collapse)
+innerMedicinMacro <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse) {
+    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse)
+}
+
+#' @description Inner process of medicin macro
+#' @title The heart of the medicin macro
+#' @param dat data set
+#' @param admdat admission data
+#' @param doses doses
+#' @param idunique unique subject ids
+#' @param prescriptionwindow prescription window
+#' @param maxdepot see medicine macro
+#' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
+#' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
+#' @export
+innerprocess <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse) {
+    .Call('_heaven_innerprocess', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse)
 }
 
 Matcher <- function(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex) {

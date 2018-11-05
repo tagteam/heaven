@@ -14,7 +14,7 @@
 ##' 
 ##' @author Helene Charlotte Rytgaard
 ##' @export
-`pwindow<-` <- function(dpp, drug=NULL, value) {
+`prescriptionwindow<-` <- function(dpp, drug=NULL, value) {
 
   if (length(drug) > 0) {
     j <- (1:length(dpp$drugs))[names(dpp$drugs) == drug]
@@ -22,7 +22,7 @@
     j <- 1:length(dpp$drugs)
   
   for (jj in j)
-    dpp$drugs[[jj]]$N <- value
+    dpp$drugs[[jj]]$prescriptionwindow <- value
   
 #  dpp$N <- value
   

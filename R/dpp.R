@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 14 2018 (13:53) 
 ## Version: 
-## Last-Updated: Nov  3 2018 (18:04) 
+## Last-Updated: Nov  5 2018 (08:04) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 90
+##     Update #: 108
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -18,9 +18,11 @@
 ##'
 ##' Create data preprocessing object (dpp)
 ##' @title Create data preprocessing object (dpp)
-##' @author Helene Charlotte Rytgaard, Anders Munch & Thomas Alexander Gerds 
+##' @author Helene Charlotte Rytgaard, Anders Munch & Thomas Alexander
+##'     Gerds
 ##' @export
-dpp <- function(study=NULL,raw=NULL,id="pnr",baseline.date) {
+##' @param id Character. Name of subject id variable. Default is \code{"pnr"}
+dpp <- function(id="pnr") {
     x = structure(list(study=list(),  ## study population: dt with pnr
                        regis=list(), ## instructions for raw data
                        variables=list(), ## instructions for variables
@@ -45,11 +47,16 @@ dpp <- function(study=NULL,raw=NULL,id="pnr",baseline.date) {
 ##'        will internally be set to \code{"pnr"}. Note this will by side effect change the name
 ##'        of id variable if the input is a \code{data.table}.
 ##' @param variables select variables from register.
-##' @param value either a data.table or path to a file.
 ##' @param ... additional arguments passed to \code{addData} for
 ##'     reading register from file.
+##' @param value either a data.table or path to a file.
 ##' @export
-'addData<-' <- function(x,name="Register",id="pnr",variables=NULL,value,...){
+'addData<-' <- function(x,
+                        name="Register",
+                        id="pnr",
+                        variables=NULL,
+                        ...,
+                        value){
     stopifnot(class(x)=="dpp")
     ## check in: one or several registers
     cl <- class(value)[1]
@@ -62,7 +69,7 @@ dpp <- function(study=NULL,raw=NULL,id="pnr",baseline.date) {
             regis <- list(value[,c(variables,id),with=FALSE])
         else{
             stopifnot(match(id,names(value),nomatch=0)>0)
-            if (id!="pnr") setnames(value,id,pnr)
+            if (id!="pnr") setnames(value,id,"pnr")
             regis <- list(value)
         }
         names(regis) <- name
@@ -80,13 +87,24 @@ dpp <- function(study=NULL,raw=NULL,id="pnr",baseline.date) {
     names(x) <- make.unique(names(x))
     return(x)
 }
-
+##' Read a register
+##'
+##' Read a register for data preprocessing purposes.
+##' @title Read a registered register from SAS data file or csv file  
+##' @param file file name
+##' @param id Character. Subject id variable. Default is \code{"pnr"}.
+##' @param variables Read only these variables.
+##' @param ... Arguments passed to \code{importSAS} or \code{fread}.
+##' @return data.table 
+##' @seealso dpp 
+##' @export 
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 read.register <- function(file,id,variables,...){
-    ext <- tools::file_ext(value)
+    ext <- tools::file_ext(file)
     regis <- switch(ext,"sas7bdat"={
         regis <- do.call("importSAS",list(filename=file,",keep=",unique(c(id,variables)),...))
     },"csv"={
-        line1 <- do.call("fread",file=file,nrows=2)
+        line1 <- do.call("fread",list(file=file,nrows=2,...))
         if (length(variables)==0){
             cc <- rep("character",NCOL(line1))
         }else{
@@ -100,29 +118,49 @@ read.register <- function(file,id,variables,...){
     return(regis)
 }
 
+##' Add a baseline to a dpp object
+##'
+##' Add a baseline to a dpp object
+##' @title Add baseline
+##' @param x dpp object
+##' @param name name of baseline date
+##' @param ... not (yet) used
+##' @param value Instructions
 ##' @export
-'addBaseline<-' <- function(x,name,date){
+'addBaseline<-' <- function(x,name,...,value){
     bslnames <- names(x$bsl)
     if (match(name,bslnames,nomatch=0)>0){
         stop(paste0("Already register a baseline dataset with name: ",name))
     }
-    regis <- list(list(as.Date(date)))
-    names(regis) <- name
-    x$bsl <- c(regis,x$bsl)
+    names(value) <- name
+    x$bsl <- c(value,x$bsl)
+    x
 }
 
-## low-end all purpose function to
-## add a variable, more precisely instructions (a function) 
-## which creates the variable (can use one or all of the regis data)
+
+##' Add a variable to a dpp object
+##'
+##' All purpose function to add a variable, more precisely
+##' instructions (a function) which creates the variable (can use one
+##' or all of the regis data)
+##' @param x dpp object 
+##' @param name name of variable
+##' @param data Optional the name of the data table in which to evaluate \code{value}.
+##' @param target Character. The name of a baseline date or \code{"fup"} for the followup dataset. Where to store the result.
+##' @param depends vector of names of other instructions (inclusion, exclusion, variables) that should be evaluated before this one.
+##' @param priority Processing priority. Maybe changed by \code{depends}.
+##' @param by Character vector. Specifying subsets in which \code{value} is evaluated. E.g., if set to \code{"pnr"} then \code{value} is applied to the data of each subject separately. 
+##' @param ... not (yet) used
+##' @param value A function obtained with the all-purpose function \code{selector} or one of the specialized functions. See \code{dpp}.
 ##' @export
 'addVariable<-' <- function(x,
                             name,
                             data, 
                             target,
-                            value,
                             depends=NULL,
+                            priority=c("late","early"),
                             by=NULL,
-                            priority=c("late","early")){
+                            ...,value){
     priority=match.arg(priority)
     stopifnot(is.function(value) | class(value)[1]=="formula")
     if(missing(name)){
@@ -139,14 +177,23 @@ read.register <- function(file,id,variables,...){
 }
 
 
-## an inclusion criterion selects pnr numbers from one or several
-## of the registered data sets
+##' Instructions for a \code{dpp} object regarding which subjects to include
+##'
+##' An inclusion criterion selects pnr numbers from one or several of the registered data sets
+##' instructions (a function) which creates the variable (can use one
+##' or all of the regis data)
+##' @title Inclusion instructions
+##' @param x dpp object
+##' @param name name of inclusion criterion
+##' @param target currently ignored
+##' @param priority Character. Data preprocessing time point. Either \code{"late"} or \code{"early"}. 
+##' @param ... not (yet) used
+##' @param value A function obtained with the all-purpose function \code{selector} or one of the specialized functions. See \code{dpp}.
 ##' @export
 'addInclusion<-'  <- function(x,
-                          name,
-                          target="all",
-                          value,
-                          priority=c("late","early")){
+                              name,
+                              target="all",
+                              priority=c("late","early"),...,value){
     priority=match.arg(priority)
     inc <- list(value)
     names(inc) <- name
@@ -157,10 +204,23 @@ read.register <- function(file,id,variables,...){
     }
     return(x)
 }
-## an exclusion criterion removes pnr numbers from one or several
-## of the processed data sets
-##' @export
-'addExclusion' <- function(x,name,target="all",value,priority=c("late","early")){
+
+##' Instructions for a \code{dpp} object regarding which subjects to include
+##'
+##' An exclusion criterion removes pnr numbers from one or several of the processed data sets.
+##' @title Inclusion instructions
+##' @param x dpp object
+##' @param name name of inclusion criterion
+##' @param target currently ignored
+##' @param priority Character. Data preprocessing time point. Either \code{"late"} or \code{"early"}. 
+##' @param ... not (yet) used
+##' @param value A function obtained with the all-purpose function \code{selector} or one of the specialized functions. See \code{dpp}.
+'addExclusion<-'  <- function(x,
+                           name,
+                           target="all",
+                           priority=c("late","early"),
+                           ...,
+                           value){
     priority=match.arg(priority)
     excl <- list(value)
     names(excl) <- name
@@ -169,9 +229,23 @@ read.register <- function(file,id,variables,...){
     } else{
         x$exclusion <- c(x$exclusion,excl)
     }
+    return(x)
 }
 
-
+##' All purpose function to contstruct instructions for inclusion, exclusion and variables
+##'
+##' Returns instructions (a function) which creates variables from one or all of the regis data sets.
+##' @title Select variables 
+##' @param data Optional. The name of a registered data set in which to evaluate the instructions.
+##' @param by Character vector. Specifying subsets in which \code{value} is evaluated. E.g., if set to \code{"pnr"} then \code{value} is applied to the data of each subject separately. 
+##' @param var Variable to filter with. Could be \code{"diag"} when data is set to \code{"lpr"}.
+##' @param search.term Expression to filter with. Could be (partial) ATC or (partial) ICD codes pasted together with \code{|}.
+##' @param sortkey Date variable for sorting in time. Could be \code{"uddto"} when data is \code{"lpr"}
+##' @param period Calendar time period 
+##' @param backward Object from which to look backwards in time.
+##' @param forward Object from which to look forwards in time. 
+##' @param select Either a character ("first", "last", "any", "count") or a function.
+##' @param ... Arguments passed to the result 
 ##' @export
 selector <- function(data,
                      var,
@@ -183,6 +257,7 @@ selector <- function(data,
                      forward=NULL,
                      select="first",
                      ...){
+    .SD=.I=.N=NULL
     ## this function will be evaluated in an environment that contains
     ## lpr
     if (missing(data)){
@@ -258,7 +333,7 @@ selector <- function(data,
                     setnames(bd,backward$reference,"canttouchthis")
                     backward$reference <- "canttouchthis"
                 }
-                d <- bd[d,.(by,backward$reference)]
+                d <- bd[d,data.table::data.table(by,backward$reference)]
                 ## select younger than this
                 d <- d[d[[backward$reference]]-d[[period$variable]]>length]
             }
@@ -299,23 +374,51 @@ selector <- function(data,
     return(f)
 }
     
-
+##' Pre-processing data
+##'
+##' Pre-processing data according to instructions in dpp object
+##' @title Data pre-processing 
+##' @param x dpp object
+##' @param n number of rows from each subject
+##' @param verbose bla bla?
+##' @param ... not (yet used)
 ##' @export 
-do <- function(x,n=Inf,verbose=TRUE,...){
+process <- function(x,n=Inf,verbose=TRUE,...){
+    if (!is.infinite(n)){
+        register.environment <- lapply(x$regis,function(d){
+            ## id.unique <-
+            d[1:n]
+        })
+    }else{
+        register.environment <- x$regis
+    }
     ## inclusion
     for (Inc in x$inclusion){
-        x$study <- with(x$regis,do.call(Inc,attr(Inc,"arguments")))
-        if (is.null(x$study)){
-            message(paste0("\nWell, for some reason your search did not match any subject.\nPlease investigate the particularities of your inclusion criteri",ifelse(length(x$inclusion)>1,"a.","on."),"\n"))
+        Inc.study <- with(register.environment,do.call(Inc,attr(Inc,"arguments")))
+        if (is.null(Inc.study)){
+            message(paste0("\nWell, for some reason this search did not match any subject.\nPlease investigate the particularities of your inclusion criteri",ifelse(length(x$inclusion)>1,"a.","on."),"\n"))
         }else{
             message(paste0("\n",sample(c("Nice","Coolio","Well done","Wow","Not bad"),size=1),
-                           ", your search matched ",NROW(x$study)," subjects."))
+                           ", your search matched ",NROW(Inc.study)," subjects."))
+        }
+        x$study <- rbindlist(list(x$study,Inc.study))
+    }
+    for (Ex in x$exclusion){
+        Ex.study <- with(register.environment,do.call(Ex,attr(Ex,"arguments")))
+        if (NROW(Ex.study)>0){
+            before.n <- NROW(x$study)
+            x$study <- x$study[!(pnr%in%Ex.study$pnr)]
+            after.n <- NROW(x$study)
+            if (after.n<before.n){
+                message(paste0("\n",sample(c("Nullified","Remoooooved","Kicked out","Gone forever","Send to device null"),size=1),
+                               before.n-after.n," subjects."))
+            }
         }
     }
     ## exclusion
     ## baseline
     for (V in x$variable){
-        x[[V$target]] <- with(x$regis,do.call(V$instructions,attr(V$instructions,"arguments")))    
+        x[[V$target]] <- with(register.environment,do.call(V$instructions,attr(V$instructions,"arguments")))    
     }
     browser()
     ## followup

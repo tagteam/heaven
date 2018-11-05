@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 15 2018 (09:30) 
 ## Version: 
-## Last-Updated: Nov  3 2018 (18:03) 
+## Last-Updated: Nov  5 2018 (06:19) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 39
+##     Update #: 43
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -18,8 +18,14 @@ library(heaven)
 library(profvis)
 library(profmem)
 library(data.table)
-pop <- simPop(100)
+library(devtools)
+library(Rcpp)
 
+## a <- readRDS("~/tmp/a.rds")
+## sourceCpp("~/research/SoftWare/heaven/src/innerMedicinMacro.cpp")
+## do.call("innerMedicinMacro",a)
+
+pop <- simPop(100)
 lpr <- simAdmissionData(1000)
 lmdb <- simPrescriptionData(1000)
 

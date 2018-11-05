@@ -15,3 +15,35 @@
 #' @name d_codes
 
 "sks_codes"
+
+#' diseasecode
+#'
+#' List with pre-specified disease codes (ATC, ICD10, ICD8)
+
+#' @format A list
+#' @docType data
+#' @keywords datasets
+#' @name diseasecode
+
+"diseasecode"
+
+
+#' atccodes
+#'
+#' data.table with unique atc codes
+#' @format A data.table
+#' @docType data
+#' @keywords datasets
+#' @name atccodes
+
+"atccodes"
+
+#' icdcodes
+#'
+#' data.table with unique icd codes
+#' @format A data.table
+#' @docType data
+#' @keywords datasets
+#' @name icdcodes
+
+"icdcodes"

@@ -124,7 +124,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   OUT <- INDAT[,c("pnrnum","inn"),with=FALSE] # Prepare output start
   setnames(copysplitdat,invars[1],"pnr")
   for(name in splitvars){
-    selected <- na.omit(copysplitdat[,c("pnr",name),with=FALSE])
+    selected <- stats::na.omit(copysplitdat[,c("pnr",name),with=FALSE])
     toSplit <- merge(INDAT,selected,by="pnr",all.x=TRUE)
     pnrmerge <- unique(INDAT[,c("pnr","pnrnum"),with=FALSE])# relation between pnr and pnrnum
     if (name != splitvars[1]) OUT[,(c("out","dead")):=NULL]

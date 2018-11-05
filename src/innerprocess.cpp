@@ -10,21 +10,23 @@ using namespace arma;
 //' @param admdat admission data
 //' @param doses doses
 //' @param idunique unique subject ids
-//' @param N sample size
+//' @param prescriptionwindow prescription window
 //' @param maxdepot see medicine macro
 //' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
-//' @author Helene Charlotte Rytgaard
+//' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 //' @export
 // [[Rcpp::export]]
 Rcpp::List innerprocess(Rcpp::DataFrame dat,
 			Rcpp::DataFrame admdat,
 			Rcpp::List doses, 
 			NumericVector idunique,
-			double N, 
+			double prescriptionwindow, 
 			double maxdepot,
 			bool collapse
 			) {
-  int NOBS= idunique.size();
+  
+  // Rcout << "before loop \n"<< std::endl;  
+  uword NOBS= idunique.size();
   Rcpp::List xxx(NOBS);
   // Rcpp::List outlist(int nobs);
   arma::vec dval = Rcpp::as<arma::vec>(doses["value"]);
@@ -32,13 +34,13 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
   arma::vec dmax = Rcpp::as<arma::vec>(doses["max"]);
   arma::vec ddef = Rcpp::as<arma::vec>(doses["def"]);
 
-  arma::vec INid = Rcpp::as<arma::vec>(dat["id"]); 
-  arma::vec INpdate = Rcpp::as<arma::vec>(dat["pdate"]);
-  arma::vec INstrength = Rcpp::as<arma::vec>(dat["strength"]);
+  arma::vec INid = Rcpp::as<arma::vec>(dat["pnr"]); 
+  arma::vec INpdate = Rcpp::as<arma::vec>(dat["eksd"]);
+  arma::vec INstrength = Rcpp::as<arma::vec>(dat["strnum"]);
   arma::vec INnpack = Rcpp::as<arma::vec>(dat["npack"]);
   arma::vec INppp = Rcpp::as<arma::vec>(dat["ppp"]);
   
-  arma::vec INaid = Rcpp::as<arma::vec>(admdat["id"]); 
+  arma::vec INaid = Rcpp::as<arma::vec>(admdat["pnr"]); 
   arma::vec INadmin = Rcpp::as<arma::vec>(admdat["inddto"]);
   arma::vec INadmax = Rcpp::as<arma::vec>(admdat["uddto"]);
   
@@ -159,7 +161,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
       double Dsum = 0; 
       double Hsum = 0;
       // Rcout << "0e" << std::endl;
-      for (uword l = 1; l < N+1; ++l) {
+      for (uword l = 1; l < prescriptionwindow+1; ++l) {
 	if (k>=l) {
 	  // check first if dosis is the same
 	  // Rcout << "k-l=" << (k-l) << std::endl;
@@ -174,14 +176,14 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
 	    }
 	    // if not overlap
 	    else 
-	      l = N+1; 
+	      l = prescriptionwindow+1; 
 	  } else { // if dosis not the same
 	    if (u(k-l) == 1) { // if overlap, i.e. Case II
 	      i0(k) = l;
 	      Dsum += D(k-l);
 	      Hsum += H(k-l);
 	    } else // if not overlap
-	      l = N+1; 
+	      l = prescriptionwindow+1; 
 	  }
 	}
       }
@@ -254,7 +256,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
     arma::vec Sjk = dval(jk); 
     
     if (!collapse) {
-      xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("id")     = idout,
+      xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr")     = idout,
 				       Rcpp::Named("X")      = X,
 				       Rcpp::Named("B")      = B,
 				       Rcpp::Named("E")      = E,
@@ -310,7 +312,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
       // xxxi.col(2)=B1;
       // xxxi.col(3)=E1;
       // xxx[i] = xxxi;
-      xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("id") = id1,
+      xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr") = id1,
        Rcpp::Named("X") = X1,
        Rcpp::Named("B") = B1,
        Rcpp::Named("E") = E1);
