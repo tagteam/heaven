@@ -1,11 +1,11 @@
 ### dpp.R --- 
 #----------------------------------------------------------------------
 ## Author: Thomas Alexander Gerds
-## Created: Oct 14 2018 (13:53) 
+## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: Nov  5 2018 (08:04) 
+## Last-Updated: Nov  5 2018 (19:50) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 108
+##     Update #: 205
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -104,7 +104,7 @@ read.register <- function(file,id,variables,...){
     regis <- switch(ext,"sas7bdat"={
         regis <- do.call("importSAS",list(filename=file,",keep=",unique(c(id,variables)),...))
     },"csv"={
-        line1 <- do.call("fread",list(file=file,nrows=2,...))
+        line1 <- do.call(data.table::fread,list(file=file,nrows=2,...))
         if (length(variables)==0){
             cc <- rep("character",NCOL(line1))
         }else{
@@ -113,7 +113,7 @@ read.register <- function(file,id,variables,...){
         names(cc) <- names(line1)
         rm(line1)
         cc[grep(unique(c(id,variables)),names(cc))] <- "character"
-        regis <- do.call("fread",file=file,nrows=Inf,colClasses=cc,...)
+        regis <- do.call(data.table::fread,list(file=file,nrows=Inf,colClasses=cc,...))
     })
     return(regis)
 }
@@ -245,6 +245,8 @@ read.register <- function(file,id,variables,...){
 ##' @param backward Object from which to look backwards in time.
 ##' @param forward Object from which to look forwards in time. 
 ##' @param select Either a character ("first", "last", "any", "count") or a function.
+##' @param name Name or vector of names for the new variable(s).
+##' @param collect Named vector or list with variables to collect 
 ##' @param ... Arguments passed to the result 
 ##' @export
 selector <- function(data,
@@ -256,6 +258,8 @@ selector <- function(data,
                      backward=NULL, #  = list(data, reference, variable, length)
                      forward=NULL,
                      select="first",
+                     name=NULL,
+                     collect=NULL,
                      ...){
     .SD=.I=.N=NULL
     ## this function will be evaluated in an environment that contains
@@ -284,8 +288,11 @@ selector <- function(data,
                   backward,
                   forward,
                   select,
-                  ...){
-        try.d <- try(d <- eval(as.name(data)))
+                  name,
+                  collect,
+                  ...,
+                  environment){
+        try.d <- try(d <- eval(as.name(data),envir=environment))
         if (class(try.d)[1]=="try-error"){
             stop(paste0(sample(c("Very sorry, but",
                                  "This is messed up somehow,",
@@ -338,21 +345,47 @@ selector <- function(data,
                 d <- d[d[[backward$reference]]-d[[period$variable]]>length]
             }
             if (NROW(d)>0){
-                ## now sort  
-                setkeyv(d,c(by,sortkey))
                 ## filter
                 if (!is.null(search.term)){
                     d <- d[grepl(search.term,d[[var]],...),.SD,.SDcols=c(by,var,sortkey)]
                 }
-                ## now select
+                ## select
                 if (NROW(d)>0){
                     d <- switch(select,
                                 "first"={
-                                    d[d[,.I[1],by=c(by,sortkey)]$V1]},
+                                    setorderv(d,c(by,sortkey),order=c(1,1))
+                                    d[d[,.I[1],by=c(by)]$V1,c(var,sortkey),with=FALSE]
+                                    if (length(name)==1)
+                                        setnames(d,c(var,sortkey),paste0(name,c("",".date")))
+                                    else if (length(name)==length(c(var,sortkey)))
+                                        setnames(d,c(var,sortkey),name)
+                                },
                                 "last"= {
+                                    ## sort ascending so that largest date is first
+                                    setorderv(d,c(by,sortkey),order=c(1,-1))
                                     d[d[,.I[.N],by=c(by,sortkey)]$V1]
-                                }, {
-                                    d
+                                    if (length(name)==1)
+                                        setnames(d,c(var,sortkey),paste0(name,c("",".date")))
+                                    else if  (length(name)==length(c(var,sortkey)))
+                                        setnames(d,c(var,sortkey),name)
+                                },
+                                "atleast2diff"= {
+                                    ## setorder(d,by,sortkey)
+                                    d[,newvariable=length(unique(var)),by=c(by)]
+                                    setnames(d,"newvariable",name)
+                                },
+                                "unique.pnr"={
+                                    unique(d[,.(pnr)])
+                                },
+                                {
+                                    if (is.null(collect))
+                                        d
+                                    else {
+                                        d <- d[,unique(c(collect,"pnr")),with=FALSE]
+                                        if (length(unique(c(name,"pnr")))==length(names(d)))
+                                            setnames(d,unique(c(name,"pnr")))
+                                        d
+                                    }
                                 })
                 }
             }
@@ -369,7 +402,8 @@ selector <- function(data,
                                   period=period,
                                   backward=backward,
                                   forward=forward,
-                                  select=select), 
+                                  select=select,
+                                  name=name,collect=collect), 
                              ...)
     return(f)
 }
@@ -386,41 +420,64 @@ selector <- function(data,
 process <- function(x,n=Inf,verbose=TRUE,...){
     if (!is.infinite(n)){
         register.environment <- lapply(x$regis,function(d){
-            ## id.unique <-
             d[1:n]
         })
     }else{
         register.environment <- x$regis
     }
     ## inclusion
-    for (Inc in x$inclusion){
-        Inc.study <- with(register.environment,do.call(Inc,attr(Inc,"arguments")))
+    for (i in 1:length(x$inclusion)){
+        Inc <- x$inclusion[[i]]
+        Inc.study <- do.call(Inc,c(attr(Inc,"arguments"),list(environment=register.environment)))
         if (is.null(Inc.study)){
             message(paste0("\nWell, for some reason this search did not match any subject.\nPlease investigate the particularities of your inclusion criteri",ifelse(length(x$inclusion)>1,"a.","on."),"\n"))
         }else{
             message(paste0("\n",sample(c("Nice","Coolio","Well done","Wow","Not bad"),size=1),
-                           ", your search matched ",NROW(Inc.study)," subjects."))
+                           ", your inclusion criterion '", names(x$inclusion)[[i]],"' matched ",NROW(Inc.study)," subjects."))
         }
-        x$study <- rbindlist(list(x$study,Inc.study))
+        if (length(x$study)>0)
+            x$study <- rbindlist(list(x$study,Inc.study))
+        else
+            x$study <- Inc.study
     }
-    for (Ex in x$exclusion){
-        Ex.study <- with(register.environment,do.call(Ex,attr(Ex,"arguments")))
+    ## restrict all further operations to study population
+    register.environment <- lapply(x$regis,function(d){
+        setkey(d,pnr)
+        d[x$study]
+    })
+    ## exclusion
+    for (e in 1:length(x$exclusion)){
+        Ex <- x$exclusion[[e]]
+        Ex.study <- do.call(Ex,c(attr(Ex,"arguments"),list(environment=register.environment)))
+        ## browser()
         if (NROW(Ex.study)>0){
             before.n <- NROW(x$study)
             x$study <- x$study[!(pnr%in%Ex.study$pnr)]
             after.n <- NROW(x$study)
             if (after.n<before.n){
-                message(paste0("\n",sample(c("Nullified","Remoooooved","Kicked out","Gone forever","Send to device null"),size=1),
-                               before.n-after.n," subjects."))
+                message(paste0(sample(c("Reeeejected","Nuuuullified","Remoooooved","Kicked outoutout","Gone forever","Send to a device called null were"),size=1),
+                               " ",before.n-after.n," subjects based on exclusion criterion: '",names(x$exclusion)[[e]],"'."))
             }
         }
     }
-    ## exclusion
     ## baseline
-    for (V in x$variable){
-        x[[V$target]] <- with(register.environment,do.call(V$instructions,attr(V$instructions,"arguments")))    
+    for (v in 1:length(x$variable)){
+        message("Processing instructions for variable: ",names(x$variable)[[v]])
+        V <- x$variable[[v]]
+        new.V <- do.call(V$instructions,c(attr(V$instructions,"arguments"),list(environment=register.environment)))
+        if (NROW(new.V)>0){
+            setkey(new.V,pnr)
+            if (V$target=="fup"){
+                x[["fup"]] <- rbindlist(list(x[["fup"]],new.V),fill=TRUE)
+            }else{
+                if (is.null(x[[V$target]])){
+                    x[[V$target]] <- new.V
+                }else{
+                    x[[V$target]] <- merge(x[[V$target]],new.V,by="pnr")
+                }
+            }
+        }
     }
-    browser()
     ## followup
     x
 }

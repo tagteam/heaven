@@ -113,7 +113,7 @@ medicinMacro <- function(drugs,
                 for (split in 1:10){
                     split.id <- idunique[ind.split==split]
                     setkeyv(drugdb.work,pnr)
-                    out.list[[split]] <- rbindlist(innerprocess(dat=drugdb.work[split.id], 
+                    out.list[[split]] <- rbindlist(innerMedicinMacro(dat=drugdb.work[split.id], 
                                                                 admdat=admdb.work,
                                                                 doses=doses,
                                                                 idunique=split.id,

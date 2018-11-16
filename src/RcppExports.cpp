@@ -38,23 +38,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// innerprocess
-Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, double prescriptionwindow, double maxdepot, bool collapse);
-RcppExport SEXP _heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP prescriptionwindowSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type admdat(admdatSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type doses(dosesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type idunique(iduniqueSEXP);
-    Rcpp::traits::input_parameter< double >::type prescriptionwindow(prescriptionwindowSEXP);
-    Rcpp::traits::input_parameter< double >::type maxdepot(maxdepotSEXP);
-    Rcpp::traits::input_parameter< bool >::type collapse(collapseSEXP);
-    rcpp_result_gen = Rcpp::wrap(innerprocess(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Matcher
 List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int Ndateterms, IntegerMatrix datescases, IntegerMatrix datescontrols, int NoIndex);
 RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NdatetermsSEXP, SEXP datescasesSEXP, SEXP datescontrolsSEXP, SEXP NoIndexSEXP) {
@@ -142,7 +125,6 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
-    {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 12},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 5},

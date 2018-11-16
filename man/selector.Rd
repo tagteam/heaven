@@ -5,7 +5,8 @@
 \title{Select variables}
 \usage{
 selector(data, var, by = "pnr", search.term, sortkey, period = NULL,
-  backward = NULL, forward = NULL, select = "first", ...)
+  backward = NULL, forward = NULL, select = "first", name = NULL,
+  collect = NULL, ...)
 }
 \arguments{
 \item{data}{Optional. The name of a registered data set in which to evaluate the instructions.}
@@ -25,6 +26,10 @@ selector(data, var, by = "pnr", search.term, sortkey, period = NULL,
 \item{forward}{Object from which to look forwards in time.}
 
 \item{select}{Either a character ("first", "last", "any", "count") or a function.}
+
+\item{name}{Name or vector of names for the new variable(s).}
+
+\item{collect}{Named vector or list with variables to collect}
 
 \item{...}{Arguments passed to the result}
 }
