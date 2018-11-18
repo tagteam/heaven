@@ -76,7 +76,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     #Prepare splitdat
     csplit <- copy(splitdat)
     csplit[,splitvars,with=FALSE] # necessary variables
-    setnames(csplit,c("pnr","start","slut","val","name"))
+    setnames(csplit,splitvars,c("pnr","start","slut","val","name"))
     csplit[,val:=as.character(val)] # Character necessary for c-program - 21.oct 2018
     setkey(csplit,"pnr")
     csplit <- merge(csplit,pnrgrp,by="pnr")

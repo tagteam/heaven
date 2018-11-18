@@ -26,10 +26,10 @@ List splitDate(IntegerVector inn, // Starttimes - base data
   
   for (int i=0; i<mergevar.size(); i++){ // Loop along base data
     int seq_num=0; // Number in seq of the first record to create for each record in input
-    for (int j=0; j<seq.size(); j++)  seq_plus[j]=seq(j)+varname[i];
-    for (int ii=0; ii<seq.size(); ii++){// Create records
+    for (int j=0; j<seq.size(); j++)  seq_plus[j]=seq(j)+varname[i]; // Final vector to split by defined by sum of vector and varname
+    for (int ii=0; ii<seq.size(); ii++){// Create records - loop through seq
       seq_num++;// next seq starts with one
-      if(seq_plus[ii]>=out(i)){//Not reached seq
+      if(seq_plus[ii]>=out(i)){//Seq_plus values >= record, output record and break
         Omergevar.push_back(mergevar(i));
         Oinn.push_back(inn(i));
         Ovalue.push_back(seq_num-1);
@@ -38,7 +38,7 @@ List splitDate(IntegerVector inn, // Starttimes - base data
         break; //Done with base record
       }   
       else
-        if(inn(i)>seq_plus[ii] && ii==(seq.size()-1)){//past seq AND last seq
+        if(inn(i)>seq_plus[ii] && ii==(seq.size()-1)){//past seq AND last seq - output and break
           Omergevar.push_back(mergevar(i));
           Oinn.push_back(inn(i));
           Ovalue.push_back(seq_num); // final seq-value
@@ -53,7 +53,7 @@ List splitDate(IntegerVector inn, // Starttimes - base data
             Ovalue.push_back(seq_num-1); //value prior to seq
             Oout.push_back(seq_plus[ii]);
             Oevent.push_back(0); // no event
-            // and reset start of base record
+            // and reset start of base record ready for next value in seq_plus
             inn(i)=seq_plus[ii];
             if(ii==seq.size()-1){
               Omergevar.push_back(mergevar(i));
@@ -71,9 +71,9 @@ List splitDate(IntegerVector inn, // Starttimes - base data
               Ovalue.push_back(seq_num-1); //value prior to seq
               Oout.push_back(seq_plus[ii]);
               Oevent.push_back(0); // no event
-              // and reset start of base record
+              // and reset start of base record ready for next value in seq_plus
               inn(i)=seq_plus[ii];
-              if(ii==seq.size()-1){
+              if(ii==seq.size()-1){ // output of last record
                 Omergevar.push_back(mergevar(i));
                 Oinn.push_back(inn(i));
                 Ovalue.push_back(seq_num); 
@@ -93,20 +93,20 @@ List splitDate(IntegerVector inn, // Starttimes - base data
 
 
 
-// /*** R
-// library(data.table)
-// # For real use the following vectors will have lengths of up to 500,000,000 records
-// pnr <- c("A","B","C","D","E")
-// #         A   B   C   D   E   
-// inn <- c(100,100,150,25,400)
-// out <- c(200,150,200,50,500)
-// event <- c(1,0,1,0,0,1)
-// seq <- c(50,125)  #,150,200,250)
-// value <- c(0,0,0,5,5)
-// mergevar <- 1:5
-// 
-// temp <- splitDate(inn,out,event,mergevar,seq)
-// setDT(temp)
-// setkey(temp,pnrnum,inn,out)
-// temp[]
-// */
+/*** R
+library(data.table)
+# For real use the following vectors will have lengths of up to 500,000,000 records
+pnr <- c("A","B","C","D","E")
+#         A   B   C   D   E
+inn <- c(100,100,150,25,400)
+out <- c(200,150,200,50,500)
+event <- c(1,0,1,0,0,1)
+seq <-  175  #c(50,125)  #,150,200,250)
+value <- c(0,0,0,5,5)
+mergevar <- 1:5
+
+temp <- splitDate(inn,out,event,mergevar,seq,varname=0)
+setDT(temp)
+setkey(temp,pnrnum,inn,out)
+temp[]
+*/
