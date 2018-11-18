@@ -97,12 +97,12 @@ library(data.table)
 
 dat <- data.table(pnr=c("123456","123456","234567","234567","345678","345678"
 ,"456789","456789"),
-                start=c(0,100,0,100,0,100,0,100),
-                end=c(100,200,100,200,100,200,100,200),
-                event=c(0,1,0,0,0,1,0,1))
+                start=as.integer(c(0,100,0,100,0,100,0,100)),
+                end=as.integer(c(100,200,100,200,100,200,100,200)),
+                event=as.integer(c(0,1,0,0,0,1,0,1)))
 split <- data.table (pnr=c("123456","234567","345678","456789"),
-como1.onset=c(0,50,150,300), como2.onset=c(25,75,175,325),
-como3.onset=c(30,30,30,30), como4.onset=c(0,1,0,1))
+como1.onset=as.integer(c(0,50,150,300)), como2.onset=as.integer(c(25,75,175,325)),
+como3.onset=as.integer(c(30,30,30,30)), como4.onset=as.integer(c(0,1,0,1)))
 lexisTwo(dat # inddato with id/in/out/event
    ,split # Data with id and dates
    ,c("pnr","start","end","event") #names of id/in/out/event - in that order

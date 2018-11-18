@@ -19,28 +19,33 @@
 ##' @export
 simAdmissionData <- function(n,
                              m = 5,
-                             diagnoses=paste0('D',toupper(letters),rep(0:99,length(letters))),
+                             diagnoses,
                              startDate = "1995-01-01"){
-  pnr=inddto=recnum=NULL
-  startDate <- as.Date(startDate)
-  out <- data.table::rbindlist(lapply(1:n,function(i){
-    M = sample(1:m,size=1)
-    ind <- startDate + runif(M,0,20*365.25)
-    udd <- pmin(ind + runif(M,0,45), startDate + 20*365.25)
-    pattype <- sample(1:3,size=1,replace=TRUE)
-    indexdate <- startDate+runif(M,0,20*365.25)
-    dat.i = data.table::data.table(pnr=i,
-                                   inddto = ind,
-                                   uddto  = udd,
-                                   diag = sample(diagnoses,size=M,replace = TRUE),
-                                   indexdate,
-                                   pattype)
-    dat.i
-  }))
-  data.table::setkey(out, inddto)
-  out[,recnum:=1:nrow(out)]
-  data.table::setkey(out, pnr, inddto)
-  data.table::setcolorder(out,c("pnr","recnum","inddto","uddto","indexdate","diag","pattype"))
+    if (missing(diagnoses)) {
+        data(icdcodes)
+        diagnoses <- icdcodes$diag
+    }
+    pnr=inddto=recnum=NULL
+    startDate <- as.Date(startDate)
+    out <- data.table::rbindlist(lapply(1:n,function(i){
+        M = sample(1:m,size=1)
+        ind <- startDate + runif(M,0,20*365.25)
+        udd <- pmin(ind + runif(M,0,45), startDate + 20*365.25)
+        pattype <- sample(1:3,size=1,replace=TRUE)
+        indexdate <- startDate+runif(M,0,20*365.25)
+        dat.i = data.table::data.table(pnr=i,
+                                       inddto = ind,
+                                       uddto  = udd,
+                                       diag = sample(diagnoses,size=M,replace = TRUE),
+                                       indexdate,
+                                       pattype)
+        dat.i
+    }))
+    data.table::setkey(out, inddto)
+    out[,recnum:=1:nrow(out)]
+    data.table::setkey(out, pnr, inddto)
+    data.table::setcolorder(out,c("pnr","recnum","inddto","uddto","indexdate","diag","pattype"))
+    out[]
 }
 
 

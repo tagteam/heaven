@@ -57,7 +57,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,invars #names of id/in/out/event - in that order
                        ,splitvars #Names in splitdat with pnr/from/to/value/name
                         ){
-    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=NULL
+    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=NULL
     copyindat <- copy(indat)
     setDT(copyindat)
     splitdat <- copy(splitdat)

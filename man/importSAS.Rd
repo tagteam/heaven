@@ -7,10 +7,12 @@
 \usage{
 importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  where = NULL,obs = NULL,filter = NULL,
+                 filter.by = NULL, filter.cond = c(1,1),
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-                 na.strings=".",...)
+                 na.strings=".",date.vars,sas.program,sas.switches,
+                 sas.runner,...)
        contentSAS(filename,wd=NULL)
 }
 \arguments{
@@ -24,7 +26,7 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{where}{Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).}
 
-\item{obs}{Number of observations to read from the dataset.}
+\item{obs}{Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.}
 
 \item{filter}{Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.}
 
@@ -54,9 +56,13 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{date.vars}{Vector of variables to read as date variables.}
 
-\item{linux}{Makes it possible to run on linux. Default is FALSE. Mostly used for testing.}
+\item{sas.program}{sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"}
 
-\item{...}{Arguments parsed to \code{fread} for reading the created .csv file.}
+\item{sas.switches}{On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
+
+\item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
+
+\item{...}{Arguments passed to \code{fread} for reading the created .csv file.}
 }
 \value{
 The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
@@ -74,6 +80,7 @@ As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all va
 # We first set a working directory in which we have read and write permission
 # These functions will produce temporary files which, if save.tmp is not set to TRUE, will
 # be removed afterwards.
+
 \dontrun{
 setwd("v:/Data/Workdata/704791/AndersMunch/readSAS/R")
 
@@ -87,6 +94,12 @@ df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,sa
 # and to examine the result
 str(df101)
 df101
+
+# Format, dates, numeric, character, colClasses
+df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
+                   save.tmp=TRUE,date.vars="inddto",
+                   colClasses=list("numeric"="pnr","factor"=packsize))
+
 # we can also use the pre.hook to limit the number of observations via sas options:
 importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
           pre.hook="options obs=17;",where="diag='DN899'",keep=c("PNR","diag"),show.sas.code=1L)

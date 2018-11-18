@@ -6,17 +6,19 @@
 ##' @aliases importSAS contentSAS
 ##' @usage importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 ##'                  where = NULL,obs = NULL,filter = NULL,
+##'                  filter.by = NULL, filter.cond = c(1,1),
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
 ##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-##'                  na.strings=".",...)
+##'                  na.strings=".",date.vars,sas.program,sas.switches,
+##'                  sas.runner,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
 ##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. 
 ##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.
 ##' @param where Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).
-##' @param obs Number of observations to read from the dataset.
+##' @param obs Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.  
 ##' @param filter Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.
 ##' @param filter.by Vector of arguments to filter by. Default is all variables present in the filter file. 
 ##' @param filter.cond Vector of two arguments equal to one of the values: -1,0,1. The first argument conditions on values from the filter file, the second on the SAS dataset. 1 means that an observation is only included if it is present in the corresponding dataset, -1 means it is excluded in this case, and 0 has no effect. Default is c(1,1).
@@ -31,8 +33,10 @@
 ##' @param content Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.
 ##' @param na.strings A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information. 
 ##' @param date.vars Vector of variables to read as date variables. 
-##' @param linux Makes it possible to run on linux. Default is FALSE. Mostly used for testing. 
-##' @param ... Arguments parsed to \code{fread} for reading the created .csv file. 
+##' @param sas.program sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
+##' @param sas.switches On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}
+##' @param sas.runner How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.
+##' @param ... Arguments passed to \code{fread} for reading the created .csv file. 
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
 ##' @references This function is based on pioneering work by Jesper Lindhardsen.
@@ -41,6 +45,7 @@
 ##' # We first set a working directory in which we have read and write permission
 ##' # These functions will produce temporary files which, if save.tmp is not set to TRUE, will
 ##' # be removed afterwards.
+##'
 ##' \dontrun{
 ##' setwd("v:/Data/Workdata/704791/AndersMunch/readSAS/R")
 ##'
@@ -54,6 +59,12 @@
 ##' # and to examine the result
 ##' str(df101)
 ##' df101
+##'
+##' # Format, dates, numeric, character, colClasses
+##' df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
+##'                    save.tmp=TRUE,date.vars="inddto",
+##'                    colClasses=list("numeric"="pnr","factor"=packsize))
+##' 
 ##' # we can also use the pre.hook to limit the number of observations via sas options:
 ##' importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 ##'           pre.hook="options obs=17;",where="diag='DN899'",keep=c("PNR","diag"),show.sas.code=1L)
@@ -147,7 +158,9 @@ importSAS <- function(filename,
                       content = FALSE,
                       na.strings=".",
                       date.vars=NULL,
-                      linux=FALSE,
+                      sas.program,
+                      sas.switches,
+                      sas.runner,
                       ...){
     .SD=NULL
     keep <- tolower(keep)
@@ -164,7 +177,28 @@ importSAS <- function(filename,
         setwd(olddir)
     })
     # }}}
-    # {{{ Setup tmp file structure
+    # {{{ Setup tmp file structure and sas program
+    if (.Platform$OS.type=="unix"){
+        if(missing(sas.program)){
+            sas.program <- "sas"
+        }
+        if(missing(sas.switches)){
+            sas.switches <- ""
+        }
+        if(missing(sas.runner)){
+            sas.runner  <- "system"
+        }
+    }else { ## assume windows
+        if(missing(sas.program)){
+            sas.program <- "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
+        }
+        if(missing(sas.switches)){
+            sas.switches <- "-batch -nosplash -noenhancededitor -sysin "
+        }
+        if(missing(sas.runner)){
+            sas.runner  <- "shell"
+        }
+    }
     existing.files <- NULL
     olddir <- getwd() # remember old wd
     if(length(wd)==0) wd <- getwd()
@@ -209,7 +243,7 @@ importSAS <- function(filename,
     if(length(keep) >0) {cond <- paste(cond, "keep=", paste(keep, collapse=" "), " ", sep="")}
     if(length(drop) >0) {cond <- paste(cond, "drop=", paste(drop, collapse=" "), " ", sep="")}
     if(length(where)>0) {cond <- paste(cond, "where=(", where, ") ", sep="")}
-    if(length(obs)  >0) {cond <- paste(cond, "obs=", format(obs, scientific=FALSE), " ", sep="")}
+    if(length(obs)  >0 && !is.infinite(obs)) {cond <- paste(cond, "obs=", format(obs, scientific=FALSE), " ", sep="")}
     if (length(cond)>0){
         if (length(set.hook)>0 & is.character(set.hook))
             cond <- paste("(",cond, set.hook, ")", sep=" ")
@@ -222,24 +256,25 @@ importSAS <- function(filename,
     cat("ods listing close;\nODS OUTPUT variables=dcontent; \n proc contents data='",
         filename, "';\nrun;\nproc sort data=dcontent;\nby num;\nrun; \ndata _NULL_; \nset dcontent; \n file '",
         tmp.proccontout,
-        "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;",
+        "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;\n",
         sep = "",
         file = tmp.SASproccont,
         append = TRUE)
-    if(linux){
-        fprog <- paste0("sas ",
-                        tmp.SASproccont)
-        system(fprog)
+    if(.Platform$OS.type=="unix")
+        fprog <- paste0(sas.program," ",sas.switches," ",tmp.SASproccont)
+    else
+        fprog <- paste0("\"\"",sas.program,"\" ",sas.switches,"\"",tmp.SASproccont,"\"\"")
+
+    runcontents <- try(do.call(sas.runner,list(fprog)),silent=FALSE)
+    if (class(runcontents)[1]=="try-error"){
+        warning(paste("Running sas on",fprog,"yielded the error shown above."))
     }
-    else{
-        fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
-                        "-batch -nosplash -noenhancededitor -sysin \"",
-                        tmp.SASproccont,
-                        "\"\"")
-        shell(fprog)
+    if (file.exists(tmp.proccontout)){
+        # Read the created file
+        dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
+    } else {
+        stop(paste("Running sas on",fprog,"did not produce the expected output file."))
     }
-    # Read the created file
-    dt.content <- data.table::fread(file = tmp.proccontout, header = TRUE)[,-1]
     # Should the filter also be compared with BOTH the keep/drop statements?
     var.names <- tolower(dt.content$Variable)
     var.format <- dt.content$Informat
@@ -322,7 +357,7 @@ importSAS <- function(filename,
     if (length(filter) > 0) {
         cat("proc sort data=csv_import; \nby ",
             paste(filter.names,collapse = " "), "; \nrun; \nproc sort data=df; \nby ",
-            paste(filter.names, collapse = " "), "; \nrun; ",
+            paste(filter.names, collapse = " "), "; \nrun;\n ",
             sep = "", file = tmp.SASfile, append = TRUE)
         ## Setup the merge statement based on the input from filter.cond
         tmp.merge.statement <- matrix(
@@ -353,13 +388,14 @@ importSAS <- function(filename,
     }
     tmp.lines <- paste("data _NULL_; \nset df; \n file '",
                        outfile,
-                       "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;")
+                       "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;\n")
     cat(tmp.lines,
         file = tmp.SASfile,
         append = TRUE)
     if (show.sas.code==TRUE){
         cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
-        file.show(tmp.SASfile)
+        cat(readChar(tmp.SASfile,file.info(tmp.SASfile)$size))
+        ## file.show(tmp.SASfile)
     }else{
         cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
     }
@@ -386,20 +422,19 @@ importSAS <- function(filename,
             print(dt.content)
             stop("Aborted.")
         }else{ # Exucute the sas file
-            if(linux){
-                fprog <- paste0("sas ",
-                                tmp.SASfile)
-                system(fprog)
+            if(.Platform$OS.type=="unix"){
+                fprog <- paste0(sas.program," ",sas.switches," ",tmp.SASfile)
+            } else{
+                fprog <- paste0("\"\"",sas.program,"\" ",sas.switches,"\"",tmp.SASfile,"\"\"")
             }
-            else{
-                fprog <- paste0("\"\"C:/Program Files/SASHome/SASFoundation/9.4/sas.exe\" ",
-                                "-batch -nosplash -noenhancededitor -sysin \"",
-                                tmp.SASfile,
-                                "\"\"")
-                shell(fprog) # Collect this if it fails?
+            runSAS <- try(do.call(sas.runner,list(fprog)),silent=FALSE)
+            if (class(runSAS)[1]=="try-error"){
+                warning(paste("Running sas on",fprog,"yielded the error shown above."))
             }
             ### Read the data
-            if (!file.exists(outfile)){stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))}
+            if (!file.exists(outfile)){
+                stop(paste("SAS did not produce output file. Maybe you have misspecified a SAS statement?\nRun with save.tmp=TRUE and then check the log file:",tmp.log))
+            }
             info <- file.info(outfile)
             if(info$size==1){  # Check if outfile is empty
                 warning("The constructed dataset is empty.")
@@ -422,6 +457,6 @@ importSAS <- function(filename,
     return(try(df[],silent=TRUE))
 }
 ##' @export
-contentSAS <- function(filename,wd=NULL,linux=FALSE){
-    importSAS(filename=filename,wd=wd,content = TRUE,linux=linux)
+contentSAS <- function(filename,wd=NULL){
+    importSAS(filename=filename,wd=wd,content = TRUE)
 }

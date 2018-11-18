@@ -4,7 +4,7 @@
 \alias{dpp}
 \title{Create data preprocessing object (dpp)}
 \usage{
-dpp()
+dpp(study = NULL, raw = NULL, id = "pnr", baseline.date)
 }
 \description{
 Create data preprocessing object
@@ -13,5 +13,5 @@ Create data preprocessing object
 Create data preprocessing object (dpp)
 }
 \author{
-Helene Charlotte Rytgaard
+Helene Charlotte Rytgaard, Anders Munch & Thomas Alexander Gerds
 }

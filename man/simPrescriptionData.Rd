@@ -4,14 +4,13 @@
 \alias{simPrescriptionData}
 \title{Prescription data simulation function}
 \usage{
-simPrescriptionData(n, m = 10, packages = list(A07 = list(c(200, 30),
-  c(400, 100), c(400, 300), c(500, 60)), A12B = list(c(750, 100), c(750,
-  250), c(75, 500))), max.packages = 3, startDate = "1995-01-01")
+simPrescriptionData(n, max.prescriptions = 37,
+  packages = list(list(c(200, 30), c(400, 100), c(400, 300), c(500, 60)),
+  list(c(750, 100), c(750, 250), c(75, 500))), max.packages = 3,
+  startDate = "1995-01-01")
 }
 \arguments{
 \item{n}{Number of patients}
-
-\item{m}{Maximal number of prescription dates per patient}
 
 \item{packages}{Named list of association lists. The names of the
 list are ATC codes, the value associates strengths of one unit and package sizes.}
@@ -19,6 +18,8 @@ list are ATC codes, the value associates strengths of one unit and package sizes
 \item{max.packages}{Integer. Upper bound for number of packages purchased on a single date}
 
 \item{startDate}{start date}
+
+\item{m}{Maximal number of prescription dates per patient}
 }
 \description{
 Simulate prescription data
@@ -28,6 +29,7 @@ Simulate prescription data alike the Danish medical registry
 
 
 
+http://medinfo.dk/sks/brows.php
 http://www.medicinpriser.dk/
 http://pro.medicin.dk/
 https://www.whocc.no/atc_ddd_index/
