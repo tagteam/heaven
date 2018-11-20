@@ -21,6 +21,7 @@ Imports:
     lava,
     lubridate,
     scales,
+    ISOweek,
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     testthat,

@@ -34,7 +34,7 @@ unchanged.
 LexisSeq is one of three split functions defined in heaven. The purpose is to
 split according a vector of dates. Typical situations are age (e.g. 5 year
 periods), calender time (e.g. 2 year periods) and selected times after a si-
-tuation of interes (e.g. three selected time periods after onset of a disea-
+tuation of interest (e.g. three selected time periods after onset of a disea-
 se). The input is a data.table and splitting guide.  The "base" data are the 
 data to be split. They may contain much information, but the key is "id",
 "start","end" and "event". These describe the participant's id, start of time 
@@ -44,7 +44,7 @@ The other input is data to define splitvector and name. The splitvector may
 be a fixed vector (format="vector", e.g. a series of fixed calender dates) or 
 a list of 3 integers defining start, end and intervel to split by 
 (format="seq", for a split on age between 20 and 80 by 5 years a splitvector 
-could be defined as:
+could be defined as: 
 splitvector <- c(20,80,5)*365.25 and provided to the function as a variable).
 "varname" is a name of a variable in the data.table the defines a value to be
 added to the splitvector.  For the age split just used as an example it would

@@ -24,12 +24,15 @@ List splitDate(IntegerVector inn, // Starttimes - base data
   std::vector<int> seq_plus(seq.size()); // seq+value for each case
   
   
-  for (int i=0; i<mergevar.size(); i++){ // Loop along base data
+  for (int i=0; i<mergevar.size(); i++){ // Loop along base data;
+//std::cout<<"Base loop - i="<<i <<"\n";     
     int seq_num=0; // Number in seq of the first record to create for each record in input
     for (int j=0; j<seq.size(); j++)  seq_plus[j]=seq(j)+varname[i]; // Final vector to split by defined by sum of vector and varname
     for (int ii=0; ii<seq.size(); ii++){// Create records - loop through seq
+//std::cout<<"seq loop ii="<<ii<< "  seq value="<< seq_plus[ii]<<"\n";      
       seq_num++;// next seq starts with one
       if(seq_plus[ii]>=out(i)){//Seq_plus values >= record, output record and break
+//std::cout<<"Seq_plus >=record"<<" out(i)="<<out(i)<<" seq_plus[ii]="<<seq_plus[ii]<<"\n";       
         Omergevar.push_back(mergevar(i));
         Oinn.push_back(inn(i));
         Ovalue.push_back(seq_num-1);
@@ -39,6 +42,7 @@ List splitDate(IntegerVector inn, // Starttimes - base data
       }   
       else
         if(inn(i)>seq_plus[ii] && ii==(seq.size()-1)){//past seq AND last seq - output and break
+//std::cout<<"Past seq and last seq"<<" inn(i)="<<inn(i)<<" ii="<<ii<<" seq_plus[ii]="<<seq_plus[ii]<<"\n";          
           Omergevar.push_back(mergevar(i));
           Oinn.push_back(inn(i));
           Ovalue.push_back(seq_num); // final seq-value
@@ -48,6 +52,7 @@ List splitDate(IntegerVector inn, // Starttimes - base data
         } 
         else
           if(inn(i)<seq_plus[ii] && out(i)>seq_plus[ii]){ //split situation - duration at least 1 day
+//std::cout<<"Split situation"<<" inn(i)="<<inn(i)<<" out(i)="<<out(i)<<" seq_plus[ii]="<<seq_plus[ii]<<"\n";            
             Omergevar.push_back(mergevar(i));
             Oinn.push_back(inn(i));
             Ovalue.push_back(seq_num-1); //value prior to seq
@@ -66,6 +71,7 @@ List splitDate(IntegerVector inn, // Starttimes - base data
           }
           else
             if(out(i)==seq_plus[ii] && event(i)==1){ // Also split with zero record in case of event 
+//std::cout<<"Split situation zero record"<<" inn(i)="<<inn(i)<<" out(i)="<<out(i)<<" seq_plus[ii]="<<seq_plus[ii]<<"\n";              
               Omergevar.push_back(mergevar(i));
               Oinn.push_back(inn(i));
               Ovalue.push_back(seq_num-1); //value prior to seq
@@ -104,8 +110,9 @@ event <- c(1,0,1,0,0,1)
 seq <-  175  #c(50,125)  #,150,200,250)
 value <- c(0,0,0,5,5)
 mergevar <- 1:5
+varname <- 0
 
-temp <- splitDate(inn,out,event,mergevar,seq,varname=0)
+temp <- splitDate(inn,out,event,mergevar,seq,varname)
 setDT(temp)
 setkey(temp,pnrnum,inn,out)
 temp[]
