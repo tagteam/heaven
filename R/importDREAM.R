@@ -66,6 +66,7 @@
 #' @export
 importDREAM <- function(dreamData,explData=NULL,type="support",pnr="PNR")
 {
+  .SD<-melt<-patterns<-start<-num_b<-branche<-lastdate<-.N<-end<-char_week<-week<-year<-support<-na.omit<-NULL
   setDT(dreamData)
   if (!is.null(explData)){
     setDT(explData)
