@@ -4,8 +4,8 @@
 \alias{dsr}
 \title{Confidence intervals for age standardized rates and rate ratios}
 \usage{
-dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95,
-  method = "gamma", crude = TRUE)
+dsr(count1, pop1, count0, pop0, stdpop, conf.level = 0.95, method = "gamma",
+  crude = TRUE)
 }
 \arguments{
 \item{count1}{counts for group 1 (e.g. exposed)}

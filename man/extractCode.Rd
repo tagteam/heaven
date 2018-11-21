@@ -4,11 +4,10 @@
 \alias{extractCode}
 \title{Extraction of diseases by diagnoses}
 \usage{
-extractCode(dat, disease = NULL, inclusions = NULL,
-  exclusions = NULL, p.in = NULL, p.out = NULL, keep = "",
-  pat = NULL, prefix = "", entryvar = "inddto", id = "PNR",
-  codevar = "diag", patvar = "pattype", indexvar = NULL,
-  index.int = NULL, lmdb = FALSE)
+extractCode(dat, disease = NULL, inclusions = NULL, exclusions = NULL,
+  p.in = NULL, p.out = NULL, keep = "", pat = NULL, prefix = "",
+  entryvar = "inddto", id = "PNR", codevar = "diag", patvar = "pattype",
+  indexvar = NULL, index.int = NULL, lmdb = FALSE)
 }
 \arguments{
 \item{dat}{Dataset containing diagnoses/atc codes, entrydate, patient id, patient type, record number and optionally index date. If extraction of atc codes is desired, patient type and record number is not expected in the input data (see lmdb).}
