@@ -92,7 +92,7 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
     stop("Varnames in c(..) not character")
   if (class(varname) != "character" & !is.null(varname)) 
     stop("varname not character or NULL")
-  if (class(event)!="integer") stop("Event must be integer, zero or one")
+  if (!class(event) %in% c("integer","numeric","int","num")) stop("Event must be integer - zero or one")
   datt <- data.table::copy(indat)
   data.table::setDT(datt)
   if (is.null(varname)) 
