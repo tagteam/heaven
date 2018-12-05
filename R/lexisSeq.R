@@ -92,7 +92,6 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
     stop("Varnames in c(..) not character")
   if (class(varname) != "character" & !is.null(varname)) 
     stop("varname not character or NULL")
-  if (!class(event) %in% c("integer","numeric","int","num")) stop("Event must be integer - zero or one")
   datt <- data.table::copy(indat)
   data.table::setDT(datt)
   if (is.null(varname)) 
@@ -103,6 +102,7 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
                                       "varname")]
   setnames(splitdat,c("pnrnum", invars[2:4],"varname"), 
            c("pnrnum", "inn", "out", "event", "varname"))
+  if (!class(splitdat[,event]) %in% c("integer","numeric")) stop("Event must be integer - zero or one")
   datt[, `:=`((invars[2:4]), NULL)]
   if (!(format %in% c("vector", "seq"))) 
     stop("format must be 'seq' or 'vector'")
