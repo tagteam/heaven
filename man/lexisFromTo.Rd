@@ -58,6 +58,9 @@ split <- data.table (id=c("A","A","A","A","B","B","B"),
                     end= c(25,75,150,151,120,250,500),
                     value=c(1,2,3,4,1,2,3),
                     name=c("d1","d1","d2","d2","d1","d1","d2"))
+#Show the dataset:
+dat[]
+split[]                   
 temp <- lexisFromTo(dat # inddato with id/in/out/event
                    ,split # Data with id and dates
                    ,c("id","start","end","event") #names of id/in/out/event - in that order

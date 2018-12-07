@@ -13,7 +13,7 @@ order:
 \item{id}{ Person identification variable such as PNR. The data may contain 
 multiple lines per subject.}
 \item{start}{ Start of time interval. Either a date or an integer/numeric.}
-\item{end}{ End of time interval. Either in date format or given as 
+\item{end}{   End of time interval. Either in date format or given as 
 numeric/integer.}
 \item{event}{ Binary 0-1 variable indicating if an event occurred at end of 
 interval}
@@ -101,8 +101,11 @@ dat <- data.table(pnr=c("123456","123456","234567","234567","345678","345678"
                 end=as.integer(c(100,200,100,200,100,200,100,200)),
                 event=as.integer(c(0,1,0,0,0,1,0,1)))
 split <- data.table (pnr=c("123456","234567","345678","456789"),
-como1.onset=as.integer(c(0,50,150,300)), como2.onset=as.integer(c(25,75,175,325)),
-como3.onset=as.integer(c(30,30,30,30)), como4.onset=as.integer(c(0,1,0,1)))
+como1.onset=as.integer(c(0,NA,49,50)), como2.onset=as.integer(c(25,75,49,49)),
+como3.onset=as.integer(c(30,NA,49,48)), como4.onset=as.integer(c(50,49,49,47))) 
+#Show the datasets:
+dat[]
+split[]
 lexisTwo(dat # inddato with id/in/out/event
    ,split # Data with id and dates
    ,c("pnr","start","end","event") #names of id/in/out/event - in that order

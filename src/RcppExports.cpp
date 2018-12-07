@@ -72,17 +72,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // split2
-DataFrame split2(IntegerVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dead, IntegerVector dato);
-RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP deadSEXP, SEXP datoSEXP) {
+List split2(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerMatrix split, int numcov);
+RcppExport SEXP _heaven_split2(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP splitSEXP, SEXP numcovSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type pnr(pnrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type pnrnum(pnrnumSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dead(deadSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dato(datoSEXP);
-    rcpp_result_gen = Rcpp::wrap(split2(pnr, inn, out, dead, dato));
+    Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type split(splitSEXP);
+    Rcpp::traits::input_parameter< int >::type numcov(numcovSEXP);
+    rcpp_result_gen = Rcpp::wrap(split2(pnrnum, inn, out, event, mergevar, split, numcov));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -127,7 +129,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
-    {"_heaven_split2", (DL_FUNC) &_heaven_split2, 5},
+    {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 9},
     {NULL, NULL, 0}

@@ -77,9 +77,11 @@
 #'                 end=c(100,200,100,200,100,200,100,200),
 #'                 dead=c(0,1,0,0,0,1,0,1),
 #'                 Bdate=c(-5000,-5000,-2000,-2000,0,0,100,100))
+#' #Example 1 - Splitting on a vector with 3 values to be added to "Bdate"                 
 #' out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
 #'                varname="Bdate",c(0,150,5000),format="vector")
 #' out[]
+#' #Example 2 - splitting on a from-to-by vector with no adding (calender time?)
 #' out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
 #'                  varname=NULL,c(0,200,50),format="seq",value="myvalue")
 #' out2[]
@@ -102,7 +104,7 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
                                       "varname")]
   setnames(splitdat,c("pnrnum", invars[2:4],"varname"), 
            c("pnrnum", "inn", "out", "event", "varname"))
-  if (!class(splitdat[,event]) %in% c("integer","numeric")) stop("Event must be integer - zero or one")
+  if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
   datt[, `:=`((invars[2:4]), NULL)]
   if (!(format %in% c("vector", "seq"))) 
     stop("format must be 'seq' or 'vector'")
