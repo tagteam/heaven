@@ -111,37 +111,35 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
 ){
   .N=inn=out=dead=.SD=dato=pnrnum=NULL
   #Tests of data
-  INDAT <- copy(indat) # leave original dataset intact
-  setDT(INDAT)
-  SPLITDAT <- copy(splitdat)
-  setDT(SPLITDAT)
-  INDAT[,mergevar:=1:.N] # var to merge RESTDAT on later - assuming data may have been presplit with multiple lines with pnr
-  RESTDAT <- copy(INDAT)
-  RESTDAT[,(invars[2:4]):=NULL]# non-split variables to be added at end
+  setDT(indat)
+  setDT(splitdat)
+  indat[,mergevar:=1:.N] # var to merge RESTDAT on later - assuming data may have been presplit with multiple lines with pnr
+  RESTDAT <- copy(indat)[,(invars[2:4]):=NULL]# non-split variables to be added at end
   setnames(RESTDAT,invars[1],"pnr")
-  INDAT <- INDAT[,c("mergevar",invars),with=FALSE] # Ncessary variables for split
-  setnames(INDAT,invars,c("pnr","inn","out","dead"))
+  indat <- indat[,c("mergevar",invars),with=FALSE] # Ncessary variables for split
+  setnames(indat,invars,c("pnr","inn","out","dead"))
   ## TEST
-  if (!class(INDAT[,inn]) %in% c("integer","Date") | !class(INDAT[,out]) %in% c("integer","Date")) 
+  if (!class(indat[,inn]) %in% c("integer","Date") | !class(indat[,out]) %in% c("integer","Date")) 
          stop("inpute date not Date or integer")
-  if(class(!INDAT[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
-  ## if (!class(tolower(INDAT[,inn])) %in% c("numeric","date","integer") | !class(tolower(INDAT[,out])) %in% c("numeric","date","integer")) stop("dates from input not numeric") 
-  # Create consecutive increasing replacement from pnr in INDAT and SPLITDAT
-  setkey(INDAT,"pnr")
-  INDAT[,pnrnum:=.GRP,by="pnr"] #Numeric replacement for pnr
-  setnames(SPLITDAT,invars[1],"pnr")
-  SPLITDAT<-merge(SPLITDAT,unique(INDAT[,c("pnr","pnrnum"),with=FALSE]),by="pnr",all.x=TRUE) # Same pnrnum as in INDAT
-  SPLITDAT[,pnr:=NULL] #remove pnr
-  # Create long-form of SPLITDAT and number covariate dates
-  setcolorder(SPLITDAT,c("pnrnum",splitvars)) # Columns ordered as in call
-  SPLITDAT <- melt(data=SPLITDAT,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
-  setkeyv(SPLITDAT,"pnrnum")
-  SPLITDAT[,"_variable_":=NULL]
-  SPLITDAT[,number_:=1:.N,by="pnrnum"]                 
-  setkeyv(SPLITDAT,c("pnrnum","value_"))
-  SPLITDAT <- as.matrix(SPLITDAT)
-  OUT <- .Call("_heaven_split2",PACKAGE = "heaven",INDAT[,pnrnum],INDAT[,inn],INDAT[,out],INDAT[,dead],INDAT[,mergevar],SPLITDAT,length(splitvars))  # Call to c++ split-function
-  #OUT <- split2(INDAT[,pnrnum],INDAT[,inn],INDAT[,out],INDAT[,dead],INDAT[,mergevar],SPLITDAT,length(splitvars))  # Call to c++ split-function
+  if(class(!indat[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
+  ## if (!class(tolower(indat[,inn])) %in% c("numeric","date","integer") | !class(tolower(indat[,out])) %in% c("numeric","date","integer")) stop("dates from input not numeric") 
+  # Create consecutive increasing replacement from pnr in indat and splitdat
+  setkey(indat,"pnr")
+  indat[,pnrnum:=.GRP,by="pnr"] #Numeric replacement for pnr
+  setnames(splitdat,invars[1],"pnr")
+  splitdat<-merge(splitdat,unique(indat[,c("pnr","pnrnum"),with=FALSE]),by="pnr",all.x=TRUE) # Same pnrnum as in indat
+  splitdat[,pnr:=NULL] #remove pnr
+  # Create long-form of splitdat and number covariate dates
+  setcolorder(splitdat,c("pnrnum",splitvars)) # Columns ordered as in call
+  splitdat <- melt(data=splitdat,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
+  setkeyv(splitdat,"pnrnum")
+  splitdat[,"_variable_":=NULL]
+  splitdat[,number_:=1:.N,by="pnrnum"] 
+  splitdat[,value_:=as.integer(value_)]  # or the matrix will be character!
+  setkeyv(splitdat,c("pnrnum","value_"))
+  splitdat <- as.matrix(splitdat)
+  OUT <- .Call("_heaven_split2",PACKAGE = "heaven",indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
+  #OUT <- split2(indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
   OUT <- cbind(setDT(OUT[1:5]),setDT(do.call(cbind,OUT[6])))
   setnames(OUT, c("pnrnum","mergevar",invars[2:4],splitvars))
   OUT <- merge(OUT,RESTDAT,by="mergevar")

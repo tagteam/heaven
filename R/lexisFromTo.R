@@ -37,15 +37,15 @@
 #' Missing data for key variables are not allowed and will cause errors.
 #' @examples
 #' library(data.table)
-#' dat <- data.table(id=c("A","A","B","B"),
-#'                  start=c(0,100,0,100),
-#'                  end=c(100,200,100,200),
-#'                  event=c(0,1,0,0))
-#' split <- data.table (id=c("A","A","A","A","B","B","B"),
-#'                     start=c(0,50,25,150,110,150,400),
-#'                     end= c(25,75,150,151,120,250,500),
-#'                     value=c(1,2,3,4,1,2,3),
-#'                     name=c("d1","d1","d2","d2","d1","d1","d2"))
+#' dat <- data.table(id=c("A","A","B","B","C","D"),
+#'                  start=as.Date(c(0,100,0,100,200,400),origin='1970-01-01'),
+#'                  end=as.Date(c(100,200,100,200,300,500),origin='1970-01-01'),
+#'                  event=c(0,1,0,0,1,1))
+#' split <- data.table (id=c("A","A","A","A","B","B","B","D","D"),
+#'                     start=as.Date(c(0,50,25,150,110,150,400,300,500),origin='1970-01-01'),
+#'                     end= as.Date(c(25,75,150,151,120,250,500,400,500),origin='1970-01-01'),
+#'                     value=c(1,2,3,4,1,2,3,6,7),
+#'                     name=c("d1","d1","d2","d2","d1","d1","d2","d3","d4"))
 #' #Show the dataset:
 #' dat[]
 #' split[]                   
@@ -60,64 +60,80 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,invars #names of id/in/out/event - in that order
                        ,splitvars #Names in splitdat with pnr/from/to/value/name
                         ){
+ 
     .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=NULL
-    copyindat <- copy(indat)
-    setDT(copyindat)
-    splitdat <- copy(splitdat)
+#browser()    
+    setDT(indat)
     setDT(splitdat)
     #Tests of data
-    INDAT <- copyindat[,invars,with=FALSE] # Necessary variables for split
+    INDAT <- indat[,invars,with=FALSE] # Necessary variables for split
     INDAT[,mergevar:=1:.N] # Variable to merge by after split;
     setnames(INDAT,invars,c("pnr","inn","out","event"))
     if (!class(INDAT[,event]) %in% c("numeric","integer")) stop("event variable must be integer - zero or one") 
     setkey(INDAT,pnr)
     INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
     pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=FALSE]) 
-    RESTDAT <- copyindat[,(invars[2:4]):=NULL]# Other variables to be added at end
+    RESTDAT <- copy(indat)[,(invars[2:4]):=NULL]# Other variables to be added at end
     RESTDAT[,mergevar:=1:.N]  # Merge after split assuming possible prior splits 
     setnames(RESTDAT,invars[1],"pnr")
     #Prepare splitdat
-    csplit <- copy(splitdat)
-    csplit[,splitvars,with=FALSE] # necessary variables
+    csplit <- copy(splitdat[,splitvars,with=FALSE]) # necessary variables
     setnames(csplit,splitvars,c("pnr","start","slut","val","name"))
     csplit[,val:=as.character(val)] # Character necessary for c-program 
     setkey(csplit,"pnr")
     csplit <- merge(csplit,pnrgrp,by="pnr")
     csplit[,pnr:=NULL] # identify only by pnrnum
-    setkeyv(csplit,c("name","pnrnum","start","slut")) 
-    ## Check csplit content
+    setkeyv(csplit,c("pnrnum","start"))
+    # Check csplit content
     temp <- csplit[start>slut,sum(start>slut)]
-    if (temp>0) stop(paste("Error - Attempt to split with negative date intervals in splitting guide"))
+    if (temp>0) stop("Error - Attempt to split with negative date intervals in splitting guide") 
     precols = paste("prior", c("start","slut"), sep="_")
     cols <-c("start","slut")
     csplit[, (precols) := shift(.SD, 1, 0, "lag"), .SDcols=cols,by=c("name","pnrnum")]
     error <-dim(csplit[start-prior_slut<0,])[1]
-    if (error>0) stop("Error in splitting guide data - Intervals overlapping - unpredictable results")
-    suppressWarnings(csplit[,precols:=NULL])#remove extra variables
-    #Separate tables for each value of name
-    namelist <- unique(csplit[["name"]])
-    OUT <- INDAT[,c("pnrnum","mergevar","inn","out","event"),with=FALSE] # Prepare output start
-    OUT[,mergevar2:=mergevar] # to add sequential information
-    PRIOR <- OUT[,c("mergevar","mergevar2")]
-  
-  for(nam in namelist){ # Separate splitting for each "name"
-    OUT2 <- .Call('_heaven_splitFT',PACKAGE = 'heaven',OUT[["pnrnum"]], OUT[["inn"]], OUT[["out"]], 
-                  OUT[["event"]], OUT[["mergevar2"]],csplit[name==nam][["pnrnum"]], 
-                  as.character(csplit[name==nam][["val"]]), csplit[name==nam][["start"]], 
-                  csplit[name==nam][["slut"]]) # Call c++
-    setDT(OUT2) # which now has more records and a new colume named after name
-    setnames(OUT2,c("merge","val"),c("mergevar2",nam))
-    setkeyv(OUT2,c("mergevar2","inn"))
-    setkey(PRIOR,mergevar2)
-    OUT <- merge(OUT2,PRIOR,by="mergevar2",all=TRUE) #Add information from prior loops
-    OUT[,mergevar2:=1:.N] # Resequence
-    PRIOR <- copy(OUT)
-    PRIOR[,c("pnrnum","inn","out","event"):=NULL] #Remove data provided by splitFT function
-  }
-  setkey(OUT, mergevar, inn)
-  setkey(RESTDAT, mergevar)
-  OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=TRUE)
-  setnames(OUT,c("pnr","inn","out","event"),invars) 
-  OUT[,c("mergevar","mergevar2","pnrnum"):=NULL]
+    if (error>0) stop("Error in splitting guide data - Intervals overlapping - unpredictable results")    
+    suppressWarnings(csplit[,(precols):=NULL])#remove extra variables
+    # Get list of names
+    nams <- unique(csplit[["name"]]) # provides order of names for later renaming
+    name <- data.table(nams,1:length(nams))
+    setnames(name,c("name","num"))
+    csplit <- merge(csplit,name,by="name")
+    csplit[,name:=NULL]
+    setcolorder(csplit,c("pnrnum","start","slut","num"))
+    csplit[,':='(start=as.integer(start),slut=as.integer(slut))] # integers need for change to matrix
+    setkeyv(csplit,c("pnrnum","start","slut","num")) # sorted with increasing dates
+    OUT <- .Call('_heaven_splitFT',PACKAGE = 'heaven',
+                INDAT[,pnrnum], # PNR as sequence number - base data
+                INDAT[,inn], # Starttimes - base data
+                INDAT[,out], # Endtimes - base data
+                INDAT[,event], # Event at end of interval 0/1 - base data
+                INDAT[,mergevar], # Merge variable, multiple records can have same pnr - base data
+                csplit[,pnrnum], # Sequence number of pnr in split guide
+                csplit[,val], # Value of name to provide to output for interval - split guide
+                csplit[,start], # Interval start - split guide
+                csplit[,slut], # Interval end - split guide
+                csplit[,num], #Covariate number
+                length(nams)) # Number of covariate to split by) # Call c++
+    # OUT<- splitFT(INDAT[,pnrnum], # PNR as sequence number - base data
+    #               INDAT[,inn], # Starttimes - base data
+    #               INDAT[,out], # Endtimes - base data
+    #               INDAT[,event], # Event at end of interval 0/1 - base data
+    #               INDAT[,mergevar], # Merge variable, multiple records can have same pnr - base data
+    #               csplit[,pnrnum], # Sequence number of pnr in split guide
+    #               csplit[,val], # Value of name to provide to output for interval - split guide
+    #               csplit[,start], # Interval start - split guide
+    #               csplit[,slut], # Interval end - split guide
+    #               csplit[,num], #Covariate number
+    #               length(nams)) # Number of covariate to split by
+    OUT1 <- cbind(setDT(OUT[1:5]))
+    OUT2 <- setDT(do.call(cbind,OUT[6]))
+    setnames(OUT2,nams)
+    OUT <- cbind(OUT1,OUT2)
+    setkey(OUT, mergevar, inn)
+    setkey(RESTDAT, mergevar)
+    OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=TRUE)
+    setkeyv(OUT,c("pnr","inn","out"))
+    setnames(OUT,c("pnr","inn","out","event"),invars) 
+    OUT[,c("mergevar","pnrnum"):=NULL]
   OUT[]
 }

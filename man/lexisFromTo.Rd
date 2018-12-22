@@ -49,15 +49,15 @@ Missing data for key variables are not allowed and will cause errors.
 }
 \examples{
 library(data.table)
-dat <- data.table(id=c("A","A","B","B"),
-                 start=c(0,100,0,100),
-                 end=c(100,200,100,200),
-                 event=c(0,1,0,0))
-split <- data.table (id=c("A","A","A","A","B","B","B"),
-                    start=c(0,50,25,150,110,150,400),
-                    end= c(25,75,150,151,120,250,500),
-                    value=c(1,2,3,4,1,2,3),
-                    name=c("d1","d1","d2","d2","d1","d1","d2"))
+dat <- data.table(id=c("A","A","B","B","C","D"),
+                 start=as.Date(c(0,100,0,100,200,400),origin='1970-01-01'),
+                 end=as.Date(c(100,200,100,200,300,500),origin='1970-01-01'),
+                 event=c(0,1,0,0,1,1))
+split <- data.table (id=c("A","A","A","A","B","B","B","D","D"),
+                    start=as.Date(c(0,50,25,150,110,150,400,300,500),origin='1970-01-01'),
+                    end= as.Date(c(25,75,150,151,120,250,500,400,500),origin='1970-01-01'),
+                    value=c(1,2,3,4,1,2,3,6,7),
+                    name=c("d1","d1","d2","d2","d1","d1","d2","d3","d4"))
 #Show the dataset:
 dat[]
 split[]                   

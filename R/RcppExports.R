@@ -36,7 +36,7 @@ splitDate <- function(inn, out, event, mergevar, seq, varname) {
     .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, seq, varname)
 }
 
-splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end) {
-    .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end)
+splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov) {
+    .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov)
 }
 
