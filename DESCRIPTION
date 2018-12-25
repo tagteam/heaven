@@ -22,6 +22,7 @@ Imports:
     lubridate,
     scales,
     ISOweek,
+    knitr,
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     testthat,
