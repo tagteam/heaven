@@ -109,7 +109,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                       ,invars #names of id/in/out/event - in that order
                       ,splitvars #Names var date-vars to split by
 ){
-  .N=inn=out=dead=.SD=dato=pnrnum=NULL
+  .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=NULL
   #Tests of data
   setDT(indat)
   setDT(splitdat)
@@ -131,7 +131,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   splitdat[,pnr:=NULL] #remove pnr
   # Create long-form of splitdat and number covariate dates
   setcolorder(splitdat,c("pnrnum",splitvars)) # Columns ordered as in call
-  splitdat <- melt(data=splitdat,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
+  splitdat <- data.table::melt(data=splitdat,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
   setkeyv(splitdat,"pnrnum")
   splitdat[,"_variable_":=NULL]
   splitdat[,number_:=1:.N,by="pnrnum"] 

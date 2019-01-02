@@ -35,7 +35,8 @@ library(knitr)
 ```{r,echo=FALSE,results='hide'}
 knitr::opts_chunk$set(fig.width=5, fig.height=5) 
 # The following lines used because I cannot make knitr load data using "data()"
-setwd('/Users/ctp/Dropbox/undvis/kursus register r')
+#setwd('/Users/ctp/Dropbox/undvis/kursus register r')
+setwd('C:/Users/hwpt/Dropbox/undvis/Kursus Register R')
 load('frmgham2.rdata')
 ```
 Useful householding functions

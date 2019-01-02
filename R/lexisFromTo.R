@@ -61,7 +61,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,splitvars #Names in splitdat with pnr/from/to/value/name
                         ){
  
-    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=NULL
+    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=event=out=num=NULL
 #browser()    
     setDT(indat)
     setDT(splitdat)
