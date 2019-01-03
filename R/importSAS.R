@@ -19,9 +19,16 @@
 ##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.
 ##' @param where Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).
 ##' @param obs Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.  
-##' @param filter Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.
+##' @param filter Alternative or in addition to the where statement it is
+##'               possible to filter the rows of \code{filename} based on a data.table.
+##'               E.g., filter can be a data.table with one column consisting of *unique*
+##'               PNRs to specify that only matching rows should be imported from filename.
 ##' @param filter.by Vector of arguments to filter by. Default is all variables present in the filter file. 
-##' @param filter.cond Vector of two arguments equal to one of the values: -1,0,1. The first argument conditions on values from the filter file, the second on the SAS dataset. 1 means that an observation is only included if it is present in the corresponding dataset, -1 means it is excluded in this case, and 0 has no effect. Default is c(1,1).
+##' @param filter.cond Vector of two arguments equal to one of the values: -1,0,1.
+##'                    The first argument conditions on values from the filter file,
+##'                    the second on the SAS dataset. 1 means that an observation is only
+##'                    included if it is present in the corresponding dataset, -1 means it is
+##'                    excluded in this case, and 0 has no effect. Default is c(1,1).
 ##' @param set.hook Quoted SAS statments (within use single quotes) to be placed in addition to set options (where, keep, drop, obs) when setting the data set \code{filename}. See examples.
 ##' @param step.hook Quoted SAS statments (within use single quotes) to be placed after setting the data set \code{filename}. See examples.
 ##' @param pre.hook Quoted SAS code (within use single quotes) to be set in the beginning of the SAS program. For example, it maybe useful to specify options such as \code{'options obs=100;'} in combination with a where statement.
@@ -36,6 +43,7 @@
 ##' @param sas.program sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
 ##' @param sas.switches On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}
 ##' @param sas.runner How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.
+##' @param verbose Logical. Bla bla on the screen?
 ##' @param ... Arguments passed to \code{fread} for reading the created .csv file. 
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
@@ -132,6 +140,14 @@
 ##' str(df3)
 ##' df3
 ##'
+##' # if you are more fluent in SAS than in R it may help to
+##' # know how to communicate e.g., a keep statement, instead of
+##' # using the keep argument:
+##'
+##' df4 <-importSAS(filename="X:/Data/Rawdata_Hurtig/999999/Dream201801",
+##'                 set.hook="keep=pnr branch:",
+##'                 obs=1000)
+##'
 ##' # Because the "overwrite" argument is FALSE, running the above code again will abort the import
 ##' # to not overwrite the temporary files.
 ##' # Setting "overwrite=TRUE" will allow the function to overwrite the files.
@@ -161,6 +177,7 @@ importSAS <- function(filename,
                       sas.program,
                       sas.switches,
                       sas.runner,
+                      verbose=TRUE,
                       ...){
     .SD=NULL
     keep <- tolower(keep)
@@ -393,11 +410,13 @@ importSAS <- function(filename,
         file = tmp.SASfile,
         append = TRUE)
     if (show.sas.code==TRUE){
-        cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
+        if (verbose) cat("\nRunning the following sas code in the background. You can cancel SAS at any time.\n" )
         cat(readChar(tmp.SASfile,file.info(tmp.SASfile)$size))
         ## file.show(tmp.SASfile)
     }else{
-        cat("\nRunning sas code in the background. You can cancel SAS at any time.\n" )
+        if (verbose){
+            cat("\nRunning sas code in the background. You can cancel SAS at any time." )
+        }
     }
     # }}}
     # {{{ Check for content or run the SAS file
