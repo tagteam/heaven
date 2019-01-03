@@ -6,6 +6,28 @@
 
 using namespace Rcpp;
 
+// Matcher
+List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int Ndateterms, IntegerMatrix datescases, IntegerMatrix datescontrols, int NoIndex);
+RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NdatetermsSEXP, SEXP datescasesSEXP, SEXP datescontrolsSEXP, SEXP NoIndexSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type Ncontrols(NcontrolsSEXP);
+    Rcpp::traits::input_parameter< int >::type Tcontrols(TcontrolsSEXP);
+    Rcpp::traits::input_parameter< int >::type Ncases(NcasesSEXP);
+    Rcpp::traits::input_parameter< int >::type reuseControls(reuseControlsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type controlIndex(controlIndexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type caseIndex(caseIndexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type controls(controlsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type cases(casesSEXP);
+    Rcpp::traits::input_parameter< int >::type Ndateterms(NdatetermsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type datescases(datescasesSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type datescontrols(datescontrolsSEXP);
+    Rcpp::traits::input_parameter< int >::type NoIndex(NoIndexSEXP);
+    rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex));
+    return rcpp_result_gen;
+END_RCPP
+}
 // daysnonhosp
 Rcpp::NumericVector daysnonhosp(Rcpp::NumericVector id, Rcpp::NumericVector pdate, Rcpp::NumericVector iddates, Rcpp::NumericVector inddto, Rcpp::NumericVector uddto);
 RcppExport SEXP _heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
@@ -38,28 +60,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Matcher
-List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, IntegerVector controlIndex, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int Ndateterms, IntegerMatrix datescases, IntegerMatrix datescontrols, int NoIndex);
-RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NdatetermsSEXP, SEXP datescasesSEXP, SEXP datescontrolsSEXP, SEXP NoIndexSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type Ncontrols(NcontrolsSEXP);
-    Rcpp::traits::input_parameter< int >::type Tcontrols(TcontrolsSEXP);
-    Rcpp::traits::input_parameter< int >::type Ncases(NcasesSEXP);
-    Rcpp::traits::input_parameter< int >::type reuseControls(reuseControlsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type controlIndex(controlIndexSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type caseIndex(caseIndexSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type controls(controlsSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type cases(casesSEXP);
-    Rcpp::traits::input_parameter< int >::type Ndateterms(NdatetermsSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type datescases(datescasesSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type datescontrols(datescontrolsSEXP);
-    Rcpp::traits::input_parameter< int >::type NoIndex(NoIndexSEXP);
-    rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex));
-    return rcpp_result_gen;
-END_RCPP
-}
 // na_locf
 IntegerVector na_locf(IntegerVector x);
 RcppExport SEXP _heaven_na_locf(SEXP xSEXP) {
@@ -72,17 +72,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // split2
-DataFrame split2(IntegerVector pnr, IntegerVector inn, IntegerVector out, IntegerVector dead, IntegerVector dato);
-RcppExport SEXP _heaven_split2(SEXP pnrSEXP, SEXP innSEXP, SEXP outSEXP, SEXP deadSEXP, SEXP datoSEXP) {
+List split2(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerMatrix split, int numcov);
+RcppExport SEXP _heaven_split2(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP splitSEXP, SEXP numcovSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type pnr(pnrSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type pnrnum(pnrnumSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dead(deadSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dato(datoSEXP);
-    rcpp_result_gen = Rcpp::wrap(split2(pnr, inn, out, dead, dato));
+    Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type split(splitSEXP);
+    Rcpp::traits::input_parameter< int >::type numcov(numcovSEXP);
+    rcpp_result_gen = Rcpp::wrap(split2(pnrnum, inn, out, event, mergevar, split, numcov));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -103,8 +105,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // splitFT
-List splitFT(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector Spnrnum, std::vector<std::string> val, IntegerVector start, IntegerVector end);
-RcppExport SEXP _heaven_splitFT(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP SpnrnumSEXP, SEXP valSEXP, SEXP startSEXP, SEXP endSEXP) {
+List splitFT(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector Spnrnum, std::vector<std::string> val, IntegerVector start, IntegerVector end, IntegerVector num, int numcov);
+RcppExport SEXP _heaven_splitFT(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP SpnrnumSEXP, SEXP valSEXP, SEXP startSEXP, SEXP endSEXP, SEXP numSEXP, SEXP numcovSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -117,19 +119,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<std::string> >::type val(valSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type start(startSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type end(endSEXP);
-    rcpp_result_gen = Rcpp::wrap(splitFT(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end));
+    Rcpp::traits::input_parameter< IntegerVector >::type num(numSEXP);
+    Rcpp::traits::input_parameter< int >::type numcov(numcovSEXP);
+    rcpp_result_gen = Rcpp::wrap(splitFT(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
-    {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 12},
+    {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
+    {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
-    {"_heaven_split2", (DL_FUNC) &_heaven_split2, 5},
+    {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
-    {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 9},
+    {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 11},
     {NULL, NULL, 0}
 };
 

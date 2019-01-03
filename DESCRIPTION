@@ -20,6 +20,8 @@ Imports:
     lava,
     lubridate,
     scales,
+    ISOweek,
+    knitr,
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     zoo,
@@ -32,6 +34,6 @@ Suggests:
     knitr,
     rmarkdown
 License: GPL (>= 3)
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 LazyData: true
