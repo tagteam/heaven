@@ -28,7 +28,7 @@
 #' @usage
 #'    riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
 #'    ,caseid="caseid",reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL 
-#'    ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL)
+#'    ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL,SEED=17)
 #' @author Christian Torp-Pedersen
 #' @param ptid  Personal ID variable defining participant
 #' @param event Defining cases/controls MUST be integer 0/1 - 0 for controls, 1 for case
@@ -62,6 +62,7 @@
 #' variables in the list either both control/case dates are missing, both prior
 #' to case index, both after case index - or missing for case and with control
 #' date after case index.
+#' @param SEED - seed for random sort of controls to select from
 #' @details 
 #' The function does exact matching and keeps 2 dates (indices) apart such that 
 #' the date for controls is larger than that for cases. Because the matching 
@@ -178,6 +179,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                           ,NoIndex=FALSE      # If T ignore index
                           ,cores=1 # Number of cores to use, default 1
                           ,dateterms=NULL # character list of date variables
+                          ,SEED =17 # Seed for random sort of controls to select from
 ){ 
   .SD=Internal.ptid=pnrnum=cterms=Internal.event=Internal.cterms=label=Internal.event=pnrnum=
     random=.N=Internal.controlIndex=Internal.caseIndex=random=Internal.controlIndex=Internal.caseIndex=NULL
@@ -242,7 +244,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
       Tcontrols<-dim(controls)[1]
       Ncases<-dim(cases)[1]
       # sort controls by random number - so that they can be selected sequentially
-      set.seed(17)
+      set.seed(SEED)
       controls[,random:=runif(.N,1,Ncontrols*10)]
       setkey(controls,random)
       NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp

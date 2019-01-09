@@ -6,7 +6,7 @@
 \usage{
 riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
    ,caseid="caseid",reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL 
-   ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL)
+   ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL,SEED=17)
 }
 \arguments{
 \item{ptid}{Personal ID variable defining participant}
@@ -54,6 +54,8 @@ checked that the caseIndex is not after controlIndex, but also that for all
 variables in the list either both control/case dates are missing, both prior
 to case index, both after case index - or missing for case and with control
 date after case index.}
+
+\item{SEED}{- seed for random sort of controls to select from}
 }
 \value{
 data.table with cases and controls. After matching, a new variable 
