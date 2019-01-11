@@ -28,11 +28,18 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 
 \item{obs}{Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.}
 
-\item{filter}{Alternative or in addition to the where statement it is possible to filter the rows of \code{filename} based on a data.table. E.g., filter can be a data.table with one column consisting of *unique* PNRs to specify that only matching rows should be imported from filename.}
+\item{filter}{Alternative or in addition to the where statement it is
+possible to filter the rows of \code{filename} based on a data.table.
+E.g., filter can be a data.table with one column consisting of *unique*
+PNRs to specify that only matching rows should be imported from filename.}
 
 \item{filter.by}{Vector of arguments to filter by. Default is all variables present in the filter file.}
 
-\item{filter.cond}{Vector of two arguments equal to one of the values: -1,0,1. The first argument conditions on values from the filter file, the second on the SAS dataset. 1 means that an observation is only included if it is present in the corresponding dataset, -1 means it is excluded in this case, and 0 has no effect. Default is c(1,1).}
+\item{filter.cond}{Vector of two arguments equal to one of the values: -1,0,1.
+The first argument conditions on values from the filter file,
+the second on the SAS dataset. 1 means that an observation is only
+included if it is present in the corresponding dataset, -1 means it is
+excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{set.hook}{Quoted SAS statments (within use single quotes) to be placed in addition to set options (where, keep, drop, obs) when setting the data set \code{filename}. See examples.}
 
@@ -61,6 +68,8 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 \item{sas.switches}{On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
 
 \item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
+
+\item{verbose}{Logical. Bla bla on the screen?}
 
 \item{...}{Arguments passed to \code{fread} for reading the created .csv file.}
 }
@@ -166,6 +175,14 @@ df3 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
                  where="diag contains 'I'")
 str(df3)
 df3
+
+# if you are more fluent in SAS than in R it may help to
+# know how to communicate e.g., a keep statement, instead of
+# using the keep argument:
+
+df4 <-importSAS(filename="X:/Data/Rawdata_Hurtig/999999/Dream201801",
+                set.hook="keep=pnr branch:",
+                obs=1000)
 
 # Because the "overwrite" argument is FALSE, running the above code again will abort the import
 # to not overwrite the temporary files.
