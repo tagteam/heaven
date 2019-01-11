@@ -119,6 +119,8 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   indat <- indat[,c("mergevar",invars),with=FALSE] # Ncessary variables for split
   setnames(indat,invars,c("pnr","inn","out","dead"))
   ## TEST
+  temp <- indat[,list(num=sum(out<inn))]
+  if (temp[,num]>0) stop("Error - end of intervald cannot com before start of intervals")
   if (!class(indat[,inn]) %in% c("integer","Date") | !class(indat[,out]) %in% c("integer","Date")) 
          stop("inpute date not Date or integer")
   if(class(!indat[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
