@@ -172,8 +172,8 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                           ,Ncontrols  # number of controls to provide
                           ,oldevent="oldevent" # To distinguish cases used as controls
                           ,caseid="caseid" # variable to group cases and controls (case-ptid)
-                          ,reuseCases=FALSE # T og F or NULL - can a case be a control prior to being a case?
-                          ,reuseControls=FALSE # T or F or NULL - can controls be reused?
+                          ,reuseCases=TRUE # T og F or NULL - can a case be a control prior to being a case?
+                          ,reuseControls=TRUE # T or F or NULL - can controls be reused?
                           ,caseIndex=NULL      # Integer or date, date where controls must be prior
                           ,controlIndex=NULL   # controlIndex - Index date for controls
                           ,NoIndex=FALSE      # If T ignore index
@@ -181,6 +181,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                           ,dateterms=NULL # character list of date variables
                           ,SEED =17 # Seed for random sort of controls to select from
 ){ 
+  warning("Defaults for reuseCases and reuseControls have changed from FALSE to TRUE as of 13.1.19")
   .SD=Internal.ptid=pnrnum=cterms=Internal.event=Internal.cterms=label=Internal.event=pnrnum=
     random=.N=Internal.controlIndex=Internal.caseIndex=random=Internal.controlIndex=Internal.caseIndex=NULL
   #check
