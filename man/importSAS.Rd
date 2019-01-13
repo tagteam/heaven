@@ -11,8 +11,9 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-                 na.strings=".",date.vars,sas.program,sas.switches,
-                 sas.runner,...)
+                 na.strings=".",date.vars, character.vars="pnr",
+                 numeric.vars = NULL,sas.program,sas.switches,
+                 sas.runner, skip.date.conversion=FALSE, verbose=TRUE,...)
        contentSAS(filename,wd=NULL)
 }
 \arguments{
@@ -63,11 +64,17 @@ excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{date.vars}{Vector of variables to read as date variables.}
 
+\item{character.vars}{names of variables that should be converted to character. case does not matter. default is "pnr"}
+
+\item{numeric.vars}{character.vars names of variables that should be converted to numeric. case does not matter.}
+
 \item{sas.program}{sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"}
 
 \item{sas.switches}{On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
 
 \item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
+
+\item{skip.date.conversion}{if TRUE do not try to convert any dates.}
 
 \item{verbose}{Logical. Bla bla on the screen?}
 

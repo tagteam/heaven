@@ -2,40 +2,48 @@
 % Please edit documentation in R/dpp.R
 \name{selector}
 \alias{selector}
-\title{Select variables}
+\title{Selecting and collecting information from raw data}
 \usage{
-selector(data, var, by = "pnr", search.term, sortkey, period = NULL,
-  backward = NULL, forward = NULL, select = "first", name = NULL,
+selector(data, var, name, varnames, by = "pnr", search.term = NULL,
+  search.expression = NULL, sortkey = NULL, period = NULL,
+  backward = NULL, forward = NULL, select = "first",
   collect = NULL, ...)
 }
 \arguments{
-\item{data}{Optional. The name of a registered data set in which to evaluate the instructions.}
+\item{data}{Name of raw data source}
 
-\item{var}{Variable to filter with. Could be \code{"diag"} when data is set to \code{"lpr"}.}
+\item{var}{raw data variables}
 
-\item{by}{Character vector. Specifying subsets in which \code{value} is evaluated. E.g., if set to \code{"pnr"} then \code{value} is applied to the data of each subject separately.}
+\item{name}{name of this action}
 
-\item{search.term}{Expression to filter with. Could be (partial) ATC or (partial) ICD codes pasted together with \code{|}.}
+\item{varnames}{names for processed variable}
 
-\item{sortkey}{Date variable for sorting in time. Could be \code{"uddto"} when data is \code{"lpr"}}
+\item{by}{by variable}
 
-\item{period}{Calendar time period}
+\item{search.term}{search term applied to var}
 
-\item{backward}{Object from which to look backwards in time.}
+\item{search.expression}{search expression applied to var}
 
-\item{forward}{Object from which to look forwards in time.}
+\item{sortkey}{in this order}
 
-\item{select}{Either a character ("first", "last", "any", "count") or a function.}
+\item{period}{list with three elements: variable, start, stop}
 
-\item{name}{Name or vector of names for the new variable(s).}
+\item{backward}{search backward in time}
 
-\item{collect}{Named vector or list with variables to collect}
+\item{forward}{search forward in time}
 
-\item{...}{Arguments passed to the result}
+\item{select}{what to select}
+
+\item{collect}{what to collect}
+
+\item{...}{additional arguments}
 }
 \description{
-All purpose function to contstruct instructions for inclusion, exclusion and variables
+Selecting and collecting information from raw data to processed data
 }
 \details{
-Returns instructions (a function) which creates variables from one or all of the regis data sets.
+This is the master function for several different data processing tasks
+}
+\author{
+Thomas Alexander Gerds tag@biostat.ku.dk
 }

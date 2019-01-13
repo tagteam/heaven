@@ -4,14 +4,21 @@
 \alias{process}
 \title{Data pre-processing}
 \usage{
-process(x, n = Inf, verbose = TRUE, ...)
+process(x, n = Inf, fish = "studypop", verbose = TRUE,
+  show.sas.code = FALSE, restart = FALSE, ...)
 }
 \arguments{
 \item{x}{dpp object}
 
-\item{n}{number of rows from each subject}
+\item{n}{sample size for all inclusion criteria}
+
+\item{fish}{sample size for raw data (registers)}
 
 \item{verbose}{bla bla?}
+
+\item{show.sas.code}{show sas code}
+
+\item{restart}{string indicating which for which terms the processing should be restarted. set to \code{"all"} to restart everything.}
 
 \item{...}{not (yet used)}
 }

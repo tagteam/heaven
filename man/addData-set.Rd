@@ -4,8 +4,7 @@
 \alias{addData<-}
 \title{Register a register}
 \usage{
-addData(x, name = "Register", id = "pnr", variables = NULL,
-  ...) <- value
+addData(x, name, id = "pnr", variables = NULL, ...) <- value
 }
 \arguments{
 \item{x}{dpp object}

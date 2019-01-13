@@ -109,7 +109,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
                       ,invars #names of id/in/out/event - in that order
                       ,splitvars #Names var date-vars to split by
 ){
-  .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=NULL
+  .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=NULL
   #Tests of data
   setDT(indat)
   setDT(splitdat)

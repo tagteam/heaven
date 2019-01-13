@@ -22,7 +22,8 @@ simAdmissionData <- function(n,
                              diagnoses,
                              startDate = "1995-01-01"){
     if (missing(diagnoses)) {
-        utils::data(icdcodes)
+        icdcodes=NULL
+        utils::data("icdcodes")
         data.table::setDT(icdcodes)
         diagnoses <- icdcodes$diag
     }

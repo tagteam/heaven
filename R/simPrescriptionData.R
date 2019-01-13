@@ -49,7 +49,8 @@ simPrescriptionData <- function(n,
     pnr=eksd=NULL
     startDate <- as.Date(startDate)
     if (is.null(names(packages))) {
-        utils::data(atccodes)
+        atccodes=NULL
+        utils::data("atccodes")
         atc <- atccodes$ATC
     }else{
         atc <- names(packages)

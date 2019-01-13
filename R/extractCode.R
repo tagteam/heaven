@@ -66,7 +66,7 @@
 extractCode <- function(dat,disease=NULL,inclusions=NULL,exclusions=NULL,p.in=NULL,p.out=NULL,
                         keep='',pat=NULL,prefix='',entryvar='inddto',id='PNR',codevar='diag',
                         patvar='pattype',indexvar=NULL,index.int=NULL,lmdb=FALSE){
-    .I = row1=.N=rowN=entrydate=index=pattype=pnr=dis=.SD=NULL
+    .I = row1=.N=rowN=entrydate=index=pattype=pnr=dis=.SD=diseasecode=NULL
     
   # definition of diseases
   

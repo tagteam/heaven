@@ -4,17 +4,18 @@
 \alias{addVariable<-}
 \title{Add a variable to a dpp object}
 \usage{
-addVariable(x, name, data, target, depends = NULL, priority = c("late",
-  "early"), by = NULL, ...) <- value
+addVariable(x, target, data, type = c("merge", "join", "rbind"),
+  depends = NULL, priority = c("late", "early"), by = NULL,
+  ...) <- value
 }
 \arguments{
 \item{x}{dpp object}
 
-\item{name}{name of variable}
+\item{target}{Character. The name of a baseline date or \code{"fup"} for the followup dataset. Where to store the result.}
 
 \item{data}{Optional the name of the data table in which to evaluate \code{value}.}
 
-\item{target}{Character. The name of a baseline date or \code{"fup"} for the followup dataset. Where to store the result.}
+\item{type}{Character that determines how to add the variable to the data set. One of \code{"merge"}, \code{"join"} or \code{"rbind"}}
 
 \item{depends}{vector of names of other instructions (inclusion, exclusion, variables) that should be evaluated before this one.}
 

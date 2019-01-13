@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Sep  20 2017 (12:45) 
-##           By: Peter Enemark Lund
-##     Update #: 19
+## last-updated: Jan 13 2019 (13:41) 
+##           By: Thomas Alexander Gerds
+##     Update #: 20
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -89,11 +89,11 @@ inddtoxTempName <- uddtoxTempName <- pnrxTempName <- startadm <- max.outdate <- 
   wdt[,`:=`(max.outdate=cummax(uddtoxTempName)),by=pnrxTempName] 
   ## Start of each admission (1L - the L forces R to store it as an integer)
   wdt[,startadm:= 1L*(inddtoxTempName>shift(max.outdate)),by=pnrxTempName] 
-  wdt[.(unique(pnrxTempName)),startadm:=1L,mult="first"]
+  wdt[data.table(unique(pnrxTempName)),startadm:=1L,mult="first"]
   ## Overlapping admissions
   wdt[,startadm:=cumsum(startadm),by=pnrxTempName]
   ## Start and end date for the hospitalization the admission is part of.
-  wdt[,':='(startadm=inddtoxTempName[1] , max.outdate=max.outdate[.N] ) ,by=.(pnrxTempName,startadm)]
+  wdt[,':='(startadm=inddtoxTempName[1] , max.outdate=max.outdate[.N] ) ,by=data.table(pnrxTempName,startadm)]
   ## Change names to what the two variables now contain
   setnames(wdt,c("startadm","max.outdate"),c("first.inddto","last.outdate"))
   ## Change columns around
