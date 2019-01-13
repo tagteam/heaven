@@ -27,7 +27,7 @@
 #' 
 #' @usage
 #'    riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
-#'    ,caseid="caseid",reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL 
+#'    ,caseid="caseid",reuseCases=TRUE,reuseControls=TRUE,caseIndex=NULL 
 #'    ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL,SEED=17)
 #' @author Christian Torp-Pedersen
 #' @param ptid  Personal ID variable defining participant
