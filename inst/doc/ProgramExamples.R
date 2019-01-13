@@ -1,24 +1,4 @@
----
-title: "ProgramExamples"
-author: "Christian Torp-Pedersen"
-date: "12/23/2018"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{"ProgramExamples"}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-This document provides some hopefully useful examples of programs used for typical epidemiological studies. The examples all use a public version of Framingham data.  The data in this version of Framingham has been adjusted to ensure confidentiality of individuals and are not useful for science.
-
-The examples below are meant only to show use of R for studies, not to provide useful results. 
-There is no attempt to explain statistical analysis, only show procedure.
-
-Always start a project by defining a working directory and load necessary libraries. Some libraries may need installation.
-
-For "real" programming is is very wise to separate data management from result production in separate files or in separate chunks og program.  This ensures that a program run from start to end is reproducible.  That rule has been violated in this vignette to keep relevant sections together.
-
-```{r, results='hide'}
+## ---- results='hide'-----------------------------------------------------
 # Typical studies
 #setwd('/Users/ctp/Dropbox/undvis/kursus register r')
 library(heaven)
@@ -31,17 +11,14 @@ library(rms) # for splines
 library(riskRegression) # prediction
 library(gtools)
 library(knitr)
-```
-```{r,echo=FALSE,results='hide'}
+
+## ----echo=FALSE,results='hide'-------------------------------------------
 knitr::opts_chunk$set(fig.width=5, fig.height=5) 
 # The following lines used because I cannot make knitr load data using "data()"
 setwd('/Users/ctp/Dropbox/undvis/kursus register r')
-#setwd('C:/Users/hwpt/Dropbox/undvis/Kursus Register R')
-#setwd('C:/Users/Christian/Dropbox/undvis/Kursus Register R')
 load('frmgham2.rdata')
-```
-Useful householding functions
-```{r, results='hide'}
+
+## ---- results='hide'-----------------------------------------------------
 # Housholding functions for data
 data(Framingham,package="heaven")
 str(Framingham) # lists variables, types and first values
@@ -55,14 +32,8 @@ dim(Framingham) # dimensions
 setDT(Framingham) # Change to data.table
 class(Framingham) # Now data.table AND data.frame
 # setDF(Framingham) will return to simple data.frame
-```
 
-# Data management
-
-Analysis of survival based on initial blood pressure and covariates
-
-First find first observation each individual
-```{r}
+## ------------------------------------------------------------------------
 setkey(Framingham,randid) # Creates an index and sorts the database
 Fram1 <- Framingham[,.SD[1],by=randid] # first record for each randid
 dim(Fram1) # Now 4434 records
@@ -93,32 +64,26 @@ Fram1[,prevhyp:=factor(prevhyp,levels=c("0","1"),labels=c("0","1"))]
 Fram1[,hyperten:=factor(hyperten,levels=c("0","1"),labels=c("0","1"))]
 # Recode sysbp and age to obtain readable estimates in model
 Fram1[,':='(sysbp=sysbp/10,age=age/10)]
-```
- Make variable for systolic blood pressure above/below median
-```{r}
+
+## ------------------------------------------------------------------------
 Fram1[,sysbp2:=factor(sysbp>median(sysbp),levels=c(TRUE,FALSE),labels=c("above","below"))]
 table(Fram1[,sysbp2])
 Fram1 <- Fram1[,.SD,.SDcols=c("sysbp2","sysbp","sex","age","diabetes","heartrte","educ",
                               "totchol","prevmi","timedth","death","timecvd","cvd")]
-```
 
-# Demography
-```{r}
+## ------------------------------------------------------------------------
 tab1 <- utable(sysbp2~sysbp+sex+age+diabetes+heartrte+educ+totchol+prevmi,data=Fram1)
 publish(tab1)
 # to export to excell, use the following:
 write.csv2(summary(tab1),file="tab1.csv")
-```
 
-# Basic Cox model with focus on Blood pressure
-```{r}
+## ------------------------------------------------------------------------
 # Missing values not good for analysis
 Fram1 <- Fram1[complete.cases(Fram1),]
 fit <- coxph(Surv(timedth,death)~sysbp+sex+age+diabetes+heartrte+educ+totchol+prevmi,data=Fram1)
 summary(fit) # Fast and primitive
-```
-## Assumptions for Cox
-```{r}
+
+## ------------------------------------------------------------------------
 # Test for proportional hazard assumption - blood pressure
 # The following provides a table of proportional hazard assumption for all variables.
 # Remember that p dependens very much on "n" and when significance is found further analysis
@@ -130,17 +95,12 @@ plot(test.ph)
 dev.off() # Maybe not necessary, but resets graphic parameters
 ggcoxzph(test.ph)
 dev.off() # Maybe not necessary, but resets graphic parameters
-```
 
-Test of linearity for sysbp: 
-Does it increase information to add a restricted cubic spline of sysbp?
-```{r}
+## ------------------------------------------------------------------------
 fit2 <- coxph(Surv(timedth,death)~sysbp+rcs(sysbp)+sex+age+diabetes+heartrte+educ+totchol+prevmi,data=Fram1)
 anova(fit, fit2, test = "Chisq") 
-```
 
-## Nice table output
-```{r}
+## ------------------------------------------------------------------------
 reg <- summary(regressionTable(fit))$rawTable
 reg <- summary(regressionTable(fit,factor.reference='inline'))$rawTable
 # Add a column of relevant variable explanations
@@ -151,12 +111,8 @@ reg <- cbind(c1,reg)
 reg$Pvalue <- format.pval(reg$Pvalue,eps=0.001,digits = 3)
 plotConfidence(x=reg[,c(4:6)],labels=reg[,c(1,3,7)])
 dev.off() # Maybe not necessary, but resets graphic parameters
-```
 
-# Competing risk
-
-Analysis to time to cvd - with and without competing risk of death from other causes
-```{r}
+## ------------------------------------------------------------------------
 fit2 <- prodlim(Hist(timecvd,cvd)~sysbp2,data=Fram1)
 plot(fit2,type="cuminc",timeconverter = "days2years",atrisk=FALSE,cex=0.5)
 # Problem: Cumulative incidence is not a probability
@@ -168,22 +124,15 @@ table(Fram1$cvd,Fram1$death) # Cross table after change
 fit3 <- prodlim(Hist(timecvd,cvd)~sysbp2,data=Fram1) #with competing risk
 plot(fit3,type="cuminc",timeconverter = "days2years",atrisk=FALSE,cex=0.5)
 dev.off() # Maybe not necessary, but resets graphic parameters
-```
 
-## Cox for cvd
-```{r}
+## ------------------------------------------------------------------------
 fit4 <- coxph(Surv(timecvd,cvd==1)~sysbp+sex+age+diabetes+heartrte+
                     educ+totchol+prevmi,data=Fram1)
 fit4 <- regressionTable(fit4)
 plot(fit4)
 dev.off() # Maybe not necessary, but resets graphic parameters
-```
 
-# Prediction
-So what is sysbp worth for prediction?
-
-## Models for cvd with and without sysbp
-```{r}
+## ------------------------------------------------------------------------
 fit_sbp <- CSC(Hist(timecvd,cvd)~sysbp+sex+age+diabetes+heartrte+
                 educ+totchol+prevmi,data=Fram1)
 fit_nsbp <- CSC(Hist(timecvd,cvd)~sex+age+diabetes+heartrte+
@@ -207,13 +156,8 @@ plot(Pred_with_sysbp$absRisk,Pred_without_sysbp$absRisk,
      ylab="Predicted risk (clinical variables)")
 abline(0,1,col="red",lwd=2)
 dev.off() # Maybe not necessary, but resets graphic parameters
-```
 
-
-# Matching
-
-Prepare to match on diabetes
-```{r}
+## ------------------------------------------------------------------------
 #Find date of first occurrence of diabetes
 diab <- Framingham[diabetes==1,c("randid","time","diabetes")]
 diab <- diab[,.SD[1],by=randid]
@@ -226,10 +170,8 @@ Fram1 <- merge(Fram1,diab,by="randid",all=TRUE)
 Fram1[is.na(diabetestime),diabetestime:=0]
 # for exact matching continuous variables needs to ba sutiably rounded
 Fram1[,age_kat:=round(age/5)]
-```
-Matching on sex, age (5 year) and prior cvd
-Combines matching on fixe parameters with requirement of controls to be alive at time of matching.  Further, it is required to match on the time dependent variable cvd
-```{r}
+
+## ------------------------------------------------------------------------
 # Risk set matching with reuse of cases (control prior to case) and reuse of 
 # controls - more cases get controls
 Fram1 <- Fram1[complete.cases(Fram1)]
@@ -240,14 +182,8 @@ matchReport(Match,"randid","diabetestime","caseid")
 # Cox model 
 fit <- coxph(Surv(timediab,timedth,death)~diabetestime+strata(caseid),data=Match)
 summary(regressionTable(fit))
-```
 
-
-
-# Time dependent analysis
-
-Prepare data for time dependent analysis
-```{r}
+## ------------------------------------------------------------------------
 # Limited basic dataset fraom Framinham with firt record for each randid - and just some variable
 setkeyv(Framingham,c("randid","time"))
 Fram2 <- Framingham[,.SD[1],by="randid",
@@ -283,12 +219,8 @@ for (var in c("sysbp","heartrte","totchol")){
   Periods <- rbind(Periods,temp) # Add the next period sequence to the output data
 }
 Periods[,end:=as.integer(end)]
-```
 
-With the data prepared a time dependent analysis can be performed.  Both Cox and Poisson are possible, but the Cox-regression is very slow and therefore left as a comment.
-
-
-```{r}
+## ------------------------------------------------------------------------
 #tFram2 <- Fram2[randid==2448]
 #Periods[,value:=as.character(value)]
 # Split by comorbidities
@@ -338,8 +270,4 @@ fit_p <- glm(death_s~kal_time+age_time+totchol+sysbp+heartrte+cvd+diabetes+sex+o
              family = poisson(link = "log"),data=Fram3)
 regressionTable(fit_p)
 plot(regressionTable(fit_p),plot.log="x")
-```
-
-
-
 

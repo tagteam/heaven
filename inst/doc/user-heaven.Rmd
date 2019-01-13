@@ -4,7 +4,7 @@ author: "Paul Blanche, Christian Torp-Pedersen & Thomas Gerds"
 date: "2018-12-23"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"user-heaven"}
+  %\VignetteIndexEntry{user-heaven}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

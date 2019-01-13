@@ -17,7 +17,7 @@
 #' These describe the participant's id, start of time interval, end of time
 #' interval and the event of interest (must be 0/1).
 #' 
-#' The other input is a data.table with the splittingguide. This data.table 
+#' The other input is a data.table with the splitting guide. This data.table 
 #' should have one record pr. individual.  One column defined the same id as in
 #' the "base" table. The other columns contain dates for each condition where 
 #' the split should occur.  These column names will also appear in the output
@@ -120,7 +120,7 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   setnames(indat,invars,c("pnr","inn","out","dead"))
   ## TEST
   temp <- indat[,list(num=sum(out<inn))]
-  if (temp[,num]>0) stop("Error - end of intervald cannot com before start of intervals")
+  if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
   if (!class(indat[,inn]) %in% c("integer","Date") | !class(indat[,out]) %in% c("integer","Date")) 
          stop("inpute date not Date or integer")
   if(class(!indat[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')

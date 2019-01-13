@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Paul Blanche, Christian Torp-Pedersen &amp; Thomas Gerds" />
+
+<meta name="date" content="2018-12-23" />
+
+<title>user-heaven</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">user-heaven</h1>
+<h4 class="author"><em>Paul Blanche, Christian Torp-Pedersen &amp; Thomas Gerds</em></h4>
+<h4 class="date"><em>2018-12-23</em></h4>
+
+
+
+<p>Heaven includes a series of function that are useful when working with massive sized epidemiological data. The functions are specifically constructed for the Statistics Denmark environment. This particular environment delivers huge datasets in SAS. Some functions are generally useful, others only helpful for datasets as delivered by Statistics Denmark.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<div id="reading-data" class="section level2">
+<h2>Reading data</h2>
+<ul>
+<li>readSAS Extract selected data from large SAS datasets. SAS does the main work in background</li>
+<li>importDREAM Reads the DREAM dataset regarding state subsidizing and profession</li>
+<li>searchEvent Search for an event in specified time period for each individual</li>
+<li>getAdmLimits Sets start and end to hospitalisations with multiple records</li>
+<li>extractCode Extraction of diseases by diagnoses</li>
+</ul>
+</div>
+<div id="standardizing" class="section level2">
+<h2>Standardizing</h2>
+<ul>
+<li>standardize.rate Standardizes rates to given age distribution</li>
+<li>Standardize.proportion Standardizes proportions to age distribution</li>
+<li>standardize.prodlim Compute standardized absolute risks based on a stratified Kaplan-Meier or Aalen-Johansen estimate</li>
+</ul>
+</div>
+<div id="simulation" class="section level2">
+<h2>Simulation</h2>
+<ul>
+<li>simpoisson Simulates data for Poisson distribution</li>
+</ul>
+</div>
+<div id="matching" class="section level2">
+<h2>Matching</h2>
+<ul>
+<li>riskSetMatch Risk set matching for incidense density samptling and exposure density sampling</li>
+<li>matchReport Provides data on matching success from riskSetMatch</li>
+</ul>
+</div>
+<div id="calculation" class="section level2">
+<h2>Calculation</h2>
+<ul>
+<li>poissonRisk Predicting absolute risks from poisson regression</li>
+<li>poissonregression Aggregates data and performs poisson regression using GLM</li>
+<li>patientProfile Profile of common covariate combinations among patients</li>
+</ul>
+</div>
+<div id="splitting" class="section level2">
+<h2>Splitting</h2>
+<ul>
+<li>lexisTwo Splits by a set of covariates each causing at most one split</li>
+<li>lexisFromTo Splits by a series of periods - from/to</li>
+<li>lexisSeq Splits consecutively by a vector</li>
+</ul>
+</div>
+</div>
+<div id="importdream" class="section level1">
+<h1>importDREAM</h1>
+<p>The DREAM dataset is collected from a range of Danish authorities. Since 1991 it contains all residents that have received public support. Since this includes student funding from the state, prolonged sick leave, maternity leave and pension most of the Danish population is included. The dataset is contructed with one record per person and one variable per week since 1991. For each week there is a code if that person has received support. Further since 2008 there is a monthly recording of occupation of each individual in the dataset. For a detailed description of DREAM refer to www.dreammodel.dk</p>
+<p>The importDREAM function reads an R data.table imported from SAS and returns a “long” list of support codes or profession codes along with person identification and dates of start and end.</p>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<p>importDREAM(dreamData,explData=NULL,type=“support”,pnr=“PNR”)</p>
+<p>Author: Christian Torp-Pedersen</p>
+<ul>
+<li>dreamData Name of dataset holding DREAM data. Typically product of the importSAS function. In most cases it will be useful to add a set.hook to the importSAS function - set.hook=“keep PNR branch:” for type of work and set.hook=“keep=PNR y_:” for support</li>
+<li>explData Name of data holding relation between codes and explanatory text. Typically read from “//srvfsenas1/formater/SAS formater i Danmarks Statistik/txt_filer” using “read.csv2”. The data is expected to hold two variables: the code and the explanation - in that order. The variable holding the code MUST be named “branche” or “support” as appropriate.</li>
+<li>type - “support” extracts weekly public support and “branche” supplies montly type of work. Other names cause error.</li>
+<li>pnr - name of person identifier in DREAM dataset, typically “PNR”</li>
+</ul>
+</div>
+<div id="return" class="section level2">
+<h2>Return</h2>
+<p>the function returns a data.table with the following variables:</p>
+<ul>
+<li>pnr - person identificer from call</li>
+<li>start - start of each period</li>
+<li>end - end of each period</li>
+<li>code - coding of period</li>
+<li>explanation - text to eplain coding if a text dataset was specified</li>
+</ul>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># The following is a minute version of DREAM</span>
+ <span class="kw">library</span>(data.table)
+ <span class="kw">library</span>(heaven)
+ microDREAM &lt;-<span class="kw">data.table</span>(<span class="dt">PNR=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="dt">branche_2008_01=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>,<span class="st">&quot;3&quot;</span>),
+   <span class="dt">branche_2008_02=</span><span class="kw">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;3&quot;</span>), <span class="dt">branche_2008_03=</span><span class="kw">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;&quot;</span>),
+   <span class="dt">y_9201=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>,<span class="st">&quot;1&quot;</span>),<span class="dt">y_9202=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>,<span class="st">&quot;2&quot;</span>),<span class="dt">y_9203=</span><span class="kw">c</span>(<span class="st">&quot;&quot;</span>,<span class="st">&quot;2&quot;</span>))
+ microDREAM[]</code></pre></div>
+<pre><code>##    PNR branche_2008_01 branche_2008_02 branche_2008_03 y_9201 y_9202
+## 1:   1                               1               1              
+## 2:   2               3               3                      1      2
+##    y_9203
+## 1:       
+## 2:      2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># Explanation of codes for &quot;branche&quot; </span>
+ branche &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">branche=</span><span class="kw">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>),
+             <span class="dt">text=</span><span class="kw">c</span>(<span class="st">&quot;school&quot;</span>,<span class="st">&quot;gardening&quot;</span>,<span class="st">&quot;suage&quot;</span>))   
+ support &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">support=</span><span class="kw">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>),<span class="dt">text=</span><span class="kw">c</span>(<span class="st">&quot;education&quot;</span>,<span class="st">&quot;sick&quot;</span>)) 
+ temp &lt;-<span class="st"> </span><span class="kw">importDREAM</span>(microDREAM,branche,<span class="dt">type=</span><span class="st">&quot;branche&quot;</span>,<span class="dt">pnr=</span><span class="st">&quot;PNR&quot;</span>)   
+ temp[]</code></pre></div>
+<pre><code>##    branche PNR      start        end   text
+## 1:           1 2008-01-01 2008-02-01   &lt;NA&gt;
+## 2:       1   1 2008-02-01 2008-01-01 school
+## 3:       3   2 2008-01-01 2008-03-01  suage
+## 4:           2 2008-03-01 2008-04-01   &lt;NA&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> temp2 &lt;-<span class="st"> </span><span class="kw">importDREAM</span>(microDREAM,support,<span class="dt">type=</span><span class="st">&quot;support&quot;</span>,<span class="dt">pnr=</span><span class="st">&quot;PNR&quot;</span>)
+ temp2[]    </code></pre></div>
+<pre><code>##    support PNR      start        end      text
+## 1:           1 1991-12-30 1991-12-30      &lt;NA&gt;
+## 2:       1   2 1991-12-30 1992-01-06 education
+## 3:       2   2 1992-01-06 1992-01-20      sick</code></pre>
+</div>
+</div>
+<div id="risksetmatch" class="section level1">
+<h1>riskSetMatch</h1>
+<p>There are multiple good programs to perform simple matching, but few for nested case-control studies where cases and controls are selected from the sample population and an additional requirement of controls to have a particular status (no event yet / alive) at the time where the case has an event/exposure. There are two main uses: Incidence density sampling, where controls are selected for each case at the time of outcome and where the controls should not (yet) have an event. Exposure density sampling is where cases are selected at the time of exposure and controls at that time should not (yet) be exposed.</p>
+<p>The riskSetMatch function performs exact matching on fixed variables such as sex and age (time of birth). Variables such a time of birth needs to be rounded appropriately to ensure matches. The function can also include a list of time dependent covariates where the requirement in matching is that the date of the covariate should be prior to matching date for both or later/missing for both.</p>
+<p>The function can with input be set to reuse controls or not and to use cases as controls prior to the case date or not. In general it i recommended to allow reuse of controls and to reuse cases prior to being a control. A review of biases is found in Robins: Biometrics, Vol. 42, No. 2 (Jun., 1986), 293-299</p>
+<p>The riskSetMatch function is designed for very large data and uses a simplified search for controls for each case. Lists of cases and controls are constructed - and then the controls are sorted by a random variables. Next for each case controls are selected consecutively when they fit the matching conditions.</p>
+<div id="usage-1" class="section level2">
+<h2>Usage</h2>
+<pre><code>riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent=&quot;oldevent&quot;
+,caseid=&quot;caseid&quot;,reuseCases=FALSE,reuseControls=FALSE,caseIndex=NULL 
+,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL)</code></pre>
+<p>Author: Christian Torp-Pedersen</p>
+<ul>
+<li>ptid Personal ID variable defining participant</li>
+<li>event Defining cases/controls MUST be integer 0/1 - 0 for controls, 1 for case</li>
+<li>terms c(…..) Specifies the variables that should be matched by - enclosed in “..”</li>
+<li>dat The single dataset with all information - coerced to data.table if data.frame</li>
+<li>Ncontrols Number of controls sought for each case</li>
+<li>oldevent Holds original value of event - distinguishes cases used as controls</li>
+<li>caseid Character. Variable holding grouping variable for cases/controls (=case-ptid)</li>
+<li>reuseCases Logical. If  a case can be a control prior to being a case</li>
+<li>reuseControls Logical. If  a control can be reused for several cases</li>
+<li>caseIndex Integer/Date. Date variable defining the date where a case becomes a case. For a case control study this is the date of event of interest, for a cohort study the date where a case enters an analysis.</li>
+<li>controlIndex Integer/Date. date variable defining the date from which a controls can no longer be selected. The controlIndex must be larger than the caseIndex. For a case control study this would be the date where a control has the event of interest or is censored. For a cohort study it would be the date where the control disappears from the analysis, e.g. due to death or censoring.</li>
+<li>NoIndex Logical. If  caseIndex/controlIndex are ignored</li>
+<li>cores number of cores to use, default is one</li>
+<li>dateterms c(….) A list of variable neames (character) in “dat” specifying dates of conditions. When a list is specified it is not only checked that the caseIndex is not after controlIndex, but also that for all variables in the list either both control/case dates are missing, both prior to case index, both after case index - or missing for case and with control date after case index.</li>
+</ul>
+</div>
+<div id="details" class="section level2">
+<h2>Details</h2>
+<p>The function does exact matching and keeps 2 dates (indices) apart such that the date for controls is larger than that for cases. Because the matching is exact all matching variables must be integer or character. Make sure that sufficient rounding is done on continuous and semicontinuous variables to ensure a decent number of controls for each case. For example it may be difficult to find controls for cases of very high age and age should therefore often be rounded by 2,3 or 5 years - and extreme ages further aggregated.</p>
+<p>For case control studies age may be a relevant matching parameter - for most cohort studies year of birth is more relevant since the age of a control varies with time.</p>
+<p>Many datasets have comorbidities as time dependent variables. Matching on these requires that the comorbidity date is not (yet) reached for a corres- ponding variables for cases if the case does not have the comorbidity and similarly that the date has been reached when the case does have that co- morbidity.</p>
+<p>For many purposes controls should be reused and cases allowed to be controls prior to being cases. By default, there is no reuse and this can be adjusted with “reuseCases” and “reuseControls”</p>
+<p>The function can be used for standard matching without the caseIndex/ controlIndex (with “NoIndex”), but other packages such as MatchIt are more likely to be more optimal for these cases.</p>
+<p>It may appear tempting always to use multiple cores, but this comes with a costly overhead because the function machinery has to be distributed to each defined “worker”. With very large numbers of cases and controls, multiple cores can save substantial amounts of time. When a single core is used a progress shows progress of matching. There is no progress bar with multiple cores</p>
+<p>The function matchReport may afterwards be used to provide simple summaries of use of cases and controls</p>
+</div>
+<div id="return-1" class="section level2">
+<h2>Return</h2>
+<p>data.table with cases and controls. After matching, a new variable “caseid” links controls to cases. Further, a variable “oldevent” holds the orginal value of “event” - to be used to identify cases functioning as controls prior to being cases.</p>
+<p>Variables in the original dataset are preserved. The final dataset includes all original cases but only the controls that were selected.</p>
+<p>If cases without controls should be removed, this is done by setting the variable removeNoControls to TRUE</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Example
+ <span class="kw">library</span>(data.table)
+ <span class="kw">library</span>(heaven)
+ case &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">40</span>),<span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">15</span>)) 
+ ptid &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;P&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">55</span>)
+ sex &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;fem&quot;</span>,<span class="dv">20</span>),<span class="kw">rep</span>(<span class="st">&quot;mal&quot;</span>,<span class="dv">20</span>),<span class="kw">rep</span>(<span class="st">&quot;fem&quot;</span>,<span class="dv">8</span>),<span class="kw">rep</span>(<span class="st">&quot;mal&quot;</span>,<span class="dv">7</span>))
+ byear &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">2020</span>,<span class="dv">2030</span>),<span class="dv">20</span>),<span class="kw">rep</span>(<span class="dv">2020</span>,<span class="dv">7</span>),<span class="kw">rep</span>(<span class="dv">2030</span>,<span class="dv">8</span>))
+ case.Index &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">40</span>,<span class="dv">1</span>),<span class="kw">seq</span>(<span class="dv">5</span>,<span class="dv">47</span>,<span class="dv">3</span>))
+ control.Index &lt;-<span class="st"> </span>case.Index
+ diabetes &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>,<span class="dv">110</span>,<span class="dv">2</span>)
+ heartdis &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">110</span>,<span class="dv">2</span>,<span class="op">-</span><span class="dv">2</span>)
+ diabetes &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">55</span>))
+ heartdis &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">100</span>,<span class="dv">55</span>))
+ dat &lt;-<span class="st"> </span><span class="kw">data.table</span>(case,ptid,sex,byear,diabetes,heartdis,case.Index,control.Index)
+ <span class="co"># Very simple match without reuse - no dates to control for</span>
+ out &lt;-<span class="st"> </span><span class="kw">riskSetMatch</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;byear&quot;</span>,<span class="st">&quot;sex&quot;</span>),dat,<span class="dv">2</span>,<span class="dt">NoIndex=</span><span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## ===========================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">head</span>(out,<span class="dv">10</span>)</code></pre></div>
+<pre><code>##     caseid case ptid sex byear diabetes heartdis case.Index control.Index
+##  1:     41    0   P1 fem  2020        1      100          1             1
+##  2:     41    0  P15 fem  2020        1      100         15            15
+##  3:     41    1  P41 fem  2020        1      100          5             5
+##  4:     42    0  P13 fem  2020        1      100         13            13
+##  5:     42    0  P19 fem  2020        1      100         19            19
+##  6:     42    1  P42 fem  2020        1      100          8             8
+##  7:     43    0   P5 fem  2020        1      100          5             5
+##  8:     43    0   P9 fem  2020        1      100          9             9
+##  9:     43    1  P43 fem  2020        1      100         11            11
+## 10:     44    0   P7 fem  2020        1      100          7             7
+##     oldevent
+##  1:        0
+##  2:        0
+##  3:        1
+##  4:        0
+##  5:        0
+##  6:        1
+##  7:        0
+##  8:        0
+##  9:        1
+## 10:        0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># Risk set matching without reusing cases/controls - </span>
+ <span class="co"># Some cases have no controls</span>
+ out2 &lt;-<span class="st"> </span><span class="kw">riskSetMatch</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;byear&quot;</span>,<span class="st">&quot;sex&quot;</span>),dat,<span class="dv">2</span>,<span class="dt">caseIndex=</span><span class="st">&quot;case.Index&quot;</span>,
+   <span class="dt">controlIndex=</span><span class="st">&quot;control.Index&quot;</span>)</code></pre></div>
+<pre><code>## ===========================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">head</span>(out2,<span class="dv">10</span>) </code></pre></div>
+<pre><code>##     caseid case ptid sex byear diabetes heartdis case.Index control.Index
+##  1:     41    0  P15 fem  2020        1      100          5            15
+##  2:     41    0  P19 fem  2020        1      100          5            19
+##  3:     41    1  P41 fem  2020        1      100          5             5
+##  4:     42    0   P9 fem  2020        1      100          8             9
+##  5:     42    0  P13 fem  2020        1      100          8            13
+##  6:     42    1  P42 fem  2020        1      100          8             8
+##  7:     43    0  P17 fem  2020        1      100         11            17
+##  8:     43    1  P43 fem  2020        1      100         11            11
+##  9:     44    1  P44 fem  2020        1      100         14            14
+## 10:     45    1  P45 fem  2020        1      100         17            17
+##     oldevent
+##  1:        0
+##  2:        0
+##  3:        1
+##  4:        0
+##  5:        0
+##  6:        1
+##  7:        0
+##  8:        1
+##  9:        1
+## 10:        1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># Risk set matching with reuse of cases (control prior to case) and reuse of </span>
+ <span class="co"># controls - more cases get controls</span>
+ out3 &lt;-<span class="st"> </span><span class="kw">riskSetMatch</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;byear&quot;</span>,<span class="st">&quot;sex&quot;</span>),dat,<span class="dv">2</span>,<span class="dt">caseIndex=</span>
+   <span class="st">&quot;case.Index&quot;</span>,<span class="dt">controlIndex=</span><span class="st">&quot;control.Index&quot;</span>
+   ,<span class="dt">reuseCases=</span><span class="ot">TRUE</span>,<span class="dt">reuseControls=</span><span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## ===========================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">head</span>(out3,<span class="dv">10</span>)  </code></pre></div>
+<pre><code>##     caseid case ptid sex byear diabetes heartdis case.Index control.Index
+##  1:     41    0  P15 fem  2020        1      100          5            15
+##  2:     41    0  P42 fem  2020        1      100          5             8
+##  3:     41    1  P41 fem  2020        1      100          5             5
+##  4:     42    0  P13 fem  2020        1      100          8            13
+##  5:     42    0  P19 fem  2020        1      100          8            19
+##  6:     42    1  P42 fem  2020        1      100          8             8
+##  7:     43    0  P17 fem  2020        1      100         11            17
+##  8:     43    0  P47 fem  2020        1      100         11            23
+##  9:     43    1  P43 fem  2020        1      100         11            11
+## 10:     44    0  P45 fem  2020        1      100         14            17
+##     oldevent
+##  1:        0
+##  2:        1
+##  3:        1
+##  4:        0
+##  5:        0
+##  6:        1
+##  7:        0
+##  8:        1
+##  9:        1
+## 10:        1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># Same with 2 cores</span>
+ out4 &lt;-<span class="st"> </span><span class="kw">riskSetMatch</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;byear&quot;</span>,<span class="st">&quot;sex&quot;</span>),dat,<span class="dv">2</span>,<span class="dt">caseIndex=</span>
+   <span class="st">&quot;case.Index&quot;</span>,<span class="dt">controlIndex=</span><span class="st">&quot;control.Index&quot;</span>
+   ,<span class="dt">reuseCases=</span><span class="ot">TRUE</span>,<span class="dt">reuseControls=</span><span class="ot">TRUE</span>,<span class="dt">cores=</span><span class="dv">2</span>)  </code></pre></div>
+<pre><code>## Warning: executing %dopar% sequentially: no parallel backend registered</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">head</span>(out4,<span class="dv">10</span>)   </code></pre></div>
+<pre><code>##     caseid case ptid sex byear diabetes heartdis case.Index control.Index
+##  1:     41    0  P15 fem  2020        1      100          5            15
+##  2:     41    0  P42 fem  2020        1      100          5             8
+##  3:     41    1  P41 fem  2020        1      100          5             5
+##  4:     42    0  P13 fem  2020        1      100          8            13
+##  5:     42    0  P19 fem  2020        1      100          8            19
+##  6:     42    1  P42 fem  2020        1      100          8             8
+##  7:     43    0  P17 fem  2020        1      100         11            17
+##  8:     43    0  P47 fem  2020        1      100         11            23
+##  9:     43    1  P43 fem  2020        1      100         11            11
+## 10:     44    0  P45 fem  2020        1      100         14            17
+##     oldevent
+##  1:        0
+##  2:        1
+##  3:        1
+##  4:        0
+##  5:        0
+##  6:        1
+##  7:        0
+##  8:        1
+##  9:        1
+## 10:        1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co">#Time dependent matching. In addtion to fixed matching parameters there are</span>
+ <span class="co">#two other sets of dates where it is required that if a case has that condi-</span>
+ <span class="co">#tion prior to index, then controls also need to have the condition prior to</span>
+ <span class="co">#the case index to be eligible - and if the control does not have the condi-</span>
+ <span class="co">#tion prior to index then the same is required for the control.</span>
+ out5 &lt;-<span class="st"> </span><span class="kw">riskSetMatch</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;byear&quot;</span>,<span class="st">&quot;sex&quot;</span>),dat,<span class="dv">2</span>,<span class="dt">caseIndex=</span>
+   <span class="st">&quot;case.Index&quot;</span>,<span class="dt">controlIndex=</span><span class="st">&quot;control.Index&quot;</span>
+   ,<span class="dt">reuseCases=</span><span class="ot">TRUE</span>,<span class="dt">reuseControls=</span><span class="ot">TRUE</span>,<span class="dt">cores=</span><span class="dv">1</span>,
+   <span class="dt">dateterms=</span><span class="kw">c</span>(<span class="st">&quot;diabetes&quot;</span>,<span class="st">&quot;heartdis&quot;</span>))  </code></pre></div>
+<pre><code>## ===========================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">head</span>(out5,<span class="dv">10</span>)</code></pre></div>
+<pre><code>##     caseid case ptid sex byear diabetes heartdis case.Index control.Index
+##  1:     41    0  P15 fem  2020        1      100          5            15
+##  2:     41    0  P42 fem  2020        1      100          5             8
+##  3:     41    1  P41 fem  2020        1      100          5             5
+##  4:     42    0  P13 fem  2020        1      100          8            13
+##  5:     42    0  P19 fem  2020        1      100          8            19
+##  6:     42    1  P42 fem  2020        1      100          8             8
+##  7:     43    0  P17 fem  2020        1      100         11            17
+##  8:     43    0  P47 fem  2020        1      100         11            23
+##  9:     43    1  P43 fem  2020        1      100         11            11
+## 10:     44    0  P45 fem  2020        1      100         14            17
+##     oldevent
+##  1:        0
+##  2:        1
+##  3:        1
+##  4:        0
+##  5:        0
+##  6:        1
+##  7:        0
+##  8:        1
+##  9:        1
+## 10:        1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co">#POSTPROCESSING</span>
+ <span class="co">#It may be convinient to add the number of controls found to each case in or-</span>
+ <span class="co">#der to remove cases without controls or where very few controls have been</span>
+ <span class="co">#found.  This is easily obtained using data.table - with the example above:</span>
+ <span class="co">#out5[,numControls:=.N,by=caseid] # adds a column with the number of controls</span>
+                                  <span class="co"># for each case-ID   </span></code></pre></div>
+</div>
+</div>
+<div id="matchreport" class="section level1">
+<h1>matchReport</h1>
+<p>This function is to be applied to the output from riskSetMatch and provides tabulation of uses and reuses of controls and cases</p>
+<div id="usage-2" class="section level2">
+<h2>Usage</h2>
+<p>matchReport(dat, id, case, caseid,oldcase=“oldevent”) * dat - data.table with result from riskSetMatch * id - variable with participant id * case - 0=control, 1=case * caseid - variable defining the groups of matching cases/controls * oldcase - Variable holding case/control=0/1 prior to matching. Distinguishes cases reused as controls</p>
+<p>Author: Christian Torp-Pedersen</p>
+</div>
+<div id="details-1" class="section level2">
+<h2>Details</h2>
+<p>This function can be helpful to define matching options. If there is excessive reuse of controls or many cases do not find controls it may be desirable to do further rounding of matching variables. Return: Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases ## Example</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">require</span>(data.table)
+ case &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">40</span>),<span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">15</span>)) 
+ ptid &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;P&quot;</span>,<span class="dv">1</span><span class="op">:</span><span class="dv">55</span>)
+ sex &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;fem&quot;</span>,<span class="dv">20</span>),<span class="kw">rep</span>(<span class="st">&quot;mal&quot;</span>,<span class="dv">20</span>),<span class="kw">rep</span>(<span class="st">&quot;fem&quot;</span>,<span class="dv">8</span>),<span class="kw">rep</span>(<span class="st">&quot;mal&quot;</span>,<span class="dv">7</span>))
+ byear &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">2020</span>,<span class="dv">2030</span>),<span class="dv">20</span>),<span class="kw">rep</span>(<span class="dv">2020</span>,<span class="dv">7</span>),<span class="kw">rep</span>(<span class="dv">2030</span>,<span class="dv">8</span>))
+ caseIndex &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">40</span>,<span class="dv">1</span>),<span class="kw">seq</span>(<span class="dv">5</span>,<span class="dv">47</span>,<span class="dv">3</span>))
+ controlIndex &lt;-<span class="st"> </span>caseIndex
+ <span class="kw">library</span>(data.table)
+ dat &lt;-<span class="st"> </span><span class="kw">data.table</span>(ptid,case,sex,byear,caseIndex,controlIndex)
+ <span class="co"># Very simple match without reuse - no dates to control for</span>
+ dataout &lt;-<span class="st"> </span><span class="kw">riskSetMatch</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="kw">c</span>(<span class="st">&quot;byear&quot;</span>,<span class="st">&quot;sex&quot;</span>),dat,<span class="dv">2</span>,<span class="dt">caseIndex=</span><span class="st">&quot;caseIndex&quot;</span>,
+   <span class="dt">controlIndex=</span><span class="st">&quot;controlIndex&quot;</span>,<span class="dt">reuseCases=</span><span class="ot">TRUE</span>,<span class="dt">reuseControls=</span><span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## ===========================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">matchReport</span>(dataout,<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;case&quot;</span>,<span class="st">&quot;caseid&quot;</span>)   </code></pre></div>
+<pre><code>## 
+##  ------------------------------------------------------------------ 
+##  Matching success
+##  Line 1, number of controls found - Line 2, number of occurrencescontrols
+##  0  1  2 
+##  3  2 10 
+## 
+##  ------------------------------------------------------------------
+##  Reuse/use of controls 
+##  Line 1, number of times - Line 2, number of occurrences 
+## N
+##  1  2  3 
+## 12  2  2 
+## 
+##  ------------------------------------------------------------------
+##  Use and reuse of cases as controls 
+##  Line 1, number of times - Line 2, number of occurrences 
+## N
+## 1 2 3 4 
+## 7 5 1 2 
+## 
+##  ------------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div id="lexis-functions" class="section level1">
+<h1>Lexis functions</h1>
+<p>The lexis functions are 3 functions to aid splitting of observations in order to perform time varying analyses. To understand the functionality the following graph is a lexis diagram.</p>
+<div class="figure">
+<img src="data:image/png;base64,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" />
+
+</div>
+<p>The diagram shows time passing for a number of individual by age and calender time. Some have an event (red x) and som not. For time dependent analysis individuals are split by calender time and age. The individual most to the right is split in 5 records, the split occurring each time a line is crossed. This allows regression to be time dependent with individuals contributing to different age/time periods and only be compared with other individuals in the same age/time period.</p>
+<p>In practice a range of splits are performed:</p>
+<ul>
+<li>Comorbidities: These are most often used to split a single time, the date of the comorbidity</li>
+<li>Period effects: For drug treatment, pregnancies and many other situations there are periods where individuals are in one state and other periods with other states - such a pregnancy, dose of a drug etc.</li>
+<li>Sequential splits: As shown in the lexis diagram it is natural to split a number of times on age and calender time</li>
+</ul>
+<p>For each of the lexis functions two inputs are important:</p>
+<ul>
+<li>Base data - These are the data that should be split and they must contain a person-id, a starting date, and end date and a recording wheter the period ended with an event.</li>
+<li>Splitting guide - This is a dataset (or vector for lexisSeq) that defines where splits should occur.</li>
+</ul>
+<p>The use of the 3 lexi function can be shown graphically</p>
+<p><img src="data:image/png;base64,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" width="400px" /></p>
+<p>Note that the content of the Splitting guide should not be part of Base data</p>
+<p>A general warning: Be careful when working with dates, not the least if the dates are provided from SAS. By default SAS has the origin of dates as 1960-01-01 and R as 1970-01-01. Confusion can easily occur. Output of dates from lexis functions is alway “integer”. This will result in dates using 1970-01-01 as origin.</p>
+</div>
+<div id="lexistwo" class="section level1">
+<h1>lexisTwo</h1>
+<p>This function can split observations on a number of conditions such as comorbidites and each defined by a date and missing if there is no comorbidity.</p>
+<p>The Base date needs to include columns defining participant, start of period, end of period and event (numeric 0/1)</p>
+<p>The splitting guide needs to be a matrix like data.table where the first column is patient id and the further columns each define dates where splitting should occur. Missing dates result in no splitting. For comorbidities is is useful to name the columns after the comorbidity and let the content of the columns be the dates of the comorbidity when present and missing if not present.</p>
+<div id="usage-3" class="section level2">
+<h2>Usage</h2>
+<p>lexisTwo(indat,splitdat,invars,splitvars)</p>
+<p>author Christian Torp-Pedersen</p>
+<div id="base-data" class="section level3">
+<h3>Base data</h3>
+<p>A data.table or data.frame whose first 4 columns are in that particular order:</p>
+<ul>
+<li>ID - Person identification - note that there may be multiple lines per ID if previously split</li>
+<li>Start of time interval. Either a date or an integer/numeric.</li>
+<li>Stop - End of time interval. Either in date format or given as numeric/integer.</li>
+<li>event - Binary 0-1 variable indicating if an event occurred at end of interval</li>
+</ul>
+</div>
+</div>
+<div id="splitting-guide" class="section level2">
+<h2>Splitting guide</h2>
+<p>A data.table which contains person specific information about the onset dates of comorbidities and other events.</p>
+<ul>
+<li>ID - Person ID</li>
+<li>Characteristic 1 - Column of dates (integer/numeric) defining start of that characteristic</li>
+<li>Characteristic 2 -</li>
+<li>Further characteristic columns</li>
+</ul>
+</div>
+<div id="return-2" class="section level2">
+<h2>Return</h2>
+<p>The function returns a new data table where records have been split according to the splittingguide dataset. Variables unrelated to the splitting are left unchanged. The names of columns from “splitvars” are also in output data, but now they have the value zero before the dates and 1 after.</p>
+</div>
+<div id="details-2" class="section level2">
+<h2>Details</h2>
+<p>The program checks that intervals are not negative. Violation results in an error. Overlap may occur in real data, but the user needs to make decisions regarding this prior to using this function.</p>
+<p>It is required that the splittingguide contains at least one record.<br />
+Missing data in the person id variables are not allowed and will cause errors.</p>
+<p>The output will always have the “next” period starting on the day where the last period ended. This is to ensure that period lengths are calculated pro- perly. The program will also allow periods of zero lengths which is a conse- quence when multiple splits are made on the same day. When there is an event on a period with zero length it is important to keep that period not to loose events for calculations. Whether other zero length records should be kept in calculations depends on the context.</p>
+</div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">library</span>(data.table)
+ 
+ dat &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">pnr=</span><span class="kw">c</span>(<span class="st">&quot;123456&quot;</span>,<span class="st">&quot;123456&quot;</span>,<span class="st">&quot;234567&quot;</span>,<span class="st">&quot;234567&quot;</span>,<span class="st">&quot;345678&quot;</span>,<span class="st">&quot;345678&quot;</span>
+ ,<span class="st">&quot;456789&quot;</span>,<span class="st">&quot;456789&quot;</span>),
+                 <span class="dt">start=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>)),
+                 <span class="dt">end=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>)),
+                 <span class="dt">event=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>)))
+ split &lt;-<span class="st"> </span><span class="kw">data.table</span> (<span class="dt">pnr=</span><span class="kw">c</span>(<span class="st">&quot;123456&quot;</span>,<span class="st">&quot;234567&quot;</span>,<span class="st">&quot;345678&quot;</span>,<span class="st">&quot;456789&quot;</span>),
+ <span class="dt">como1.onset=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="ot">NA</span>,<span class="dv">49</span>,<span class="dv">50</span>)), <span class="dt">como2.onset=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">25</span>,<span class="dv">75</span>,<span class="dv">49</span>,<span class="dv">49</span>)),
+ <span class="dt">como3.onset=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">30</span>,<span class="ot">NA</span>,<span class="dv">49</span>,<span class="dv">48</span>)), <span class="dt">como4.onset=</span><span class="kw">as.integer</span>(<span class="kw">c</span>(<span class="dv">50</span>,<span class="dv">49</span>,<span class="dv">49</span>,<span class="dv">47</span>))) 
+ <span class="co">#Show the datasets:</span>
+ dat[]</code></pre></div>
+<pre><code>##       pnr start end event
+## 1: 123456     0 100     0
+## 2: 123456   100 200     1
+## 3: 234567     0 100     0
+## 4: 234567   100 200     0
+## 5: 345678     0 100     0
+## 6: 345678   100 200     1
+## 7: 456789     0 100     0
+## 8: 456789   100 200     1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> split[]</code></pre></div>
+<pre><code>##       pnr como1.onset como2.onset como3.onset como4.onset
+## 1: 123456           0          25          30          50
+## 2: 234567          NA          75          NA          49
+## 3: 345678          49          49          49          49
+## 4: 456789          50          49          48          47</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">lexisTwo</span>(dat <span class="co"># inddato with id/in/out/event</span>
+    ,split <span class="co"># Data with id and dates</span>
+    ,<span class="kw">c</span>(<span class="st">&quot;pnr&quot;</span>,<span class="st">&quot;start&quot;</span>,<span class="st">&quot;end&quot;</span>,<span class="st">&quot;event&quot;</span>) <span class="co">#names of id/in/out/event - in that order</span>
+    ,<span class="kw">c</span>(<span class="st">&quot;como1.onset&quot;</span>,<span class="st">&quot;como2.onset&quot;</span>,<span class="st">&quot;como3.onset&quot;</span>,<span class="st">&quot;como4.onset&quot;</span>)) </code></pre></div>
+<pre><code>##     start end event como1.onset como2.onset como3.onset como4.onset    pnr
+##  1:     0  25     0           1           0           0           0 123456
+##  2:    25  30     0           1           1           0           0 123456
+##  3:    30  50     0           1           1           1           0 123456
+##  4:    50 100     0           1           1           1           1 123456
+##  5:   100 200     1           1           1           1           1 123456
+##  6:     0  49     0           0           0           0           0 234567
+##  7:    49  75     0           0           0           0           1 234567
+##  8:    75 100     0           0           1           0           1 234567
+##  9:   100 200     0           0           1           0           1 234567
+## 10:     0  49     0           0           0           0           0 345678
+## 11:    49 100     0           1           1           1           1 345678
+## 12:   100 200     1           1           1           1           1 345678
+## 13:     0  47     0           0           0           0           0 456789
+## 14:    47  48     0           0           0           0           1 456789
+## 15:    48  49     0           0           0           1           1 456789
+## 16:    49  50     0           0           1           1           1 456789
+## 17:    50 100     0           1           1           1           1 456789
+## 18:   100 200     1           1           1           1           1 456789</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    <span class="co">#Names of date-vars to split by</span></code></pre></div>
+</div>
+</div>
+<div id="lexisfromto" class="section level1">
+<h1>LexisFromTo</h1>
+<p>This function handles situations where individuals have conditions that are limited in time - pregnancy, drug doses etc. Each limited condition has a starting date, an end date, the condition as a character string and a name defining the condition. Multiple limited conditions can be in a single data.table.</p>
+<div id="base-data-1" class="section level2">
+<h2>Base data</h2>
+<p>A data.table or data.frame whose first 4 columns are in that particular order:</p>
+<ul>
+<li>ID - Person identification - note that there may be multiple lines per ID if previously split</li>
+<li>Start of time interval. Either a date or an integer/numeric.</li>
+<li>Stop - End of time interval. Either in date format or given as numeric/integer.</li>
+<li>event - Binary 0-1 variable indicating if an event occurred at end of interval</li>
+</ul>
+</div>
+<div id="splitting-guide-1" class="section level2">
+<h2>Splitting guide</h2>
+<ul>
+<li>ID - person id</li>
+<li>start - date/integer to set start of period</li>
+<li>end - date/ineger to set end of period</li>
+<li>value - character variable indicating condition (dose of drug, pregnancy etc)</li>
+<li>name - name of condition (pregnancy, occupation, name of drug etc)</li>
+</ul>
+</div>
+<div id="usage-4" class="section level2">
+<h2>Usage</h2>
+<p>lexisFromTo(indat,splitdat,invars,splitvars) author: Christian Torp-Pedersen</p>
+<ul>
+<li>indat - base data with id, start, end, event and other data - possibly already split</li>
+<li>splitdat - Data with splitting guide - id/from/to/value/name</li>
+<li>invars - vector of colum names for id/entry/exit/event - in that order, example: c(“id”,“start”,“end”,“event”)</li>
+<li>splitvars - vector of column names containing dates to split by. example: c(“id”,“start”,“end”,“value”,“name”) - must be in that order!</li>
+</ul>
+</div>
+<div id="return-3" class="section level2">
+<h2>Return</h2>
+<p>The function returns a new data table where records have been split according to the splitting guide dataset. Variables unrelated to the splitting are left unchanged.</p>
+</div>
+<div id="details-3" class="section level2">
+<h2>Details</h2>
+<p>The input to this function are two data.tables and two lists of the critical variables. The BASE data it the data to be split. This data must have a variable to identify participants, start/end times and a variable to indicate event after last interval. The other table (SPLITTINGUIDE) contains possibly multiple records for each participants with id/from/to/value/name.</p>
+<p>The program checks that intervals are not negative and that intervals for each “name” and each individual do not overlap. Violation stops the program with error. Overlaps may occur in real situations, but the user needs to make decisions regarding this prior to this function.</p>
+<p>It is required that the splittingguide contains at least one record. Missing data for key variables are not allowed and will cause errors.</p>
+</div>
+<div id="examples-1" class="section level2">
+<h2>Examples</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(data.table)
+dat &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">id=</span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>),
+                 <span class="dt">start=</span><span class="kw">as.Date</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">400</span>),<span class="dt">origin=</span><span class="st">'1970-01-01'</span>),
+                 <span class="dt">end=</span><span class="kw">as.Date</span>(<span class="kw">c</span>(<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">300</span>,<span class="dv">500</span>),<span class="dt">origin=</span><span class="st">'1970-01-01'</span>),
+                 <span class="dt">event=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>))
+split &lt;-<span class="st"> </span><span class="kw">data.table</span> (<span class="dt">id=</span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;D&quot;</span>),
+                    <span class="dt">start=</span><span class="kw">as.Date</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">50</span>,<span class="dv">25</span>,<span class="dv">150</span>,<span class="dv">110</span>,<span class="dv">150</span>,<span class="dv">400</span>,<span class="dv">300</span>,<span class="dv">500</span>),<span class="dt">origin=</span><span class="st">'1970-01-01'</span>),
+                    <span class="dt">end=</span> <span class="kw">as.Date</span>(<span class="kw">c</span>(<span class="dv">25</span>,<span class="dv">75</span>,<span class="dv">150</span>,<span class="dv">151</span>,<span class="dv">120</span>,<span class="dv">250</span>,<span class="dv">500</span>,<span class="dv">400</span>,<span class="dv">500</span>),<span class="dt">origin=</span><span class="st">'1970-01-01'</span>),
+                    <span class="dt">value=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">7</span>),
+                    <span class="dt">name=</span><span class="kw">c</span>(<span class="st">&quot;d1&quot;</span>,<span class="st">&quot;d1&quot;</span>,<span class="st">&quot;d2&quot;</span>,<span class="st">&quot;d2&quot;</span>,<span class="st">&quot;d1&quot;</span>,<span class="st">&quot;d1&quot;</span>,<span class="st">&quot;d2&quot;</span>,<span class="st">&quot;d3&quot;</span>,<span class="st">&quot;d4&quot;</span>))
+<span class="co">#Show the dataset:</span>
+dat[]</code></pre></div>
+<pre><code>##    id      start        end event
+## 1:  A 1970-01-01 1970-04-11     0
+## 2:  A 1970-04-11 1970-07-20     1
+## 3:  B 1970-01-01 1970-04-11     0
+## 4:  B 1970-04-11 1970-07-20     0
+## 5:  C 1970-07-20 1970-10-28     1
+## 6:  D 1971-02-05 1971-05-16     1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">split[]                   </code></pre></div>
+<pre><code>##    id      start        end value name
+## 1:  A 1970-01-01 1970-01-26     1   d1
+## 2:  A 1970-02-20 1970-03-17     2   d1
+## 3:  A 1970-01-26 1970-05-31     3   d2
+## 4:  A 1970-05-31 1970-06-01     4   d2
+## 5:  B 1970-04-21 1970-05-01     1   d1
+## 6:  B 1970-05-31 1970-09-08     2   d1
+## 7:  B 1971-02-05 1971-05-16     3   d2
+## 8:  D 1970-10-28 1971-02-05     6   d3
+## 9:  D 1971-05-16 1971-05-16     7   d4</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">temp &lt;-<span class="st"> </span><span class="kw">lexisFromTo</span>(dat <span class="co"># inddato with id/in/out/event</span>
+                   ,split <span class="co"># Data with id and dates</span>
+                   ,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;start&quot;</span>,<span class="st">&quot;end&quot;</span>,<span class="st">&quot;event&quot;</span>) <span class="co">#names of id/in/out/event - in that order</span>
+                  ,<span class="kw">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;start&quot;</span>,<span class="st">&quot;end&quot;</span>,<span class="st">&quot;value&quot;</span>,<span class="st">&quot;name&quot;</span>)) <span class="co">#Nmes var date-vars to split by</span>
+temp[]</code></pre></div>
+<pre><code>##     start end event d1 d2 d3 d4 id
+##  1:     0  25     0  1           A
+##  2:    25  50     0     3        A
+##  3:    50  75     0  2  3        A
+##  4:    75 100     0     3        A
+##  5:   100 150     0     3        A
+##  6:   150 151     0     4        A
+##  7:   151 200     1              A
+##  8:     0 100     0              B
+##  9:   100 110     0              B
+## 10:   110 120     0  1           B
+## 11:   120 150     0              B
+## 12:   150 200     0  2           B
+## 13:   200 300     1              C
+## 14:   400 500     0              D
+## 15:   500 500     1           7  D</code></pre>
+</div>
+</div>
+<div id="lexisseq" class="section level1">
+<h1>LexisSeq</h1>
+<p>The base data for this function is identical to the other lexis functions, a data.table including c(“id”,“start”,“end”,“event”) - and other variables to be preserved during splitting. In contrast to the other functions the splitting guide is not a data.table but a vector of dates. It can be specified as a fixed vector with selected dates or in a “seq” format (from,to,by). This simple vector is useful for splitting according to calender time where splitting is identical for all subjects. Further a “varname” may hold a variable from the base data to be added to the vector. This is typically birthdate for splitting on age - and it may be time of exposure when splitting in periods after exposure.</p>
+<div id="usage-5" class="section level2">
+<h2>Usage</h2>
+<p>lexisSeq(indat,invars,varname=NULL,splitvector,format,value=“value”)</p>
+<p>Author: Christian Torp-Pedersen</p>
+<ul>
+<li>indat - base data with id, start, end, event and other data - possibly already split</li>
+<li>invars - vector of colum names for id/entry/exit/event - in that order, example: c(“id”,“start”,“end”,“event”)</li>
+<li>varname - name of variable to be added to vector</li>
+<li>splitvector - A vector of calender times (integer). Splitvector can be a sequence of fixed times with format=“vector” or generate a sequence of from-to-by if given 3 values and format=“seq”</li>
+<li>format - either “vector” for fixed times or “seq” to generate a sequence of from-to-by</li>
+<li>value - 0 to the left of the vector, increase of 1 as each element of vector is passed</li>
+</ul>
+</div>
+<div id="return-4" class="section level2">
+<h2>Return</h2>
+<p>The function returns a new data table where records have been split according to the provided vector. Variables unrelated to the splitting are left unchanged.</p>
+</div>
+<div id="details-4" class="section level2">
+<h2>Details</h2>
+<p>The input must be data.table. This data.table is assumed already to be split by other functions with multiple records having identical participant id. The function extracts those variables necessary for splitting, splits by the provided vector and finally merges other variable onto the final result.</p>
+<p>The output will always have the “next” period starting on the day where the last period ended. This is to ensure that period lengths are calculated pro- perly. The program will also allow periods of zero lengths which is a conse- quence when multiple splits are made on the same day. When there is an event on a period with zero length it is important to keep that period not to loose events for calculations. Whether other zero length records should be kept in calculations depend on context.</p>
+</div>
+<div id="examples-2" class="section level2">
+<h2>Examples</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(data.table)
+dat &lt;-<span class="st"> </span><span class="kw">data.table</span>(<span class="dt">ptid=</span><span class="kw">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;D&quot;</span>),
+                <span class="dt">start=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">0</span>,<span class="dv">100</span>),
+                <span class="dt">end=</span><span class="kw">c</span>(<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>,<span class="dv">100</span>,<span class="dv">200</span>),
+                <span class="dt">dead=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>),
+                <span class="dt">Bdate=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">5000</span>,<span class="op">-</span><span class="dv">5000</span>,<span class="op">-</span><span class="dv">2000</span>,<span class="op">-</span><span class="dv">2000</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">100</span>))
+<span class="co">#Example 1 - Splitting on a vector with 3 values to be added to &quot;Bdate&quot;                 </span>
+out &lt;-<span class="st"> </span><span class="kw">lexisSeq</span>(<span class="dt">indat=</span>dat,<span class="dt">invars=</span><span class="kw">c</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;start&quot;</span>,<span class="st">&quot;end&quot;</span>,<span class="st">&quot;dead&quot;</span>),
+               <span class="dt">varname=</span><span class="st">&quot;Bdate&quot;</span>,<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">150</span>,<span class="dv">5000</span>),<span class="dt">format=</span><span class="st">&quot;vector&quot;</span>)
+out[]</code></pre></div>
+<pre><code>##    start end dead value ptid Bdate
+## 1:    NA  NA   NA    NA    A -5000
+## 2:   100 200    1     3    A -5000
+## 3:     0 100    0     2    B -2000
+## 4:   100 200    0     2    B -2000
+## 5:     0 100    0     1    C     0
+## 6:   100 150    0     1    C     0
+## 7:   150 200    1     2    C     0
+## 8:     0 100    0     0    D   100
+## 9:   100 200    1     1    D   100</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Example 2 - splitting on a from-to-by vector with no adding (calender time?)</span>
+out2 &lt;-<span class="st"> </span><span class="kw">lexisSeq</span>(<span class="dt">indat=</span>dat,<span class="dt">invars=</span><span class="kw">c</span>(<span class="st">&quot;ptid&quot;</span>,<span class="st">&quot;start&quot;</span>,<span class="st">&quot;end&quot;</span>,<span class="st">&quot;dead&quot;</span>),
+                 <span class="dt">varname=</span><span class="ot">NULL</span>,<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">200</span>,<span class="dv">50</span>),<span class="dt">format=</span><span class="st">&quot;seq&quot;</span>,<span class="dt">value=</span><span class="st">&quot;myvalue&quot;</span>)
+out2[]</code></pre></div>
+<pre><code>##     start end dead myvalue ptid Bdate
+##  1:     0  50    0       1    A -5000
+##  2:    50 100    0       2    A -5000
+##  3:   100 150    0       3    A -5000
+##  4:   150 200    1       4    A -5000
+##  5:     0  50    0       1    B -2000
+##  6:    50 100    0       2    B -2000
+##  7:   100 150    0       3    B -2000
+##  8:   150 200    0       4    B -2000
+##  9:     0  50    0       1    C     0
+## 10:    50 100    0       2    C     0
+## 11:   100 150    0       3    C     0
+## 12:   150 200    1       4    C     0
+## 13:     0  50    0       1    D   100
+## 14:    50 100    0       2    D   100
+## 15:   100 150    0       3    D   100
+## 16:   150 200    1       4    D   100</code></pre>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

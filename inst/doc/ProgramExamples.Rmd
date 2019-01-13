@@ -4,7 +4,7 @@ author: "Christian Torp-Pedersen"
 date: "12/23/2018"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"ProgramExamples"}
+  %\VignetteIndexEntry{ProgramExamples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -36,8 +36,6 @@ library(knitr)
 knitr::opts_chunk$set(fig.width=5, fig.height=5) 
 # The following lines used because I cannot make knitr load data using "data()"
 setwd('/Users/ctp/Dropbox/undvis/kursus register r')
-#setwd('C:/Users/hwpt/Dropbox/undvis/Kursus Register R')
-#setwd('C:/Users/Christian/Dropbox/undvis/Kursus Register R')
 load('frmgham2.rdata')
 ```
 Useful householding functions
