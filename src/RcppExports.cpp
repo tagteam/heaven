@@ -126,8 +126,6 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP _heaven_innerMedicinMacro(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 12},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
@@ -136,7 +134,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 11},
-    {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro,  7},
     {NULL, NULL, 0}
 };
 

@@ -64,7 +64,7 @@ may contain much information, but the key is "id","start","end" and "event".
 These describe the participant's id, start of time interval, end of time
 interval and the event of interest (must be 0/1).
 
-The other input is a data.table with the splittingguide. This data.table 
+The other input is a data.table with the splitting guide. This data.table 
 should have one record pr. individual.  One column defined the same id as in
 the "base" table. The other columns contain dates for each condition where 
 the split should occur.  These column names will also appear in the output
