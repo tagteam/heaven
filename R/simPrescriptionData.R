@@ -49,9 +49,33 @@ simPrescriptionData <- function(n,
     pnr=eksd=NULL
     startDate <- as.Date(startDate)
     if (is.null(names(packages))) {
-        atccodes=NULL
-        utils::data(atccodes)
-        atc <- atccodes$ATC
+        atc <- c("R06AC01",
+                 "N01BB51",
+                 "D08AX01",
+                 "N02AA03",
+                 "C09BA02",
+                 "B02BC",
+                 "L01AD02",
+                 "C08CA08",
+                 "L01AA02",
+                 "J07BB",
+                 "R05CB15",
+                 "C09DA04",
+                 "L04AA32",
+                 "J05AE03",
+                 "N04BD03",
+                 "M03AX01",
+                 "A12AX",
+                 "D06BB12",
+                 "R03DA03",
+                 "A06AB06",
+                 "L03AA10",
+                 "N07BB05",
+                 "A09AA02",
+                 "G02AD04",
+                 "H05BA01",
+                 "C03CB02",
+                 "C01EB17")
     }else{
         atc <- names(packages)
     }
@@ -59,12 +83,12 @@ simPrescriptionData <- function(n,
         pat.i <- data.table::rbindlist(lapply(1:length(packages),function(p){
             pack <- unlist(packages[p],recursive=FALSE)
             M=sample(1:max.prescriptions,size=1) ## number of prescription dates
-            browser()
-            data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*runif(M,0,5*365.25),
-                                   atc = sample(atc,size=M),
-                                   packsize = sample(sapply(pack,"[",2),size=M,replace=TRUE),
-                                   apk=sample(1:max.packages,size=M,replace=TRUE),
-                                   strnum = sample(sapply(pack,"[",1),size=M,replace=TRUE))
+            out <- data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*runif(M,0,5*365.25),
+                                          atc = sample(atc,size=M,replace=TRUE),
+                                          packsize = sample(sapply(pack,"[",2),size=M,replace=TRUE),
+                                          apk=sample(1:max.packages,size=M,replace=TRUE),
+                                          strnum = sample(sapply(pack,"[",1),size=M,replace=TRUE))
+            out
         }))
         pat.i[,pnr:=i]
     }))

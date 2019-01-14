@@ -43,9 +43,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// innerprocess
-Rcpp::List innerprocess(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, double prescriptionwindow, double maxdepot, bool collapse);
-RcppExport SEXP _heaven_innerprocess(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP prescriptionwindowSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
+// innerMedicinMacro
+Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, double prescriptionwindow, double maxdepot, bool collapse);
+RcppExport SEXP _heaven_innerMedicinMacro(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP prescriptionwindowSEXP, SEXP maxdepotSEXP, SEXP collapseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -56,7 +56,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type prescriptionwindow(prescriptionwindowSEXP);
     Rcpp::traits::input_parameter< double >::type maxdepot(maxdepotSEXP);
     Rcpp::traits::input_parameter< bool >::type collapse(collapseSEXP);
-    rcpp_result_gen = Rcpp::wrap(innerprocess(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse));
+    rcpp_result_gen = Rcpp::wrap(innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -129,7 +129,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 12},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
-    {"_heaven_innerprocess", (DL_FUNC) &_heaven_innerprocess, 7},
+    {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},

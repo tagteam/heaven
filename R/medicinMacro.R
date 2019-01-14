@@ -26,12 +26,15 @@
 ##' @examples
 ##' set.seed(05021992)
 ##' N=20
-##' lmdb=simPrescriptionData(N)
+##' packs = list("R03AK11"=list(c(750,75),c(500,200),c(400,200)),
+##'              "R03AL03"=list(c(750,75),c(500,200),c(400,200)),
+##'              "C01CA01"=list(c(200,100),c(750,30)))
+##' lmdb=simPrescriptionData(N,packages=packs)
 ##' lpr=simAdmissionData(N)
 ##' drug1 = list(atc=c("R03AK11","R03AL03","R03AC02","R03AC04","R03AC19",
 ##'                     "R03AL02","R03AA01","R03AC18","R03AL01"),
 ##'              maxdepot=4000,
-##'              period=as.Date(c("1997-01-01", "2012-12-31")),
+##'              period=as.Date(c("1995-01-01", "2012-12-31")),
 ##'              prescriptionwindow=2,
 ##'              doses=list(value=c(750,500,400,200,75),
 ##'                         min = c(250,200,200,100,25),
@@ -39,7 +42,7 @@
 ##'                         def = c(750,500,400,200,75)))
 ##' drug2=list(atc=c("C01CA01","C01AA05"),
 ##'            maxdepot=4000,
-##'            period=as.Date(c("1997-01-01", "2012-12-31")),
+##'            period=as.Date(c("1995-01-01", "2012-12-31")),
 ##'            prescriptionwindow=2,
 ##'            doses=list(value=c(200, 400, 500,750),
 ##'                       min = c(100, 200, 250,750),

@@ -22,10 +22,33 @@ simAdmissionData <- function(n,
                              diagnoses,
                              startDate = "1995-01-01"){
     if (missing(diagnoses)) {
-        icdcodes=NULL
-        utils::data("icdcodes")
-        data.table::setDT(icdcodes)
-        diagnoses <- icdcodes$diag
+        diagnoses <- c("DN162D",
+                      "DV1180",
+                      "DN982",
+                      "DT698",
+                      "DJ343",
+                      "DP389C",
+                      "DD484",
+                      "DB741",
+                      "DO721A",
+                      "DQ728D",
+                      "DK254E",
+                      "DT635",
+                      "DB601A",
+                      "DD239E",
+                      "DQ794A",
+                      "DO010",
+                      "DL923B",
+                      "DD223Z",
+                      "DF0122",
+                      "DZ237",
+                      "DE519",
+                      "DG461",
+                      "DO472",
+                      "DK265D",
+                      "DN330",
+                      "DM92",
+                      "DUA19")
     }
     pnr=inddto=recnum=NULL
     startDate <- as.Date(startDate)

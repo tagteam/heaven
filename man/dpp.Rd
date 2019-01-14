@@ -26,30 +26,94 @@ d2 <- contentSAS("x:/Data/Rawdata_Hurtig/706818/lmdb.sas7bdat")
 pp <- contentSAS("x:/Data/Rawdata_Hurtig/706818/pop.sas7bdat")
 pp10 <- importSAS("x:/Data/Rawdata_Hurtig/706818/pop.sas7bdat",obs=10,date.vars="FdaTo")
 
-ddd <- importSAS("x:/Data/Rawdata_Hurtig/706818/doede.sas7bdat",keep=c("pnr","doddato"),obs=10,date.vars="doddato")
+ddd <- importSAS("x:/Data/Rawdata_Hurtig/706818/doede.sas7bdat",
+       keep=c("pnr","doddato"),obs=10,date.vars="doddato")
 
-## d <- importSAS("x:/Data/Rawdata_Hurtig/706818/diag_indl.sas7bdat",obs=100,where="pnr ne ''",keep=c("pnr","uddto"))
+## d <- importSAS("x:/Data/Rawdata_Hurtig/706818/diag_indl.sas7bdat",
+obs=100,where="pnr ne ''",keep=c("pnr","uddto"))
 
 source("v:/Data/Workdata/706818/ThomasAlexanderGerds/testheaven/R/new-process.R")
 setwd("v:/Data/Workdata/706818/ThomasAlexanderGerds/testheaven/")
 x <- dpp()
-addData(x,name="lmdb",variables=c("atc","date"="eksd")) <- "x:/Data/Rawdata_Hurtig/706818/lmdb.sas7bdat"
-addData(x,name="pop",variables=c("sex","date"="fdato")) <- "x:/Data/Rawdata_Hurtig/706818/pop.sas7bdat"
-addData(x,name="dod",variables=c("date"="doddato")) <- "x:/Data/Rawdata_Hurtig/706818/doede.sas7bdat"
-addData(x,name="lpr",variables=c("diag","diagtype","date"="inddto","date"="uddto","pattype")) <- "x:/Data/Rawdata_Hurtig/706818/diag_indl.sas7bdat"
-addInclusion(x,"firstAF") <- importer("lpr",keep=c("pnr","diag","inddto","uddto","pattype"),where="inddto >= '01jan97'd and (diag contains 'DI48' or substr(diag,1,5) in ('42793' '42794')) and pnr ne ' ' and pattype ne 3",select="unique")
-addExclusion(x,"earlyAF") <- importer("lpr",keep=c("pnr","diag","inddto","uddto","pattype"),where="inddto < '01jan97'd and (diag contains 'DI48' or substr(diag,1,5) in ('42793' '42794')) and pnr ne ' ' and pattype ne 3",select="unique")
+addData(x,
+        name="lmdb",
+        variables=c("atc","date"="eksd")) <- "x:/Data/Rawdata_Hurtig/706818/lmdb.sas7bdat"
+addData(x,
+        name="pop",
+        variables=c("sex","date"="fdato")) <- "x:/Data/Rawdata_Hurtig/706818/pop.sas7bdat"
+addData(x,
+        name="dod",
+        variables=c("date"="doddato")) <- "x:/Data/Rawdata_Hurtig/706818/doede.sas7bdat"
+addData(x,
+        name="lpr",
+        variables=c("diag",
+                    "diagtype",
+                    "date"="inddto",
+                    "date"="uddto",
+                    "pattype")) <- "x:/Data/Rawdata_Hurtig/706818/diag_indl.sas7bdat"
+addInclusion(x,"firstAF") <- importer("lpr",
+                                      keep=c("pnr","diag","inddto","uddto","pattype"),
+                                      where="inddto >= '01jan97'd and (diag contains 'DI48' or
+ substr(diag,1,5) in ('42793' '42794')) and pnr ne ' ' and pattype ne 3",
+                                      select="unique")
+addExclusion(x,"earlyAF") <- importer("lpr",
+                                      keep=c("pnr","diag","inddto","uddto","pattype"),
+                                      where="inddto < '01jan97'd and (diag contains
+ 'DI48' or substr(diag,1,5) in ('42793' '42794')) and pnr ne ' ' and pattype ne 3",
+                                      select="unique")
 ## start followup
-addVariable(x,target="afbsl") <- selector(data="studypop",var="afstart7",name="afstart7",sortkey=NULL,search.term=NULL,select="expression",collect=expression(uddto+7))
+addVariable(x,target="afbsl") <- selector(data="studypop",
+                                          var="afstart7",
+                                          name="afstart7",
+                                          sortkey=NULL,
+                                          search.term=NULL,
+                                          select="expression",
+                                          collect=expression(uddto+7))
 ## end followup
-addVariable(x,target="studypop") <- selector(data="dod",var="efup.date",name="efup.date",sortkey=NULL,search.term=NULL,select="expression",collect=expression(pmin(doddato,as.Date("2017-01-01"),na.rm=TRUE)))
-addVariable(x,target="afbsl") <- selector(data="pop",var="sex",name="sex",sortkey=NULL,search.term=NULL,select="expression",collect=expression(factor(sex,levels=c(0,1),labels=c("Female","Male"))))
-addVariable(x,target="afbsl") <- selector(data="pop",var="fdato",name="birthday",sortkey=NULL,search.term=NULL,select="variable",collect="fdato")
-addVariable(x,target="afbsl") <- selector(data="afbsl",var="age_af7",sortkey=NULL,search.term=NULL,select="expression",collect=expression(round(as.numeric(afstart7-birthday)/365.25,1)))
-## addVariable(x,target="afbsl") <- selector(data="afbsl",var="survtime",sortkey=NULL,search.term=NULL,select="eventtime",collect=expression(as.numeric(efup.date-afstart7)))
-addVariable(x,target="fup",type="rbind") <- selector(data="lmdb",var="atc",name="drug",sortkey="eksd",search.term="B01A")
-addVariable(x,target="fup",type="rbind") <- selector(data="lpr",var="diag",name="stroke",sortkey="inddto",search.term="I63")
-## addVariable(x,target="afbsl") <- selector(data="fup",var="stroketime",sortkey=NULL,search.term=NULL,select="eventtime",collect=expression(as.numeric(efup.date-afstart7)))
+addVariable(x,target="studypop") <- selector(data="dod",
+                                             var="efup.date",
+                                             name="efup.date",
+                                             sortkey=NULL,
+                                             search.term=NULL,
+                                             select="expression",
+                                             collect=expression(pmin(doddato,
+                                                                     as.Date("2017-01-01"),
+                                                                     na.rm=TRUE)))
+addVariable(x,target="afbsl") <- selector(data="pop",
+                                          var="sex",
+                                          name="sex",
+                                          sortkey=NULL,
+                                          search.term=NULL,
+                                          select="expression",
+                                          collect=expression(factor(sex,
+                                                                    levels=c(0,1),
+                                                                    labels=c("Female","Male"))))
+addVariable(x,target="afbsl") <- selector(data="pop",
+                                          var="fdato",
+                                          name="birthday",
+                                          sortkey=NULL,
+                                          search.term=NULL,
+                                          select="variable",
+                                          collect="fdato")
+addVariable(x,
+            target="afbsl") <- selector(data="afbsl",
+                                        var="age_af7",
+                                        sortkey=NULL,
+                                        search.term=NULL,
+                                        select="expression",
+                                        collect=expression(round(as.numeric(afstart7
+                                                                            -birthday)/365.25,1)))
+addVariable(x,target="fup",type="rbind") <- selector(data="lmdb",
+                                                     var="atc",
+                                                     name="drug",
+                                                     sortkey="eksd",
+                                                     search.term="B01A")
+addVariable(x,target="fup",type="rbind") <- selector(data="lpr",
+                                                     var="diag",
+                                                     name="stroke",
+                                                     sortkey="inddto",
+                                                     search.term="I63")
+
 
 source("v:/Data/Workdata/706818/ThomasAlexanderGerds/testheaven/R/new-process.R")
 x <- process(x,n=1000,fish=10000,show.sas.code=0L,restart="all")
@@ -82,8 +146,6 @@ system.time(x <- process(x,n=Inf,fish=Inf,show.sas.code=0L))
 ## x <- process(x,n=30,fish=100000,show.sas.code=0L,restart="age")
 ## system.time(x <- process(x,n=1000,fish=Inf,show.sas.code=0L))
 system.time(x <- process(x,n=Inf,fish=Inf,show.sas.code=0L))
-# saveRDS(x,file="v:/Data/Workdata/706818/ThomasAlexanderGerds/testheaven/R/test-x.rds")
-x <- readRDS(file="v:/Data/Workdata/706818/ThomasAlexanderGerds/testheaven/R/test-x.rds")
 print(object.size(x),units="Mb")
 }
 }
