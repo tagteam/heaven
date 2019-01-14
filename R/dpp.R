@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: Jan 14 2019 (09:55) 
+## Last-Updated: Jan 14 2019 (10:27) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 221
+##     Update #: 222
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -292,6 +292,7 @@ importer <- function(data,
 ##' @param collect what to collect
 ##' @param ... additional arguments
 ##' @author Thomas Alexander Gerds tag@@biostat.ku.dk
+##' @export
 selector <- function(data,
                      var,
                      name,

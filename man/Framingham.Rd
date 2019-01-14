@@ -3,7 +3,7 @@
 \docType{data}
 \name{Framingham}
 \alias{Framingham}
-\title{Sample drug purchase data for illustration}
+\title{Public version of Framingham data}
 \format{The Framingham dataset is a public version of several examinations of people in the Framingham study. Various variables have been adjusted to ensure anonymity of people. Thus, the data cannot be used for science, only demonstration of R-code. 
 \describe{
 \item{randid}{bla bla} 
@@ -47,7 +47,7 @@
 \item{timehyp}{bla bla} 
 }}
 \description{
-a sample data frame used to illustrate some functionality
+The Framingham dataset is a public version of several examinations of people in the Framingham study. Various variables have been adjusted to ensure anonymity of people. Thus, the data cannot be used for science, only demonstration of R-code.
 }
 \examples{
 
