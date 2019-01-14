@@ -16,7 +16,7 @@ using namespace arma;
 //' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 //' @export
 // [[Rcpp::export]]
-Rcpp::List innerprocess(Rcpp::DataFrame dat,
+Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 			Rcpp::DataFrame admdat,
 			Rcpp::List doses, 
 			NumericVector idunique,
@@ -25,7 +25,7 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
 			bool collapse
 			) {
   
-  // Rcout << "before loop \n"<< std::endl;  
+  // Rcout << "before aloop \n"<< std::endl;  
   uword NOBS= idunique.size();
   Rcpp::List xxx(NOBS);
   // Rcpp::List outlist(int nobs);
@@ -37,15 +37,16 @@ Rcpp::List innerprocess(Rcpp::DataFrame dat,
   arma::vec INid = Rcpp::as<arma::vec>(dat["pnr"]); 
   arma::vec INpdate = Rcpp::as<arma::vec>(dat["eksd"]);
   arma::vec INstrength = Rcpp::as<arma::vec>(dat["strnum"]);
-  arma::vec INnpack = Rcpp::as<arma::vec>(dat["npack"]);
-  arma::vec INppp = Rcpp::as<arma::vec>(dat["ppp"]);
+  arma::vec INnpack = Rcpp::as<arma::vec>(dat["packsize"]);
+  arma::vec INppp = Rcpp::as<arma::vec>(dat["apk"]);
   
   arma::vec INaid = Rcpp::as<arma::vec>(admdat["pnr"]); 
   arma::vec INadmin = Rcpp::as<arma::vec>(admdat["inddto"]);
   arma::vec INadmax = Rcpp::as<arma::vec>(admdat["uddto"]);
   
   //  Function formatDate("format.Date");
-  // Rcout << "before loop \n"<< std::endl;  
+  // Rcout << "before loop \n"<< std::endl;
+  // Rprintf("NOBS=%d\t\n",NOBS);
   for (uword i = 0; i < NOBS; i++) {
     // if (i == 1000 || i == 2000 || i==3000){
     // Rcout << "==============i = " << i << "===============\n\n"<< std::endl;
