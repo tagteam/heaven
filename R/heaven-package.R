@@ -2,21 +2,57 @@
 #' 
 #' a sample data frame used to illustrate some functionality
 #' 
-#' @name sampleDrugData
+#' @name Framingham
 #' @docType data
-#' @format This data frame contains 12 observations from one subject:
+#' @format The Framingham dataset is a public version of several examinations of people
+#' in the Framingham study. Various variables have been adjusted to ensure
+#' anonymity of people. Thus, the data cannot be used for science, only demon-
+#' stration of R-code. 
 #' \describe{
-#' \item{pnr}{pnr number}
-#' \item{eksd}{date of purchase}
-#' \item{packsize}{package size}
-#' \item{strnum}{strnum}
-#' \item{apk}{apk}
-#' \item{atc}{atc code}
+#' \item{randid}{bla bla}} 
+#' \item{sex}{bla bla}} 
+#' \item{totchol}{bla bla}} 
+#' \item{age}{bla bla}} 
+#' \item{sysbp}{bla bla}} 
+#' \item{diabp}{bla bla}} 
+#' \item{cursmoke}{bla bla}} 
+#' \item{cigpday}{bla bla}} 
+#' \item{bmi}{bla bla}} 
+#' \item{diabetes}{bla bla}} 
+#' \item{bpmeds}{bla bla}} 
+#' \item{heartrte}{bla bla}} 
+#' \item{glucose}{bla bla}} 
+#' \item{educ}{bla bla}} 
+#' \item{prevchd}{bla bla}} 
+#' \item{prevap}{bla bla}} 
+#' \item{prevmi}{bla bla}} 
+#' \item{prevstrk}{bla bla}} 
+#' \item{prevhyp}{bla bla}} 
+#' \item{time}{bla bla}} 
+#' \item{period}{bla bla}} 
+#' \item{hdlc}{bla bla}} 
+#' \item{ldlc}{bla bla}} 
+#' \item{death}{bla bla}} 
+#' \item{angina}{bla bla}} 
+#' \item{hospmi}{bla bla}} 
+#' \item{MI_FCHD}{bla bla}} 
+#' \item{anychd}{bla bla}} 
+#' \item{stroke}{bla bla}} 
+#' \item{cvd}{bla bla}} 
+#' \item{hyperten}{bla bla}} 
+#' \item{timeap}{bla bla}} 
+#' \item{timemi}{bla bla}} 
+#' \item{timemifc}{bla bla}} 
+#' \item{timechd}{bla bla}} 
+#' \item{timestrk}{bla bla}} 
+#' \item{timecvd}{bla bla}} 
+#' \item{timedth}{bla bla}} 
+#' \item{timehyp}{bla bla}} 
 #'} 
 #' @keywords datasets
 ##' @examples
 ##' 
-##' data(sampleDrugData)
+##' data(Framingham)
 #'
 
 #' 

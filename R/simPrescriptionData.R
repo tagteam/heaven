@@ -50,7 +50,7 @@ simPrescriptionData <- function(n,
     startDate <- as.Date(startDate)
     if (is.null(names(packages))) {
         atccodes=NULL
-        utils::data("atccodes")
+        utils::data(atccodes)
         atc <- atccodes$ATC
     }else{
         atc <- names(packages)
@@ -59,6 +59,7 @@ simPrescriptionData <- function(n,
         pat.i <- data.table::rbindlist(lapply(1:length(packages),function(p){
             pack <- unlist(packages[p],recursive=FALSE)
             M=sample(1:max.prescriptions,size=1) ## number of prescription dates
+            browser()
             data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*runif(M,0,5*365.25),
                                    atc = sample(atc,size=M),
                                    packsize = sample(sapply(pack,"[",2),size=M,replace=TRUE),
