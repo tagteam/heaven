@@ -6,3 +6,4 @@ build()                                                         ## Creates .tar.
 install(build_vignettes = TRUE)                                 ## build vignettes = FALSE is the default for some reason
 
 Now it should be possible to see the vignettes, e.g. by using browseVignettes('heaven') or vignette('user-heaven').
+
