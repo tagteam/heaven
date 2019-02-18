@@ -1,0 +1,75 @@
+---
+title: "Nested case control"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Nested case control}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+[//]: ## Vignette about nested case control
+
+Epidemiologic cohort studies are often used for assessing the variation in rates of morbidity and mortality due to factors present in the population. Because the outcome of interest can be very rare, cohort studies may require a lot of subjects to reliably be able to answer the question at hand. It can, however, be very expensive to collect covariate information for all subjects. One solution to this problem is nested case control where only a subset of the non-failures are used for the analysis. This works because the extra statistical power of the study gained by each additional non-failure is very small compared to that of the failures (cases) when there are many non-failures. 
+
+It works in the following way: For each observed failure-time (case), $t$, sample $m-1$ non-failures (controls) without replacement among those at risk at time $t$ for some fixed $m>1$.
+
+## Visualization using Lexis diagram (SLET IKKE FERTIG!)
+The Lexis diagram plots the year of birth on the x-axis and the age on the y-axis. Someone who is born in 1975 will be represented by a diagonal line starting at (1975,0) and going through (1976,1), (1977,2) and so on. 
+
+```{r, echo=FALSE,include=T, message=FALSE}
+library(ggplot2)
+library(lubridate)
+
+n <- 8
+startDates <- sample(seq(as.Date('1995/01/01'), as.Date('2005/01/01'), by = "day"), n)    
+startTimes <- runif(n, 0, 5)
+startDates5 <- startDates %m+% years(5)
+startTimes5 <- startTimes + 5
+endDates <- startDates %m+% days(round(runif(n, 5*365.25, 15*365.25)))
+time <- as.numeric(endDates- startDates) / 365.25 + startTimes
+plot(startDates, time, ylim = c(0,max(time+1)), xlab = "Year", xlim = c(as.Date(min(startDates) %m+% years(-1)), as.Date(max(endDates) %m+% years(1))), col = "white")
+segments(x0 = as.Date(startDates), x1 = as.Date(endDates), y0 = startTimes, y1 = time)
+points(startDates, startTimes, cex = 2, pch = 20)
+points(startDates5, startTimes5, pch = 4, cex = 2)
+points(endDates, time, pch = 15, cex = 2)
+legend("topleft", legend = c("First diagnosis", "Index date (First diagnosis + 5 years)", "Dementia diagnosis"), pch = c(20, 4, 15))
+```
+
+## Nested case control for the Cox proportional hazards model
+It turns out, somewhat surprisingly, that the estimator $(\hat{\beta})$ of the regression parameters $(\beta)$ in the Cox model isn't influenced by the sampling and is thus the same as usually. The fact that we have fewer non-failures per failure in the data than in the real world does, however, mean that we can't use the usual Breslow estimator of the integrated baseline hazard. Let $\mathcal{R}_j$ be the set of all those at risk at failure-time $t_j-$, and $\tilde{\mathcal{R}}_j$ be the set of the case at $t_j$ and the $m-1$ controls. Let $n(t_j)$ be the total number at risk at time $t_j$, and $Z_l(t)$ a vector of time-dependent covariates for observation $l$. Then the estimator for the integrated baseline hazard turns out to be
+$$
+\hat{A}(t;\hat{\beta}) = \sum_{t_j<t}\frac{1}{\sum_{l\in \tilde{\mathcal{R}}_j}\exp\left(\hat{\beta}^TZ_l(t_j)\right)n(t_j)/m}.
+$$
+So each observation is given a higher weight according to how many controls have been sampled and how big the original data set is. 
+
+## Connection to conditional logistic regression
+Conditional logistic regression deals with the probability of events for observations in different strata given that we know how many events we observe in each stratum. This corresponds exactly to the situation we are in when we have a nested case control design, since each stratum corresponds to a failure time (so we know that we have exactly one failure time in each stratum). The $\beta$-parameters in this type of model correspond exactly to the $\beta$-parameters we get when we estimate the Cox model for the nested case control design. This also means that we should be very careful when interpreting the $\beta$-parameters - in "normal" logistic regression, it is easy to interpret the $\beta$-parameters since they equal the logarithm of the odds ratio between individuals with covariates $(Z_1,...,Z_k+1,...,Z_K)$ and $(Z_1,...,Z_k,...,Z_K)$. We know, however, that this isn't the case in the Cox model - here they equal the logarithm of the *hazard rate* between individuals with covariates $(Z_1,...,Z_k+1,...,Z_K)$ and $(Z_1,...,Z_k,...,Z_K)$. Hence, parameters should be interpreted as hazard rates rather than odds ratios when using conditional logistic regression.
+
+## Advantages and disadvantages
+There are both advantages and disadvantages to using a nested case control design. Some of the advantages are:
+
+- We only need covariate information for a subset of observations.
+
+- We only need covariate information for the observations at the times they are sampled for, even if covariates are time-dependent. 
+
+Some disadvantages are:
+
+- We lose statistical power when only using a subset of observations.
+
+## Does it work?
+Of course you get less precision using nested case control compared to if you could do the analysis on the whole population rather than only on the cases and some sampled controls. But how much worse is nested case control really? We can try some simulations to check
+
+
+
+
+
+
