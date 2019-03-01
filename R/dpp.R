@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: Jan 14 2019 (10:27) 
+## Last-Updated: Jan 29 2019 (10:04) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 222
+##     Update #: 225
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -170,7 +170,7 @@ dpp <- function (id = "pnr") {
 print.dpp <- function(x,...){
     if ((lenwork <- length(x$data$studypop))>0){
         cat("\nStudy population according to inclusion/exclusion criteria:\n",
-            "$studypop contains",
+            "$data$studypop contains",
             NROW(x$data$studypop)," subjects.")
     }else{
         cat("\nEmpty study population.\n",
@@ -623,7 +623,8 @@ selector <- function(data,
 ##' @param priority Character. Data preprocessing time point. Either \code{"late"} or \code{"early"}. 
 ##' @param ... not (yet) used
 ##' @param value A function obtained with the all-purpose function \code{selector} or one of the specialized functions. See \code{dpp}.
-'addExclusion<-' <- function (x, name, target = "all", priority = c("late", "early"),
+##' @export
+'addExclusion<-' <- function(x, name, target = "all", priority = c("late", "early"),
                               ..., value)
 {
     priority = match.arg(priority)
@@ -653,7 +654,7 @@ selector <- function(data,
 ##' @param ...  passed to subroutine: fread or importSAS
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
-getRawdata <- function (x, id, n, ...){
+getRawdata <- function(x, id, n, ...){
     ## FIXME: deal with origin!=filename
     if (x$origin=="file.name"){
         if (!file.exists(x$file)){
