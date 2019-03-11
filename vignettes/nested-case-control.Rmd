@@ -1,6 +1,6 @@
 ---
 title: "Nested case control"
-author: "Vignette Author"
+author: "Jeppe EH Madsen"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -27,8 +27,9 @@ The Lexis diagram plots the year of birth on the x-axis and the age on the y-axi
 
 ```{r, echo=FALSE,include=T, message=FALSE}
 library(ggplot2)
-library(lubridate)
+## library(lubridate)
 
+library(rmarkdown)
 n <- 8
 startDates <- sample(seq(as.Date('1995/01/01'), as.Date('2005/01/01'), by = "day"), n)    
 startTimes <- runif(n, 0, 5)

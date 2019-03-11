@@ -27,6 +27,7 @@ Suggests:
     testthat,
     doParallel,
     survival,
+    lubridate,
     Publish,
     prodlim,
     riskRegression,
