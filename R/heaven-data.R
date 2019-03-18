@@ -47,3 +47,21 @@
 #' @name icdcodes
 
 "icdcodes"
+
+#' "edu_code"
+#' 
+#' data.table with education codes
+#' @format A data.table
+#' @docType data
+#' @keywords datasets
+#' @name edu_code
+ 
+"Framingham"
+
+#' "Framingham"
+#' 
+#' data.frame with Framingham data
+#' @format A data.frame
+#' @docType data
+#' @keywords datasets
+#' @name Framingham
