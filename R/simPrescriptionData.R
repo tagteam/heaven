@@ -83,11 +83,15 @@ simPrescriptionData <- function(n,
         pat.i <- data.table::rbindlist(lapply(1:length(packages),function(p){
             pack <- unlist(packages[p],recursive=FALSE)
             M=sample(1:max.prescriptions,size=1) ## number of prescription dates
-            out <- data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*runif(M,0,5*365.25),
+            sizes <- sapply(pack,"[",2)
+            if (length(sizes)==1) sizes <- rep(sizes,M) else sample(sizes,size=M,replace=TRUE)
+            strengths <- sapply(pack,"[",1)
+            if (length(strengths)==1) strengths <- rep(strengths,M) else sample(strengths,size=M,replace=TRUE)
+            out <- data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*floor(runif(M,0,5*365.25)),
                                           atc = sample(atc,size=M,replace=TRUE),
-                                          packsize = sample(sapply(pack,"[",2),size=M,replace=TRUE),
+                                          packsize = sizes,
                                           apk=sample(1:max.packages,size=M,replace=TRUE),
-                                          strnum = sample(sapply(pack,"[",1),size=M,replace=TRUE))
+                                          strnum = strengths)
             out
         }))
         pat.i[,pnr:=i]

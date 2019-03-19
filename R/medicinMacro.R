@@ -1,9 +1,31 @@
 ##' Processing function, to perform calculations according to the data and variables specified in preprocessing object. 
 ##' 
 ##' @title Medicin macro to estimate prescription lengths and averages
-##' @param drugs List of drugs (see examples).
-##' @param treatments If specified, calcations will only be performed
-##'     for these treatments.
+##' @param drugs A named list of drugs. Each element of this list should be a list
+##' with the following elements:
+##' \itemize{
+##'   \item{atc}{A vector of ATC codes which should match the components of the drug exactly.}
+##'   \item{maxdepot} The maximum total dose that a single patient can possibly stack.
+##'   \item{period} A vector of dates to limit the period in which to estimate the daily dose. 
+##'   \item{prescriptionwindow} Default is 2. 
+##'   \item{doses}
+##'    A named list with the elements \code{value}, \code{min}, \code{max} and \code{def}.
+##'    Here \code{value} is a vector of strengths of one
+##'    unit (e.g., pill) of the drug. The vector should have one such strength for
+##'    each of the different packages that occur in the data.
+##' \code{min} is a vector of the same length as \code{value} where each element is the
+##' assumed minimum total dosis that a patient can consume on one day. For example, if the
+##' value is 50 mg and the pills of this strength can be cut (in halves) the minimum
+##' total dosis is 25 mg.
+##' \code{max} is a vector of the same length as \code{value} where each element is the
+##' assumed maximum total dosis that a patient can consume on one day. For example, if the
+##' value is 50 mg and one can at most consume 4 pills a day the maximum
+##' total dosis is 200 mg.
+##' \code{def} is a vector of the same length as \code{value} where each element is the
+##' assumed default dosis that an average patient would consume on one day. For example,
+##' if the value is 50 mg and usually a patient would consume 2 pills the default is 100 mg.
+##' }
+##' (see examples).
 ##' @param drugdb data.table with (subset of) medical drugs registry
 ##' @param admdb data.table with (subset of) hospital admission registry
 ##' @param drugdb.datevar name of the date variable in \code{drugdb}. Default is \code{"eksd"}.
@@ -48,10 +70,10 @@
 ##'                       min = c(100, 200, 250,750),
 ##'                       max = c(300, 800, 1000,750),
 ##'                       def = c(200, 400, 500,750)))
-##' a <- medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
+##' x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
+##' x$drug1
 ##' @export
 medicinMacro <- function(drugs,
-                         treatments = NULL,
                          drugdb,
                          admdb,
                          drugdb.datevar="eksd",
@@ -62,13 +84,12 @@ medicinMacro <- function(drugs,
                          apk.var="apk",
                          collapse = TRUE,
                          splitting = FALSE){
-    atc=eksd=inddto=uddto=pnr=NULL
+    atc=eksd=inddto=uddto=NULL
     # Set the right structure for processed object
     processed <- structure(list(),class = "medicinmacro")
-    if (missing(drugs) || is.null(drugs)) stop("Sorry, no treatments have been specified.")
-    if (length(treatments) == 0) treatments <- names(drugs)
+    if (missing(drugs) || is.null(drugs)) stop("Sorry, no drugs have been specified.")
     if (missing(drugdb) || is.null(drugdb)) stop("No drug purchase data provided")
-    for (drugname in treatments){ 
+    for (drugname in names(drugs)){ 
         ## treatfun <- function(drugname) {
         j            <- (1:length(drugs))[names(drugs) == drugname]
         atcs         <- unlist(drugs[[j]]$atc)
@@ -84,13 +105,24 @@ medicinMacro <- function(drugs,
         if (drugdb.datevar!="eksd") {
             setnames(drugdb.work,drugdb.datevar,"eksd")
         }
-        admdb.work <-  copy(admdb)
-        if (any(admdb.datevars!=c("inddto","uddto"))) {
-            setnames(admdb.work,admdb.datevars[1],"inddto")
-            setnames(admdb.work,admdb.datevars[2],"uddto")
-        }    
+        if (NROW(admdb)>0){
+            admdb.work <-  copy(admdb)
+            if (any(admdb.datevars!=c("inddto","uddto"))) {
+                setnames(admdb.work,admdb.datevars[1],"inddto")
+                setnames(admdb.work,admdb.datevars[2],"uddto")
+            }    
+        }
         drugdb.work   <- drugdb.work[atc %in% atcs & eksd <= period[2] & eksd >= period[1], ]
-        admdb.work   <- admdb.work[inddto<= period[2] & uddto >= period[1], ]
+        ## convert dates to numeric: number of days since 1995-01-01
+        drugdb.work[,eksd:=as.numeric(eksd-as.Date("1995-01-01"))]
+        if (NROW(admdb)>0){
+            admdb.work   <- admdb.work[inddto<= period[2] & uddto >= period[1], ]
+            ## convert dates to numeric: number of days since 1995-01-01
+            admdb.work[,inddto:=as.numeric(inddto-as.Date("1995-01-01"))]
+            admdb.work[,uddto:=as.numeric(uddto-as.Date("1995-01-01"))]
+        }else{
+            admdb.work <- data.frame(pnr=numeric(0),inddto=numeric(0),uddto=numeric(0))
+        }
         ##--- unique id's
         idunique <- unique(drugdb.work[["pnr"]])
         if (length(idunique)==0) {
@@ -115,14 +147,14 @@ medicinMacro <- function(drugs,
                 est.time <- 0
                 for (split in 1:10){
                     split.id <- idunique[ind.split==split]
-                    setkeyv(drugdb.work,pnr)
+                    setkeyv(drugdb.work,"pnr")
                     out.list[[split]] <- rbindlist(innerMedicinMacro(dat=drugdb.work[split.id], 
-                                                                admdat=admdb.work,
-                                                                doses=doses,
-                                                                idunique=split.id,
-                                                                prescriptionwindow=prescriptionwindow,
-                                                                maxdepot=maxdepot,
-                                                                collapse=collapse))
+                                                                     admdat=admdb.work,
+                                                                     doses=doses,
+                                                                     idunique=split.id,
+                                                                     prescriptionwindow=prescriptionwindow,
+                                                                     maxdepot=maxdepot,
+                                                                     collapse=collapse))
                 }
                 out <- rbindlist(out.list)
             }else{
@@ -133,6 +165,9 @@ medicinMacro <- function(drugs,
                                                    prescriptionwindow=prescriptionwindow,
                                                    maxdepot=maxdepot,
                                                    collapse=collapse))
+                out[,B:=as.Date("1995-01-01")+B]
+                out[,E:=as.Date("1995-01-01")+E]
+                out[,exposure.days:=E-B]
             }
             processed[[drugname]] <- out
         }

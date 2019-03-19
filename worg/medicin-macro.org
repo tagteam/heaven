@@ -282,7 +282,7 @@ indicate if the maximal number of exposure days exceeds the number of
 non-hospitalized days in period \periodK:
 \begin{align*} 
 u_{k} = \begin{cases}
-0, & n_{k} \le H_k,\,\,   \text{in words:  \it the supply at \(T_k\) is empty before \(T_{k+1}\)}\\
+0, & n_{k} \le H_k,\,\,   \text{in words:  \it the supply at \(T_k\) does not reach \(T_{k+1}\)}\\
 1, & n_{k} > H_k,\,\, \text{in words: \it the supply at \(T_k\) can be sufficient to reach \(T_{k+1}\)}.
 \end{cases}
 \end{align*}
