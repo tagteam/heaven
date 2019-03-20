@@ -1,13 +1,13 @@
-##' Processing function, to perform calculations according to the data and variables specified in preprocessing object. 
-##' 
+##' Processing function, to perform calculations according to the data and variables specified in preprocessing object.
+##'
 ##' @title Medicin macro to estimate prescription lengths and averages
 ##' @param drugs A named list of drugs. Each element of this list should be a list
 ##' with the following elements:
 ##' \itemize{
 ##'   \item{atc}{A vector of ATC codes which should match the components of the drug exactly.}
 ##'   \item{maxdepot} The maximum total dose that a single patient can possibly stack.
-##'   \item{period} A vector of dates to limit the period in which to estimate the daily dose. 
-##'   \item{prescriptionwindow} Default is 2. 
+##'   \item{period} A vector of dates to limit the period in which to estimate the daily dose.
+##'   \item{prescriptionwindow} Default is 2.
 ##'   \item{doses}
 ##'    A named list with the elements \code{value}, \code{min}, \code{max} and \code{def}.
 ##'    Here \code{value} is a vector of strengths of one
@@ -89,7 +89,7 @@ medicinMacro <- function(drugs,
     processed <- structure(list(),class = "medicinmacro")
     if (missing(drugs) || is.null(drugs)) stop("Sorry, no drugs have been specified.")
     if (missing(drugdb) || is.null(drugdb)) stop("No drug purchase data provided")
-    for (drugname in names(drugs)){ 
+    for (drugname in names(drugs)){
         ## treatfun <- function(drugname) {
         j            <- (1:length(drugs))[names(drugs) == drugname]
         atcs         <- unlist(drugs[[j]]$atc)
@@ -106,11 +106,12 @@ medicinMacro <- function(drugs,
             setnames(drugdb.work,drugdb.datevar,"eksd")
         }
         if (NROW(admdb)>0){
+            # Why not changing names of admdb "id" too?
             admdb.work <-  copy(admdb)
             if (any(admdb.datevars!=c("inddto","uddto"))) {
                 setnames(admdb.work,admdb.datevars[1],"inddto")
                 setnames(admdb.work,admdb.datevars[2],"uddto")
-            }    
+            }
         }
         drugdb.work   <- drugdb.work[atc %in% atcs & eksd <= period[2] & eksd >= period[1], ]
         ## convert dates to numeric: number of days since 1995-01-01
@@ -125,6 +126,14 @@ medicinMacro <- function(drugs,
         }
         ##--- unique id's
         idunique <- unique(drugdb.work[["pnr"]])
+        # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
+        if(typeof(idunique)=="character"){
+            db = data.table(pnr.db=idunique)
+            db[,tmp.index:=1:.N]
+            drugdb.work = merge(drugdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
+            if(NROW(admdb.work)>0)
+                admdb.work = merge(admdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
+        }
         if (length(idunique)==0) {
             warning(paste0("No individual purchased ",paste0(atcs,collapse=", ")," in this period"))
             processed[[drugname]] <- NULL
@@ -148,7 +157,7 @@ medicinMacro <- function(drugs,
                 for (split in 1:10){
                     split.id <- idunique[ind.split==split]
                     setkeyv(drugdb.work,"pnr")
-                    out.list[[split]] <- rbindlist(innerMedicinMacro(dat=drugdb.work[split.id], 
+                    out.list[[split]] <- rbindlist(innerMedicinMacro(dat=drugdb.work[split.id],
                                                                      admdat=admdb.work,
                                                                      doses=doses,
                                                                      idunique=split.id,
@@ -169,9 +178,12 @@ medicinMacro <- function(drugs,
                 out[,E:=as.Date("1995-01-01")+E]
                 out[,exposure.days:=E-B]
             }
+            ## Revert pnr type change
+            if(typeof(idunique)=="character")
+                out = merge(out,db,by.x="pnr",by.y="tmp.index",all.x=TRUE)[,pnr:=pnr.db][,pnr.db:=NULL][]
             processed[[drugname]] <- out
         }
     }
     processed
 }
-  
+

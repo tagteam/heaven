@@ -15,8 +15,8 @@ with the following elements:
 \itemize{
   \item{atc}{A vector of ATC codes which should match the components of the drug exactly.}
   \item{maxdepot} The maximum total dose that a single patient can possibly stack.
-  \item{period} A vector of dates to limit the period in which to estimate the daily dose. 
-  \item{prescriptionwindow} Default is 2. 
+  \item{period} A vector of dates to limit the period in which to estimate the daily dose.
+  \item{prescriptionwindow} Default is 2.
   \item{doses}
    A named list with the elements \code{value}, \code{min}, \code{max} and \code{def}.
    Here \code{value} is a vector of strengths of one
