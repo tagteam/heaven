@@ -177,6 +177,7 @@ medicinMacro <- function(drugs,
                 out[,B:=as.Date("1995-01-01")+B]
                 out[,E:=as.Date("1995-01-01")+E]
                 out[,exposure.days:=E-B]
+                setkey(out,pnr,B)
             }
             ## Revert pnr type change
             if(typeof(idunique)=="character")

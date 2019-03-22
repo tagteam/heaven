@@ -236,7 +236,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       if (R(k) > maxdepot) R(k) = maxdepot;
 
       // compute the end dates of exposure
-      Rcout << "_________" << k << "________" << std::endl;
+      // Rcout << "_________" << k << "________" << std::endl;
       // if (k>0) Rcout << "u(k-1)" << u(k-1) << std::endl;
       // Rcout << "date T(k):" << T(k) << std::endl;
       // Rcout << "dosis D(k)=" << D(k) << std::endl;
@@ -257,9 +257,9 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	// Rcout << "floor=" << floor((D(k) + R(k)) / (double) X(k)) << std::endl;
 	EndExposure(k) = (T(k) - 1.0 + floor((D(k) + R(k)) / (double) ddef(jk(k))));
       }
-      Rcout << "T(k)=" << T(k) << std::endl;
-      Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
-      Rcout << "floorEndExposure(k)" << floor(EndExposure(k)) << std::endl;
+      // Rcout << "T(k)=" << T(k) << std::endl;
+      // Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
+      // Rcout << "floorEndExposure(k)" << floor(EndExposure(k)) << std::endl;
       if (k < K-1 && EndExposure(k) > T(k+1)-1)
 	EndExposure(k) = T(k+1)-1;
 
@@ -282,13 +282,13 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  // rows with yk = 2 will introduce a period with 0 exposure
 	  yk(k-1) = 2; 
 	}
-	ylength += yk(k-1); // this will define length of output data
+	ylength += yk(k-1); // this will define length of output data when collapsing
       }
     
       // B(k) = as<std::string>(formatDate(wrap(Date(T(k)))));
       // E(k) = as<std::string>(formatDate(wrap(Date(EndExposure(k)))));
       B(k) = T(k);
-      Rcout << "B(k)=" << B(k) << std::endl;
+      // Rcout << "B(k)=" << B(k) << std::endl;
       E(k) = EndExposure(k);
     } // end loop over unique prescription dates
   
@@ -300,27 +300,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr")     = idout,
 				       Rcpp::Named("X")      = X,
 				       Rcpp::Named("B")      = B,
-				       Rcpp::Named("E")      = E,
-				       Rcpp::Named("R")      = R,
-				       Rcpp::Named("D")      = D,
-				       Rcpp::Named("M")      = M,
-				       Rcpp::Named("A")      = S,
-				       Rcpp::Named("c")      = c,
-				       Rcpp::Named("jk")     = jk,
-				       Rcpp::Named("Sjk")    = Sjk,
-				       Rcpp::Named("H")      = H,
-				       Rcpp::Named("DH")     = DH,
-				       Rcpp::Named("nk")     = nk,
-				       Rcpp::Named("u")      = u,
-				       Rcpp::Named("w")      = w,
-				       Rcpp::Named("i0")     = i0,
-				       Rcpp::Named("yj")     = yk);
+				       Rcpp::Named("E")      = E);
+      // xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr")     = idout,Rcpp::Named("X")      = X,Rcpp::Named("B")      = B,Rcpp::Named("E")      = E,Rcpp::Named("R")      = R,Rcpp::Named("D")      = D,Rcpp::Named("M")      = M,Rcpp::Named("A")      = S,Rcpp::Named("c")      = c,Rcpp::Named("jk")     = jk,Rcpp::Named("Sjk")    = Sjk,Rcpp::Named("H")      = H,Rcpp::Named("DH")     = DH,Rcpp::Named("nk")     = nk,Rcpp::Named("u")      = u,Rcpp::Named("w")      = w,Rcpp::Named("i0")     = i0,Rcpp::Named("yj")     = yk);
     } else {
       arma::vec id1(ylength,fill::zeros);
       // Rcout << " ylength "  << ylength << std::endl;
-      // id1+=id(0);
-      // Rcpp::DateVector B1(ylength); 
-      // Rcpp::DateVector E1(ylength);
       arma::vec B1(ylength); 
       arma::vec E1(ylength); 
       arma::vec X1(ylength); 
@@ -349,16 +333,10 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       }
       // to speed up we would like to return a matrix instead of a data frame
       // but B1 and E1 are date format
-      // arma:mat xxxi = arma::zeros(ylength,4);
-      // xxxi.col(0) = arma::conv_to<arma::vec>::from(id1);
-      // xxxi.col(1)=arma::conv_to<arma::vec>::from(X1);
-      // xxxi.col(2)=B1;
-      // xxxi.col(3)=E1;
-      // xxx[i] = xxxi;
       xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr") = id1,
-       Rcpp::Named("X") = X1,
-       Rcpp::Named("B") = B1,
-       Rcpp::Named("E") = E1);
+				       Rcpp::Named("X") = X1,
+				       Rcpp::Named("B") = B1,
+				       Rcpp::Named("E") = E1);
     }
   }
   // Rcout << "after loop \n"<< std::endl;  
