@@ -24,8 +24,16 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 			double maxdepot,
 			bool collapse
 			) {
+  // NOTATION
+  // T(k) sequence of purchase dates
+  // S(k) strength
+  // D(k) total purchase at T(k)
   
-  // Rcout << "before aloop \n"<< std::endl;  
+  // n(k) exposure days
+  // B(k) starts of exposure periods
+  // E(k) estimated ends of exposure periods
+  
+  // Rcout << "before a-loop \n"<< std::endl;  
   uword NOBS= idunique.size();
   Rcpp::List xxx(NOBS);
   // Rcpp::List outlist(int nobs);
@@ -43,7 +51,6 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
   arma::vec INaid = Rcpp::as<arma::vec>(admdat["pnr"]); 
   arma::vec INadmin = Rcpp::as<arma::vec>(admdat["inddto"]);
   arma::vec INadmax = Rcpp::as<arma::vec>(admdat["uddto"]);
-  
   //  Function formatDate("format.Date");
   // Rcout << "before loop \n"<< std::endl;
   // Rprintf("NOBS=%d\t\n",NOBS);
@@ -87,9 +94,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
     arma::vec i0(K);
   
     arma::vec idout(K);
-    Rcpp::DateVector B(K);
-    Rcpp::DateVector E(K);
-    arma::vec Enum(K);
+    // Rcpp::DateVector B(K);
+    arma::vec B(K,fill::zeros);
+    // Rcpp::DateVector E(K);
+    arma::vec E(K,fill::zeros);
+    arma::vec EndExposure(K,fill::zeros);
     arma::vec R(K);
     arma::vec X(K);
   
@@ -103,7 +112,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       //--- for each date merge prescriptions to one
       arma::uvec datekid = arma::find(pdate == T(k));
       uword ndatekid = datekid.n_elem;
-    
+
+      // arma::vec dates1 = pdate.elem(datekid);
       arma::vec strength1 = strength.elem(datekid);
       arma::vec npack1    = npack.elem(datekid);
       arma::vec ppp1      = ppp.elem(datekid);
@@ -111,9 +121,19 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 
       for (uword g = 0; g < ndatekid; g++) {
 	S(k) += strength1(g);
-	double ne = npack1(g) * ppp1(g) * strength1(g); 
+	double ne = npack1(g) * ppp1(g) * strength1(g);
+	
 	//--- compute total amount of drug purchased on date Tk. 
+	// Rcout << "g=" << g << std::endl;
+	// Rcout << "T(k)=" << T(k) << std::endl;
+	// Rcout << "dates1(g)=" << dates1(g) << std::endl;
+	// Rcout << "strength1(g)=" << strength1(g) << std::endl;
+	// Rcout << "npack1(g)=" << npack1(g) << std::endl;
+	// Rcout << "ppp1(g)=" << ppp1(g) << std::endl;      
+	// Rcout << "D(k)=" << D(k) << std::endl;      
 	D(k) += ne;
+	// Rcout << "D(k)=" << D(k) << std::endl;
+	// Rcout << "-------------------" << std::endl;
 	// n(,) is the matrix which contains the total amount of smallest units:
 	// one row for each date
 	// one column for each drug strength
@@ -123,7 +143,6 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  }
 	}
       }
-      // Rcout << "0c" << std::endl;      
       if (!collapse)
 	c(k) = ndatekid;
       S(k) = S(k) / (double) ndatekid;
@@ -144,8 +163,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       nk(k) = sum(n.row(k));
       
       // check if there is overlap (if the current period reaches the next)
-      if (nk(k) > H(k) && k < K-1)
-	u(k) = 1;
+      if (nk(k) > H(k) && k < K-1) u(k) = 1;
       // Rcout << "or here" << std::endl;
       // identify the nearest drug strength that does not exceed the first preliminary average strength
       for (uword j = 0; j < J; j++) {
@@ -200,56 +218,78 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       
       // Final dose formula
       if (k>0){
-	X(k) = (1-u(k-1)) * ddef(jk(k)) + 
-	  u(k-1)*w(k-1)*((1-vmax)*(1-vmin)*round(M(k) / (double) dmin(jk(k))) * dmin(jk(k)) + vmax*dmax(jk(k)) + vmin*dmin(jk(k))) +
-	  (u(k-1)*(1-w(k-1)))*(vmax*dmax(jk(k)) + vmin*dmin(jk(k)) + (1-vmax)*(1-vmin)*ddef(jk(k)));
+	if (u(k-1)==0){ // cannot reach
+	  X(k) = ddef(jk(k));
+	}else{// u(k-1)=1 can reach
+	  X(k)= w(k-1)*((1-vmax)*(1-vmin)*round(M(k) / (double) dmin(jk(k))) * dmin(jk(k)) + vmax*dmax(jk(k)) + vmin*dmin(jk(k))) +
+	  (1-w(k-1))*(vmax*dmax(jk(k)) + vmin*dmin(jk(k)) + (1-vmax)*(1-vmin)*ddef(jk(k)));
+	}
       }else{
 	X(k)=ddef(jk(k));
       }
 
       // compute leftover dosis
       if (k > 0)
-	R(k) = std::max(0.0, u(k-1) * (D(k-1) + R(k-1) - X(k-1)*(Enum(k-1) - T(k-1) - DH(k-1))));
-      if (R(k) > maxdepot) 
-	R(k) = maxdepot;
+	R(k) = std::max(0.0, u(k-1) * (D(k-1) + R(k-1) - X(k-1)*(EndExposure(k-1) - T(k-1) - DH(k-1))));
+      else
+	R(k) = 0.0; 
+      if (R(k) > maxdepot) R(k) = maxdepot;
 
       // compute the end dates of exposure
-      if (k > 0){      
-	Enum(k) = (1-u(k))*(1-u(k-1)) * (T(k) - 1 + round((D(k) + R(k)) / (double) ddef(jk(k)))) + 
-	  (1 - (1-u(k))*(1-u(k-1))) * (T(k) - 1 + round((D(k) + R(k)) / (double) X(k)));
+      // Rcout << "_________" << k << "________" << std::endl;
+      // if (k>0) Rcout << "u(k-1)" << u(k-1) << std::endl;
+      // Rcout << "date T(k):" << T(k) << std::endl;
+      // Rcout << "dosis D(k)=" << D(k) << std::endl;
+      // Rcout << "rest R(k)=" << R(k) << std::endl;
+      // Rcout << "X(k)=" << X(k) << std::endl;
+      
+      // Rcout << "floor=" << floor((D(k) + R(k)) / (double) X(k)) << std::endl;
+      // Rcout << "T(k+1)" << T(k+1) << std::endl;
+      // Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
+      if (k > 0){ 
+	if (u(k)==0){ // supply at T(k) does not reach T(k+1)
+	  EndExposure(k) = (1-u(k-1)) * (T(k) - 1.0 + std::max(1.0,floor((D(k) + R(k)) / (double) ddef(jk(k)))));
+	}else{ // u(k)==1 supply at T(k) can reach T(k+1)
+	  EndExposure(k)=(1-u(k-1)) * (T(k) - 1.0 + std::max(1.0,floor((D(k) + R(k)) / (double) X(k))));
+	}
       }else{
-	Enum(k) = (T(k) - 1 + round((D(k) + R(k)) / (double) ddef(jk(k))));
+	//case k=0
+	// Rcout << "floor=" << floor((D(k) + R(k)) / (double) X(k)) << std::endl;
+	EndExposure(k) = (T(k) - 1.0 + floor((D(k) + R(k)) / (double) ddef(jk(k))));
       }
-    
-      if (k < K-1 && Enum(k) > T(k+1)-1)
-	Enum(k) = T(k+1)-1;
+      // Rcout << "T(k)=" << T(k) << std::endl;
+      // Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
+      // Rcout << "floorEndExposure(k)" << floor(EndExposure(k)) << std::endl;
+      if (k < K-1 && EndExposure(k) > T(k+1)-1)
+	EndExposure(k) = T(k+1)-1;
 
-      idout(k) = id(0); // ?
+      idout(k) = id(0); // set all id values
       
       // check if periods can be concatenated
       if (k > 0 && collapse) {
-	if (X(k-1) == X(k) && Enum(k-1) >= (T(k)-1)) { 
+	if (X(k-1) == X(k) && EndExposure(k-1) >= (T(k)-1)) { 
 	  // if doses are the same, and gap is smaller than 1 day
 	  // then keep the last.  
 	  T(k) = T(k-1); // set start date to start date of previous period
 	  // rows with yk = 0 will be removed 
 	  yk(k-1) = 0; 
-	} else if (X(k-1) != X(k) && Enum(k-1) >= (T(k)-1)) { // check if doses are not the same, gap smaller than 1 day
-	  T(k) = std::max(T(k), Enum(k-1) + 1);
-	  Enum(k) = std::max(Enum(k), T(k) + 1);
+	} else if (X(k-1) != X(k) && EndExposure(k-1) >= (T(k)-1)) { // check if doses are not the same, gap smaller than 1 day
+	  T(k) = std::max(T(k), EndExposure(k-1) + 1);
+	  EndExposure(k) = std::max(EndExposure(k), T(k) + 1);
 	  // rows with yk = 1 will be kept
 	  yk(k-1) = 1; 
-	} else if (round(Enum(k-1)) < (T(k)-1)) { // gap is larger than 1 day
+	} else if (round(EndExposure(k-1)) < (T(k)-1)) { // gap is larger than 1 day
 	  // rows with yk = 2 will introduce a period with 0 exposure
 	  yk(k-1) = 2; 
 	}
-	ylength += yk(k-1); // this will define length of output data
+	ylength += yk(k-1); // this will define length of output data when collapsing
       }
     
       // B(k) = as<std::string>(formatDate(wrap(Date(T(k)))));
-      // E(k) = as<std::string>(formatDate(wrap(Date(Enum(k)))));
+      // E(k) = as<std::string>(formatDate(wrap(Date(EndExposure(k)))));
       B(k) = T(k);
-      E(k) = Enum(k);
+      // Rcout << "B(k)=" << B(k) << std::endl;
+      E(k) = EndExposure(k);
     } // end loop over unique prescription dates
   
     yk(K-1) = 1; 
@@ -260,27 +300,13 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr")     = idout,
 				       Rcpp::Named("X")      = X,
 				       Rcpp::Named("B")      = B,
-				       Rcpp::Named("E")      = E,
-				       Rcpp::Named("R")      = R,
-				       Rcpp::Named("D")      = D,
-				       Rcpp::Named("M")      = M,
-				       Rcpp::Named("A")      = S,
-				       Rcpp::Named("c")      = c,
-				       Rcpp::Named("jk")     = jk,
-				       Rcpp::Named("Sjk")    = Sjk,
-				       Rcpp::Named("H")      = H,
-				       Rcpp::Named("DH")     = DH,
-				       Rcpp::Named("nk")     = nk,
-				       Rcpp::Named("u")      = u,
-				       Rcpp::Named("w")      = w,
-				       Rcpp::Named("i0")     = i0,
-				       Rcpp::Named("yj")     = yk);
+				       Rcpp::Named("E")      = E);
+      // xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr")     = idout,Rcpp::Named("X")      = X,Rcpp::Named("B")      = B,Rcpp::Named("E")      = E,Rcpp::Named("R")      = R,Rcpp::Named("D")      = D,Rcpp::Named("M")      = M,Rcpp::Named("A")      = S,Rcpp::Named("c")      = c,Rcpp::Named("jk")     = jk,Rcpp::Named("Sjk")    = Sjk,Rcpp::Named("H")      = H,Rcpp::Named("DH")     = DH,Rcpp::Named("nk")     = nk,Rcpp::Named("u")      = u,Rcpp::Named("w")      = w,Rcpp::Named("i0")     = i0,Rcpp::Named("yj")     = yk);
     } else {
       arma::vec id1(ylength,fill::zeros);
       // Rcout << " ylength "  << ylength << std::endl;
-      // id1+=id(0);
-      Rcpp::DateVector B1(ylength); 
-      Rcpp::DateVector E1(ylength); 
+      arma::vec B1(ylength); 
+      arma::vec E1(ylength); 
       arma::vec X1(ylength); 
       uword k1 = 0;
       // remove rows in continuous exposure periods with same exposure
@@ -291,7 +317,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	if (yk(k)==2){
 	  // create a row with zero exposure
 	  id1(k1) = id(0);
-	  B1(k1) = Enum(k)+1; 
+	  B1(k1) = EndExposure(k)+1; 
 	  E1(k1) = T(k+1)-1;
 	  X1(k1) = 0; 
 	  k1 += 1;
@@ -305,18 +331,12 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  k1 += 1;
 	}
       }
-      // to speed up we would like to return a matrix instead of a data fram
+      // to speed up we would like to return a matrix instead of a data frame
       // but B1 and E1 are date format
-      // arma:mat xxxi = arma::zeros(ylength,4);
-      // xxxi.col(0) = arma::conv_to<arma::vec>::from(id1);
-      // xxxi.col(1)=arma::conv_to<arma::vec>::from(X1);
-      // xxxi.col(2)=B1;
-      // xxxi.col(3)=E1;
-      // xxx[i] = xxxi;
       xxx[i] = Rcpp::DataFrame::create(Rcpp::Named("pnr") = id1,
-       Rcpp::Named("X") = X1,
-       Rcpp::Named("B") = B1,
-       Rcpp::Named("E") = E1);
+				       Rcpp::Named("X") = X1,
+				       Rcpp::Named("B") = B1,
+				       Rcpp::Named("E") = E1);
     }
   }
   // Rcout << "after loop \n"<< std::endl;  

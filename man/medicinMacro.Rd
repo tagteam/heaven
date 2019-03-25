@@ -4,16 +4,37 @@
 \alias{medicinMacro}
 \title{Medicin macro to estimate prescription lengths and averages}
 \usage{
-medicinMacro(drugs, treatments = NULL, drugdb, admdb,
-  drugdb.datevar = "eksd", admdb.datevars = c("inddto", "uddto"),
-  id = "pnr", strength.var = "strnum", packsize.var = "packsize",
+medicinMacro(drugs, drugdb, admdb, drugdb.datevar = "eksd",
+  admdb.datevars = c("inddto", "uddto"), id = "pnr",
+  strength.var = "strnum", packsize.var = "packsize",
   apk.var = "apk", collapse = TRUE, splitting = FALSE)
 }
 \arguments{
-\item{drugs}{List of drugs (see examples).}
-
-\item{treatments}{If specified, calcations will only be performed
-for these treatments.}
+\item{drugs}{A named list of drugs. Each element of this list should be a list
+with the following elements:
+\itemize{
+  \item{atc}{A vector of ATC codes which should match the components of the drug exactly.}
+  \item{maxdepot} The maximum total dose that a single patient can possibly stack.
+  \item{period} A vector of dates to limit the period in which to estimate the daily dose.
+  \item{prescriptionwindow} Default is 2.
+  \item{doses}
+   A named list with the elements \code{value}, \code{min}, \code{max} and \code{def}.
+   Here \code{value} is a vector of strengths of one
+   unit (e.g., pill) of the drug. The vector should have one such strength for
+   each of the different packages that occur in the data.
+\code{min} is a vector of the same length as \code{value} where each element is the
+assumed minimum total dosis that a patient can consume on one day. For example, if the
+value is 50 mg and the pills of this strength can be cut (in halves) the minimum
+total dosis is 25 mg.
+\code{max} is a vector of the same length as \code{value} where each element is the
+assumed maximum total dosis that a patient can consume on one day. For example, if the
+value is 50 mg and one can at most consume 4 pills a day the maximum
+total dosis is 200 mg.
+\code{def} is a vector of the same length as \code{value} where each element is the
+assumed default dosis that an average patient would consume on one day. For example,
+if the value is 50 mg and usually a patient would consume 2 pills the default is 100 mg.
+}
+(see examples).}
 
 \item{drugdb}{data.table with (subset of) medical drugs registry}
 
@@ -70,7 +91,8 @@ drug2=list(atc=c("C01CA01","C01AA05"),
                       min = c(100, 200, 250,750),
                       max = c(300, 800, 1000,750),
                       def = c(200, 400, 500,750)))
-a <- medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
+x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
+x$drug1
 }
 \author{
 Helene Charlotte Rytgaard, Anders Munch and Thomas Alexander Gerds based
