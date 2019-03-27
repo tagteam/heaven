@@ -36,13 +36,8 @@
 ##'                          min = c(100, 200, 250),
 ##'                          max = c(300, 800, 1000),
 ##'                          def = c(200, 400, 500))
-##' d
 ##' maxdepot(d) <- 4000
 ##' pwindow(d) <- 2
-##' period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
-##' system.time(pd <- process(d,out_data=TRUE))
-##' x=pd$drug1[pd$drug1$X!=0,]
-##' for(i in unique(da$pnr)){try(print(cbind(w[w$pnr==i,],x[x$id==i,])))}
 ##' 
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
