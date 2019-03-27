@@ -4,40 +4,73 @@
 \alias{findCondition}
 \title{Find conditions in registry data}
 \usage{
-findCondition(data, id = "pnr", vars, keep, conditions,
-  match = "contain", replace = NULL, combine = "long")
+findCondition(data, vars, keep, conditions, match="contain",cond="cond")
 }
 \arguments{
 \item{data}{Data in which to search for conditions}
 
-\item{vars}{Name(s) of variable(s) in which to search}
+\item{vars}{Name(s) of variable(s) in which to search.}
 
-\item{keep}{a character vector of the columns in Data.table to keep in output}
+\item{keep}{a character vector of the columns in Data.table to keep in
+output}
 
 \item{conditions}{A named list of (vectors of) search strings. See examples.}
 
-\item{match}{A variable to tell how to use the character vectors: "exact"=exactly matches the search string, "contains"=contains the search string, "starts"=Starts with the search string, "end"=Ends with the search string}
-
-\item{replace}{if replace=NULL then the set of variables corresponding to the names "conditions" will be inter 0/1 indicating whether the condition was met.  If replace is the name of a variable in Data, then that variable will be in the output replacing "1".}
+\item{match}{A variable to tell how to use the character vectors:
+"exact"=exactly matches the search string, "contains"=contains the search
+string, "starts"=Starts with the search string, "end"=Ends with the search
+string}
 }
 \value{
-A data table that includes the "keep-variables" and a set of ivariables corresponding to the names of the vectors in the list.  For each record these variables takes on values 0/1 when the condition is not-met/met OR NA/value-of-Replace-variable if replace is NULL/name-of-variable
+A data table that includes the "keep-variables" and a variable "cond" which
+identifies the condition searched for
 }
 \description{
-Find conditions
+This functions is useful for the very common task of selecting cases based 
+on a code which has complete or partial match to a vector of character vari-
+ables.
+
+The function is designed to search a group of variables (character) for 
+multiple conditions defined in a list of named character vectors. The func-
+tion will produce a data.table with selected variables for cases where a
+match is found.
+
+See examples for common use of the output
 }
 \details{
 Find conditions
+
+Find conditions
 }
 \examples{
-\dontrun{
-library(data.table)
 library(heaven)
-d=simPrescriptionData(10000)
-findCondition(data=d,vars="atc",conditions=list(drug1=c("N07","A12"),drug2=c("R03","R05")),match="start")
-findCondition(data=d,vars="atc",conditions=list(drug1=c("N07","A12"),drug2=c("R03","R05")),match="start",combine="wide")
-}
+library(data.table)
+opr <- data.table(
+  pnr=1:100,opr=paste0(rep(c('A','B'),50),seq(0,100,10)),
+  oprtil=paste0(rep(c('A','C'),50),seq(0,100,10)),
+  odto=101:200
+)
+search <- list(Cond1=c('A1','A2'),Cond2=c('B10','B40','B5'),
+Cond3=c('A1','C20','B2'))
+
+out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
+conditions=search,match="start",cond="cond")
+### And how to use the result:
+# Find first occurence of each condition and then use "dcast" to create
+# a data.table with vectors corresponding to each condition.
+test <- out[,list(min=min(odto)),by=c("pnr","cond")]
+# provide a list of variables with one value each
+test2 <- dcast(pnr~cond,data=test,value.var="min")
+test2 # A datatable with first dates of each condition for each pnr, but only 
+      # for pnr with at least one condition
+# Define a condition as present when before a certain date
+dates <- data.table (pnr=1:100,basedate=sample(0:200,size=100,replace=TRUE))       
+test3 <- merge(out,dates,by="pnr")
+test3[,before:=as.numeric(odto<=basedate)] # 1 when condition fulfilled
+test3[is.na(before),before:=0] # change NA to zero
+test4 <- dcast(pnr~cond,value.var="before",data=test3)
 }
 \author{
-Christian Torp-Pedersen  <ctp@&hst.aau.dk>, Thomas A. Gerds <tag@biostat.ku.dk>
+Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta
+tag@biostat.ku.dk>
 }

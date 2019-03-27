@@ -68,6 +68,22 @@ standardize.rate(x=list(c("e1","rt1")),
 standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
                  age="agegroups",exposure="sex",data=d,by="year")
 
+# more than 2 exposures
+d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
+D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
+D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
+D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
+standardize.rate(x=list(c("e1","rt1")),
+                 age="agegroups",exposure="groups",data=D,standardize.to="mean")
+}
+\references{
+Michael P Fay. Approximate confidence intervals for rate ratios from
+directly standardized rates with sparse data. Communications in Statistics-
+Theory and Methods, 28(9):2141--2160, 1999.
+
+Niels Keiding, David Clayton, et al. Standardization and control for
+confounding in observational studies: a historical perspective. Statistical
+Science, 29(4):529--558, 2014.
 }
 \seealso{
 standardize.prodlim standardize.proportion epitools::ageadjust.direct
