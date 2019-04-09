@@ -59,7 +59,7 @@ simAdmissionData <- function(n,
         ## out <- data.table::rbindlist(lapply(1:n,function(i){
         M = sample(1:m,size=1)
         ind <- startDate + floor(runif(M,0,20*365.25))
-        udd <- pmin(ind + floor(runif(M,0,45)), floor(startDate + 20*365.25))
+        udd <- pmin(ind + floor(runif(M,0,45)), startDate + 20*365.25)
         pattype <- sample(1:3,size=1,replace=TRUE)
         indexdate <- startDate+floor(runif(M,0,20*365.25))
         dat.i = data.table::data.table(pnr=i,inddto = ind,uddto  = udd,diag = sample(diagnoses,size=M,replace = TRUE),indexdate,pattype)

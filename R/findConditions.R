@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Mar 11 2019 (10:30) 
 ## Version: 
-## Last-Updated: Mar 25
-##           By: CTP
-##     Update #: 13
+## Last-Updated: Apr  9 2019 (16:51) 
+##           By: Thomas Alexander Gerds
+##     Update #: 14
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -56,7 +56,7 @@
 #' Cond3=c('A1','C20','B2'))
 #'
 #' out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
-#' conditions=search,match="start",cond="cond")
+#' conditions=search,match="start",cond="x")
 #' ### And how to use the result:
 #' # Find first occurence of each condition and then use "dcast" to create
 #' # a data.table with vectors corresponding to each condition.
@@ -74,7 +74,12 @@
 #' @export
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta
 #' tag@@biostat.ku.dk>
-findCondition <- function(data, vars, keep, conditions, match="contain",cond="cond"){
+findCondition <- function(data,
+                          vars,
+                          keep,
+                          conditions,
+                          match="contain",
+                          variable.name="variable"){
     match <-match.arg(match,c("exact","contains","start"))
     if (!is.character(vars) | !is.character(keep)) stop ("Error -  vars or keep not character")  
     if (!class(conditions)=="list") stop ("Error - Conditions not a list")
@@ -82,7 +87,7 @@ findCondition <- function(data, vars, keep, conditions, match="contain",cond="co
     setDT(data)
     data <-copy(data)
     for (variable in unique(c(vars,keep))){
-      if (!variable %in% names(data)) stop(paste0("Error - ",variable," not in data to be analysed"))
+        if (!variable %in% names(data)) stop(paste0("Error - ",variable," not in data to be analysed"))
     }
     out <- NULL
     for (i in 1:length(conditions)){
@@ -101,9 +106,9 @@ findCondition <- function(data, vars, keep, conditions, match="contain",cond="co
             out <- data[found]
             out[,cond:=name]
         } else{
-          temp <- data[found]
-          temp[,cond:=name]
-          out <- rbindlist(list(out,temp))
+            temp <- data[found]
+            temp[,cond:=name]
+            out <- rbindlist(list(out,temp))
         }
     }
     out <- out[,c("cond",keep),with=FALSE]

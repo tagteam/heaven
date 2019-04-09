@@ -39,8 +39,9 @@ and some Wald confidence interval (also on log-scale) for comparison purpose.
 }
 \examples{
 library(riskRegression)
+library(data.table)
 set.seed(84)
-n=160
+ n=160
 d <- data.table(e1=rpois(n,lambda=9),
                 rt1=rpois(n,lambda=1880),
                 e2=rpois(n,lambda=123),

@@ -5,13 +5,12 @@
 \title{wrapper for medicin macro}
 \usage{
 xrecepter(drug, adm, atc, npre, dose, min, max, def, maxdepot, period,
-  name, user, server = "doob", sas = "/usr/local/bin/sas ",
+  name, user, server = "doob", sas.program = "/usr/local/bin/sas ",
+  sas.switches, sas.runner,
   macro = "~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
-  proFile = "/tmp/med-macro-call.sas",
-  drugFile = "/tmp/med-macro-drug.csv",
-  admFile = "/tmp/med-macro-adm.csv",
-  outFile = "/tmp/med-macro-out.csv", logfile = "/tmp/med-macro.log",
-  lstfile = "/tmp/med-macro.lst")
+  proFile = "med-macro-call.sas", drugFile = "med-macro-drug.csv",
+  admFile = "med-macro-adm.csv", outFile = "med-macro-out.csv",
+  logfile = "med-macro.log", lstfile = "med-macro.lst")
 }
 \arguments{
 \item{drug}{drug data}
@@ -22,7 +21,11 @@ xrecepter(drug, adm, atc, npre, dose, min, max, def, maxdepot, period,
 
 \item{name}{name of drug}
 
-\item{sas}{path to sas program}
+\item{sas.program}{path to sas program}
+
+\item{sas.switches}{On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
+
+\item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
 
 \item{macro}{path to sas macro}
 
@@ -44,16 +47,19 @@ wrapper for medicin macro
 }
 \examples{
 library(heaven)
+\dontrun{
 ppi=read.table("~/research/SoftWare/heaven/data/PPI.csv",sep=";",header=TRUE)
 adm=read.table("~/research/SoftWare/heaven/data/admData.csv",sep=";",header=TRUE)
 u=medicinMacro(drug=ppi,adm=adm,atc="A02BC02",name="omeprazol",npre=5,dose=c(10, 20, 40, 40),min=c(10, 20, 40, 40),max=c(20, 40, 60, 80),def=c(10, 20, 40, 40),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),sas="/usr/local/bin/sas",server="doob",user="grb615")
 v=medicinMacro(drug=ppi,adm=adm,atc="A02BC02",name="omeprazol",npre=5,dose=c(10, 20, 40, 40),min=c(10, 20, 40, 40),max=c(20, 40, 60, 80),def=c(20, 40, 60, 10),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),sas="/usr/local/bin/sas",server="doob",user="grb615")
-
 set.seed(05021992)
 N=100
 da=heaven:::simPrescriptionData(N)
 a=heaven:::simAdmissionData(N)
-system.time(w <- medicinMacro(drug=da,adm=a,atc="A07",name="drug1",npre=5,dose=c(200, 400, 500, 500),min=c(100, 200, 250, 250),max=c(300, 800, 1000, 1000),def=c(200, 400,500,500),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),sas="/usr/local/bin/sas",server="doob",user="grb615"))
+system.time(w <- medicinMacro(drug=da,adm=a,atc="A07",
+name="drug1",npre=5,dose=c(200, 400, 500, 500),
+min=c(100, 200, 250, 250),max=c(300, 800, 1000, 1000),def=c(200, 400,500,500),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),
+sas.program="/usr/local/bin/sas",server="doob",user="grb615"))
 
 library(heaven)
 d=dpp()
@@ -65,13 +71,9 @@ drug(d, "drug1") <- pack(c(200, 400, 500),
                          min = c(100, 200, 250),
                          max = c(300, 800, 1000),
                          def = c(200, 400, 500))
-d
 maxdepot(d) <- 4000
 pwindow(d) <- 2
-period(d) <- as.Date(c("1997-01-01", "2012-12-31"))
-system.time(pd <- process(d,out_data=TRUE))
-x=pd$drug1[pd$drug1$X!=0,]
-for(i in unique(da$pnr)){try(print(cbind(w[w$pnr==i,],x[x$id==i,])))}
+} 
 
 }
 \author{

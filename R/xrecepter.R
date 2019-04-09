@@ -6,7 +6,9 @@
 ##' @param adm admission data
 ##' @param atc atc kode specifying drug of interest
 ##' @param name name of drug
-##' @param sas path to sas program
+##' @param sas.program path to sas program
+##' @param sas.switches On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}
+##' @param sas.runner How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.
 ##' @param macro path to sas macro
 ##' @param proFile path to pro
 ##' @param drugFile path to drug
@@ -15,16 +17,19 @@
 ##' @param logfile path to log
 ##' @examples
 ##' library(heaven)
+##' \dontrun{
 ##' ppi=read.table("~/research/SoftWare/heaven/data/PPI.csv",sep=";",header=TRUE)
 ##' adm=read.table("~/research/SoftWare/heaven/data/admData.csv",sep=";",header=TRUE)
 ##' u=medicinMacro(drug=ppi,adm=adm,atc="A02BC02",name="omeprazol",npre=5,dose=c(10, 20, 40, 40),min=c(10, 20, 40, 40),max=c(20, 40, 60, 80),def=c(10, 20, 40, 40),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),sas="/usr/local/bin/sas",server="doob",user="grb615")
 ##' v=medicinMacro(drug=ppi,adm=adm,atc="A02BC02",name="omeprazol",npre=5,dose=c(10, 20, 40, 40),min=c(10, 20, 40, 40),max=c(20, 40, 60, 80),def=c(20, 40, 60, 10),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),sas="/usr/local/bin/sas",server="doob",user="grb615")
-##'
 ##' set.seed(05021992)
 ##' N=100
 ##' da=heaven:::simPrescriptionData(N)
 ##' a=heaven:::simAdmissionData(N)
-##' system.time(w <- medicinMacro(drug=da,adm=a,atc="A07",name="drug1",npre=5,dose=c(200, 400, 500, 500),min=c(100, 200, 250, 250),max=c(300, 800, 1000, 1000),def=c(200, 400,500,500),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),sas="/usr/local/bin/sas",server="doob",user="grb615"))
+##' system.time(w <- medicinMacro(drug=da,adm=a,atc="A07",
+##' name="drug1",npre=5,dose=c(200, 400, 500, 500),
+##' min=c(100, 200, 250, 250),max=c(300, 800, 1000, 1000),def=c(200, 400,500,500),maxdepot=4000,period=c("'01jan1997'd","'31dec2012'd"),
+##' sas.program="/usr/local/bin/sas",server="doob",user="grb615"))
 ##'
 ##' library(heaven)
 ##' d=dpp()
@@ -38,6 +43,7 @@
 ##'                          def = c(200, 400, 500))
 ##' maxdepot(d) <- 4000
 ##' pwindow(d) <- 2
+##' } 
 ##' 
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
@@ -54,14 +60,53 @@ xrecepter <- function(drug,
                       name,
                       user,
                       server="doob",
-                      sas="/usr/local/bin/sas ",
+                      sas.program="/usr/local/bin/sas ",
+                      sas.switches,
+                      sas.runner,
                       macro="~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
-                      proFile="/tmp/med-macro-call.sas",
-                      drugFile="/tmp/med-macro-drug.csv",
-                      admFile="/tmp/med-macro-adm.csv",
-                      outFile="/tmp/med-macro-out.csv",
-                      logfile="/tmp/med-macro.log",
-                      lstfile="/tmp/med-macro.lst"){
+                      proFile="med-macro-call.sas",
+                      drugFile="med-macro-drug.csv",
+                      admFile="med-macro-adm.csv",
+                      outFile="med-macro-out.csv",
+                      logfile="med-macro.log",
+                      lstfile="med-macro.lst"){
+
+    .SD = NULL
+    date.vars <- tolower(date.vars)
+    on.exit({
+        if (!save.tmp) {
+            unlink("tmp",force=TRUE,recursive=TRUE)
+            for (file in files[!files == outfile]) {
+                if (file.exists(file)) file.remove(file)
+            }
+            if (length(savefile) == 0) if (file.exists(outfile)) file.remove(outfile)
+        }
+        setwd(olddir)
+    })
+    if (.Platform$OS.type == "unix") {
+        if (missing(sas.program)) {
+            sas.program <- "sas"
+        }
+        if (missing(sas.switches)) {
+            sas.switches <- ""
+        }
+        if (missing(sas.runner)) {
+            sas.runner <- "system"
+        }
+    }
+    else {
+        if (missing(sas.program)) {
+            sas.program <- "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
+        }
+        if (missing(sas.switches)) {
+            sas.switches <- "-batch -nosplash -noenhancededitor -sysin "
+        }
+        if (missing(sas.runner)) {
+            sas.runner <- "shell"
+        }
+    }
+
+    
 
     Prog <- path.expand(proFile)
     Out <- path.expand(outFile)
@@ -127,7 +172,7 @@ xrecepter <- function(drug,
     ## secure copy to server
     system(paste0("scp ", drugFile," ",user,"@",server,":",drugFile))
     system(paste0("scp ", admFile," ",user,"@",server,":",admFile))
-    progstring <- paste0("ssh -Y ",user,"@",server," ",sas," -log ",logfile," -print ",lstfile," ",Prog)
+    progstring <- paste0("ssh -Y ",user,"@",server," ",sas.program," -log ",logfile," -print ",lstfile," ",Prog)
     print(progstring)
     system(paste0("scp ", Prog," ",user,"@",server,":",Prog))
     status <- system(progstring)

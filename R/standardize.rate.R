@@ -31,6 +31,7 @@
 ##' @seealso standardize.prodlim standardize.proportion epitools::ageadjust.direct
 ##' @examples
 ##' library(riskRegression)
+##' library(data.table)
 ##' set.seed(84)
 ##' n=160
 ##' d <- data.table(e1=rpois(n,lambda=9),
@@ -52,13 +53,15 @@
 ##' standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
 ##'                  age="agegroups",exposure="sex",data=d,by="year")
 ##'
-##' # more than 2 exposures
+##' # more than 2 exposures does not yet work!! workaround is to subset ...
+##' \dontrun{
 ##' d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
 ##' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
 ##' D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 ##' D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 ##' standardize.rate(x=list(c("e1","rt1")),
 ##'                  age="agegroups",exposure="groups",data=D,standardize.to="mean")
+##' }
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 standardize.rate <- function(x,
@@ -168,8 +171,9 @@ standardize.rate <- function(x,
 ##' @seealso epitools::ageadjust.direct
 ##' @examples
 ##' library(riskRegression)
+##' library(data.table)
 ##' set.seed(84)
-##' n=160
+##'  n=160
 ##' d <- data.table(e1=rpois(n,lambda=9),
 ##'                 rt1=rpois(n,lambda=1880),
 ##'                 e2=rpois(n,lambda=123),

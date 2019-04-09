@@ -19,7 +19,9 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 \arguments{
 \item{filename}{The filename (with full path) of the SAS dataset to import.}
 
-\item{wd}{The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).}
+\item{wd}{The directory used to store temporarily created files (SAS script, log file, csv file). You need to
+have permission to write to this directory. The default value is the current working directory, see \code{getwd()},
+(which you may not have access to write to!).}
 
 \item{keep}{Specifies the variables (columns) to include from the dataset. Default is to include all variables.}
 

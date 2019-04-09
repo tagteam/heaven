@@ -178,7 +178,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
         wd <- getwd()
     }
     # cleaning up old temporary directories
-    olddirs <- list.files(wd,patter="heaven_tempSASfiles[a-z0-9]+")
+    olddirs <- list.files(wd,pattern="heaven_tempSASfiles[a-z0-9]+")
     for (old in olddirs){
         message("Cleaning up temporary directories from previous calls.")
         unlink(old,recursive=TRUE,force=TRUE)

@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: Jan 29 2019 (10:04) 
+## Last-Updated: Apr  9 2019 (16:42) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 225
+##     Update #: 235
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -167,38 +167,44 @@ dpp <- function (id = "pnr") {
 }
 
 ##' @export
-print.dpp <- function(x,...){
-    if ((lenwork <- length(x$data$studypop))>0){
+print.dpp <- function (x, ...) {
+    if ((lenwork <- length(x$data$studypop)) > 0) {
         cat("\nStudy population according to inclusion/exclusion criteria:\n",
-            "$data$studypop contains",
-            NROW(x$data$studypop)," subjects.")
-    }else{
-        cat("\nEmpty study population.\n",
-            ifelse(length(x$inclusion)>0,"r","You should define at least one inclusion criterion and then r"),
-            "un process(x) to change this.",sep="")
+            "$studypop contains", NROW(x$data$studypop), " subjects.")
     }
-    if ((len.rawdata <- length(x$rawdata))>0){
-        cat("\n\nChecked in ",len.rawdata," registers at $rawdata:\n",sep="")
-        lapply(1:len.rawdata,function(i){
-            cat(" + ",names(x$rawdata)[i],":",sep="")
-            if ((nn <- NROW(x$rawdata[[i]]$dt))==0)
-                cat(" ",x$rawdata[[i]]$file,", Variables:",sep="")
-            else
-                cat(" Rows: ",nn,", Variables:",sep="")
-            cat(" ",paste(x$rawdata[[i]]$variables,collapse=", "),"\n",sep="")
+    else {
+        cat("\nEmpty study population.\n", ifelse(length(x$inclusion) >
+            0, "r", "You should define at least one inclusion criterion and then r"),
+            "un process(x) to change this.\n", sep = "")
+    }
+    if ((len.rawdata <- length(x$rawdata)) > 0) {
+        cat("\nChecked in ", len.rawdata, " registers at $rawdata:\n",
+            sep = "")
+        lapply(1:len.rawdata, function(i) {
+            cat(" + ", names(x$rawdata)[i], ":", sep = "")
+            if ((nn <- NROW(x$rawdata[[i]]$dt)) == 0)
+                cat(" ", x$rawdata[[i]]$file, ", Variables:",
+                  sep = "")
+            else cat(" Rows: ", nn, ", Variables:", sep = "")
+            cat(" ", paste(x$rawdata[[i]]$variables, collapse = ", "),
+                "\n", sep = "")
         })
     }
-    ## show constructed data sets
-    if ((len.bsl <- length(x$data))>0){
-        cat("\nExtracted ",len.bsl,ifelse(len.bsl==1," dataset"," datasets"),":\n",sep="")
-        for (dd in names(x$data)){
+    if ((len.bsl <- length(x$data)) > 0) {
+        cat("\nExtracted ", len.bsl, ifelse(len.bsl == 1, " dataset",
+            " datasets"), ":\n", sep = "")
+        for (dd in names(x$data)) {
             cc <- colnames(x$data[[dd]])
-            cc <- if(length(cc)<5){
-                      paste(cc,collapse=", ")
-                  }else{
-                      paste0(paste(cc[1:4],collapse=", ")," ..., ",cc[[length(cc)]])
-                  }
-            cat(" + $data$",dd,": ",NROW(x$data[[dd]])," rows and ",NCOL(x$data[[dd]])," columns(",cc,")","\n",sep="")
+            cc <- if (length(cc) < 5) {
+                paste(cc, collapse = ", ")
+            }
+            else {
+                paste0(paste(cc[1:4], collapse = ", "), " ..., ",
+                  cc[[length(cc)]])
+            }
+            cat(" + $data$", dd, ": ", NROW(x$data[[dd]]), " rows and ",
+                NCOL(x$data[[dd]]), " columns(", cc, ")", "\n",
+                sep = "")
         }
     }
 }
@@ -293,139 +299,137 @@ importer <- function(data,
 ##' @param ... additional arguments
 ##' @author Thomas Alexander Gerds tag@@biostat.ku.dk
 ##' @export
-selector <- function(data,
-                     var,
-                     name,
-                     varnames,
-                     by = "pnr",
-                     search.term=NULL,
-                     search.expression=NULL,
-                     sortkey=NULL,
-                     period = NULL,
-                     backward = NULL,
-                     forward = NULL,
-                     select = "first",
-                     collect = NULL,
-                     ...){
-    .SD = .I = .N = pnr =NULL
+selector <- function(data, var, name, varnames, by = "pnr", search.term = NULL,
+    search.expression = NULL, sortkey = NULL, period = NULL,
+    backward = NULL, forward = NULL, select = "first", collect = NULL,
+    ...)
+{
+    .SD = .I = .N = pnr = NULL
     if (missing(data)) {
         stop(paste0(sample(c("Sorry", "Honey", "Sweety", "Attagirl",
-                             "Attaboy", "My dear"), size = 1), ", we cannot search thin air. Need data to work with."))
+            "Attaboy", "My dear"), size = 1), ", we cannot search thin air. Need data to work with."))
     }
     else {
         if (!is.character(data)) {
-            stop(paste0(sample(c("No, no,no. I told you that", "Looking at the help page shows that",
-                                 "Reading the docs would reveal that", "You forgot that",
-                                 "Nice try, but"), size = 1), " data has\nto be the name of a data set, i.e., a character."))
+            stop(paste0(sample(c("No, no,no. I told you that",
+                "Looking at the help page shows that", "Reading the docs would reveal that",
+                "You forgot that", "Nice try, but"), size = 1),
+                " data has\nto be the name of a data set, i.e., a character."))
         }
-
-        ## data = as.character(substitute(data))
     }
-    if (missing(name)) name <- var
-    if (missing(varnames)) varnames <- name
-    f <- function(data, var, by, search.term,search.expression, sortkey, period,
-                  backward, forward, select, name, collect, ..., environment) {
+    if (missing(name))
+        name <- var
+    if (missing(varnames))
+        varnames <- name
+    f <- function(data, var, by, search.term, search.expression,
+        sortkey, period, backward, forward, select, name, collect,
+        ..., environment) {
         d <- environment[[data]]
-        #try.d <- try(d <- eval(as.name(data), envir = environment))
-        if (length(d)==0){
+        if (length(d) == 0) {
             stop(paste0(sample(c("Very sorry, but", "This is messed up somehow,",
-                                 "Damn it,", "May I kindly remind you that", "Impossible to proceed, because"),
-                               size = 1), " data ", data, " has not been checked in yet.\n",
-                        ifelse(length(names(environment))>0,paste0("Checked in data are: ",paste(names(environment),collapse=", ")),"")))
+                "Damn it,", "May I kindly remind you that", "Impossible to proceed, because"),
+                size = 1), " data ", data, " has not been checked in yet.\n",
+                ifelse(length(names(environment)) > 0, paste0("Checked in data are: ",
+                  paste(names(environment), collapse = ", ")),
+                  "")))
         }
         if (NROW(d) > 0) {
             if (!missing(period) && !is.null(period)) {
                 if (is.null(period$stop)) {
-                    if (is.null(period$start)) {
-                    }
-                    else {
-                        d <- d[(d[[period$variable]] >= period$start)]
-                    }
+                  if (is.null(period$start)) {
+                  }
+                  else {
+                    d <- d[(d[[period$variable]] >= period$start)]
+                  }
                 }
                 else {
-                    if (is.null(period$start)) {
-                        d <- d[(d[[period$variable]] <= period$stop)]
-                    }
-                    else {
-                        d <- d[(d[[period$variable]] >= period$start) &
-                               (d[[period$variable]] <= period$stop)]
-                    }
+                  if (is.null(period$start)) {
+                    d <- d[(d[[period$variable]] <= period$stop)]
+                  }
+                  else {
+                    d <- d[(d[[period$variable]] >= period$start) &
+                      (d[[period$variable]] <= period$stop)]
+                  }
                 }
             }
             if (!missing(backward) && !is.null(backward)) {
                 if (is.null(backward$data)) {
-                    bd = "study"
+                  bd = "study"
                 }
                 bd = eval(as.name(backward$data))
                 if (!(by %in% names(bd))) {
-                    stop(paste0(sample(c("Oooh", "Uups", "Beginner mistake",
-                                         "No no no no no", "Try again"), size = 1),
-                                ", the variable ", by, " is not in reference data for backward search."))
+                  stop(paste0(sample(c("Oooh", "Uups", "Beginner mistake",
+                    "No no no no no", "Try again"), size = 1),
+                    ", the variable ", by, " is not in reference data for backward search."))
                 }
                 setkeyv(bd, by)
                 setkeyv(d, by)
                 if (backward$reference %in% names(d)) {
-                    setnames(bd, backward$reference, "canttouchthis")
-                    backward$reference <- "canttouchthis"
+                  setnames(bd, backward$reference, "canttouchthis")
+                  backward$reference <- "canttouchthis"
                 }
                 d <- bd[d, data.table::data.table(by, backward$reference)]
                 d <- d[d[[backward$reference]] - d[[period$variable]] >
-                       length]
+                  length]
             }
             if (NROW(d) > 0) {
                 if (!is.null(search.term)) {
-                    d <- d[grepl(search.term, d[[var]]), .SD,
-                           .SDcols = c(by, var, sortkey)]
+                  d <- d[grepl(search.term, d[[var]]), .SD, .SDcols = c(by,
+                    var, sortkey)]
                 }
                 if (!is.null(search.expression)) {
-                    d <- d[eval(search.expression), .SD,
-                           .SDcols = c(by, var, sortkey)]
+                  d <- d[eval(search.expression), .SD, .SDcols = c(by,
+                    var, sortkey)]
                 }
                 if (NROW(d) > 0) {
-                    d <- switch(select, "first" = {
-                        data.table::setorderv(d, c(by, sortkey), order = c(1, 1))
-                        d[d[, .I[1], by = c(by)]$V1, c(var, sortkey),
-                          with = FALSE]
-                        if (length(varnames) == 1)
-                            setnames(d, c(var,sortkey), paste0(varnames, c("", ".date")))
-                        else if (length(varnames) == length(c(var, sortkey)))
-                            setnames(d, c(var, sortkey), varnames)
-                    }, "last" = {
-                        data.table::setorderv(d, c(by, sortkey), order = c(1, -1))
-                        d[d[, .I[.N], by = c(by, sortkey)]$V1]
-                        if (length(varnames) == 1){
-                            setnames(d, c(var, sortkey), paste0(varnames, c("", ".date")))
-                        } else{
-                            if (length(varnames) == length(c(var, sortkey)))
-                                setnames(d, c(var, sortkey), varnames)
-                        }
-                    }, "atleast2diff" = {
-                        d[, newvariable = length(unique(var)), by = c(by)]
-                        setnames(d, "newvariable", varnames)
-                    }, "unique.pnr" = {
-                        unique(d[, data.table(pnr)])
-                    }, "expression" = {
-                        d <- d[,data.table(eval(collect),pnr)]
-                        setnames(d,unique(c(varnames,"pnr")))
-                        d
-                    }, {
-                        if (is.null(collect)) d
-                        else {
-                            d <- d[, unique(c(collect, "pnr")), with = FALSE]
-                            if (length(unique(c(varnames, "pnr"))) == length(names(d)))
-                                setnames(d,unique(c(varnames, "pnr")))
-                            d
-                        }
-                    })
+                  d <- switch(select, first = {
+                    data.table::setorderv(d, c(by, sortkey),
+                                          order = c(1, 1))
+                    d <- d[d[, .I[1], by = c(by)]$V1, c(by, var, sortkey),
+                      with = FALSE]
+                    if (length(varnames) == 1) setnames(d, c(var,
+                      sortkey), paste0(varnames, c("", ".date"))) else if (length(varnames) ==
+                      length(c(var, sortkey))) setnames(d, c(var,
+                      sortkey), varnames)
+                  }, last = {
+                    data.table::setorderv(d, c(by, sortkey),
+                      order = c(1, -1))
+                    d[d[, .I[.N], by = c(by, sortkey)]$V1,c(by,var,sortkey)]
+                    if (length(varnames) == 1) {
+                      setnames(d, c(var, sortkey), paste0(varnames,
+                        c("", ".date")))
+                    } else {
+                      if (length(varnames) == length(c(var, sortkey))) setnames(d,
+                        c(var, sortkey), varnames)
+                    }
+                  }, atleast2diff = {
+                    d[, newvariable = length(unique(var)), by = c(by)]
+                    setnames(d, "newvariable", varnames)
+                  }, unique.pnr = {
+                    unique(d[, data.table(pnr)])
+                  }, expression = {
+                    d <- d[, data.table(eval(collect), pnr)]
+                    setnames(d, unique(c(varnames, "pnr")))
+                    d
+                  }, {
+                    if (is.null(collect)) d else {
+                      d <- d[, unique(c(collect, "pnr")), with = FALSE]
+                      if (length(unique(c(varnames, "pnr"))) ==
+                        length(names(d))) setnames(d, unique(c(varnames,
+                        "pnr")))
+                      d
+                    }
+                  })
                 }
             }
         }
         return(d)
     }
-    attr(f, "arguments") <- c(list(data = data, var = var, name = name, varnames=varnames, by = by,
-                                   search.term = search.term,search.expression = search.expression, sortkey = sortkey, period = period,
-                                   backward = backward, forward = forward, select = select,
-                                    collect = collect), list(...))
+    attr(f, "arguments") <- c(list(data = data, var = var, name = name,
+        varnames = varnames, by = by, search.term = search.term,
+        search.expression = search.expression, sortkey = sortkey,
+        period = period, backward = backward, forward = forward,
+        select = select, collect = collect), list(...))
     return(f)
 }
 
@@ -708,53 +712,47 @@ getRawdata <- function(x, id, n, ...){
 ##' @param restart string indicating which for which terms the processing should be restarted. set to \code{"all"} to restart everything.
 ##' @param ... not (yet used)
 ##' @export
-process <- function(x,
-                    n = Inf,
-                    fish = "studypop",
-                    verbose = TRUE,
-                    show.sas.code=FALSE,
-                    restart=FALSE,
-                    ...){
-pnr=NULL
-    ##--------------------------------------------------------------------
-    ## Step 0: check restart and discuss processing order
-    ##--------------------------------------------------------------------
+##'
+##' 
+process <- function (x, n = Inf, fish = "studypop", verbose = TRUE, show.sas.code = FALSE,
+                     restart = FALSE, ...)
+{
+    pnr = NULL
     restart <- tolower(restart)
-    if ("studypop" %in% restart) restart <- "all"
-    if (restart =="all" || "variables" %in% restart){
-        x$data <- list()
+    if ("studypop" %in% restart)
+        restart <- "all"
+    if (restart == "all" || "variables" %in% restart) {
+        x$data <- list(studypop=x$data$studypop)
     }
     len.variable <- length(x$variable)
-    if (len.variable>0){
-        vtargets <- sapply(x$variable,function(v)v$target)
-        vtype <- sapply(x$variable,function(v)v$type)
-        vrestart <- names(x$variabe)%in%restart
-        ## need to restart any data set that is built with rbind
-        restart <- c(restart, tolower(unique(vtargets[vrestart & vtype=="rbind"])))
+    if (len.variable > 0) {
+        vtargets <- sapply(x$variable, function(v) v$target)
+        vtype <- sapply(x$variable, function(v) v$type)
+        vrestart <- names(x$variabe) %in% restart
+        restart <- c(restart, tolower(unique(vtargets[vrestart &
+                                                      vtype == "rbind"])))
     }
-    for (r in restart){
-        if (tolower(r) %in% names(x$data)) x$data[[r]] <- NULL
+    for (r in restart) {
+        if (tolower(r) %in% names(x$data))
+            x$data[[r]] <- NULL
     }
-    ##--------------------------------------------------------------------
-    ## Step 1: apply inclusion criteria to define study
-    ##--------------------------------------------------------------------
     message("\n===============================================================",
-            "\nData preprocessing step 1a: inclusion",
-            "\n===============================================================")
+            "\nData preprocessing step 1a: inclusion", "\n===============================================================")
     xn <- x$info$n
-    if ((len.inclusion <- length(x$inclusion))>0){
-        ## check if already applied for this sample size
-        if ((xn<n) || restart=="all"){
+    if ((len.inclusion <- length(x$inclusion)) > 0) {
+        if ((xn < n) || restart == "all") {
             x$data$studypop <- NULL
             restart <- "all"
-            message("\nApplying inclusion ",ifelse(len.inclusion==1,
-                                                   paste0("criterion: ",names(x$inclusion),"\n"),
-                                                   paste0("criteria: ",
-                                                          paste(names(x$inclusion),collapse="\n-"))))
+            message("\nApplying inclusion ", ifelse(len.inclusion ==
+                                                    1, paste0("criterion: ", names(x$inclusion),
+                                                              "\n"), paste0("criteria: ", paste(names(x$inclusion),
+                                                                                                collapse = "\n-"))))
             for (i in 1:len.inclusion) {
                 Inc <- x$inclusion[[i]]
-                Inc.study <- do.call(Inc,c(attr(Inc, "arguments"), list(obs=n,environment = x$rawdata)))
-                if (is.null(Inc.study) ||NROW(Inc.study)==0) {
+                Inc.study <- do.call(Inc, c(attr(Inc, "arguments"),
+                                            list(obs = n, environment = x$rawdata)))
+                if (is.null(Inc.study) || NROW(Inc.study) ==
+                    0) {
                     message("Well, for some reason this search did not match any subject.\nPlease investigate the particularities of your inclusion criterion",
                             ifelse(length(x$inclusion) > 1, "a.", "on."))
                 }
@@ -765,39 +763,41 @@ pnr=NULL
                             " subjects.")
                 }
                 if (length(x$data$studypop) > 0)
-                    x$data$studypop <- rbindlist(list(x$data$studypop, Inc.study),fill=TRUE)
+                    x$data$studypop <- rbindlist(list(x$data$studypop,
+                                                      Inc.study), fill = TRUE)
                 else x$data$studypop <- Inc.study
             }
             x$info$n <- n
-        }else{
-            if (xn>n){
+        }
+        else {
+            if (xn > n) {
                 message(paste0("\nSubsetting previously extracted study population."))
                 x$data$studypop <- x$data$studypop[1:n]
                 x$info$n <- n
-            }else{
+            }
+            else {
                 message(paste0("\nUsing previously extracted study population.\nCheck in as restart=TRUE to change this."))
             }
         }
-    }else{
-        stop(paste0(sample(c("Oh my gosh, please focus.","Sorry, but are you new to this?","This is so obvious.","Sorry, no inclusion criterion, no data."),size=1),
-                    " ",
-                    "Need at least one inclusion criterion."))
     }
-    ##--------------------------------------------------------------------
-    ## Data processing step 1b: exclusion
-    ##--------------------------------------------------------------------
-    if ((len.exclusion <- length(x$exclusion))>0){
+    else {
+        stop(paste0(sample(c("Oh my gosh, please focus.", "Sorry, but are you new to this?",
+                             "This is so obvious.", "Sorry, no inclusion criterion, no data."),
+                           size = 1), " ", "Need at least one inclusion criterion."))
+    }
+    if ((len.exclusion <- length(x$exclusion)) > 0) {
         for (e in 1:len.exclusion) {
-            if (restart=="all" || "exclusion" %in% restart){
+            if (restart == "all" || "exclusion" %in% restart) {
                 message("\n===============================================================",
                         "\nData preprocessing step 1b: exclusion",
                         "\n===============================================================")
-                message("\nApplying exclusion ",ifelse(len.exclusion==1,
-                                                       paste0("criterion: ",names(x$exclusion),"\n"),
-                                                       paste0("criteria: ",
-                                                              paste(names(x$exclusion),collapse="\n-"))))
+                message("\nApplying exclusion ", ifelse(len.exclusion ==
+                                                        1, paste0("criterion: ", names(x$exclusion),
+                                                                  "\n"), paste0("criteria: ", paste(names(x$exclusion),
+                                                                                                    collapse = "\n-"))))
                 Ex <- x$exclusion[[e]]
-                Ex.study <- do.call(Ex, c(attr(Ex, "arguments"), list(obs=n,environment = x$rawdata)))
+                Ex.study <- do.call(Ex, c(attr(Ex, "arguments"),
+                                          list(obs = n, environment = x$rawdata)))
                 if (NROW(Ex.study) > 0) {
                     before.n <- NROW(x$data$studypop)
                     x$data$studypop <- x$data$studypop[!(pnr %in% Ex.study$pnr)]
@@ -813,55 +813,66 @@ pnr=NULL
             }
         }
     }
-    ##--------------------------------------------------------------------
-    ## Step 2: subset the other data sources
-    ##--------------------------------------------------------------------
-    setkey(x$data$studypop,pnr)
+
+    setkey(x$data$studypop, pnr)
     study.pnr <- x$data$studypop[["pnr"]]
-    where.id <- paste0("pnr in (",paste0("'",study.pnr,"'",collapse="\n"),")")
+    where.id <- paste0("pnr in (", paste0("'", study.pnr, "'",
+                                          collapse = "\n"), ")")
     message("\n===============================================================",
             "\nData preprocessing step 2: extracting raw data from registers",
             "\n===============================================================\n")
     rawdata.environment <- NULL
     redone <- NULL
-    for (r in (1:length(x$rawdata))){
+    for (r in (1:length(x$rawdata))) {
         d <- x$rawdata[[r]]
         name.d <- names(x$rawdata)[[r]]
-        ## check if data are already processed
-        if ((restart != "all") && !(name.d %in% restart) && d$done==fish){
-            if (xn>n){
-                message(paste0("Subsetting previously extracted data from ",name.d,"."))
-                if (is.infinite(fish)){
+        if ((restart != "all") && !(name.d %in% restart) && d$done == fish) {
+            if (xn > n) {
+                message(paste0("Subsetting previously extracted data from ",
+                               name.d, "."))
+                if (is.infinite(fish)) {
                     x$rawdata[[r]]$dt <- x$rawdata[[r]]$dt[x$data$studypop]
-                }else{
+                }
+                else {
                     x$rawdata[[r]]$dt <- x$rawdata[[r]]$dt[1:n]
                     x$rawdata[[r]]$done <- n
                 }
-                redone <- unique(c(redone,names(x$rawdata)[[r]]))
-            }else{
-                message(paste0("Using previously extracted data from ",name.d,"."))
+                redone <- unique(c(redone, names(x$rawdata)[[r]]))
             }
-        }else{
-            redone <- unique(c(redone,name.d))
-            if (fish=="studypop"||is.infinite(fish)){
-                if (verbose){
-                    message(paste0("Reading all data lines in ","",name.d," register corresponding to ",length(study.pnr),
-                                   " study subjects",
+            else {
+                message(paste0("Using previously extracted data from ",
+                               name.d, "."))
+            }
+        }
+        else {
+            redone <- unique(c(redone, name.d))
+            if (fish == "studypop" || is.infinite(fish)) {
+                if (verbose) {
+                    message(paste0("Reading all data lines in ",
+                                   "", name.d, " register corresponding to ",
+                                   length(study.pnr), " study subjects", "... be patient, this may take some time.\n"))
+                }
+                d <- getRawdata(d, id = x$info$id, n = Inf, show.sas.code = show.sas.code,
+                                where = where.id, ...)
+                if (verbose) {
+                    message("Read ", NROW(d$dt), " data lines from ",
+                            name.d, " register.")
+                }
+            }
+            else {
+                if (verbose) {
+                    message(paste0("Reading first ", fish, " data lines in ",
+                                   "", name.d, " register, and filter those corresponding to one of the ",
+                                   length(study.pnr), " study subjects ...\n",
                                    "... be patient, this may take some time.\n"))
                 }
-                d <- getRawdata(d,id=x$info$id,n=Inf,show.sas.code=show.sas.code,where=where.id,...)
-                if (verbose){
-                    message("Read ",NROW(d$dt)," data lines from ",name.d," register.")
-                }
-            }else{
-                if (verbose){
-                    message(paste0("Reading first ",fish," data lines in ","",name.d," register, and filter those corresponding to one of the ",length(study.pnr)," study subjects ...\n","... be patient, this may take some time.\n"))
-                }
-                d <- getRawdata(d,id=x$info$id,n=fish,show.sas.code=show.sas.code,...)
-                setkey(d$dt,pnr)
-                d$dt <- d$dt[x$data$studypop[,pnr]]
-                if (verbose){
-                    message("Found ",NROW(d$dt)," matching data lines in ",name.d," register.")
+                d <- getRawdata(d, id = x$info$id, n = fish,
+                                show.sas.code = show.sas.code, ...)
+                setkey(d$dt, pnr)
+                d$dt <- d$dt[x$data$studypop[, pnr]]
+                if (verbose) {
+                    message("Found ", NROW(d$dt), " matching data lines in ",
+                            name.d, " register.")
                 }
             }
             x$rawdata[[r]]$dt <- d$dt
@@ -870,83 +881,174 @@ pnr=NULL
         rawdata.environment[[r]] <- x$rawdata[[r]]$dt
         names(rawdata.environment)[[r]] <- names(x$rawdata)[[r]]
     }
-    # now adding the study population and the derived datasets
-    # to the rawdata.environment
-    rawdata.environment <- c(rawdata.environment,x$data)
-
-    ##--------------------------------------------------------------------
-    ## Step 3: derive variables for target datasets
-    ##--------------------------------------------------------------------
+    rawdata.environment <- c(rawdata.environment, x$data)
     message("\n===============================================================\n",
-            "Step 3: Processing variable instructions: ",
-            "\n===============================================================\n")
-    if (len.variable>0){
+            "Step 3: Processing variable instructions: ", "\n===============================================================\n")
+    if (len.variable > 0) {
         for (v in 1:len.variable) {
             V <- x$variable[[v]]
             Vname <- names(x$variable)[[v]]
-            ## only work on this variable when not already done earlier
-            ## or explicitely requested
-            if (V$done == FALSE ||
-                restart=="all" ||
-                V$target %in% restart ||
-                "variables" %in% tolower(restart) ||
-                tolower(Vname) %in% restart ||
-                any(V$sources %in% redone)){
-                ## processing variable Vname
-                if (Vname %in% names(x$data[[V$target]])){
-                    ## remove variable if this is indicated
-                    if (any(V$sources %in% redone) || tolower(Vname) %in% restart){
+            if (V$done == FALSE || restart == "all" || V$target %in%
+                restart || "variables" %in% tolower(restart) ||
+                tolower(Vname) %in% restart || any(V$sources %in%
+                                                   redone)) {
+                # reset existing elements
+                if (Vname %in% names(x$data[[V$target]])) {
+                    if (any(V$sources %in% redone) || "variables"%in%restart || tolower(Vname) %in%
+                        restart) {
                         x$data[[V$target]][[Vname]] <- NULL
-                        ## clean up
-                        if (match(paste0(Vname,".date"),names(x$data[[V$target]]),nomatch=0))
-                            x$data[[V$target]][[paste0(Vname,".date")]] <- NULL
-                        ## clean up some more
-                        if (NCOL(x$data[[V$target]])==1 && names(x$data[[V$target]])=="pnr")
+                        if (match(paste0(Vname, ".date"), names(x$data[[V$target]]),
+                                  nomatch = 0))
+                            x$data[[V$target]][[paste0(Vname, ".date")]] <- NULL
+                        if (NCOL(x$data[[V$target]]) == 1 && names(x$data[[V$target]]) ==
+                            "pnr")
                             x$data[[V$target]] <- NULL
-                    }else{
-                        stop("Variable ",Vname," exists in dataset ",V$target)
+                    }
+                    else {
+                        stop("Variable ", Vname, " exists in dataset ",
+                             V$target)
                     }
                 }
-                ## process variable
-                message(paste0(paste(V$sources,collapse=", ")," -> ",V$target,"$",Vname))
-                try.V <- try(new.V <- do.call(V$instructions,c(attr(V$instructions, "arguments"),list(environment = rawdata.environment))),
-                    silent=FALSE)
-                if ("try-error" %in% class(try.V)){
-                    message(paste0("Problems with processing variable ",Vname))
+                # announce operation
+                message(paste0(paste(V$sources, collapse = ", "),
+                               " -> ", V$target, "$", Vname))
+                # apply variable instructions
+                try.V <- try(new.V <- do.call(V$instructions,
+                                              c(attr(V$instructions, "arguments"), list(environment = rawdata.environment))),
+                             silent = FALSE)
+                if ("try-error" %in% class(try.V)) {
+                    message(paste0("Problems with processing variable ",
+                                   Vname))
                     new.V <- NULL
                 }
-                ## add variable to target
+                # add data to target
                 if (NROW(new.V) > 0) {
                     data.table::setkey(new.V, pnr)
-                    if (length(x$data[[V$target]])==0) {
-                        ## first variable in this target
+                    if (length(x$data[[V$target]]) == 0) {
+                        # this is first variable in target
                         x$data[[V$target]] <- new.V
-                        ## add the variable to target
-                    }else{
-                        switch(V$type,"merge"={
-                            x$data[[V$target]] <- merge(x$data[[V$target]], new.V, by = "pnr")
-                        },
-                        "join"={
+                    }
+                    else {
+                        ## browser(skipCalls=1L)
+                        switch(V$type, merge = {
+                            x$data[[V$target]] <- merge(x$data[[V$target]],
+                                                        new.V, by = "pnr")
+                        }, join = {
+                            orig.names <- names(x$data[[V$target]])
+                            new.names <- names(new.V)
                             x$data[[V$target]] <- new.V[x$data[[V$target]]]
-                        },
-                        "rbind"={
-                            x$data[[V$target]] <- rbindlist(list(x$data[[V$target]], new.V),fill = TRUE)
+                            setcolorder(x$data[[V$target]],union(orig.names,new.names))
+                        }, rbind = {
+                            x$data[[V$target]] <- rbindlist(list(x$data[[V$target]],
+                                                                 new.V), fill = TRUE)
                         })
-                        ## update target so that this variable can be used to construct further variables
                         rawdata.environment[[V$target]] <- x$data[[V$target]]
                     }
                 }
                 x$variable[[v]]$done <- TRUE
-            }else{
-                message("Variable ",Vname, " as processed previously.")
+            }
+            else {
+                message("Variable ", Vname, " as processed previously.")
             }
         }
-    }else{
-        cat("\nNo variables checked in yet. Do this via 'addvariable'.\n")
+    }
+    else {
+        cat("\nNo variables checked in yet. Do this via 'addVariable'.\n")
     }
     x
 }
 
+addDrug <- function(x,target,drug,...){
+    drug.match <- grep(drug,names(diseasecode),ignore.case=TRUE,value=TRUE)
+    atc <- paste0(diseasecode[drug.match][[1]],collapse="|")
+    addVariable(x,target=target,type="join") <- selector(data="lmdb",
+                                             var="atc",
+                                             name=drug,
+                                             sortkey="eksd",
+                                             search.term=atc,
+                                             select="first")
+    x
+}
+##' Add a comorbidity to an existing dpp object 
+##'
+##' Add a comorbidity to an existing dpp object 
+##' @title Add comorbidity
+##' @param x dpp object
+##' @param target name of dataset 
+##' @param como character string which should 
+##' @param ... not used
+##' @return updated object
+##' @seealso addSex, addAge, addVariable
+##' @examples # see help(dpp)
+##' @export 
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
+addComo <- function(x,target,como,...){
+    como.match <- grep(como,names(diseasecode),ignore.case=TRUE,value=TRUE)
+    if (length(como.match)==0) stop("Cannot find definition of comorbidity ",como," in list of known comorbidities.\nSee diseasecode for known comorbidities.")
+    icd <- paste0(diseasecode[como.match][[1]],collapse="|")
+    addVariable(x,target=target,type="join") <- selector(data="lpr",
+                                                         var="diag",
+                                                         name=como,
+                                                         sortkey="inddto",
+                                                         search.term=icd,
+                                                         select="first")
+    x
+}
+
+##' Add sex to an existing dpp object 
+##'
+##' Add sex to an existing dpp object 
+##' @title Add sex
+##' @param x dpp object
+##' @param target name of dataset 
+##' @param ... not used
+##' @return updated object
+##' @seealso addComo, addAge, addVariable
+##' @examples # see help(dpp)
+##' @export
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
+addSex <- function(x,target,...){
+    addVariable(x,target=target) <- selector(data="pop",
+                                             var="sex",
+                                             name="sex",
+                                             sortkey=NULL,
+                                             search.term=NULL,
+                                             select="expression",
+                                             collect=expression(factor(sex,levels=c(0,1),labels=c("Female","Male"))))
+    return(x)
+}
+
+##' Add age at index to an existing dpp object 
+##'
+##' Add at index age to an existing dpp object 
+##' @title Add age
+##' @param x dpp object
+##' @param target name of dataset
+##' @param ... not used
+##' @return updated object
+##' @seealso addComo, addSex, addVariable
+##' @examples # see help(dpp)
+##' @export
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
+addAge <- function(x,target,...){
+    ## birthday
+    addVariable(x,target=target) <- selector(data="pop",
+                                             var="fdato",
+                                             name="birthday",
+                                             sortkey=NULL,
+                                             search.term=NULL,
+                                             select="variable",
+                                             collect="fdato")
+    ## age at index
+    expr <- expression(round(as.numeric(index-birthday)/365.25,1))
+    addVariable(x,target=target) <- selector(data="afbsl",
+                                             var="age",
+                                             sortkey=NULL,
+                                             search.term=NULL,
+                                             select="expression",
+                                             collect=expr)
+    return(x)
+}
 
 ######################################################################
 ### dpp.R ends here
