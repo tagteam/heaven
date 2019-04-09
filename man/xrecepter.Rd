@@ -5,12 +5,9 @@
 \title{wrapper for medicin macro}
 \usage{
 xrecepter(drug, adm, atc, npre, dose, min, max, def, maxdepot, period,
-  name, user, server = "doob", sas.program = "/usr/local/bin/sas ",
+  name, user, server = "doob", wd, sas.program = "/usr/local/bin/sas ",
   sas.switches, sas.runner,
-  macro = "~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
-  proFile = "med-macro-call.sas", drugFile = "med-macro-drug.csv",
-  admFile = "med-macro-adm.csv", outFile = "med-macro-out.csv",
-  logfile = "med-macro.log", lstfile = "med-macro.lst")
+  macro = "~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas")
 }
 \arguments{
 \item{drug}{drug data}

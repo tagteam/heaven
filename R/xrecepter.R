@@ -60,18 +60,44 @@ xrecepter <- function(drug,
                       name,
                       user,
                       server="doob",
+                      wd,
                       sas.program="/usr/local/bin/sas ",
                       sas.switches,
                       sas.runner,
-                      macro="~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
-                      proFile="med-macro-call.sas",
-                      drugFile="med-macro-drug.csv",
-                      admFile="med-macro-adm.csv",
-                      outFile="med-macro-out.csv",
-                      logfile="med-macro.log",
-                      lstfile="med-macro.lst"){
+                      macro="~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas"){
 
     .SD = NULL
+    olddir <- getwd()
+    if (length(wd) == 0){
+        wd <- getwd()
+    }
+    # cleaning up old temporary directories
+    olddirs <- list.files(wd,pattern="heaven_tempSASfiles[a-z0-9]+")
+    for (old in olddirs){
+        message("Cleaning up temporary directories from previous calls.")
+        unlink(old,recursive=TRUE,force=TRUE)
+    }
+    tmpname <- basename(tempfile(pattern="heaven_tempSASfiles"))
+    tmpdir = paste0(wd,"/",tmpname)
+    if (verbose) message("Writing temporary SAS files (log, lst, input data, output data) to directory\n",tmpdir)
+    if (file.exists(tmpdir)) {
+        stop(paste("file.exists:",tmpdir))
+    }else{
+        try.val <- try(dir.create(tmpdir))
+        if (class(try.val)[[1]]=="try-error")
+            stop("Cannot create temporary directory.\nYou probably do not have permission to write to the directory: \n ",
+                 tmpdir, "\nTry to specify another directory with the argument \"wd\" or change the working directory.",
+                 sep = "")
+    }
+    setwd(tmpdir)
+    on.exit({
+        setwd(olddir)
+        if (!save.tmp) {
+            unlink(tmpdir,recursive=TRUE,force=TRUE)
+        }else{
+            cat("\nTemporary directory:\n ",tmpdir,"\ncan now be inspected -- and should be removed manually afterwards!\n")
+        }
+    })
     if (.Platform$OS.type == "unix") {
         if (missing(sas.program)) {
             sas.program <- "sas"
@@ -94,13 +120,17 @@ xrecepter <- function(drug,
             sas.runner <- "shell"
         }
     }
-
-
+    proFile="med-macro-call.sas"
+    drugFile="med-macro-drug.csv"
+    admFile="med-macro-adm.csv"
+    outFile="med-macro-out.csv"
+    logfile="med-macro.log"
+    lstfile="med-macro.lst"
     Prog <- path.expand(proFile)
     Out <- path.expand(outFile)
     if(file.exists(Out)) file.remove(Out)
-    write.table(drug,sep=";",file=drugFile,col.names=TRUE,row.names=FALSE,quote=FALSE)
-    write.table(adm,sep=";",file=admFile,col.names=TRUE,row.names=FALSE,quote=FALSE)
+    data.table::fwrite(drug,sep=";",file=drugFile)
+    data.table::fwrite(adm,sep=";",file=admFile)
     cat("libname mm '/tmp/';\n",file=Prog,append=FALSE,sep="")
     cat("%include \'",macro,"\';\n\n",file=Prog,append=TRUE,sep="")
     cat("proc import out=drug
@@ -123,7 +153,7 @@ xrecepter <- function(drug,
     proc transpose data=admdata out=uddato prefix=uddto;
       by pnr; var uddto;
     run;",file=Prog,append=TRUE,sep="")
-   cat("\n proc summary data = admdata nway;
+    cat("\n proc summary data = admdata nway;
     by pnr; var inddto; 
     output out = nadm n=max_indl; 
    run;",file=Prog,append=TRUE,sep="")
