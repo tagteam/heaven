@@ -75,12 +75,15 @@
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta
 #' tag@@biostat.ku.dk>
 findCondition <- function(data, vars, keep, conditions, match="contain",cond="cond"){
-    if (!match %in% c("exact","contains","start")) stop("Error - Incorrect choice for match variable")
-    if (!class(vars)=="character" | !class(keep)=="character") stop ("Error -  vars or keep not character")  
+    match <-match.arg(match,c("exact","contains","start"))
+    if (!is.character(vars) | !is.character(keep)) stop ("Error -  vars or keep not character")  
     if (!class(conditions)=="list") stop ("Error - Conditions not a list")
     requireNamespace("data.table")
     setDT(data)
     data <-copy(data)
+    for (variable in unique(c(vars,keep))){
+      if (!variable %in% names(data)) stop(paste0("Error - ",variable," not in data to be analysed"))
+    }
     out <- NULL
     for (i in 1:length(conditions)){
         cc <- conditions[[i]]
