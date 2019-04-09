@@ -15,7 +15,9 @@
 ##'                  sas.runner, skip.date.conversion=FALSE, verbose=TRUE,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
-##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to have permission to write to this directory. The default value is the working directory (which you may not have access to write to!).
+##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to
+##' have permission to write to this directory. The default value is the current working directory, see \code{getwd()},
+##' (which you may not have access to write to!).
 ##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. 
 ##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.
 ##' @param where Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).
@@ -158,46 +160,67 @@
 ##'
 ##' }
 ##' @export
-importSAS <- function(filename,
-                      wd = NULL,
-                      keep = NULL,
-                      drop = NULL,
-                      where = NULL,
-                      obs = NULL,
-                      filter = NULL,
-                      filter.by = NULL,
-                      filter.cond = c(1,1),
-                      set.hook = NULL,
-                      step.hook = NULL,
-                      pre.hook = NULL,
-                      post.hook = NULL,
-                      savefile = NULL,
-                      overwrite = TRUE,
-                      show.sas.code = TRUE,
-                      save.tmp = FALSE,
-                      content = FALSE,
-                      na.strings = ".",
-                      date.vars = NULL,
-                      character.vars="pnr",
-                      numeric.vars = NULL,
-                      sas.program,
-                      sas.switches,
-                      sas.runner,
-                      skip.date.conversion=FALSE,
-                      verbose=TRUE,
-                      ...){
+importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
+                        obs = NULL, filter = NULL, filter.by = NULL, filter.cond = c(1, 1),
+                        set.hook = NULL, step.hook = NULL, pre.hook = NULL,
+                        post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = TRUE,
+                        save.tmp = FALSE, content = FALSE, na.strings = ".", date.vars = NULL,
+                        character.vars = "pnr", numeric.vars = NULL, sas.program,
+                        sas.switches, sas.runner, skip.date.conversion = FALSE, verbose = TRUE,
+                        ...)
+{
     .SD = NULL
     keep <- tolower(keep)
     drop <- tolower(drop)
     date.vars <- tolower(date.vars)
-    on.exit({
-        if (!save.tmp) {
-            for (file in files[!files == outfile]) {
-                if (file.exists(file)) file.remove(file)
+    olddir <- getwd()
+    if (length(wd) == 0){
+        wd <- getwd()
+    }
+    # cleaning up old temporary directories
+    olddirs <- list.files(wd,patter="heaven_tempSASfiles[a-z0-9]+")
+    for (old in olddirs){
+        message("Cleaning up temporary directories from previous calls.")
+        unlink(old,recursive=TRUE,force=TRUE)
+    }
+    tmpname <- basename(tempfile(pattern="heaven_tempSASfiles"))
+    tmpdir = paste0(wd,"/",tmpname)
+    if (verbose) message("Writing temporary SAS files (log, lst, input data, output data) to directory\n",tmpdir)
+    if (file.exists(tmpdir)) {
+        stop(paste("file.exists:",tmpdir))
+    }else{
+        try.val <- try(dir.create(tmpdir))
+        if (class(try.val)[[1]]=="try-error")
+            stop("Cannot create temporary directory.\nYou probably do not have permission to write to the directory: \n ",
+                 tmpdir, "\nTry to specify another directory with the argument \"wd\" or change the working directory.",
+                 sep = "")
+    }
+    if (length(savefile) > 0) {
+        outfile <- paste(wd, "/", savefile, sep = "")
+        if (file.exists(outfile)) {
+            if (interactive()){
+                maybestop <- askYesNo(paste0("Overwrite existing file: ",outfile,"? "))
+                if (is.na(maybestop)||maybestop==FALSE){
+                    stop("File exists:",outfile)
+                }
+            }else{
+                stop("File exists:",outfile)
             }
-            if (length(savefile) == 0) if (file.exists(outfile)) file.remove(outfile)
         }
+        message("The output of SAS will be saved to file:\n",outfile)
+    }
+    else {
+        outfile <- paste(tmpdir, "/", "sasimport_internal_tmpout.csv",
+                         sep = "")
+    }
+    setwd(tmpdir)
+    on.exit({
         setwd(olddir)
+        if (!save.tmp) {
+            unlink(tmpdir,recursive=TRUE,force=TRUE)
+        }else{
+            cat("\nTemporary directory:\n ",tmpdir,"\ncan now be inspected -- and should be removed manually afterwards!\n")
+        }
     })
     if (.Platform$OS.type == "unix") {
         if (missing(sas.program)) {
@@ -222,34 +245,20 @@ importSAS <- function(filename,
         }
     }
     existing.files <- NULL
-    olddir <- getwd()
-    if (length(wd) == 0)
-        wd <- getwd()
-    setwd(wd)
-    tmp.SASfile <- paste(wd, "/", "sasimport_internal_tmpfile.sas",
+    tmp.SASfile <- paste(tmpdir, "/", "sasimport_internal_tmpfile.sas",
                          sep = "")
-    tmp.log <- paste(wd, "/", "sasimport_internal_tmpfile.log",
+    tmp.log <- paste(tmpdir, "/", "sasimport_internal_tmpfile.log",
                      sep = "")
-    tmp.filterfile <- paste(wd, "/", "sasimport_internal_tmpfilterfile.csv",
+    tmp.filterfile <- paste(tmpdir, "/", "sasimport_internal_tmpfilterfile.csv",
                             sep = "")
-    tmp.SASproccont <- paste(wd, "/", "sasimport_internal_tmpproccont.sas",
+    tmp.SASproccont <- paste(tmpdir, "/", "sasimport_internal_tmpproccont.sas",
                              sep = "")
-    tmp.proccontout <- paste(wd, "/", "sasimport_internal_tmpproccontout.csv",
+    tmp.proccontout <- paste(tmpdir, "/", "sasimport_internal_tmpproccontout.csv",
                              sep = "")
-    tmp.proccontlog <- paste(wd, "/", "sasimport_internal_tmpproccont.log",
+    tmp.proccontlog <- paste(tmpdir, "/", "sasimport_internal_tmpproccont.log",
                              sep = "")
     try.val <- try(file.create(tmp.SASfile))
-    if (!try.val)
-        stop("Aborted. \nYou probably do not have permission to write to the directory: \n ",
-             wd, "\nTry to specify another directory with the argument \"wd\" or change the working directory.",
-             sep = "")
-    if (length(savefile) > 0) {
-        outfile <- paste(wd, "/", savefile, sep = "")
-    }
-    else {
-        outfile <- paste(wd, "/", "sasimport_internal_tmpout.csv",
-                         sep = "")
-    }
+
     files <- c(tmp.SASfile, tmp.log, tmp.filterfile, outfile,
                tmp.SASproccont, tmp.proccontout, tmp.proccontlog)
     for (file in files) {
@@ -259,7 +268,7 @@ importSAS <- function(filename,
     if (length(existing.files) > 0 & overwrite == FALSE) {
         stop(paste("Aborted to not overwrite the file(s):", paste(" ",
                                                                   existing.files, collapse = "\n"), "in the directory:",
-                   paste(" ", wd), "Set the argument \"overwrite\" equal to \"TRUE\" to allow overwriting.",
+                   paste(" ", tmpdir), "Set the argument \"overwrite\" equal to \"TRUE\" to allow overwriting.",
                    sep = "\n"))
     }
     for (file in files) {
@@ -315,11 +324,16 @@ importSAS <- function(filename,
         grepl("dato", var.format, ignore.case = TRUE)
     is.num <- grepl("num", var.type, ignore.case = TRUE)
     is.num <- is.num & !is.date
-    if (length(filter.by) == 0) {
-        filter.names <- tolower(names(filter))
-    }
-    else {
-        filter.names <- tolower(filter.by)
+    if (length(filter)>0){
+        ## convert filter variables to lower
+        orig.filter.names <- copy(names(filter))
+        setnames(filter,tolower(names(filter)))
+        if (length(filter.by) == 0) {
+            filter.names <- names(filter)
+        }
+        else {
+            filter.names <- tolower(filter.by)
+        }
     }
     keep.check <- drop.check <- filter.check <- TRUE
     if (length(keep) > 0) {
@@ -344,8 +358,7 @@ importSAS <- function(filename,
     date.vars <- var.names[is.date]
     format.statement <- if (!any(is.date))
                             ""
-                        else paste("format ", paste(date.vars, collapse = " "),
-                                   " yymmdd10.;")
+                        else paste("format ", paste(date.vars, collapse = " "), " yymmdd10.;")
     if (length(pre.hook) > 0 & is.character(pre.hook)) {
         cat(pre.hook, file = tmp.SASfile, append = TRUE)
     }
@@ -450,24 +463,35 @@ importSAS <- function(filename,
             }
             if (!file.exists(outfile)) {
                 stop(paste0("SAS did not produce output file. Maybe you have misspecified a SAS statement?",
-                            ifelse(save.tmp==FALSE,"\nRun with save.tmp=TRUE and then","\nPlease"),
-                            " check the log file:\n",
-                            tmp.log))
+                            ifelse(save.tmp == FALSE, "\nRun with save.tmp=TRUE and then",
+                                   "\nPlease"), " check the log file:\n", tmp.log))
             }
             info <- file.info(outfile)
-            ## colclasses
-            ia <- c(list(file = outfile,header = TRUE, na.strings = na.strings),list(...))
-            if (length(ia$colClasses)==0) ia$colClasses <- list("character"=NULL,"numeric"=NULL)
-            for (v in character.vars){
-                ## get case correct, i.e., "pnr" vs "PNR"
-                if (length(vname <- grep(v,dt.content$Variable,value=TRUE,ignore.case=TRUE))>0)
-                    ia$colClasses[["character"]] <- unique(c(vname,ia$colClasses[["character"]]))
+            ia <- c(list(file = outfile, header = TRUE, na.strings = na.strings),
+                    list(...))
+            if (length(ia$colClasses) == 0)
+                ia$colClasses <- list(character = NULL, numeric = NULL)
+            for (v in character.vars) {
+                if (length(vname <- grep(v, dt.content$Variable,
+                                         value = TRUE, ignore.case = TRUE)) > 0)
+                    if (length(filter) > 0){
+                        if (tolower(vname) %in% filter.names) vname <- tolower(vname)
+                    }
+                ia$colClasses[["character"]] <- unique(c(vname,ia$colClasses[["character"]]))
             }
-            for (v in numeric.vars){
-                ## get case correct, i.e., "pnr" vs "PNR"
-                if (length(vname <- grep(v,dt.content$Variable,value=TRUE,ignore.case=TRUE))>0){
-                    ia$colClasses[["numeric"]] <- unique(c(vname,ia$colClasses[["numeric"]]))
+            for (v in numeric.vars) {
+                if (length(vname <- grep(v, dt.content$Variable,
+                                         value = TRUE, ignore.case = TRUE)) > 0) {
+                    if (length(filter) > 0){
+                        if (tolower(vname) %in% filter.names) vname <- tolower(vname)
+                    }
+                    ia$colClasses[["numeric"]] <- unique(c(vname,
+                                                           ia$colClasses[["numeric"]]))
                 }
+            }
+            # reset filternames
+            if (length(filter) > 0){
+                setnames(filter,orig.filter.names)
             }
             if (info$size == 1) {
                 warning("The dataset produced by SAS appears to be empty.")
@@ -480,7 +504,7 @@ importSAS <- function(filename,
                     df <- NULL
                 }
             }
-            if (skip.date.conversion==FALSE){
+            if (skip.date.conversion == FALSE) {
                 names(df) <- tolower(names(df))
                 if (!is.null(df) & sum(is.date) > 0) {
                     date.vars <- tolower(date.vars)
