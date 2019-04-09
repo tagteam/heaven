@@ -2,9 +2,9 @@
 % Please edit documentation in R/dpp.R
 \name{addAge}
 \alias{addAge}
-\title{Add comorbidity}
+\title{Add age}
 \usage{
-addAge(x, target, at, ...)
+addAge(x, target, ...)
 }
 \arguments{
 \item{x}{dpp object}
@@ -17,10 +17,10 @@ addAge(x, target, at, ...)
 updated object
 }
 \description{
-Add a age to an existing dpp object
+Add age at index to an existing dpp object
 }
 \details{
-Add a age to an existing dpp object
+Add at index age to an existing dpp object
 }
 \examples{
 # see help(dpp)

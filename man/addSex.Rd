@@ -2,7 +2,7 @@
 % Please edit documentation in R/dpp.R
 \name{addSex}
 \alias{addSex}
-\title{Add comorbidity}
+\title{Add sex}
 \usage{
 addSex(x, target, ...)
 }

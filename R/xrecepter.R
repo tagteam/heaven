@@ -72,17 +72,6 @@ xrecepter <- function(drug,
                       lstfile="med-macro.lst"){
 
     .SD = NULL
-    date.vars <- tolower(date.vars)
-    on.exit({
-        if (!save.tmp) {
-            unlink("tmp",force=TRUE,recursive=TRUE)
-            for (file in files[!files == outfile]) {
-                if (file.exists(file)) file.remove(file)
-            }
-            if (length(savefile) == 0) if (file.exists(outfile)) file.remove(outfile)
-        }
-        setwd(olddir)
-    })
     if (.Platform$OS.type == "unix") {
         if (missing(sas.program)) {
             sas.program <- "sas"
@@ -106,7 +95,6 @@ xrecepter <- function(drug,
         }
     }
 
-    
 
     Prog <- path.expand(proFile)
     Out <- path.expand(outFile)
