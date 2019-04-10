@@ -49,6 +49,9 @@ A12: strength 750, number of pills 100
       "A12B"=list(c(750,100),c(750,250),c(75,500)))}
 }
 \examples{
+## see https://www.dst.dk/da/TilSalg/Forskningsservice/Data/Andre_Styrelser
+## for details of the contents of lmdb
+
 ## a single subject
 set.seed(1)
 simPrescriptionData(1)

@@ -5,7 +5,7 @@ N=180
 packs = list("R03AK11"=list(c(10,5)))
 source("~/research/SoftWare/heaven/R/simPrescriptionData.R")
 lmdb=simPrescriptionData(N,packages=packs,max.packages=1)
-table(lmdb$strnum)
+## table(lmdb$strnum)
 lpr=simAdmissionData(N)
 ## very simple data 
 ## lmdb <- lmdb[c(1,4,18)]
@@ -29,16 +29,19 @@ devtools::install(quick=TRUE)
 # kan man bar koere de foelgende to linier (kraever dog at man re-starter R)
 # men man behoever ikke vente paa install() hver gang
 setwd("~/research/SoftWare/heaven/")
+
 inner1 <- Rcpp::sourceCpp("src/innerMedicinMacro.cpp")
 source("R/medicinMacro.R")
+medicinMacro(drugs=list("R03"=R03),drugdb=lmdb1,admdb=lpr,collapse=0L)
 
 ## Tasks:
 ##-----------------------------------------
 
 ## 2. resultatet skal give mening baade med og uden collapse
-lmdb[,pnr:=c(1,3,1)][,strnum:=5]
+lmdb <- lmdb[,pnr:=c(1,3,1)][,strnum:=5]
 
-medicinMacro(drugs=list("R03"=R03),drugdb=lmdb,admdb=lpr,collapse=1L)
+lmdb1 <- lmdb[pnr==1][3:5]
+medicinMacro(drugs=list("R03"=R03),drugdb=lmdb1,admdb=lpr,collapse=0L)
 
 ## source("~/research/SoftWare/heaven/R/xrecepter.R")
 xrecepter(drugdb=lmdb,adm=lpr,window=5,remote=FALSE,wd="~/tmp",save.tmp=0L,value=rep(R03$doses$value,2),min=rep(R03$doses$min,2),max=rep(R03$doses$max,2),def=rep(R03$doses$def,2),maxdepot=100,period=c(12784,20089),atc="R03AK11",name="blaupill",sas.program="/usr/local/bin/sas",verbose=FALSE)

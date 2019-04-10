@@ -78,7 +78,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
     arma::vec T = unique(pdate);
     uword K = T.n_elem;
     uword J = dval.n_elem;
-    arma::vec c(K,fill::zeros);
+    // arma::vec c(K,fill::zeros);
     arma::vec D(K,fill::zeros);
     arma::vec S(K,fill::zeros);
     arma::mat n(K, J,fill::zeros); 
@@ -122,7 +122,6 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       for (uword g = 0; g < ndatekid; g++) {
 	S(k) += strength1(g);
 	double ne = npack1(g) * ppp1(g) * strength1(g);
-	
 	//--- compute total amount of drug purchased on date Tk. 
 	// Rcout << "g=" << g << std::endl;
 	// Rcout << "T(k)=" << T(k) << std::endl;
@@ -134,17 +133,16 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	D(k) += ne;
 	// Rcout << "D(k)=" << D(k) << std::endl;
 	// Rcout << "-------------------" << std::endl;
-	// n(,) is the matrix which contains the total amount of smallest units:
-	// one row for each date
-	// one column for each drug strength
 	for (uword j = 0; j < J; j++) {
 	  if (strength1(g) == dval(j)) {
+	    // n(,) is the matrix which contains the total amount of smallest units:
+	    // one row for each date
+	    // one column for each drug strength
 	    n(k, j) += ne / (double) dmin(j);
 	  }
 	}
       }
-      if (!collapse)
-	c(k) = ndatekid;
+      // if (!collapse) c(k) = ndatekid;
       S(k) = S(k) / (double) ndatekid;
 
       // Compute number of days non-hospitalized in the period from Tk to Tk+1
@@ -163,6 +161,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       nk(k) = sum(n.row(k));
       
       // check if there is overlap (if the current period reaches the next)
+      Rcout << "number days covered: nk(k)=" << nk(k) << std::endl;
+      Rcout << "H(k)=" << H(k) << std::endl;
       if (nk(k) > H(k) && k < K-1) u(k) = 1;
       // Rcout << "or here" << std::endl;
       // identify the nearest drug strength that does not exceed the first preliminary average strength
@@ -236,16 +236,16 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       if (R(k) > maxdepot) R(k) = maxdepot;
 
       // compute the end dates of exposure
-      // Rcout << "_________" << k << "________" << std::endl;
-      // if (k>0) Rcout << "u(k-1)" << u(k-1) << std::endl;
-      // Rcout << "date T(k):" << T(k) << std::endl;
-      // Rcout << "dosis D(k)=" << D(k) << std::endl;
-      // Rcout << "rest R(k)=" << R(k) << std::endl;
-      // Rcout << "X(k)=" << X(k) << std::endl;
-      
-      // Rcout << "floor=" << floor((D(k) + R(k)) / (double) X(k)) << std::endl;
-      // Rcout << "T(k+1)" << T(k+1) << std::endl;
-      // Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
+      Rcout << "_________" << k << "________" << std::endl;
+      if (k>0) Rcout << "u(k-1)=" << u(k-1) << std::endl;
+      Rcout << "u(k)=" << u(k) << std::endl;
+      Rcout << "date T(k):" << T(k) << std::endl;
+      Rcout << "dosis D(k)=" << D(k) << std::endl;
+      Rcout << "rest R(k)=" << R(k) << std::endl;
+      Rcout << "X(k)=" << X(k) << std::endl;
+      Rcout << "floor=" << floor((D(k) + R(k)) / (double) X(k)) << std::endl;
+      // if (k<K) Rcout << "date T(k+1)" << T(k+1) << std::endl;
+      Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
       if (k > 0){ 
 	if (u(k)==0){ // supply at T(k) does not reach T(k+1)
 	  EndExposure(k) = (1-u(k-1)) * (T(k) - 1.0 + std::max(1.0,floor((D(k) + R(k)) / (double) ddef(jk(k)))));
@@ -258,11 +258,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	EndExposure(k) = (T(k) - 1.0 + floor((D(k) + R(k)) / (double) ddef(jk(k))));
       }
       // Rcout << "T(k)=" << T(k) << std::endl;
-      // Rcout << "EndExposure(k)" << EndExposure(k) << std::endl;
-      // Rcout << "floorEndExposure(k)" << floor(EndExposure(k)) << std::endl;
+      Rcout << "EndExposure2(k)" << EndExposure(k) << std::endl;
+      // when EndExposure is larger than next time point stop
       if (k < K-1 && EndExposure(k) > T(k+1)-1)
 	EndExposure(k) = T(k+1)-1;
-
+      Rcout << "EndExposure3(k)" << EndExposure(k) << std::endl;
       idout(k) = id(0); // set all id values
       
       // check if periods can be concatenated
