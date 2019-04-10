@@ -1,7 +1,7 @@
 Package: heaven
 Type: Package
 Title: Data Preparation Routines for Medical Registry Data
-Version: 2019.04.09
+Version: 2019.04.10
 Author: Helene Charlotte Rytgaard, Anders Munch, Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter Enemark Lund, Thomas Alexander Gerds
 Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
 Description: Fast and furious implementations of often used data preparation steps.
@@ -33,8 +33,9 @@ Suggests:
     riskRegression,
     knitr,
     survminer,
-    rmarkdown
+    rmarkdown,
+    R.rsp
 License: GPL (>= 3)
 RoxygenNote: 6.1.1
-VignetteBuilder: knitr
+VignetteBuilder: R.rsp
 LazyData: true

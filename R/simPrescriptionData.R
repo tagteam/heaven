@@ -32,6 +32,9 @@
 ##'       "A12B"=list(c(750,100),c(750,250),c(75,500)))}
 ##' 
 ##' @examples
+##' ## see https://www.dst.dk/da/TilSalg/Forskningsservice/Data/Andre_Styrelser
+##' ## for details of the contents of lmdb
+##' 
 ##' ## a single subject
 ##' set.seed(1)
 ##' simPrescriptionData(1)
@@ -84,14 +87,29 @@ simPrescriptionData <- function(n,
             pack <- unlist(packages[p],recursive=FALSE)
             M=sample(1:max.prescriptions,size=1) ## number of prescription dates
             sizes <- sapply(pack,"[",2)
-            if (length(sizes)==1) sizes <- rep(sizes,M) else sample(sizes,size=M,replace=TRUE)
+            if (length(sizes)==1)
+                sizes <- rep(sizes,2)
+            else {
+                if (M==1)
+                    sizes <- rep(sizes,2)
+                else
+                    sample(sizes,size=M,replace=TRUE)
+            }
             strengths <- sapply(pack,"[",1)
-            if (length(strengths)==1) strengths <- rep(strengths,M) else sample(strengths,size=M,replace=TRUE)
+            if (length(strengths)==1)
+                strengths <- rep(strengths,2)
+            else {
+                if (M==1)
+                    strengths <- rep(strengths,2)
+                else
+                    strengths <- sample(strengths,size=M,replace=TRUE)
+            }
             out <- data.table::data.table(eksd = startDate + rbinom(M, 1, 0.95)*floor(runif(M,0,5*365.25)),
                                           atc = sample(atc,size=M,replace=TRUE),
-                                          packsize = sizes,
+                                          packsize = sample(sizes,size=M,replace=TRUE),
                                           apk=sample(1:max.packages,size=M,replace=TRUE),
-                                          strnum = strengths)
+                                          strnum = sample(strengths,size=M,replace=TRUE))
+            if (any(out$strnum!=10))browser()
             out
         }))
         pat.i[,pnr:=i]

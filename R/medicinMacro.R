@@ -96,7 +96,7 @@ medicinMacro <- function(drugs,
         doses        <- drugs[[j]]$doses
         maxdepot     <- drugs[[j]]$maxdepot
         period       <- drugs[[j]]$period
-        prescriptionwindow            <- drugs[[j]]$prescriptionwindow
+        prescriptionwindow <- drugs[[j]]$prescriptionwindow
         drugdb.work <-  copy(drugdb)
         if (id!="pnr") setnames(drugdb.work,id,"pnr")
         if (strength.var!="strnum") setnames(drugdb.work,strength.var,"strnum")
@@ -174,10 +174,13 @@ medicinMacro <- function(drugs,
                                                    prescriptionwindow=prescriptionwindow,
                                                    maxdepot=maxdepot,
                                                    collapse=collapse))
+                setnames(out,"X","dose")
                 out[,B:=as.Date("1995-01-01")+B]
                 out[,E:=as.Date("1995-01-01")+E]
-                out[,exposure.days:=E-B]
-                setkey(out,pnr,B)
+                setnames(out,"B","firstday")
+                setnames(out,"E","lastday")
+                out[,exposure.days:=lastday-firstday]
+                setkey(out,pnr,firstday)
             }
             ## Revert pnr type change
             if(typeof(idunique)=="character")

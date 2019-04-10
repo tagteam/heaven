@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Nov 29 2016 (15:36) 
 ## Version: 
-## last-updated: Dec 16 2016 (16:36) 
+## last-updated: Apr 10 2019 (08:28) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 10
+##     Update #: 11
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -28,7 +28,7 @@ admData$inddto <- as.Date(admData$inddto, origin="1970-01-01")
 admData$uddto <- as.Date(admData$uddto, origin="1970-01-01")
 
 library(heaven)
-PPI <- read.table("~/research/SoftWare/heaven/data/samplePPIData.csv", header=TRUE, sep=";")
+PPI <- simPrescriptionData(n=1)
 head(PPI)
 PPI$eksd <- as.Date(PPI$eksd, format="%d/%m/%Y")
 d <- dpp()
@@ -57,9 +57,36 @@ plot(out, trace=TRUE)
 
 
 source("~/research/SoftWare/UseSas/R/medicinMacro.R")
-ppi=read.table("~/research/SoftWare/heaven/data/PPI.csv",sep=";",header=TRUE,stringsAsFactors=FALSE)
-adm=read.table("~/research/SoftWare/heaven/data/admData.csv",sep=";",header=TRUE,stringsAsFactors=FALSE)
-## a=medicinMacro(drug=ppi,adm=adm,atc="A02BC02",name="omeprazol",sas="/usr/local/bin/sas",server="doob",user="grb615")
+
+
+library(heaven)
+library(data.table)
+set.seed(05021992)
+N=1
+packs = list("R03AK11"=list(c(10,1)))
+lmdb=simPrescriptionData(N,packages=packs,max.packages=1)
+## very simple data 
+lmdb <- lmdb[c(1,4,18)]
+R03 = list(atc=c("R03AK11"),
+           maxdepot=100,
+           period=as.Date(c("1995-01-01", "2012-12-31")),
+           prescriptionwindow=2,
+           doses=list(value=c(10,33),min = c(.5,.5),max = c(2,2),def = c(1,1)))
+set.seed(8)
+packs
+
+ppi=simPrescriptionData(8)
+adm=simAdmissionData(8)
+a=xrecepter(drug=ppi,
+            adm=adm,
+            npre=5,
+            dose=c(200, 400, 500, 500),
+            min=c(100, 200, 250, 250),max=c(300, 800, 1000, 100),def=c(20, 75,100,100),
+            atc="A06AB06",
+            name="omeprazol",
+            sas.program="/usr/local/bin/sas",
+            server="doob",
+            user="grb615")
 adm$inddto <- as.Date(adm$inddto)
 adm$uddto <- as.Date(adm$uddto)
 ppi$eksd <- as.Date(ppi$eksd,format="%d/%m/%Y")
