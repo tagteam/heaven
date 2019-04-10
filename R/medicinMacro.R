@@ -82,7 +82,6 @@ medicinMacro <- function(drugs,
                          strength.var = "strnum",
                          packsize.var="packsize",
                          apk.var="apk",
-                         collapse = TRUE,
                          splitting = FALSE){
     atc=eksd=inddto=uddto=NULL
     # Set the right structure for processed object
@@ -162,8 +161,7 @@ medicinMacro <- function(drugs,
                                                                      doses=doses,
                                                                      idunique=split.id,
                                                                      prescriptionwindow=prescriptionwindow,
-                                                                     maxdepot=maxdepot,
-                                                                     collapse=collapse))
+                                                                     maxdepot=maxdepot))
                 }
                 out <- rbindlist(out.list)
             }else{
@@ -172,8 +170,7 @@ medicinMacro <- function(drugs,
                                                    doses=doses,
                                                    idunique=as.numeric(idunique),
                                                    prescriptionwindow=prescriptionwindow,
-                                                   maxdepot=maxdepot,
-                                                   collapse=collapse))
+                                                   maxdepot=maxdepot))
                 setnames(out,"X","dose")
                 out[,B:=as.Date("1995-01-01")+B]
                 out[,E:=as.Date("1995-01-01")+E]

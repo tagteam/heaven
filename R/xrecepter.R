@@ -264,9 +264,17 @@ xrecepter <- function(drugdb,
             warning(paste("Running sas on", fprog, "yielded the error shown above."))
     }
     if (file.exists(Out)){
-        out <- importSAS(file=paste0(tmpdir,"/",name,"_alt"),
-                         date.vars=c("startdag","slutdag"),
-                         verbose=verbose,show.sas.code=verbose)
+        if (remote){
+            out <- sas7bdat::read.sas7bdat(paste0(tmpdir,"/",name,"_alt.sas7bdat"))
+            data.table::setDT(out)
+            out[,startdag:=as.Date(startdag,origin=as.Date("1960-01-01"))]
+            out[,slutdag:=as.Date(slutdag,origin=as.Date("1960-01-01"))]
+        }else{
+            out <- importSAS(file=paste0(tmpdir,"/",name,"_alt.sas7bdat"),
+                             date.vars=c("startdag","slutdag"),
+                             verbose=verbose,show.sas.code=verbose,
+                             sas.program=sas.program,sas.switches=sas.switches,sas.runner=sas.runner)
+        }
         setnames(out,"startdag","firstday")
         setnames(out,"slutdag","lastday")
         setnames(out,"dosis","dose")

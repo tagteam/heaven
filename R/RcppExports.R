@@ -17,11 +17,10 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @param idunique unique subject ids
 #' @param prescriptionwindow prescription window
 #' @param maxdepot see medicine macro
-#' @param collapse If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.
 #' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 #' @export
-innerMedicinMacro <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse) {
-    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot, collapse)
+innerMedicinMacro <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot) {
+    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot)
 }
 
 na_locf <- function(x) {

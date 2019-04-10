@@ -7,7 +7,7 @@
 medicinMacro(drugs, drugdb, admdb, drugdb.datevar = "eksd",
   admdb.datevars = c("inddto", "uddto"), id = "pnr",
   strength.var = "strnum", packsize.var = "packsize",
-  apk.var = "apk", collapse = TRUE, splitting = FALSE)
+  apk.var = "apk", splitting = FALSE)
 }
 \arguments{
 \item{drugs}{A named list of drugs. Each element of this list should be a list
@@ -56,12 +56,12 @@ packages. Default is \code{"packsize"}.}
 \item{apk.var}{Name of variable to identify number of
 packages. Default is \code{"packsize"}.}
 
+\item{splitting}{Split the data into 10 chunks to estimate
+remaining time (and possibly speed up computation).}
+
 \item{collapse}{Logical. If \code{TRUE}, collapse contiguous
 exposure periods with same computed exposure strength to one
 and add periods with zero exposure.}
-
-\item{splitting}{Split the data into 10 chunks to estimate
-remaining time (and possibly speed up computation).}
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.

@@ -5,7 +5,7 @@
 \title{The heart of the medicin macro}
 \usage{
 innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow,
-  maxdepot, collapse)
+  maxdepot)
 }
 \arguments{
 \item{dat}{data set}
@@ -19,8 +19,6 @@ innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow,
 \item{prescriptionwindow}{prescription window}
 
 \item{maxdepot}{see medicine macro}
-
-\item{collapse}{If \code{TRUE} collapse admission periods when there is not a single day out of hospital in between.}
 }
 \description{
 Inner process of medicin macro
