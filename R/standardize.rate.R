@@ -77,7 +77,7 @@ standardize.rate <- function(x,
     requireNamespace("data.table")
     .N=N=.SD=weight=NULL
     setDT(data)
-    ## data <- copy(data)
+    data <- copy(data)
     nnn <- colnames(data)
     if (!is.list(x) || any(sapply(x,length)!=2)){
         stop("Argument 'x' has to be a list where each element contains two variable names:\n1. number of events\n2. number at risk (or person-years)")
@@ -95,29 +95,32 @@ standardize.rate <- function(x,
         data[[exposure]] <- factor(data[[exposure]])
     }
     exposure.levels <- levels(data[[exposure]])
-    if (length(exposure.levels)>2) stop("Can only handle two exposure groups at a time.")
-    if (missing(standardize.to)) {
+    if (missing(standardize.to)) {                                                  
         standardize.to <- "ref.level"
     } else{
         if (!is.character(standardize.to)) stop("Argument 'standardize.to' is not character. It has characterize the standard population.")        
     }
     N <- NROW(data)
+    n0 <- length(exposure.levels)
     out <- data[,{
         xout <- rbindlist(lapply(1:length(x),function(v){
             counts <- .SD[[x[[v]][[1]]]]
-            pops <- .SD[[x[[v]][[2]]]]
+            pops <- .SD[[x[[v]][[2]]]]  
             egroups <- .SD[[exposure]]
+            ## Jeppe laver rod
             e1 <- egroups==exposure.levels[[1]]
-            e2 <- egroups==exposure.levels[[2]]
-            stdpop <- switch(standardize.to,
-                             "ref.level"={pops[e1]},
-                             "mean"={(pops[e1]+pops[e2])/2},
-                             pops[e2])
-            std.x <- dsr(count0=counts[e1],
-                         count1=counts[e2],
-                         pop0=pops[e1],
-                         pop1=pops[e2],
-                         stdpop=stdpop,method=method,crude=crude)
+            std.x <- NULL
+            for(i in 2:n0){
+                e2 <- egroups==exposure.levels[i]
+                stdpop <- switch(standardize.to, ref.level = {
+                    pops[e1]
+                }, mean = {
+                    (pops[e1] + pops[e2])/2
+                }, pops[e2])
+                std.x <- rbind(std.x, dsr(count0=counts[e1], count1=counts[e2],
+                                          pop0=pops[e1], pop1=pops[e2], stdpop=stdpop,
+                                          method=method,crude=crude))
+            }
             xname <- ifelse(length(names(x)[v])==0,x[[v]][1],names(x)[v])
             std.x <- cbind(x=xname,std.x)
         }))

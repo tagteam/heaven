@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Apr 11 2019 (09:51) 
 ## Version: 
-## Last-Updated: Apr 11 2019 (10:32) 
+## Last-Updated: Apr 11 2019 (10:43) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 14
+##     Update #: 17
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -52,17 +52,17 @@ createProject <- function(directory){
             cat("# Created: ",as.character(Sys.Date()),
                 "\n# Author(s): ",as.character(Sys.info()[["login"]]),
                 "\n# Input files: (list data sources and other scripts which deliver data for this file)",
-                "\n Output files: (list processed data files and other output such as figures and tables)",
-                "\n# Description:\n\nThis script is about ..."
+                "\n# Output files: (list processed data files and other output such as figures and tables)",
+                "\n# Description:\n\n# This script is about ..."
                ,file=temp.R,append=TRUE,sep="")
             dir.create(paste0(directory,"/","sas-code"))
             temp.SAS <- paste0(directory,"/","sas-code/template-SAS-code.sas")
             file.create(temp.SAS)
-            cat("// Created: ",as.character(Sys.Date()),
-                "\n Author(s): ",as.character(Sys.info()[["login"]]),
-                "\n Input files: (list data sources and other scripts which deliver data for this file)",
-                "\n Output files: (list processed data files and other output such as figures and tables)",
-                "\n Description:\n\nThis script is about ...\n//"
+            cat("/*\nCreated: ",as.character(Sys.Date()),
+                "\nAuthor(s): ",as.character(Sys.info()[["login"]]),
+                "\nInput files: (list data sources and other scripts which deliver data for this file)",
+                "\nOutput files: (list processed data files and other output such as figures and tables)",
+                "\nDescription:\n\nThis script is about ...\n*/"
                ,file=temp.SAS,append=TRUE,sep="")
             dir.create(paste0(directory,"/","sandbox"))
             dir.create(paste0(directory,"/","temp"))
