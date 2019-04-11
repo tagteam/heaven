@@ -7,3 +7,4 @@ sas/
 worg/
 sandbox/
 auto/
+^vignettes/.*[.](r|R)$

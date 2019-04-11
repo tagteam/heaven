@@ -109,7 +109,7 @@ simPrescriptionData <- function(n,
                                           packsize = sample(sizes,size=M,replace=TRUE),
                                           apk=sample(1:max.packages,size=M,replace=TRUE),
                                           strnum = sample(strengths,size=M,replace=TRUE))
-            if (any(out$strnum!=10))browser()
+            ## if (any(out$strnum!=10))browser()
             out
         }))
         pat.i[,pnr:=i]

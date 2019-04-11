@@ -75,7 +75,7 @@ There are both advantages and disadvantages to using a nested case control desig
 
 Some disadvantages are:
 
-- We lose statistical power when only using a subset of observations.
+- We loose statistical power when only using a subset of observations.
 
 - If we have more than one kind of outcome, we need to sample controls for every type of outcome for nested case control, but not if we use the case-cohort design.
 

@@ -37,5 +37,5 @@ Suggests:
     R.rsp
 License: GPL (>= 3)
 RoxygenNote: 6.1.1
-VignetteBuilder: R.rsp, knitr
+VignetteBuilder: knitr, R.rsp
 LazyData: true
