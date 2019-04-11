@@ -56,7 +56,7 @@
 #' @keywords datasets
 #' @name edu_code
  
-"Framingham"
+"edu_code"
 
 #' "Framingham"
 #' 
@@ -65,3 +65,5 @@
 #' @docType data
 #' @keywords datasets
 #' @name Framingham
+
+"Framingham"

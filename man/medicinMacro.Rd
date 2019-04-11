@@ -58,10 +58,6 @@ packages. Default is \code{"packsize"}.}
 
 \item{splitting}{Split the data into 10 chunks to estimate
 remaining time (and possibly speed up computation).}
-
-\item{collapse}{Logical. If \code{TRUE}, collapse contiguous
-exposure periods with same computed exposure strength to one
-and add periods with zero exposure.}
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.

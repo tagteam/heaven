@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Apr 11 2019 (09:51) 
 ## Version: 
-## Last-Updated: Apr 11 2019 (10:43) 
+## Last-Updated: Apr 11 2019 (10:56) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 17
+##     Update #: 18
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -20,7 +20,7 @@
 ##' @title ordnung muss sein
 ##' @param directory Full path of the new project. E.g., "v:/data/workdata/706818/BlaBlaBla/study"
 ##' @examples
-##' createProject("v:/data/workdata/706818/BlaBlaBla/study")
+##' \dontrun{createProject("v:/data/workdata/706818/BlaBlaBla/study")}
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 createProject <- function(directory){

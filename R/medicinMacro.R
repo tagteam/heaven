@@ -38,9 +38,6 @@
 ##'     packages. Default is \code{"packsize"}.
 ##' @param apk.var Name of variable to identify number of
 ##'     packages. Default is \code{"packsize"}.
-##' @param collapse Logical. If \code{TRUE}, collapse contiguous
-##'     exposure periods with same computed exposure strength to one
-##'     and add periods with zero exposure.
 ##' @param splitting Split the data into 10 chunks to estimate
 ##'     remaining time (and possibly speed up computation).
 ##' @author Helene Charlotte Rytgaard, Anders Munch and Thomas Alexander Gerds based

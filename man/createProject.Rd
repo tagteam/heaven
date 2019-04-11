@@ -16,7 +16,7 @@ create new empty folder for project organisation
 ordnung muss sein
 }
 \examples{
-createProject("v:/data/workdata/706818/BlaBlaBla/study")
+\dontrun{createProject("v:/data/workdata/706818/BlaBlaBla/study")}
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

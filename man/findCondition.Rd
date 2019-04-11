@@ -20,6 +20,8 @@ output}
 "exact"=exactly matches the search string, "contains"=contains the search
 string, "starts"=Starts with the search string, "end"=Ends with the search
 string}
+
+\item{cond}{not sure}
 }
 \value{
 A data table that includes the "keep-variables" and a variable "cond" which
@@ -54,7 +56,7 @@ search <- list(Cond1=c('A1','A2'),Cond2=c('B10','B40','B5'),
 Cond3=c('A1','C20','B2'))
 
 out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
-conditions=search,match="start",cond="x")
+conditions=search,match="start",cond="cond")
 ### And how to use the result:
 # Find first occurence of each condition and then use "dcast" to create
 # a data.table with vectors corresponding to each condition.

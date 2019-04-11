@@ -3,11 +3,10 @@
 \docType{data}
 \name{edu_code}
 \alias{edu_code}
-\alias{Framingham}
 \title{"edu_code"}
 \format{A data.table}
 \usage{
-Framingham
+edu_code
 }
 \description{
 data.table with education codes
