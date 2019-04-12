@@ -17,6 +17,7 @@ R03 = list(atc=c("R03AK11"),
                       min = c(1,1),
                       max = c(2,2),
                       def = c(1,1)))
+## importSAS(file="~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat",obs=9)
 
 ## efter man har bygget pakken en gang via
 if (0L){
@@ -42,6 +43,8 @@ B <- a$R03[dose>0]
 b <- xrecepter(drugdb=lmdb1,adm=lpr,window=5,remote=TRUE,remote.home="/home/ifsv/grb615",wd="~/tmp/",save.tmp=FALSE,value=rep(R03$doses$value,2),min=rep(R03$doses$min,2),max=rep(R03$doses$max,2),def=rep(R03$doses$def,2),maxdepot=100,period=c(12784,20089),atc="R03AK11",name="blaupill",sas.program="/usr/local/bin/sas",server="doob",user="grb615")
 a$R03[dose>0]
 b
+
+c <- xrecepter(drugdb=lmdb1,adm=lpr,window=5,remote=FALSE,wd="~/tmp/",save.tmp=FALSE,value=rep(R03$doses$value,2),min=rep(R03$doses$min,2),max=rep(R03$doses$max,2),def=rep(R03$doses$def,2),maxdepot=100,period=c(12784,20089),atc="R03AK11",name="blaupill",sas.program="/usr/local/bin/sas",server="doob",user="grb615")
 
 ## Tasks:
 ##-----------------------------------------

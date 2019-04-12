@@ -201,7 +201,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
         outfile <- paste(wd, "/", savefile, sep = "")
         if (file.exists(outfile)) {
             if (interactive()){
-                maybestop <- askYesNo(paste0("Overwrite existing file: ",outfile,"? "))
+                maybestop <- utils::askYesNo(paste0("Overwrite existing file: ",outfile,"? "))
                 if (is.na(maybestop)||maybestop==FALSE){
                     stop("File exists:",outfile)
                 }
