@@ -3,6 +3,7 @@ title: "Nested case control"
 author: "Jeppe EH Madsen"
 date: "`r Sys.Date()`"
 output: pdf_document
+bibliography: "mybib.bib"
 vignette: >
   %\VignetteIndexEntry{Nested case control}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,16 +17,19 @@ knitr::opts_chunk$set(
 )
 ```
 
+
 Epidemiologic cohort studies are often used for assessing the variation in rates of morbidity and mortality due to factors present in the population. Because the outcome of interest can be very rare, cohort studies may require a lot of subjects to reliably be able to answer the question at hand. It can, however, be very expensive to collect covariate information for all subjects. One solution to this problem is nested case control where only a subset of the non-failures are used for the analysis. This works because the extra statistical power of the study gained by each additional non-failure is very small compared to that of the failures (cases) when there are many non-failures. 
 
 The case-cohort design works in the following way: For each observed failure-time (case), sample $m-1$ non-failures (controls) without replacement. Nested case-control is similar, but with the difference that the sampling is done, only among those at risk at the cases failure-time. 
 
+<!--
 ## Visualization using Lexis diagram
 The Lexis diagram plots the year of birth on the x-axis and the age on the y-axis. Someone who is born in 2000 will be represented by a diagonal line starting at (2000,0) and going through (2001,1), (2002,2) and so on. Let's say we have a group of patients as in Figure \ref{luxus}.
 
 ![\label{luxus} Lexis plot of hypothetical study.](LexisPlotRisk520190311.pdf){width=60%}
 
 They get their diagnosis, but we don't observe anything else about them before five years after (so data is truncated?). Then we're interested in the time from the index date (first diagnosis + 5 years) until they get diagnosed with dementia. We can potentially sample an observation every time we have a star in Figure \ref{luxus}. This also means that the same person can get sampled more than once.
+-->
 
 ## Nested case control for the Cox proportional hazards model
 It turns out, somewhat surprisingly, that the estimator $(\hat{\beta})$ of the regression parameters $(\beta)$ in the Cox model isn't influenced by the sampling and is thus the same as usually. The fact that we have fewer non-failures per failure in the data than in the real world does, however, mean that we can't use the usual Breslow estimator of the integrated baseline hazard. Let $\mathcal{R}_j$ be the set of all those at risk at failure-time $t_j-$, and $\tilde{\mathcal{R}}_j$ be the set of the case at $t_j$ and the $m-1$ controls. Let $n(t_j)$ be the total number at risk at time $t_j$, and $Z_l(t)$ a vector of time-dependent covariates for observation $l$. Then the estimator for the integrated baseline hazard turns out to be
@@ -41,7 +45,7 @@ Conditional logistic regression deals with the probability of events for observa
 A way to improve effeciency of nested case control is to use counter-matching. Let's say we have a study where it is expensive to measure one covariate so we want to use nested case control, but we have another covariate which is very easy and cheap to collect (e.g. sex). Then split data into S strata (so two strata in the case of sex - or maybe more these days, but you get the idea). If we have a case in stratum $s(i)$ at time $t$, sample without replacement $m_s$ among those at risk at time $t$ in stratum $s\neq s(i)$, and $m_{s(i)}-1$ from stratum $s(i)$.     
 
 ## How well does it work?
-In case of only one covariate with the true parameter equal to 0, the variance of the estimator for the full cohort design to the variance of the nested case control design is $m/(m-1)$ independently of censoring and covariate distributions. What if we have other covariates and/or the true parameter is different from 0?
+In case of only one covariate with the true parameter equal to 0, the variance of the estimator for the full cohort design to the variance of the nested case control design is $m/(m-1)$ independently of censoring and covariate distributions. <!--What if we have other covariates and/or the true parameter is different from 0?
 
 Let's say we have a simple setup: two binary variables - one for treatment and another for sex. Let's say 10 \% of patients are treated in the study. We let the censoring times equal the 1 \% quantile of the failure times so that we have exactly 99 \% censoring (so we have type 2 censoring). We use 5 controls per case (so $m=6$) for the nested case control design. We simulate 5000 observations and repeat the simulation 1000 times. 
 
@@ -68,6 +72,7 @@ This little simulation study is only one very simple scenario so we should be ca
 
 
 Austin, P. C., Anderson, G. M., Cigsar, C. and Gruneir, A. (2012), Comparing the cohort design and the nested case–control design in the presence of both time‐invariant and time‐dependent treatment and competing risks: bias and precision.
+-->
 
 ## Advantages and disadvantages
 There are both advantages and disadvantages to using a nested case control design. Some of the advantages are:
@@ -85,6 +90,7 @@ Some disadvantages are:
 - If we have more than one kind of outcome, we need to sample controls for every type of outcome for nested case control, but not if we use the case-cohort design.
 
 - We have to wait until cases occur to get covariate information when using nested case control, but controls can be chosen right away when using a case-cohort design.  
+
 
 
 
