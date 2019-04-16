@@ -3,7 +3,6 @@ title: "Nested case control"
 author: "Jeppe EH Madsen"
 date: "`r Sys.Date()`"
 output: pdf_document
-bibliography: "mybib.bib"
 vignette: >
   %\VignetteIndexEntry{Nested case control}
   %\VignetteEngine{knitr::rmarkdown}
