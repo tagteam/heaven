@@ -6,7 +6,8 @@
 \usage{
 riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
    ,caseid="caseid",reuseCases=TRUE,reuseControls=TRUE,caseIndex=NULL 
-   ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL,SEED=17)
+   ,controlIndex=NULL,NoIndex=FALSE,cores=1,dateterms=NULL,
+   exposureWindow=0,startDate=NULL,SEED=17)
 }
 \arguments{
 \item{ptid}{Personal ID variable defining participant}
@@ -37,7 +38,7 @@ several cases}
 becomes a case. For a case control study this is the date of event of 
 interest, for a cohort study the date where a case enters an analysis.}
 
-\item{controlIndex}{Integer/Date. date variable defining the date from which 
+\item{controlIndex}{Integer/Date. Date variable defining the date from which 
 a controls can no longer be selected.  The controlIndex must be larger than 
 the caseIndex.  For a case control study this would be the date where a 
 control has the event of interest or is censored.  For a cohort study it 
@@ -55,19 +56,25 @@ variables in the list either both control/case dates are missing, both prior
 to case index, both after case index - or missing for case and with control
 date after case index.}
 
-\item{SEED}{- seed for random sort of controls to select from}
+\item{exposureWindow}{For case/control studies this can be specified to
+ensure that controls have a minimum expore window for some condition which
+starts at the following variable "startDate".  For practical use only cases
+with a certain exposure window are first selected and then this feature is
+used to ensure similar exposure for controls.}
+
+\item{startDate}{Starting date of condition which defines exposure window}
+
+\item{SEED}{- Seed for random shuffling of cases}
 }
 \value{
 data.table with cases and controls. After matching, a new variable 
 "caseid" links controls to cases. Further, a variable "oldevent" holds the 
 orginal value of "event" - to be used to identify cases functioning
-as controls prior to being cases.
+as controls prior to being cases.  Make sure that "caseid" and "oldevent"
+are not already in the dataset
 
 Variables in the original dataset are preserved. The final dataset includes 
-all original cases but only the controls that were selected. 
-
-If cases without controls should be removed, this is done by setting the
-variable removeNoControls to TRUE
+all original cases but only the controls that were selected.
 }
 \description{
 Risk set matching is common term to represent "incidence density sampling" 
@@ -114,20 +121,25 @@ ponding variables for cases if the case does not have the comorbidity and
 similarly that the date has been reached when the case does have that co-
 morbidity.
 
-For many purposes controls should be reused and cases allowed to be controls 
-prior to being cases. By default, there is no reuse and this can be adjusted 
-with "reuseCases" and "reuseControls"
+For most purposes controls should be reused and if cases are not allowed to
+be controls prior to being a case a bias will be introduced. By default, both
+are set to TRUE. 
+
+For special cases it may be required that there is a minimum duration of a 
+condition shared by cases and controls. This can be achieved with defining
+exposure window (same units as the various times, usually days) and 
+startDate, the day the condition of interest starts
 
 The function can be used for standard matching without the caseIndex/
-controlIndex (with "NoIndex"), but other packages such as MatchIt are more 
-likely to be more optimal for these cases.
+controlIndex (with "NoIndex"), but other packages such as MatchIt are 
+likely to be more optimal for such cases.
 
 It may appear tempting always to use multiple cores, but this comes with a 
-costly overhead because the function machinery has to be distributed to each 
-defined "worker".  With very large numbers of cases and controls, multiple
-cores can save substantial amounts of time. When a single core is used a 
-progress shows progress of matching. There is no progress bar with multiple 
-cores
+time costing overhead because the function machinery has to be distributed 
+to each defined "worker".  With very large numbers of cases and controls,
+multiple cores can save substantial amounts of time. When a single core is
+used a progress shows progress of matching. There is no progress bar with 
+multiple cores.
 
 The function matchReport may afterwards be used to provide simple summaries 
 of use of cases and controls
@@ -139,13 +151,15 @@ ptid <- paste0("P",1:55)
 sex <- c(rep("fem",20),rep("mal",20),rep("fem",8),rep("mal",7))
 byear <- c(rep(c(2020,2030),20),rep(2020,7),rep(2030,8))
 case.Index <- c(seq(1,40,1),seq(5,47,3))
+startDisease <- rep(10,55)
 control.Index <- case.Index
 diabetes <- seq(2,110,2)
 heartdis <- seq(110,2,-2)
 diabetes <- c(rep(1,55))
 heartdis <- c(rep(100,55))
 library(data.table)
-dat <- data.table(case,ptid,sex,byear,diabetes,heartdis,case.Index,control.Index)
+dat <- data.table(case,ptid,sex,byear,diabetes,heartdis,case.Index,
+control.Index,startDisease)
 # Very simple match without reuse - no dates to control for
 out <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,NoIndex=TRUE)
 out[]
@@ -161,6 +175,8 @@ out3 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
   ,reuseCases=TRUE,reuseControls=TRUE)
 out3[]   
 # Same with 2 cores
+library(parallel)
+library(foreach)
 out4 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
   "case.Index",controlIndex="control.Index"
   ,reuseCases=TRUE,reuseControls=TRUE,cores=2)  
@@ -174,7 +190,14 @@ out5 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
   "case.Index",controlIndex="control.Index"
   ,reuseCases=TRUE,reuseControls=TRUE,cores=1,
   dateterms=c("diabetes","heartdis"))  
-out5[]   
+out5[]  
+# Case control matching with requirement of minimum exposure time in each
+# group 
+out6 <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex=
+  "case.Index",controlIndex="control.Index"
+  ,reuseCases=TRUE,reuseControls=TRUE,cores=1,
+  exposureWindow=15,startDate="startDisease")
+out6[]  
 
 #POSTPROCESSING
 #It may be convinient to add the number of controls found to each case in or-

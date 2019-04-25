@@ -7,7 +7,7 @@
 \usage{
 standardize.rate(x, age = "agegroups", exposure, by,
   standardize.to = "ref.level", data, method = "gamma", level = 0.95,
-  crude = TRUE, reference = NULL, ...)
+  crude = TRUE, ...)
 }
 \arguments{
 \item{x}{List of names of variable names used to calculate the rates.
@@ -32,8 +32,6 @@ normal or log-normal approximation.}
 \item{level}{Confidence level}
 
 \item{crude}{Logical. If \code{TRUE} calculate crude rates too.}
-
-\item{reference}{Name of reference group}
 
 \item{...}{Not (yet) used}
 }
@@ -94,5 +92,5 @@ Science, 29(4):529--558, 2014.
 standardize.prodlim standardize.proportion epitools::ageadjust.direct
 }
 \author{
-Thomas A. Gerds <tag@biostat.ku.dk> and Jeppe E. H. Madsen <jehm@sund.ku.dk>
+Thomas A. Gerds <tag@biostat.ku.dk>
 }
