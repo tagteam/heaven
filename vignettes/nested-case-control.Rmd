@@ -20,12 +20,14 @@ Epidemiologic cohort studies are often used for assessing the variation in rates
 
 The case-cohort design works in the following way: For each observed failure-time (case), sample $m-1$ non-failures (controls) without replacement. Nested case-control is similar, but with the difference that the sampling is done, only among those at risk at the cases failure-time. 
 
+<!--
 ## Visualization using Lexis diagram
 The Lexis diagram plots the year of birth on the x-axis and the age on the y-axis. Someone who is born in 2000 will be represented by a diagonal line starting at (2000,0) and going through (2001,1), (2002,2) and so on. Let's say we have a group of patients as in Figure \ref{luxus}.
 
 ![\label{luxus} Lexis plot of hypothetical study.](LexisPlotRisk520190311.pdf){width=60%}
 
 They get their diagnosis, but we don't observe anything else about them before five years after (so data is truncated?). Then we're interested in the time from the index date (first diagnosis + 5 years) until they get diagnosed with dementia. We can potentially sample an observation every time we have a star in Figure \ref{luxus}. This also means that the same person can get sampled more than once.
+-->
 
 ## Nested case control for the Cox proportional hazards model
 It turns out, somewhat surprisingly, that the estimator $(\hat{\beta})$ of the regression parameters $(\beta)$ in the Cox model isn't influenced by the sampling and is thus the same as usually. The fact that we have fewer non-failures per failure in the data than in the real world does, however, mean that we can't use the usual Breslow estimator of the integrated baseline hazard. Let $\mathcal{R}_j$ be the set of all those at risk at failure-time $t_j-$, and $\tilde{\mathcal{R}}_j$ be the set of the case at $t_j$ and the $m-1$ controls. Let $n(t_j)$ be the total number at risk at time $t_j$, and $Z_l(t)$ a vector of time-dependent covariates for observation $l$. Then the estimator for the integrated baseline hazard turns out to be
@@ -38,10 +40,12 @@ So each observation is given a higher weight according to how many controls have
 Conditional logistic regression deals with the probability of events for observations in different strata given that we know how many events we observe in each stratum. This corresponds exactly to the situation we are in when we have a nested case control design, since each stratum corresponds to a failure time (so we know that we have exactly one failure time in each stratum). The $\beta$-parameters in this type of model correspond exactly to the $\beta$-parameters we get when we estimate the Cox model for the nested case control design. This also means that we should be very careful when interpreting the $\beta$-parameters - in "normal" logistic regression, it is easy to interpret the $\beta$-parameters since they equal the logarithm of the odds ratio between individuals with covariates $(Z_1,...,Z_k+1,...,Z_K)$ and $(Z_1,...,Z_k,...,Z_K)$. We know, however, that this isn't the case in the Cox model - here they equal the logarithm of the *hazard rate* between individuals with covariates $(Z_1,...,Z_k+1,...,Z_K)$ and $(Z_1,...,Z_k,...,Z_K)$. Hence, parameters should be interpreted as hazard rates rather than odds ratios when using conditional logistic regression.
 
 ## Counter-matching / stratified sampling
-A way to improve effeciency of nested case control is to use counter-matching. Let's say we have a study where it is expensive to measure one covariate so we want to use nested case control, but we have another covariate which is very easy and cheap to collect (e.g. sex). Then split data into S strata (so two strata in the case of sex - or maybe more these days, but you get the idea). If we have a case in stratum $s(i)$ at time $t$, sample without replacement $m_s$ among those at risk at time $t$ in stratum $s\neq s(i)$, and $m_{s(i)}-1$ from stratum $s(i)$.     
+A way to improve effeciency of nested case control is to use counter-matching. Let's say we have a study where we want to use nested case control, but we have a covariate which is very easy and cheap to collect (e.g. sex). Then split data into S strata (so two strata in the case of sex - or maybe more these days, but you get the idea). If we have a case in stratum $s(i)$ at time $t$, sample without replacement $m_s$ among those at risk at time $t$ in stratum $s\neq s(i)$, and $m_{s(i)}-1$ from stratum $s(i)$. It could be smart, for instance, to only sample controls among women when we have a female case and likewise for men.      
 
 ## How well does it work?
-In case of only one covariate with the true parameter equal to 0, the variance of the estimator for the full cohort design to the variance of the nested case control design is $m/(m-1)$ independently of censoring and covariate distributions. What if we have other covariates and/or the true parameter is different from 0?
+In case of only one covariate with the true parameter equal to 0, the variance of the estimator for the full cohort design to the variance of the nested case control design is $m/(m-1)$ independently of censoring and covariate distributions. <!--Things get more complicated in other situations, and different simulations have given different results..
+
+What if we have other covariates and/or the true parameter is different from 0?
 
 Let's say we have a simple setup: two binary variables - one for treatment and another for sex. Let's say 10 \% of patients are treated in the study. We let the censoring times equal the 1 \% quantile of the failure times so that we have exactly 99 \% censoring (so we have type 2 censoring). We use 5 controls per case (so $m=6$) for the nested case control design. We simulate 5000 observations and repeat the simulation 1000 times. 
 
@@ -62,7 +66,7 @@ It looks a lot like $\sqrt{\frac{m}{m-1}}$ so maybe the extra covariate and the 
 
 How does the relative precision depend on the true parameter value? The simulation has been run for parameter values of -0.4, -0.2, 0, 0.2, 0.7 and 1.4 corresponding to hazard rates of 0.67, 0.82, 1, 1.22, 2.01, and 4.06. The median relative precisions were 1.06, 1.08, 1.10, 1.11, 1.16, and 1.25 respectively so it seems like the relative precision is increasing in the value of the true parameter, which is interesting. 
 
-This little simulation study is only one very simple scenario so we should be careful not to conclude too confidently based on it, but to make a long story short: it seems like the effectiveness of the nested case control design is not too imprecise - it lets us go from a sample size of 5000 to 300 with a standard error, which is only 11 \% higher. 
+This little simulation study is only one very simple scenario so we should be careful not to conclude too confidently based on it, but to make a long story short: it seems like the effectiveness of the nested case control design is not too imprecise - it lets us go from a sample size of 5000 to 300 with a standard error, which is only 11 \% higher.--> 
 
 ## Advantages and disadvantages
 There are both advantages and disadvantages to using a nested case control design. Some of the advantages are:
