@@ -92,5 +92,5 @@ Science, 29(4):529--558, 2014.
 standardize.prodlim standardize.proportion epitools::ageadjust.direct
 }
 \author{
-Thomas A. Gerds <tag@biostat.ku.dk>
+Thomas A. Gerds <tag@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
 }
