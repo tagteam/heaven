@@ -63,7 +63,7 @@
 ##'                  age="agegroups",exposure="groups",data=D,standardize.to="mean")
 ##' }
 ##' @export 
-##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
 standardize.rate <- function(x,
                              age="agegroups",
                              exposure,
@@ -107,7 +107,6 @@ standardize.rate <- function(x,
             counts <- .SD[[x[[v]][[1]]]]
             pops <- .SD[[x[[v]][[2]]]]  
             egroups <- .SD[[exposure]]
-            ## Jeppe laver rod
             e1 <- egroups==exposure.levels[[1]]
             std.x <- NULL
             for(i in 2:n0){
