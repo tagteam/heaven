@@ -27,6 +27,10 @@ na_locf <- function(x) {
     .Call('_heaven_na_locf', PACKAGE = 'heaven', x)
 }
 
+nccSamplingCpp <- function(pnr, time, status, Ncontrols = 10) {
+    .Call('_heaven_nccSamplingCpp', PACKAGE = 'heaven', pnr, time, status, Ncontrols)
+}
+
 split2 <- function(pnrnum, inn, out, event, mergevar, split, numcov) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, split, numcov)
 }

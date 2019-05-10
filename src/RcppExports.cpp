@@ -72,6 +72,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nccSamplingCpp
+DataFrame nccSamplingCpp(arma::vec pnr, arma::vec time, arma::vec status, double Ncontrols);
+RcppExport SEXP _heaven_nccSamplingCpp(SEXP pnrSEXP, SEXP timeSEXP, SEXP statusSEXP, SEXP NcontrolsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type pnr(pnrSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type status(statusSEXP);
+    Rcpp::traits::input_parameter< double >::type Ncontrols(NcontrolsSEXP);
+    rcpp_result_gen = Rcpp::wrap(nccSamplingCpp(pnr, time, status, Ncontrols));
+    return rcpp_result_gen;
+END_RCPP
+}
 // split2
 List split2(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerMatrix split, int numcov);
 RcppExport SEXP _heaven_split2(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP splitSEXP, SEXP numcovSEXP) {
@@ -132,6 +146,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 6},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
+    {"_heaven_nccSamplingCpp", (DL_FUNC) &_heaven_nccSamplingCpp, 4},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 11},
