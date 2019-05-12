@@ -11,13 +11,14 @@
 #' @return A data.table with the variables pnr, time, status and chosen covariates
 #' @details The time variable can be used as strata variable in clogit
 #' @examples
-#' n <- 100000
+#' \dontrun{n <- 100000
 #' pnr <- 1:n
 #' time <- rexp(n)
 #' status <- sample(0:1,n,replace=TRUE,prob=c(.99,.01))
 #' sex <- sample(c("M","F"),n,replace=TRUE)
 #' age <- sample(c("y","m","o"),n,replace=TRUE)
 #' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex,age),include=list(sex=sex,age=age))
+#' }
 #' @export
 #' @author Jeppe E. H. Madsen <vcl891@alumni.ku.dk>
 nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,include=NULL){

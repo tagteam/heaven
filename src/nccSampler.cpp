@@ -11,13 +11,16 @@ DataFrame nccSamplingCpp(arma::vec pnr, arma::vec time, arma::vec status, double
   arma::vec PNR = zeros<vec>((Ncontrols+1)*nCases);               
   arma::vec TIME = zeros<vec>((Ncontrols+1)*nCases);
   arma::vec STATUS = zeros<vec>((Ncontrols+1)*nCases);
+  uword NOBS= caseTimes.size();
   int nn=0;
-  for(double t:caseTimes){                                        // Loop over event times
-    arma::uvec Case = (time == t) % (status == 1);                // Case at time t (1/0)
+  double CT=0;
+  for(uword t = 0;t< NOBS;t++){                                        // Loop over event times
+    CT=caseTimes[t];
+    arma::uvec Case = (time == CT) % (status == 1);                // Case at time t (1/0)
     int ncase = sum(Case);                                        // Number of cases at time t
-    arma::uvec atRiskIndex = (time>=t)%(status==0);               // At risk set                            
-    arma::vec atRisk = pnr(find((time>=t)%(status==0)));          // PNRs for people at risk
-    int ncont = Ncontrols * ncase;                                // Number of controls
+    arma::uvec atRiskIndex = (time>=CT)%(status==0);               // At risk set                            
+    arma::vec atRisk = pnr(find((time>=CT)%(status==0)));          // PNRs for people at risk
+    uword ncont = Ncontrols * ncase;                                // Number of controls
     // Sample risk set if risk set is smaller than Ncontrols
     if(ncont>sum(atRiskIndex)) ncont = sum(atRiskIndex);          
     if(ncont>0){                                                  // Do stuff if risk set is not empty
@@ -26,7 +29,7 @@ DataFrame nccSamplingCpp(arma::vec pnr, arma::vec time, arma::vec status, double
 	TIME(i)=t;                                                // The time for the cluster
       }
       // PNR for cases
-      arma::vec pnrHelp = pnr.elem(find((time==t) % (status==1)));
+      arma::vec pnrHelp = pnr.elem(find((time==CT) % (status==1)));
       for(int i=nn;i<nn+ncase;++i){
 	STATUS(i) = 1;                                            // Status for cases (1)
 	int j=i-nn;

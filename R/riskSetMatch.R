@@ -202,7 +202,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                          ,SEED=17 # Seed for random sort
 ){ 
   .SD=Internal.ptid=pnrnum=cterms=Internal.event=Internal.cterms=label=Internal.event=pnrnum=
-    random=.N=Internal.controlIndex=Internal.caseIndex=random=Internal.controlIndex=Internal.caseIndex=NULL
+    random=.N=Internal.controlIndex=Internal.caseIndex=random=Internal.controlIndex=Internal.caseIndex=Internal.startDate=NULL
   #check
   if (!is.character(ptid) | !is.character(event) | (!is.null(caseIndex) & !is.character (caseIndex)) |
       (!is.null(dateterms) & !is.character(dateterms))   |
