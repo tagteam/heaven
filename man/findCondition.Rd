@@ -4,7 +4,7 @@
 \alias{findCondition}
 \title{Find conditions in registry data}
 \usage{
-findCondition(data, vars, keep, conditions, match="contain",cond="cond")
+findCondition(data, vars, keep, conditions, match="contain",variabale.name="variable")
 }
 \arguments{
 \item{data}{Data in which to search for conditions}
@@ -54,7 +54,7 @@ search <- list(Cond1=c('A1','A2'),Cond2=c('B10','B40','B5'),
 Cond3=c('A1','C20','B2'))
 
 out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
-conditions=search,match="start",cond="x")
+conditions=search,match="start",variable.name="cond")
 ### And how to use the result:
 # Find first occurence of each condition and then use "dcast" to create
 # a data.table with vectors corresponding to each condition.
@@ -63,12 +63,12 @@ test <- out[,list(min=min(odto)),by=c("pnr","cond")]
 test2 <- dcast(pnr~cond,data=test,value.var="min")
 test2 # A datatable with first dates of each condition for each pnr, but only 
       # for pnr with at least one condition
-# Define a condition as present when before a certain date
+# Define a condition as present when before a certain index date
 dates <- data.table (pnr=1:100,basedate=sample(0:200,size=100,replace=TRUE))       
 test3 <- merge(out,dates,by="pnr")
 test3[,before:=as.numeric(odto<=basedate)] # 1 when condition fulfilled
-test3[is.na(before),before:=0] # change NA to zero
 test4 <- dcast(pnr~cond,value.var="before",data=test3)
+# Whether to conver NAs to zero depends on application
 }
 \author{
 Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta

@@ -30,7 +30,7 @@
 #' 
 #' See examples for common use of the output
 #' @usage
-#' findCondition(data, vars, keep, conditions, match="contain",cond="cond")
+#' findCondition(data, vars, keep, conditions, match="contain",variabale.name="variable")
 #' 
 #' @param data Data in which to search for conditions
 #' @param vars Name(s) of variable(s) in which to search.
@@ -74,7 +74,7 @@
 #' test4 <- dcast(pnr~cond,value.var="before",data=test3)
 #' # Whether to conver NAs to zero depends on application
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta
-#' tag@@biostat.ku.dk>
+#' tag@biostat.ku.dk>
 findCondition <- function(data,
                           vars,
                           keep,
