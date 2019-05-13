@@ -41,6 +41,8 @@
 #' "exact"=exactly matches the search string, "contains"=contains the search
 #' string, "starts"=Starts with the search string, "end"=Ends with the search
 #' string
+#' @variable.name Name of variable where values define perhaps multiple 
+#' conditions
 #' @return
 #' A data table that includes the "keep-variables" and a variable "cond" which
 #' identifies the condition searched for
@@ -56,7 +58,7 @@
 #' Cond3=c('A1','C20','B2'))
 #'
 #' out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
-#' conditions=search,match="start",cond="x")
+#' conditions=search,match="start",variable.name="cond")
 #' ### And how to use the result:
 #' # Find first occurence of each condition and then use "dcast" to create
 #' # a data.table with vectors corresponding to each condition.
@@ -65,13 +67,12 @@
 #' test2 <- dcast(pnr~cond,data=test,value.var="min")
 #' test2 # A datatable with first dates of each condition for each pnr, but only 
 #'       # for pnr with at least one condition
-#' # Define a condition as present when before a certain date
+#' # Define a condition as present when before a certain index date
 #' dates <- data.table (pnr=1:100,basedate=sample(0:200,size=100,replace=TRUE))       
 #' test3 <- merge(out,dates,by="pnr")
 #' test3[,before:=as.numeric(odto<=basedate)] # 1 when condition fulfilled
-#' test3[is.na(before),before:=0] # change NA to zero
 #' test4 <- dcast(pnr~cond,value.var="before",data=test3)
-#' @export
+#' # Whether to conver NAs to zero depends on application
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta
 #' tag@@biostat.ku.dk>
 findCondition <- function(data,
@@ -112,7 +113,7 @@ findCondition <- function(data,
         }
     }
     out <- out[,c("cond",keep),with=FALSE]
-    setnames(out,"cond",cond)
+    setnames(out,"cond",variable.name)
     out
 }
 
