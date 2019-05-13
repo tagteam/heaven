@@ -122,13 +122,16 @@ medicinMacro <- function(drugs,
         }
         ##--- unique id's
         idunique <- unique(drugdb.work[["pnr"]])
-        # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
-        if(typeof(idunique)=="character"){
+                                        # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
+        id.character <- typeof(idunique)=="character"
+        if(id.character){
             db = data.table(pnr.db=idunique)
             db[,tmp.index:=1:.N]
             drugdb.work = merge(drugdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
             if(NROW(admdb.work)>0)
                 admdb.work = merge(admdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
+            ## now continue with numeric id
+            idunique <- db[["tmp.index"]]
         }
         if (length(idunique)==0) {
             warning(paste0("No individual purchased ",paste0(atcs,collapse=", ")," in this period"))
@@ -177,7 +180,7 @@ medicinMacro <- function(drugs,
                 setkey(out,pnr,firstday)
             }
             ## Revert pnr type change
-            if(typeof(idunique)=="character")
+            if(id.character)
                 out = merge(out,db,by.x="pnr",by.y="tmp.index",all.x=TRUE)[,pnr:=pnr.db][,pnr.db:=NULL][]
             processed[[drugname]] <- out
         }
