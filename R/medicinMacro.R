@@ -80,7 +80,7 @@ medicinMacro <- function(drugs,
                          packsize.var="packsize",
                          apk.var="apk",
                          splitting = FALSE){
-    atc=eksd=inddto=uddto=NULL
+    atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
     # Set the right structure for processed object
     processed <- structure(list(),class = "medicinmacro")
     if (missing(drugs) || is.null(drugs)) stop("Sorry, no drugs have been specified.")

@@ -93,7 +93,7 @@ xrecepter <- function(drugdb,
     if (missing(min) || length(min)!=4) stop("argument min should be a vector of length 4 (minimal dosages)")
     if (missing(max) || length(max)!=4) stop("argument max should be a vector of length 4 (maximal dosages)")
     if (missing(def) || length(def)!=4) stop("argument def should be a vector of length 4 (default dosages)")
-    .SD = NULL
+    .SD=startdag=slutdag=exposure.days=lastday=firstday=pnr = NULL
     olddir <- getwd()
     if (missing(wd) || length(wd) == 0){
         wd <- getwd()

@@ -12,12 +12,13 @@ DataFrame nccSamplingCpp(arma::vec pnr, arma::vec time, arma::vec status, double
   arma::vec PNR = zeros<vec>((Ncontrols+1)*nCases);               
   arma::vec TIME = zeros<vec>((Ncontrols+1)*nCases);
   arma::vec STATUS = zeros<vec>((Ncontrols+1)*nCases);
+  uword NOBS= caseTimes.size();
   int nn=0;
   // seq function from base
   Rcpp::Environment base("package:base"); 
   Rcpp::Function seq = base["seq"];
   // Loop over event times
-  for(double i=0;i<n;++i){                                        
+  for(int i=0;i<n;++i){                                        
     double t = caseTimes(i);
     arma::uvec Case = (time == t) % (status == 1);                // Case at time t (1/0)
     int ncase = sum(Case);                                        // Number of cases at time t
