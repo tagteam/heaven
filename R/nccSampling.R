@@ -21,19 +21,31 @@
 #' }
 #' @export
 #' @author Jeppe E. H. Madsen <vcl891@alumni.ku.dk>
-nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,include=NULL){
+nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,include=match,
+                        Tstart=rep(0,length(pnr)),exposureWindow=0){
     tmp <- NULL
     pnr <- eval(substitute(pnr),data)
     time <- eval(substitute(time),data)
     status <- eval(substitute(status),data)
+    Tstart <- eval(substitute(Tstart),data)
+    sub <- ((time-Tstart)>exposureWindow)
+    pnr <- pnr[sub]
+    time <- time[sub]
+    status <- status[sub]
+    Tstart <- Tstart[sub]
+    exposureWindow <- rep(exposureWindow, length(pnr))
     if(!is.numeric(pnr)) pnr <- as.numeric(as.factor(pnr))
     ## Matching part of code
     ifelse(is.null(match), grp <- rep(1,length(time)), grp <- as.numeric(interaction(match)))
     for(i in 1:length(unique(grp))){
-        tmppnr <- pnr[grp==i]
-        tmptime <- time[grp==i]
-        tmpstatus <- status[grp==i]
-        tmp <- rbind(tmp, nccSamplingCpp(tmppnr,tmptime,tmpstatus,Ncontrols))
+        ind <- (grp==i)
+        tmppnr <- pnr[ind]
+        tmptime <- time[ind]
+        tmpstatus <- status[ind]
+        tmpTstart <- Tstart[ind]
+        tmpexposureWindow <- exposureWindow[ind]
+        tmp <- rbind(tmp, nccSamplingCpp(tmppnr,tmptime,tmpstatus,tmpTstart,
+                                         tmpexposureWindow,Ncontrols))
     }
     ## Include part of code
     mm <- length(include)
@@ -48,6 +60,6 @@ nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,includ
     }
     ## Return as sorted data table
     setDT(tmp)
-    tmp <- tmp[time!=0,]
+    tmp <- tmp[pnr!=0,]
     tmp[order(time),]
 }
