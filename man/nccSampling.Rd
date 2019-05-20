@@ -4,8 +4,9 @@
 \alias{nccSampling}
 \title{Dataset for nested case-control}
 \usage{
-nccSampling(pnr, time, status, Ncontrols = 10, data = NULL,
-  match = NULL, include = NULL)
+nccSampling(pnr, time, status, Ncontrols = 10L, data = NULL,
+  match = NULL, include = match, Tstart = rep(0, length(pnr)),
+  exposureWindow = 0)
 }
 \arguments{
 \item{pnr}{PNR for the individual patients}
@@ -21,6 +22,10 @@ nccSampling(pnr, time, status, Ncontrols = 10, data = NULL,
 \item{match}{List of matching variables}
 
 \item{include}{List of covariates to include in the output dataset}
+
+\item{Tstart}{Time of treatment start}
+
+\item{exposureWindow}{Minimum required time of exposure to be included both as a case and as a control}
 }
 \value{
 A data.table with the variables pnr, time, status and chosen covariates

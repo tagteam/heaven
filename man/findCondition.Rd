@@ -20,6 +20,9 @@ output}
 "exact"=exactly matches the search string, "contains"=contains the search
 string, "starts"=Starts with the search string, "end"=Ends with the search
 string}
+
+\item{variable.name}{Name of variable where values define conditions.  The values
+of this variable are the names from paramter "conditions".}
 }
 \value{
 A data table that includes the "keep-variables" and a variable "cond" which

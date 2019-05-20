@@ -8,6 +8,8 @@
 #' @param data Dateset containing the variables (not the matching and inclusion variables yet)
 #' @param match List of matching variables
 #' @param include List of covariates to include in the output dataset
+#' @param Tstart Time of treatment start
+#' @param exposureWindow Minimum required time of exposure to be included both as a case and as a control
 #' @return A data.table with the variables pnr, time, status and chosen covariates
 #' @details The time variable can be used as strata variable in clogit
 #' @examples
