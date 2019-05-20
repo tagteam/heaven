@@ -22,6 +22,7 @@
 #' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex,age),include=list(sex=sex,age=age))
 #' }
 #' @export
+#' @useDynLib heaven
 #' @author Jeppe E. H. Madsen <vcl891@alumni.ku.dk>
 nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,include=match,
                         Tstart=rep(0,length(pnr)),exposureWindow=0){
@@ -35,6 +36,10 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     time <- time[sub]
     status <- status[sub]
     Tstart <- Tstart[sub]
+    m <- length(match)
+    for(i in 1:m) match[[i]] <- match[[i]][sub];
+    ii <- length(include)
+    for(i in 1:ii) include[[i]] <- include[[i]][sub]
     exposureWindow <- rep(exposureWindow, length(pnr))
     if(!is.numeric(pnr)) pnr <- as.numeric(as.factor(pnr))
     ## Matching part of code
