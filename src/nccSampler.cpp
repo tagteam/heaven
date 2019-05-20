@@ -23,7 +23,7 @@ DataFrame nccSamplingCpp(arma::vec pnr, arma::vec time, arma::vec status, arma::
     arma::uvec Case = (time == t) % (status == 1);                // Case at time t (1/0)
     int ncase = sum(Case);                                        // Number of cases at time t
     // At risk set
-    arma::uvec atRiskIndex = (time>=t)%(1-Case)%((t-Tstart)>exposureWindow);          
+    arma::uvec atRiskIndex = ((time==t)%(1-Case) + (time>t))%((t-Tstart)>exposureWindow);          
     // PNRs for people at risk
     arma::vec atRisk = pnr.elem(find(atRiskIndex));
     int ncont = Ncontrols * ncase;                                // Number of controls

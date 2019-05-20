@@ -5,8 +5,8 @@
 \title{Dataset for nested case-control}
 \usage{
 nccSampling(pnr, time, status, Ncontrols = 10L, data = NULL,
-  match = NULL, include = match, Tstart = rep(0, length(pnr)),
-  exposureWindow = 0)
+  match = NULL, include = NULL, Tstart = rep(0, length(pnr)),
+  exposureWindow = 0, cores = 1)
 }
 \arguments{
 \item{pnr}{PNR for the individual patients}
@@ -26,6 +26,8 @@ nccSampling(pnr, time, status, Ncontrols = 10L, data = NULL,
 \item{Tstart}{Time of treatment start}
 
 \item{exposureWindow}{Minimum required time of exposure to be included both as a case and as a control}
+
+\item{cores}{Number of cores to use}
 }
 \value{
 A data.table with the variables pnr, time, status and chosen covariates
@@ -43,7 +45,7 @@ time <- rexp(n)
 status <- sample(0:1,n,replace=TRUE,prob=c(.99,.01))
 sex <- sample(c("M","F"),n,replace=TRUE)
 age <- sample(c("y","m","o"),n,replace=TRUE)
-d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex,age),include=list(sex=sex,age=age))
+d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
 }
 }
 \author{
