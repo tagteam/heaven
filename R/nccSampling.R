@@ -8,6 +8,9 @@
 #' @param data Dateset containing the variables (not the matching and inclusion variables yet)
 #' @param match List of matching variables
 #' @param include List of covariates to include in the output dataset
+#' @param Tstart Time of treatment start
+#' @param exposureWindow Minimum required time of exposure to be included both as a case and as a control
+#' @param cores Number of cores to use
 #' @return A data.table with the variables pnr, time, status and chosen covariates
 #' @details The time variable can be used as strata variable in clogit
 #' @examples
@@ -17,29 +20,60 @@
 #' status <- sample(0:1,n,replace=TRUE,prob=c(.99,.01))
 #' sex <- sample(c("M","F"),n,replace=TRUE)
 #' age <- sample(c("y","m","o"),n,replace=TRUE)
-#' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex,age),include=list(sex=sex,age=age))
+#' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
 #' }
 #' @export
+#' @useDynLib heaven
 #' @author Jeppe E. H. Madsen <vcl891@alumni.ku.dk>
-nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,include=NULL){
+nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,include=NULL,
+                        Tstart=rep(0,length(pnr)),exposureWindow=0,cores=1){
     tmp <- NULL
+    if(is.null(include)) include <- match
     pnr <- eval(substitute(pnr),data)
     time <- eval(substitute(time),data)
     status <- eval(substitute(status),data)
+    Tstart <- eval(substitute(Tstart),data)
+    sub <- ((time-Tstart)>exposureWindow)
+    pnr <- pnr[sub]
+    time <- time[sub]
+    status <- status[sub]
+    Tstart <- Tstart[sub]
+    m <- length(match)
+    for(i in 1:m) match[[i]] <- match[[i]][sub];
+    ii <- length(include)
+    for(i in 1:ii) include[[i]] <- include[[i]][sub]
+    exposureWindow <- rep(exposureWindow, length(pnr))
     if(!is.numeric(pnr)) pnr <- as.numeric(as.factor(pnr))
     ## Matching part of code
     ifelse(is.null(match), grp <- rep(1,length(time)), grp <- as.numeric(interaction(match)))
-    for(i in 1:length(unique(grp))){
-        tmppnr <- pnr[grp==i]
-        tmptime <- time[grp==i]
-        tmpstatus <- status[grp==i]
-        tmp <- rbind(tmp, nccSamplingCpp(tmppnr,tmptime,tmpstatus,Ncontrols))
+    if(cores==1){
+        for(i in 1:length(unique(grp))){
+            ind <- (grp==i)
+            tmppnr <- pnr[ind]
+            tmptime <- time[ind]
+            tmpstatus <- status[ind]
+            tmpTstart <- Tstart[ind]
+            tmpexposureWindow <- exposureWindow[ind]
+            tmp <- rbind(tmp, nccSamplingCpp(tmppnr,tmptime,tmpstatus,tmpTstart,
+                                             tmpexposureWindow,Ncontrols))
+        }
+    }
+    else{
+        registerDoMC <- cores
+        tmp <- foreach(i=1:length(unique(grp)), .combine = "rbind") %dopar% {
+            ind <- (grp==i)
+            tmppnr <- pnr[ind]
+            tmptime <- time[ind]
+            tmpstatus <- status[ind]
+            tmpTstart <- Tstart[ind]
+            tmpexposureWindow <- exposureWindow[ind]
+            nccSamplingCpp(tmppnr,tmptime,tmpstatus,tmpTstart,tmpexposureWindow,Ncontrols)
+        }
     }
     ## Include part of code
-    mm <- length(include)
-    if(mm > 0){
-        cov <- matrix(NA,nrow=nrow(tmp),ncol=mm)
-        for(i in 1:mm){
+    if(ii > 0){
+        cov <- matrix(NA,nrow=nrow(tmp),ncol=ii)
+        for(i in 1:ii){
             v <- include[[i]]
             cov[,i] <- v[match(tmp$pnr,pnr)]
         }
@@ -48,6 +82,6 @@ nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,includ
     }
     ## Return as sorted data table
     setDT(tmp)
-    tmp <- tmp[time!=0,]
+    tmp <- tmp[pnr!=0,]
     tmp[order(time),]
 }
