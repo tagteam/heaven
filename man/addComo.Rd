@@ -11,7 +11,7 @@ addComo(x, target, como, ...)
 
 \item{target}{name of dataset}
 
-\item{como}{character string which should}
+\item{como}{character string which should match \code{names(diseasecode)}}
 
 \item{...}{not used}
 }
@@ -28,7 +28,7 @@ Add a comorbidity to an existing dpp object
 # see help(dpp)
 }
 \seealso{
-addSex, addAge, addVariable
+addSex, addAge, addVariable, addDrug
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

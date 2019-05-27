@@ -7,7 +7,7 @@ Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
 Description: Fast and furious implementations of often used data preparation steps.
              These functions are adapted to Danish registry data.
 Depends:
-    R (>= 3.0.0)
+    R (>= 3.5.0)
 Imports:
     ggplot2,
     data.table(>= 1.9.6),

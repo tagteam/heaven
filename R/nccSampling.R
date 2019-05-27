@@ -26,18 +26,9 @@ nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,includ
     pnr <- eval(substitute(pnr),data)
     time <- eval(substitute(time),data)
     status <- eval(substitute(status),data)
+    if(!is.numeric(pnr)) pnr <- as.numeric(as.factor(pnr))
     ## Matching part of code
-    grp <- rep(1,length(time))
-    m <- length(match)
-    pd <- 1
-    if(m > 0){
-        for(im in 1:m){
-            v <- match[[im]]
-            if(!is.factor(v)) v <- factor(v)
-            grp <- grp  + pd * (as.numeric(v)-1)
-            pd <- pd * length(levels(v))
-        }
-    }
+    ifelse(is.null(match), grp <- rep(1,length(time)), grp <- as.numeric(interaction(match)))
     for(i in 1:length(unique(grp))){
         tmppnr <- pnr[grp==i]
         tmptime <- time[grp==i]
@@ -56,7 +47,7 @@ nccSampling <- function(pnr,time,status,Ncontrols=10,data=NULL,match=NULL,includ
         tmp <- cbind(tmp, cov)
     }
     ## Return as sorted data table
-    tmp <- setDT(tmp)
+    setDT(tmp)
     tmp <- tmp[time!=0,]
     tmp[order(time),]
 }
