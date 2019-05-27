@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 #include <vector>
 #include <string>
+#include <random>
+#include <algorithm>
 using namespace Rcpp;
 // [[Rcpp::export]]
 List Matcher(int Ncontrols, // Desired number of controls
@@ -16,7 +18,8 @@ List Matcher(int Ncontrols, // Desired number of controls
              int Ndateterms, // number of dateterm variables - zero=0
              IntegerMatrix datescases, // case dates 
              IntegerMatrix datescontrols, // control dates   
-             int NoIndex){ // Ignore index if 1 - match without regard to risk-set - essentially simple match 
+             int NoIndex,
+             int seed){ // Ignore index if 1 - match without regard to risk-set - essentially simple match 
   int ii; // while counter - number of selected controls
   int controlCounter=0;// Sequencer through list of controls - controlIndex
   bool IsCoEl;  // preliminary test of selectability
@@ -28,6 +31,14 @@ List Matcher(int Ncontrols, // Desired number of controls
   std::vector<int> usedControls(Tcontrols+1,0);  // Have already been used
   for (int i=0; i<Ncases; i++){ // Loop through each case to identify controls
     if (Ncases<1 || Tcontrols<1) break; // allows for groups to have no controls or no cases
+    if (reuseControls==1){ // New shufling for each case
+      controlCounter=0;
+      seed+=1;
+      std::mt19937 eng1(seed);
+      std::shuffle(controlIndex.begin(), controlIndex.end(), eng1);
+      std::mt19937 eng2 = eng1;
+      std::shuffle(controls.begin(), controls.end(), eng2);
+    }
     for (int j=0; j<Tcontrols; j++) haveTried[j]=0; //Initialize to "have not tried"
     ii=1; // while counter - number of selected cases for a control
     while (ii<=Ncontrols){
@@ -127,7 +138,7 @@ List Matcher(int Ncontrols, // Desired number of controls
 // 
 // temp <- Matcher(Ncontrols,Tcontrols,Ncases,reuseControls,expWindow,startDate,
 //                         controlIndex, caseIndex,
-//                          controls,  cases,3,dcases,dcontrols,NoIndex)
+//                          controls,  cases,3,dcases,dcontrols,NoIndex,2)
 //  library(data.table)
 //   setDT(temp)[]
 // 

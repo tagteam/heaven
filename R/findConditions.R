@@ -79,6 +79,7 @@ findCondition <- function(data,
                           conditions,
                           match="contain",
                           variable.name="variable"){
+  cond=NULL
   match <-match.arg(match,c("exact","contains","start"))
   if (!is.character(vars) | !is.character(keep)) stop ("Error -  vars or keep not character")  
   if (!class(conditions)=="list") stop ("Error - Conditions not a list")

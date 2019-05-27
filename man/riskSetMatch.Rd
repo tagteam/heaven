@@ -87,19 +87,14 @@ specify a "greedy" approach where controls are only used once as well as
 allowing the program to reuse controls and to allow cases to be controls 
 prior to being a case.
 
+For the common use in nested case control studies it is important to specify
+that controls can be reused and cases can appear as controls prior to being
+a control.
+
 In addition to the exact matching the function and also only select controls
 where time of covariates are missing for both cases and controls, are both
 before case index, are both after case index - or are missing for case index
-and after case index for controls. 
-
-To provide necessary speed for large samples the general technique used is 
-to create a series of risk-groups that have the fixed matching variables 
-identical (such as birthyear and gender).  The available controls are then 
-sorted by a random number and selected for consecutive cases if the 
-"case-date=case index" is later than the corresponding "control-date=
-control index". The consecutive selection can in theory cause bias and the 
-result of the function needs careful attention when the number of controls 
-is small compared to the number of cases.
+and after case index for controls.
 }
 \details{
 The function does exact matching and keeps 2 dates (indices) apart such that 
