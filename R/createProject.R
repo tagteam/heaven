@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Apr 11 2019 (09:51) 
 ## Version: 
-## Last-Updated: Apr 11 2019 (10:56) 
+## Last-Updated: May 29 2019 (15:12) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 18
+##     Update #: 20
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -24,7 +24,7 @@
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 createProject <- function(directory){
-    if (missing(directory)) directory <- file.choose()
+    if (missing(directory)) directory <- file.choose(new=TRUE)
     if (dir.exists(directory)) stop("Directory ",directory," exists already.\nYou may want to choose another name and afterwards merge with the old project!?")
     else {
         dd <- try(xx <- dir.create(directory))
@@ -38,7 +38,7 @@ createProject <- function(directory){
                 "\n-----------------------------------------------------------",
                 "\nFile structure:\n",
                 "  - To create a new R script file copy the file template-R-code.R\n",
-                "  - To create a new SAS script file copy the file template-SAS-code.R",
+                "  - To create a new SAS script file copy the file template-SAS-code.sas",
                 "\n-----------------------------------------------------------",
                 "\nDo not POLUTE the environment:",
                 "\n - put temporary objects into temp (i.e., files that can be deleted without loss)",
