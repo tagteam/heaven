@@ -11,19 +11,14 @@
 #' allowing the program to reuse controls and to allow cases to be controls 
 #' prior to being a case.
 #' 
+#' For the common use in nested case control studies it is important to specify
+#' that controls can be reused and cases can appear as controls prior to being
+#' a control.
+#' 
 #' In addition to the exact matching the function and also only select controls
 #' where time of covariates are missing for both cases and controls, are both
 #' before case index, are both after case index - or are missing for case index
 #' and after case index for controls. 
-#' 
-#' To provide necessary speed for large samples the general technique used is 
-#' to create a series of risk-groups that have the fixed matching variables 
-#' identical (such as birthyear and gender).  The available controls are then 
-#' sorted by a random number and selected for consecutive cases if the 
-#' "case-date=case index" is later than the corresponding "control-date=
-#' control index". The consecutive selection can in theory cause bias and the 
-#' result of the function needs careful attention when the number of controls 
-#' is small compared to the number of cases.
 #' 
 #' @usage
 #'    riskSetMatch(ptid,event,terms,dat,Ncontrols,oldevent="oldevent"
@@ -247,6 +242,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
   
   if(!NoIndex) RcaseIndex <- caseIndex # remember name of caseIndex
   if(!is.null(dateterms)) alldata[,(Internal.dateterms):=lapply(.SD,as.integer),.SDcols=Internal.dateterms] #conversion to integer of dateterms
+  NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
   # prepare to split 
   setkey(alldata,Internal.cterms)
   split.alldata <- split(alldata,by="Internal.cterms") # Now a list aplit by Internal.cterms
@@ -272,11 +268,12 @@ riskSetMatch <- function(ptid     # Unique patient identifier
       #find lengths of controls and cases
       Tcontrols<-dim(controls)[1]
       Ncases<-dim(cases)[1]
-      # sort controls by random number - so that they can be selected sequentially
-      set.seed(SEED)
-      controls[,random:=runif(.N,1,Ncontrols*10)]
-      setkey(controls,random)
-      NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
+      if (!reuseControls){ # For reuse control shuffling is performed in cpp
+        # sort controls by random number - so that they can be selected sequentially
+        set.seed(SEED)
+        controls[,random:=runif(.N,1,Ncontrols*10)]
+        setkey(controls,random)
+      }
       #Length of dateterm vector
       if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
       if(!NoIndex){
@@ -299,7 +296,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
       else startDate <-0
       Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,exposureWindow, startDate,
                       control.date,case.date,controls[,pnrnum],cases[,pnrnum],
-                      Ndateterms,dates.cases,dates.controls,noindex)
+                      Ndateterms,dates.cases,dates.controls,noindex,SEED)
       # Output <- Matcher(Ncontrols,Tcontrols,Ncases,NreuseControls, exposureWindow,startDate,
       #                   control.date,case.date,controls[,pnrnum],cases[,pnrnum],
       #                   Ndateterms,dates.cases,dates.controls,noindex)
@@ -328,11 +325,13 @@ riskSetMatch <- function(ptid     # Unique patient identifier
       #find lengths of controls and cases
       Tcontrols<-dim(controls)[1]
       Ncases<-dim(cases)[1]
+      if (!reuseControls){ # For reuse control shuffling is performed in cpp
+        # sort controls by random number - so that they can be selected sequentially
+        set.seed(SEED)
+        controls[,random:=runif(.N,1,Ncontrols*10)]
+        setkey(controls,random)
+      }
       # sort controls by random number - so that they can be selected sequentially
-      set.seed(17)
-      controls[,random:=runif(.N,1,Ncontrols*10)]
-      setkey(controls,random)
-      NreuseControls <- as.numeric(reuseControls) # Integerlogic for Rcpp
       #Length of dateterm vector
       if(!is.null(dateterms)) Ndateterms=length(dateterms) else Ndateterms <- 0
       if(!NoIndex){
@@ -355,7 +354,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
       else startDate <-0
       Output <- .Call('_heaven_Matcher',PACKAGE = 'heaven',Ncontrols,Tcontrols,Ncases,NreuseControls,exposureWindow, startDate,
                       control.date,case.date,controls[,pnrnum],cases[,pnrnum],
-                      Ndateterms,dates.cases,dates.controls,noindex)
+                      Ndateterms,dates.cases,dates.controls,noindex,SEED)
       # Output <- Matcher(Ncontrols,Tcontrols,Ncases,NreuseControls, exposureWindow,startDate,
       #                   control.date,case.date,controls[,pnrnum],cases[,pnrnum],
       #                   Ndateterms,dates.cases,dates.controls,noindex)
