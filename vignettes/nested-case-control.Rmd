@@ -83,6 +83,10 @@ Some disadvantages are:
 
 - We have to wait until cases occur to get covariate information when using nested case control, but controls can be chosen right away when using a case-cohort design.  
 
+## References
+Schmid, Matthias. (2015). Handbook of Survival Analysis. J. P.Klein, H. C.vanHouwelingen, J. G.Ibrahim, and T. H.Scheike (eds.) (2014). Boca Raton: CRC Press. 656 pages
+
+Borgan, O & Goldstein, L & Langholz, B. (1995). Methods for the Analysis of Sampled Cohort Data in the Cox Proportional Hazards Model. The Annals of Statistics. 23. 
 
 
 
