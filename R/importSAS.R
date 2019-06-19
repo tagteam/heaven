@@ -293,9 +293,10 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
             file.remove(file)
     }
     cond <- ""
-    ## make life easier for the user
-    keep <- c(keep, date.vars, numeric.vars, character.vars)
+
     if (length(keep) > 0) {
+        ## make life easier for the user
+        keep <- c(keep, date.vars, numeric.vars, character.vars)
         cond <- paste(cond, "keep=", paste(keep, collapse = " "),
                       " ", sep = "")
     }
@@ -508,7 +509,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
                                                            ia$colClasses[["numeric"]]))
                 }
             }
-            # reset filternames
+                                        # reset filternames
             if (length(filter) > 0){
                 setnames(filter,orig.filter.names)
             }
