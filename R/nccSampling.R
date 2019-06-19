@@ -1,6 +1,6 @@
 #' Dataset for nested case-control
 #'
-#' @title Dataset for nested case-control
+#' @title Create dataset for nested case-control design 
 #' @param pnr PNR for the individual patients
 #' @param time Time of event or censoring
 #' @param status Event indicator
@@ -20,6 +20,7 @@
 #' status <- sample(0:1,n,replace=TRUE,prob=c(.99,.01))
 #' sex <- sample(c("M","F"),n,replace=TRUE)
 #' age <- sample(c("y","m","o"),n,replace=TRUE)
+#' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
 #' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
 #' }
 #' @export

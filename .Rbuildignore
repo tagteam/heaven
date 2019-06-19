@@ -8,3 +8,4 @@ worg/
 sandbox/
 auto/
 ^vignettes/.*[.](r|R)$
+^appveyor\.yml$
