@@ -294,28 +294,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
     }
     cond <- ""
 
-    if (length(keep) > 0) {
-        ## make life easier for the user
-        keep <- c(keep, date.vars, numeric.vars, character.vars)
-        cond <- paste(cond, "keep=", paste(keep, collapse = " "),
-                      " ", sep = "")
-    }
-    if (length(drop) > 0) {
-        cond <- paste(cond, "drop=", paste(drop, collapse = " "),
-                      " ", sep = "")
-    }
-    if (length(where) > 0) {
-        cond <- paste(cond, "where=(", where, ") ", sep = "")
-    }
-    if (length(obs) > 0 && !is.infinite(obs)) {
-        cond <- paste(cond, "obs=", format(obs, scientific = FALSE),
-                      " ", sep = "")
-    }
-    if (length(cond) > 0) {
-        if (length(set.hook) > 0 & is.character(set.hook))
-            cond <- paste("(", cond, set.hook, ")", sep = " ")
-        else cond <- paste("(", cond, ")", sep = " ")
-    }
+    ## ----------------------------- start proc contents -------------------------
     file.create(tmp.SASproccont)
     cat("ods listing close;\nODS OUTPUT variables=dcontent; \n proc contents data='",
         filename, "';\nrun;\nproc sort data=dcontent;\nby num;\nrun; \ndata _NULL_; \nset dcontent; \n file '",
@@ -340,6 +319,33 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
     var.names <- tolower(dt.content$Variable)
     var.format <- dt.content$Informat
     var.type <- dt.content$Type
+    ## ----------------------------- end proc contents -------------------------
+
+    if (length(keep) > 0) {
+        ## make life easier for the user
+        keep <- c(keep, date.vars, numeric.vars, character.vars)
+        if ("pnr" %in% var.names) {
+            if (!("pnr" %in% keep)) keep <- c("pnr",keep)
+        }
+        cond <- paste(cond, "keep=", paste(keep, collapse = " "),
+                      " ", sep = "")
+    }
+    if (length(drop) > 0) {
+        cond <- paste(cond, "drop=", paste(drop, collapse = " "),
+                      " ", sep = "")
+    }
+    if (length(where) > 0) {
+        cond <- paste(cond, "where=(", where, ") ", sep = "")
+    }
+    if (length(obs) > 0 && !is.infinite(obs)) {
+        cond <- paste(cond, "obs=", format(obs, scientific = FALSE),
+                      " ", sep = "")
+    }
+    if (length(cond) > 0) {
+        if (length(set.hook) > 0 & is.character(set.hook))
+            cond <- paste("(", cond, set.hook, ")", sep = " ")
+        else cond <- paste("(", cond, ")", sep = " ")
+    }
     is.date <- grepl("date", var.format, ignore.case = TRUE) |
         grepl("dato", var.format, ignore.case = TRUE)
     is.num <- grepl("num", var.type, ignore.case = TRUE)
@@ -388,8 +394,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
             "out = csv_import \ndbms =csv; \nrun; \n", sep = "",
             file = tmp.SASfile, append = TRUE)
     }
-    cat("data df; \nset '", filename, "'", cond, ";\n", format.statement,
-        sep = "", file = tmp.SASfile, append = TRUE)
+    cat("data df; \nset '",filename,"'",cond,";\n",format.statement,sep = "",file = tmp.SASfile,append = TRUE)
     if (length(step.hook) > 0 & is.character(step.hook)) {
         cat(step.hook, sep = "", file = tmp.SASfile, append = TRUE)
     }

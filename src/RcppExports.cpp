@@ -7,27 +7,24 @@
 using namespace Rcpp;
 
 // Matcher
-List Matcher(int Ncontrols, int Tcontrols, int Ncases, int reuseControls, int expWindow, IntegerVector startDate, IntegerVector controlIndex, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int Ndateterms, IntegerMatrix datescases, IntegerMatrix datescontrols, int NoIndex, int seed);
-RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP reuseControlsSEXP, SEXP expWindowSEXP, SEXP startDateSEXP, SEXP controlIndexSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NdatetermsSEXP, SEXP datescasesSEXP, SEXP datescontrolsSEXP, SEXP NoIndexSEXP, SEXP seedSEXP) {
+List Matcher(int Ncontrols, int Tcontrols, int Ncases, int expWindow, IntegerVector startDate, IntegerVector endFollowUp, IntegerVector caseIndex, IntegerVector controls, IntegerVector cases, int Ndateterms, IntegerMatrix datescases, IntegerMatrix datescontrols);
+RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP expWindowSEXP, SEXP startDateSEXP, SEXP endFollowUpSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NdatetermsSEXP, SEXP datescasesSEXP, SEXP datescontrolsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type Ncontrols(NcontrolsSEXP);
     Rcpp::traits::input_parameter< int >::type Tcontrols(TcontrolsSEXP);
     Rcpp::traits::input_parameter< int >::type Ncases(NcasesSEXP);
-    Rcpp::traits::input_parameter< int >::type reuseControls(reuseControlsSEXP);
     Rcpp::traits::input_parameter< int >::type expWindow(expWindowSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type startDate(startDateSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type controlIndex(controlIndexSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type endFollowUp(endFollowUpSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type caseIndex(caseIndexSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type controls(controlsSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type cases(casesSEXP);
     Rcpp::traits::input_parameter< int >::type Ndateterms(NdatetermsSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type datescases(datescasesSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type datescontrols(datescontrolsSEXP);
-    Rcpp::traits::input_parameter< int >::type NoIndex(NoIndexSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, reuseControls, expWindow, startDate, controlIndex, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, NoIndex, seed));
+    rcpp_result_gen = Rcpp::wrap(Matcher(Ncontrols, Tcontrols, Ncases, expWindow, startDate, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -145,7 +142,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 15},
+    {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 12},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 6},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},

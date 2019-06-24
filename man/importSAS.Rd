@@ -17,13 +17,17 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
        contentSAS(filename,wd=NULL)
 }
 \arguments{
-\item{filename}{The filename (with full path) of the SAS dataset to import.}
+\item{filename}{The filename (with full path) of the SAS dataset to import.
+So, \code{"x:/data/rawdata/701111/lmdb.sas7bdat"} and also
+\code{"v:/data/workdata/701111/MeMe/project1/data/mydata.sas7bdat"} work but \code{"./data/mydata.sas7bdat"}
+does not even not if the working directory is set to \code{"v:/data/workdata/701111/MeMe/project1/"}.}
 
 \item{wd}{The directory used to store temporarily created files (SAS script, log file, csv file). You need to
 have permission to write to this directory. The default value is the current working directory, see \code{getwd()},
-(which you may not have access to write to!).}
+(which you may not have access to write to!). On Gentofte's Danmark Statistics servers it may help to set
+the working directory to the fast X drive.}
 
-\item{keep}{Specifies the variables (columns) to include from the dataset. Default is to include all variables.}
+\item{keep}{A vector of variable names, i.e., the variables (columns) to read and keep from the dataset. Default is to read and keep all variables.}
 
 \item{drop}{Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.}
 
@@ -78,6 +82,8 @@ excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{skip.date.conversion}{if TRUE do not try to convert any dates.}
 
+\item{sas.data.extension}{String to be checked against the file extenstion of filename. Default is \code{"sas7bdat"}.}
+
 \item{verbose}{Logical. Bla bla on the screen?}
 
 \item{...}{Arguments passed to \code{fread} for reading the created .csv file.}
@@ -113,10 +119,10 @@ df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,sa
 str(df101)
 df101
 
-# Format, dates, numeric, character, colClasses
+# Format, dates, numeric, character
 df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
                    save.tmp=TRUE,date.vars="inddto",
-                   colClasses=list("numeric"="pnr","factor"=packsize))
+                   numeric.vars="pnr",character.vars="packsize")
 
 # we can also use the pre.hook to limit the number of observations via sas options:
 importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
