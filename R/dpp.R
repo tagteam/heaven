@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: May 14 2019 (11:27) 
+## Last-Updated: Jun 27 2019 (14:41) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 237
+##     Update #: 239
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -1060,8 +1060,8 @@ addAge <- function(x,target,...){
                                              select="variable",
                                              collect="fdato")
     ## age at index
-    expr <- expression(round(as.numeric(index-birthday)/365.25,1))
-    addVariable(x,target=target) <- selector(data="afbsl",
+    expr <- expression(round(as.numeric(index-fdato)/365.25,1))
+    addVariable(x,target=target) <- selector(data="pop",
                                              var="age",
                                              sortkey=NULL,
                                              search.term=NULL,

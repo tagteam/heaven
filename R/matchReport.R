@@ -6,17 +6,14 @@
 #' riskSetMatch
 #' @usage
 #' matchReport(dat, id, case, caseid,oldcase="oldevent") 
-#' @param dat - data.table with result from riskSetMatch
-#' @param id - variable with participant id
-#' @param case - 0=control, 1=case
-#' @param caseid - variable defining the groups of matching cases/controls
-#' @param oldcase - Variable holding case/control=0/1 prior to matching. Distinguishes
-#' cases reused as controls
-#' @author Christian Torp-Pedersen
+#' @param data result of exposureMatch or incidenceMatch
+#' @author Christian Torp-Pedersen & Thomas Alexander Gerds
 #' @details 
-#' This function can be helpful to define matching options.  If there is excessive reuse of controls or many
-#' cases do not find controls it may be desirable to do further rounding of matching variables.
-#' @return Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
+#' This function can be helpful to define matching options.
+#' If there is excessive reuse of controls or many
+#' cases do not find controls it may be desirable to do
+#' further rounding of matching variables.
+#' @return Three tables - Number of controls for cases, use/reuse of controls
 #' @seealso riskSetMatch
 #' @export
 #' @examples
@@ -33,35 +30,27 @@
 #' dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
 #'   controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
 #' matchReport(dataout,"ptid","case","caseid")   
-matchReport <- function(dat, # Datatable with matches
-                        id, # Participant identification
-                        case, # 0=control, 1=case
-                        caseid, # grouping variable
-                        oldcase="oldevent" # remember whether a case used as control was originally a case
-                        ){
-.SD=.N=N=NULL
-    datt <- dat[,.SD,.SDcols=c(id,case,caseid,oldcase)] # select relevant data
- setnames(datt,c("id","case","caseid","oldcase"))
- cat("\n","------------------------------------------------------------------","\n","Matching success")
- #Matching success:
- controls <- datt[,.N,by=caseid]
- controls <- as.vector(controls[,N]-1)
- controls <- table(controls)
- cat("\n", "Line 1, number of controls found - Line 2, number of occurrences")
- print(controls)
- cat("\n","------------------------------------------------------------------")
- #Reuse of controls
- controls<-datt[case==0,.N,by=id]
- controls<-with(controls,table(N))
- cat("\n","Reuse/use of controls","\n","Line 1, number of times - Line 2, number of occurrences","\n")
- print(controls)
- cat("\n","------------------------------------------------------------------")
- #Reuse of cases
- cat("\n","Use and reuse of cases as controls","\n","Line 1, number of times - Line 2, number of occurrences","\n")
- cases <- datt[oldcase==1,.N,by=id]
- cases <- with(cases,table(N))
- print(cases)
- cat("\n","------------------------------------------------------------------")
+matchReport <- function(data){
+    .SD=.N=N=NULL
+    vnames <- names(data)[1:3]
+    id=vnames[1]
+    case=vnames[2]
+    datt <- data[,.SD,.SDcols=c(id,case,"case.id")] # select relevant data
+    setnames(datt,c("id","case","caseid"))
+    cat("\n","------------------------------------------------------------------","\n","Matching success")
+    ## Matching success:
+    controls <- datt[,.N,by=caseid]
+    controls <- as.vector(controls[,N]-1)
+    controls <- table(controls)
+    cat("\n", "Line 1, number of controls found - Line 2, number of occurrences")
+    print(controls)
+    cat("\n","------------------------------------------------------------------")
+                                        #Reuse of controls
+    controls<-datt[case==0,.N,by=id]
+    controls<-with(controls,table(N))
+    cat("\n","Reuse/use of controls","\n","Line 1, number of times - Line 2, number of occurrences","\n")
+    print(controls)
+    cat("\n","------------------------------------------------------------------")
 }
 
  

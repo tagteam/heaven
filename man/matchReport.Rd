@@ -7,19 +7,10 @@
 matchReport(dat, id, case, caseid,oldcase="oldevent")
 }
 \arguments{
-\item{dat}{- data.table with result from riskSetMatch}
-
-\item{id}{- variable with participant id}
-
-\item{case}{- 0=control, 1=case}
-
-\item{caseid}{- variable defining the groups of matching cases/controls}
-
-\item{oldcase}{- Variable holding case/control=0/1 prior to matching. Distinguishes
-cases reused as controls}
+\item{data}{result of exposureMatch or incidenceMatch}
 }
 \value{
-Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
+Three tables - Number of controls for cases, use/reuse of controls
 }
 \description{
 The function provides very simple tables of the success of finding controls and
@@ -27,8 +18,10 @@ the reuse of cases and controls. Designed to deal with the results of function
 riskSetMatch
 }
 \details{
-This function can be helpful to define matching options.  If there is excessive reuse of controls or many
-cases do not find controls it may be desirable to do further rounding of matching variables.
+This function can be helpful to define matching options.
+If there is excessive reuse of controls or many
+cases do not find controls it may be desirable to do
+further rounding of matching variables.
 }
 \examples{
 require(data.table)
@@ -49,5 +42,5 @@ matchReport(dataout,"ptid","case","caseid")
 riskSetMatch
 }
 \author{
-Christian Torp-Pedersen
+Christian Torp-Pedersen & Thomas Alexander Gerds
 }
