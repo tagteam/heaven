@@ -4,14 +4,12 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                         ,terms   # terms c("n1","n2",...) - list of variables to match by
                         ,data     # dataset with all variables
                         ,n.controls  # number of controls to provide
-                        ,case.id="case.id" # variable to group cases and controls (case-ptid)
                         ,case.index=NULL      # Integer or date, date where controls must be prior
                         ,end.followup=NULL   # end.followup - Index date for controls
-                        ,cores=1 # Number of cores to use, default 1
                         ,date.terms=NULL # character list of date variables
-                        ,exposure.window=0 # Duration of a minimal exposure window for the condition defined by start.date
-                        ,start.date=NULL # When relevant starting date of condition where a minimal exposure window is required
+                        ,duration.terms=NULL # Duration of a minimal exposure window for the condition defined by start.date
                         ,output.count.controls=TRUE # add number of controls
+                        ,cores=1 # Number of cores to use, default 1
                         ,seed # Seed for random sort
                         ,progressbar=TRUE
                          ){
@@ -32,8 +30,6 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                 stop ("Argument 'date.terms' must be a vector of names of variables in the dataset.")
         }
     }
-    if (exposure.window==0) start.date <- 0 # No exposure window
-    if (exposure.window>0 & is.null(start.date)) stop("Error - An exposure window requires a starting date")
     if(!is.integer(cores) & !(is.numeric(cores))) stop("cores must be integer, default 1")
     cores <- as.integer(cores)
     ## copy input data
@@ -50,35 +46,41 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     if (!is.null(date.terms)){
         cols <- c(cols,date.terms)
     }
-    if(exposure.window>0){
-        cols <- c(cols,start.date)
+    n.duration.terms <- length(duration.terms)
+    if (n.duration.terms>0) {
+        start.vars <- sapply(duration.terms,function(x){x[["start"]]})
+        if (!is.character(start.vars)) stop("All duration terms need to have an element named 'start' which provides the name of the variable that indicates the start of the duration.")
+        duration.min <- sapply(duration.terms,function(x){x[["min"]]})
+        cols <- c(cols,start.vars)
+    }else{
+        start.vars=NULL
     }
     work.data <- DATA[,.SD,.SDcols=cols]
     setcolorder(work.data,cols) # ensure correct order of columns
-                                        #conversion to integer of all date.terms
-    for (v in c(case.index,end.followup,date.terms)){
-        set(work.data,j=v,value=as.integer(work.data[[v]]))
+    ##conversion to integer of all date.terms
+    for (v in c(case.index,end.followup,date.terms,start.vars)){
+        set(work.data,j=v,value=as.double(work.data[[v]]))
     }
-                                        # Cases can only be controls before being a case, hence the case index date limits the followup
+    ## Cases can only be controls before being a case, hence the case index date limits the followup
     work.data[[end.followup]] <- pmin(work.data[[case.index]],work.data[[end.followup]],na.rm=TRUE)
     efup <- work.data[[end.followup]]
     if (any(is.na(efup)))stop("Missing values in end.followup variable. ")
     beyond.maxtime <- max(efup)+1
-                                        # replace missing dates with maxtime
-    na.replace <- function(v,value){v[is.na(v)]=value;v}
+    ## replace missing dates with maxtime
+    ## na.replace <- function(v,value){v[is.na(v)]=value;v}
     for (v in c(case.index,end.followup,date.terms)){
         work.data[is.na(get(v)),(v):=beyond.maxtime]
     }
     if(!is.null(date.terms)) {
-                                        #Number of date.terms
-        Ndate.terms=length(date.terms)
+        ##Number of date.terms
+        n.date.terms=length(date.terms)
     }else {
-        Ndate.terms <- 0
+        n.date.terms <- 0
     }
-                                        # prepare to split
+    ## prepare to split
     setkey(work.data,cterms)
-                                        # make sure every case has a date
-                                        # FIXME could define event as a non missing caseindex
+    ## make sure every case has a date
+    ## FIXME could define event as a non missing caseindex
     ## work.data <- work.data[work.data[[event]]==0 | !is.na(work.data[[case.index]])]
     split.work.data <- split(work.data,by="cterms") # Now a list aplit by cterms
     message("\nMatching terms define ",length(split.work.data)," subsets")
@@ -97,7 +99,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     }else{
         foreach::registerDoSEQ
     }
-                                        # Prepare progress bar
+    ## Prepare progress bar
     if (progressbar){
         totalprogress <-as.numeric(length(split.work.data)/1000)
         pb <-txtProgressBar(min = 0,
@@ -114,52 +116,53 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     ## selected.controls <- do.call(rbind,foreach::foreach(controls=split.work.data,.packages=c("heaven")) %dopar% {
     selected.controls <- do.call(rbind,foreach::foreach(sub=1:length(split.work.data),.packages=c("heaven")) %dopar% {
         controls=split.work.data[[sub]]
-                                        # selected.controls <- do.call("rbind",lapply(split.work.data,function(controls){ # Function handles each split-group, afterward rbind
-                                        #find lengths of controls and cases
+        ## find lengths of controls and cases
         Tcontrols<-NROW(controls)
-                                        # Setnames because data.table called from function
-        ## setnames(controls,cols)
+        ## Setnames because data.table called from function
         setkeyv(controls,c(event,"pnrnum"))
-                                        # Define cases in selected match-group
+        ## Define cases in selected match-group
         isCase <- controls[[event]]==1
         cases <- controls[isCase]
-                                        #find lengths of cases
+        ##find lengths of cases
         setkey(cases,pnrnum)
         Ncases<-NROW(cases)
-                                        # Remove those where exposre window is not sufficient - only relevant when an exposure window is defined along with a start.date
-        if(exposure.window>0){
-            cases <- cases[(cases[[case.index]]-cases[[start.date]])>exposure.window]
-        }
         if (Ncases==0){return(NULL)}
-                                        #dateterm matrix
-        if(!is.null(date.terms)){
+        ## dateterm matrix
+        if(n.date.terms>0){
             dates.cases <- as.matrix(cases[,.SD,.SDcols=date.terms])
             dates.controls <- as.matrix(controls[,.SD,.SDcols=date.terms])
-        }
-        else {
+        } else {
             dates.cases <- as.matrix(0)
             dates.controls <- as.matrix(0)
         }
-        if (exposure.window>0) start.date <- controls[[start.date]]
-        else start.date <-0
+        ## durationterm matrix
+        if(n.duration.terms>0){
+            duration.start.cases <- as.matrix(cases[,.SD,.SDcols=start.vars])
+            duration.start.controls <- as.matrix(controls[,.SD,.SDcols=start.vars])
+        } else {
+            duration.start.cases <- as.matrix(0)
+            duration.start.controls <- as.matrix(0)
+            duration.min <- double(1)
+        }
         if (!missing(seed)) set.seed(seed)
         Output <- Matcher(n.controls,
                           Tcontrols,
                           Ncases,
-                          exposure.window,
-                          start.date,
-                          controls[[end.followup]],
-                          cases[[case.index]],
+                          as.double(controls[[end.followup]]),
+                          as.double(cases[[case.index]]),
                           controls[["pnrnum"]],
                           cases[["pnrnum"]],
-                          Ndate.terms,
+                          n.date.terms,
                           dates.cases,
-                          dates.controls)
-
+                          dates.controls,
+                          n.duration.terms,
+                          duration.start.cases,
+                          duration.start.controls,
+                          duration.min)
         setDT(Output)
         if (progressbar){
             progress <- progressValues[sub]
-                                        #Progress bar
+            ##Progress bar
             setTxtProgressBar(pb,value=progress)
             flush(stdout())
         }
@@ -170,7 +173,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         setDT(selected.controls)
     }  #end cores>1
     if (progressbar) cat("\n") 
-    setnames(selected.controls, c(case.id, "pnrnum"))
+    setnames(selected.controls, c("case.id", "pnrnum"))
     ## prepare cases for rbind
     cases <- work.data[work.data[[event]] == 1,.(case.id=pnrnum,pnrnum=pnrnum,event=1 )]
     FINAL <- rbind(cases, cbind(selected.controls,event=0))
@@ -180,9 +183,10 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     DATA[,(event):=NULL]
     FINAL <- merge(FINAL,DATA,by="pnrnum")
     setnames(FINAL, "pnrnum",ptid)
-    setkeyv(FINAL,c(case.id,event))
+    setkeyv(FINAL,c("case.id",event))
     ## Add relevant case.id to controls
     ## FINAL[,eval(case.index):=.SD[.N],.SDcols=c(case.index),by=case.id]
-    if (output.count.controls) FINAL[,n.controls:=(.N-1),by=case.id]
+    if (output.count.controls)
+        FINAL[,n.controls:=(.N-1),by="case.id"]
     FINAL[]
 }

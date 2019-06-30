@@ -8,16 +8,17 @@ using namespace arma;
 List Matcher(int Ncontrols, // Desired number of controls
 	     int Tcontrols, // Total number of controls
 	     int Ncases,    // Total number of cases
-	     int expWindow, // Fixed required exposure window between case index and start
-	     IntegerVector startDate, // Startdate of condition defining exposure window
-	     IntegerVector endFollowUp, // max time for being in at-risk-set
-	     IntegerVector caseIndex, // Cases dates for at-risk-set
-	     IntegerVector controls, // controls ID
-	     IntegerVector cases, // cases ID
+	     NumericVector endFollowUp, // max time for being in at-risk-set
+	     NumericVector caseIndex, // Cases dates for at-risk-set
+	     NumericVector controls, // controls ID
+	     NumericVector cases, // cases ID
 	     int Ndateterms, // number of dateterm variables - zero=0
-	     IntegerMatrix datescases, // case dates 
-	     IntegerMatrix datescontrols // control dates   
-	     ){ // Ignore index if 1 - match without regard to risk-set - essentially simple match 
+	     NumericMatrix datescases, // case dates 
+	     NumericMatrix datescontrols, // control dates
+	     int Ndurationterms, // number of duration variables - zero=0	     
+	     NumericMatrix durationcases,
+	     NumericMatrix durationcontrols,
+	     NumericVector durationMin){
   int ii; // while counter - number of selected controls
   int controlCounter;// Sequencer through list of controls - endFollowUp
   int innerCounter=0;
@@ -30,6 +31,8 @@ List Matcher(int Ncontrols, // Desired number of controls
   selectedCases.reserve(Ncontrols*(Ncases+1));
   int casehasevent=0;
   int controlhasevent=0;
+  arma::vec casehasduration(Ndurationterms,fill::zeros);
+  int controlhasduration=0;
   for (int i=0; i<Ncases; i++){ // Loop through each case to identify controls
     // Rcout << "i: " << i << std::endl;
     // shuffle order in which controls are considered
@@ -37,6 +40,11 @@ List Matcher(int Ncontrols, // Desired number of controls
     innerCounter=0; 
     arma::vec currentorder = arma::shuffle(neworder);
     controlCounter = currentorder(innerCounter);
+    if (Ndurationterms>0){
+      for (int k=0; k<Ndurationterms; k++){	
+	casehasduration(k) = (caseIndex[i]-durationcases(i,k))>durationMin(k);
+      }
+    }
     while (innerCounter<Tcontrols && ii<=Ncontrols){ 
       controlCounter=currentorder(innerCounter);
       //A control must be at risk at the case's case date
@@ -47,18 +55,21 @@ List Matcher(int Ncontrols, // Desired number of controls
       // Time dependent matching variables:
       // event dates of case and control must be on the same side of the case index date
       if(IsCoEl && Ndateterms>0){ // Additional logic with time varying conditions to be before case date
-        for (int k=0; k<Ndateterms; k++){
+	for (int k=0; k<Ndateterms; k++){
 	  controlhasevent = (datescontrols(controlCounter,k)<caseIndex[i]);
 	  casehasevent = (datescases(i,k)<caseIndex[i]);
 	  if (controlhasevent != casehasevent) IsCoEl=false;
-        }
+	}
       }
       // Exposure window:
       // a control is only a control if difference between
       // case dato and intro into our study is larger than expWindow
       // Rcout << "IsCoEl: " << IsCoEl << std::endl;      
-      if(IsCoEl && expWindow>0){ 
-	IsCoEl= IsCoEl && ((caseIndex[i]-startDate[controlCounter])>expWindow);
+      if(IsCoEl && Ndurationterms>0){ // Additional logic with time varying conditions to be before case date
+	for (int k=0; k<Ndurationterms; k++){	
+	  controlhasduration = (caseIndex[i]-durationcontrols(i,k))>durationMin(k);
+	  IsCoEl= IsCoEl && ((casehasduration(k) == controlhasduration));
+	}
       }
       if (IsCoEl) { // foundOne
 	// Rcout << "-------: "<< std::endl;
@@ -74,7 +85,7 @@ List Matcher(int Ncontrols, // Desired number of controls
     } // end while
   }// End loop for each case  
   return List::create(Named("selectedCases") = selectedCases,
-                      Named("selectedControls") = selectedControls);
+		      Named("selectedControls") = selectedControls);
 }
 
 
