@@ -4,16 +4,17 @@
 using namespace Rcpp;
 // [[Rcpp::export]]
 List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
-              IntegerVector inn, // Starttimes - base data
-              IntegerVector out, // Endtimes - base data
+              NumericVector inn, // Starttimes - base data
+              NumericVector out, // Endtimes - base data
               IntegerVector event, // Event at end of interval 0/1 - base data
               IntegerVector mergevar, // Merge variable, multiple records can have same pnr - base data
               IntegerVector Spnrnum, // Sequence number of pnr in split guide
               std::vector<std::string> val, // Value of name to provide to output for interval - split guide
-              IntegerVector start, // Interval start - split guide
-              IntegerVector end, // Interval end - split guide
+              NumericVector start, // Interval start - split guide
+              NumericVector end, // Interval end - split guide
               IntegerVector num, //Covariate number
-              int numcov // Number of covariate to split by
+              int numcov, // Number of covariate to split by
+              String default_ // Default value when no value is assigned
 ) { 
   // This function is intended for creating split data for lexis survival analyses. It handles
   // splitting by a set of splitting guide vectors which contains (Spnrnum,start,end,val) 
@@ -30,9 +31,9 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
   Opnrnum.reserve(pnrnum.size()*2);
   std::vector<int> Omergevar;  
   Omergevar.reserve(pnrnum.size()*2);
-  std::vector<int> Oinn;  // Starttimes output
+  std::vector<double> Oinn;  // Starttimes output
   Oinn.reserve(pnrnum.size()*2);
-  std::vector<int> Oout; // Endtimes output
+  std::vector<double> Oout; // Endtimes output
   Oout.reserve(pnrnum.size()*2);
   std::vector<int> Oevent; // Event at end 0/1
   Oevent.reserve(pnrnum.size()*2);
@@ -86,7 +87,7 @@ List splitFT(IntegerVector pnrnum, // PNR as sequence number - base data
       Oinn.push_back(inn(i));
       Oout.push_back(out(i));
       Oevent.push_back(event(i));
-      for(int k=0; k<numcov; k++) Oval[k].push_back("");
+      for(int k=0; k<numcov; k++) Oval[k].push_back(default_);
       if (noSplit==1){ //Nothing to split - at least potentially
       }
       else{ // Something to split

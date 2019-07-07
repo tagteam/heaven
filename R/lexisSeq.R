@@ -73,13 +73,13 @@
 #' @examples
 #' library(data.table)
 #' dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
-#'                 start=c(0,100,0,100,0,100,0,100),
-#'                 end=c(100,200,100,200,100,200,100,200),
+#'                 start=as.Date(c(0,100,0,100,0,100,0,100),origin="1970-01-01"),
+#'                 end=as.Date(c(100,200,100,200,100,200,100,200),origin="1970-01-01"),
 #'                 dead=c(0,1,0,0,0,1,0,1),
-#'                 Bdate=c(-5000,-5000,-2000,-2000,0,0,100,100))
+#'                 Bdate=as.Date(c(-5000,-5000,-2000,-2000,0,0,100,100),origin="1970-01-01"))
 #' #Example 1 - Splitting on a vector with 3 values to be added to "Bdate"                 
 #' out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-#'                varname="Bdate",c(0,150,5000),format="vector")
+#'                varname="Bdate",as.Date(c(0,150,5000),origin="1970-01-01"),format="vector")
 #' out[]
 #' #Example 2 - splitting on a from-to-by vector with no adding (calender time?)
 #' out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
@@ -89,7 +89,7 @@
 lexisSeq <- function (indat, invars, varname = NULL, splitvector, format, 
                        value = "value") 
 {
-  event = out = inn = .SD = pnrnum = .N = NULL
+  event = out = inn = .SD = pnrnum = .N = isdate= NULL
   if (class(invars) != "character") 
     stop("Varnames in c(..) not character")
   if (class(varname) != "character" & !is.null(varname)) 
@@ -104,6 +104,10 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
                                       "varname")]
   setnames(splitdat,c("pnrnum", invars[2:4],"varname"), 
            c("pnrnum", "inn", "out", "event", "varname"))
+  if (lubridate::is.Date(splitdat[,inn])){
+    splitdat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
+    isdate <- TRUE
+  }
   if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
   datt[, `:=`((invars[2:4]), NULL)]
   if (!(format %in% c("vector", "seq"))) 
@@ -125,6 +129,9 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
                                 inn, out, event, pnrnum, splitguide, varname)]  
   setDT(out)
   setkeyv(out, c("pnrnum", "inn"))
+  if(lubridate::is.Date(splitdat[,inn])){
+    out[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
+  }
   if (is.null(varname)) 
     datt[, `:=`(varname, NULL)]
   else setnames(datt,"varname",varname)

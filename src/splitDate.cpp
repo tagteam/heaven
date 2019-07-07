@@ -3,8 +3,8 @@
 #include <vector>
 using namespace Rcpp;
 // [[Rcpp::export]]
-List splitDate(IntegerVector inn, // Starttimes - base data
-               IntegerVector out, // Endtimes - base data
+List splitDate(NumericVector inn, // Starttimes - base data
+               NumericVector out, // Endtimes - base data
                IntegerVector event, // Event at end of interval 0/1 - base data
                IntegerVector mergevar, // Merge variable, multiple records can have same pnr - base data
                IntegerVector seq, // Vector of date values to split by
@@ -13,9 +13,9 @@ List splitDate(IntegerVector inn, // Starttimes - base data
 { 
   std::vector<int> Omergevar;  
   Omergevar.reserve(mergevar.size()*seq.size());
-  std::vector<int> Oinn;  // Starttimes output
+  std::vector<double> Oinn;  // Starttimes output
   Oinn.reserve(mergevar.size()*seq.size());
-  std::vector<int> Oout; // Endtimes output
+  std::vector<double> Oout; // Endtimes output
   Oout.reserve(mergevar.size()*seq.size());
   std::vector<int> Oevent; // Event at end 0/1
   Oevent.reserve(mergevar.size()*seq.size());

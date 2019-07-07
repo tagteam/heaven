@@ -87,7 +87,8 @@ situations where a case has a time to event outcome at the index date and contro
 
 Within a cohort or registry study, a number of controls
 are matched to each case on demographics, comorbidity, concomitant medication and other pre-treatment person characteristics
-measured at the index date of the case. 
+measured at the index date of the case.
+
 
 Matching may be useful in non-randomized studies when the aim is to estimate a 
 \itemize{
@@ -164,7 +165,9 @@ Yunfei Paul Li, Kathleen J Propert, and Paul R Rosenbaum. Balanced risk set
 matching. Journal of the American Statistical Association, 96(455):870--
  882, 2001.
 
-Neil Pearce. Analysis of matched case-control studies. BMJ, 352:i969, 2016.
+Mohammad A Mansournia, Miguel A Herna'n, and Sander Greenland. Matched
+   designs and causal diagrams. International journal of epidemiology, 42(3):
+   860--869, 2013.
 
 King, G., & Nielsen, R.
 Why Propensity Scores Should Not Be Used for Matching.

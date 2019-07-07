@@ -27,7 +27,7 @@ by which admissions are available in Statistics Denmark.
 \examples{
 \dontrun{
 pop <- as.data.table(data(sample.diag))
-## Varaibles have default names
+## Variables have default names
 newpop <- getAdmLimits(pop)
 
 ## Varaibles have custom names

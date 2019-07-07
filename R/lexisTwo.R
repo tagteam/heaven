@@ -17,14 +17,21 @@
 #' These describe the participant's id, start of time interval, end of time
 #' interval and the event of interest (must be 0/1).
 #' 
-#' The other input is a data.table with the splitting guide. This data.table 
-#' should have one record pr. individual.  One column defined the same id as in
-#' the "base" table. The other columns contain dates for each condition where 
-#' the split should occur.  These column names will also appear in the output
-#' data, but on output the values are zero before the dates and 1 after.  When
-#' dates are NA output has zero. 
+#' The other input is a data.table with the splitting guide. 
+#' This can be supplied in two formats: wide and long
+#' Wide format:
+#' This requires one record pr. individual that have dates to be split on.  
+#' One column defines the same id as in the "base" table. The other columns 
+#' contain dates for each condition where the split should occur.  These column 
+#' names will also appear in the output data, but on output the values are zero 
+#' before the dates and 1 after.  When dates are NA output has zero. 
+#' 
+#' Long format:
+#' This requires one record per data where a possible split should occur. The
+#' columns should contain id, name of condition and the data to split on
+#' 
 #' @usage
-#' lexisTwo(indat,splitdat,invars,splitvars)
+#' lexisTwo(indat,splitdat,invars,splitvars,format="wide")
 #' @author Christian Torp-Pedersen
 #' @param indat A data.table or data.frame whose first 4 columns are in that 
 #' order:
@@ -39,6 +46,7 @@
 #' }
 #' @param splitdat The splittingguide. A data.table which contains person 
 #' specific information about the onset dates of comorbidities and other events.
+#' Wide format:
 #' \itemize{
 #' \item{id}{ Person identification variable such as PNR. The data may contain 
 #' multiple lines per subject.}
@@ -50,12 +58,29 @@
 #' \item{Date 2}{ Either a date or an integer/numeric. The onset date of 
 #' comorbidity 2 or other event. If integer/numeric it can be time since a 
 #' baseline date on project specific scale (e.g., days or months).}
+#' \item{Dat3 ....}
 #' }
+#' Long format:
+#' #' \itemize{
+#' \item{id}{ Person identification variable such as PNR. The data may contain 
+#' multiple lines per subject.}
+#' \item{Condition name}{Character providing the variable name of condition} 
+#' \item{Date}{ Either a date or an integer/numeric. The onset date of 
+#' comorbidity or other event. If integer/numeric it can be time since a 
+#' baseline date on project specific scale (e.g., days or months).}
+#' }
+#' 
 #' @param invars vector of column names for id/entry/exit/event - in that 
 #' order, example: c("id","start","end","event")
-#' @param splitvars - vector of column names of columns containing dates to 
+#' @param splitvars
+#' For wide format: 
+#' - vector of column names of columns containing dates to 
 #' split by. example: c("date1","date2","date3","date4")
+#' For long format: 
+#' - vector of the 3 columns in the data.table: id/name/date,
+#' example: c("id","name","date")
 #' The name of the id column must be the same in both datasets
+#' @param format - format of splitting guide - "wide"  or "long"
 #' @return
 #' The function returns a new data table where records have been split according 
 #' to the splittingguide dataset. Variables unrelated to the splitting are 
@@ -70,7 +95,7 @@
 #' It is required that the splittingguide contains at least one record.  
 #' Missing data in the person id variables are not allowed and will cause errors.
 #' 
-#' A note of caution: This function works with dates as integers. R has a default
+#' A note of caution: This function works with dates as numeric. R has a default
 #' original of dates as 1 January 1970, but other programs have different
 #' default origins - and this includes SAS and Excel. It is therefor important
 #' for decent results that care is taken that all dates are defined similarly.
@@ -88,9 +113,10 @@
 #' 
 #' dat <- data.table(pnr=c("123456","123456","234567","234567","345678","345678"
 #' ,"456789","456789"),
-#'                 start=as.integer(c(0,100,0,100,0,100,0,100)),
-#'                 end=as.integer(c(100,200,100,200,100,200,100,200)),
+#'                 start=as.Date(c(0,100,0,100,0,100,0,100),origin="1970-01-01"),
+#'                 end=as.Date(c(100,200,100,200,100,200,100,200),origin="1970-01-01"),
 #'                 event=as.integer(c(0,1,0,0,0,1,0,1)))
+#'                 
 #' split <- data.table (pnr=c("123456","234567","345678","456789"),
 #' como1.onset=as.integer(c(0,NA,49,50)), como2.onset=as.integer(c(25,75,49,49)),
 #' como3.onset=as.integer(c(30,NA,49,48)), como4.onset=as.integer(c(50,49,49,47))) 
@@ -102,14 +128,26 @@
 #'    ,c("pnr","start","end","event") #names of id/in/out/event - in that order
 #'    ,c("como1.onset","como2.onset","como3.onset","como4.onset")) 
 #'    #Names of date-vars to split by
+#' # And with splittingguide in long format
+#' splitvars <- c("como1.onset","como2.onset","como3.onset","como4.onset")
+#' split <- data.table::melt(data=split,id.vars="pnr",measure.vars=splitvars,
+#'   variable.name="name",value.name="value")
+#' split[,value:=as.Date(value,origin="1970-01-01")]
+#' split[]
+#' split <- split[!is.na(value)] # remove missing values
+#' lexisTwo(dat # in-data with id/in/out/event
+#'    ,split # Data with id/name/date
+#'    ,c("pnr","start","end","event") #names of id/in/out/event - in that order
+#'    ,c("pnr","name","value")
+#'    ,format="long") 
 #' @export
-lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other variables
-             
-                              ,splitdat # Data with id and dates
-                      ,invars #names of id/in/out/event - in that order
-                      ,splitvars #Names var date-vars to split by
+lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other variables
+                    splitdat, # Data with id and dates
+                    invars, #names of id/in/out/event - in that order
+                    splitvars, #Names var date-vars to split by
+                    format="wide" # Wide or long format of splitting guide
 ){
-  .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=NULL
+  .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=numcov=name=isdate=NULL
   #Tests of data
   setDT(indat)
   setDT(splitdat)
@@ -118,11 +156,15 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   setnames(RESTDAT,invars[1],"pnr")
   indat <- indat[,c("mergevar",invars),with=FALSE] # Ncessary variables for split
   setnames(indat,invars,c("pnr","inn","out","dead"))
+  if (lubridate::is.Date(indat[,inn])) {
+    indat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
+    isdate <- TRUE
+  }
   ## TEST
   temp <- indat[,list(num=sum(out<inn))]
   if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
-  if (!class(indat[,inn]) %in% c("integer","Date") | !class(indat[,out]) %in% c("integer","Date")) 
-         stop("inpute date not Date or integer")
+  if (!class(indat[,inn]) %in% c("numeric","integer","Date") | !class(indat[,out]) %in% c("numeric","integer","Date")) 
+         stop("input date not Date or integer or numeric")
   if(class(!indat[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
   ## if (!class(tolower(indat[,inn])) %in% c("numeric","date","integer") | !class(tolower(indat[,out])) %in% c("numeric","date","integer")) stop("dates from input not numeric") 
   # Create consecutive increasing replacement from pnr in indat and splitdat
@@ -132,20 +174,43 @@ lexisTwo <- function(indat # inddato with id/in/out/event - and possibly other v
   splitdat<-merge(splitdat,unique(indat[,c("pnr","pnrnum"),with=FALSE]),by="pnr",all.x=TRUE) # Same pnrnum as in indat
   splitdat[,pnr:=NULL] #remove pnr
   # Create long-form of splitdat and number covariate dates
-  setcolorder(splitdat,c("pnrnum",splitvars)) # Columns ordered as in call
-  splitdat <- data.table::melt(data=splitdat,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
-  setkeyv(splitdat,"pnrnum")
-  splitdat[,"_variable_":=NULL]
-  splitdat[,number_:=1:.N,by="pnrnum"] 
-  splitdat[,value_:=as.integer(value_)]  # or the matrix will be character!
-  setkeyv(splitdat,c("pnrnum","value_"))
-  splitdat <- as.matrix(splitdat)
+  if (format=="wide"){
+    setcolorder(splitdat,c("pnrnum",splitvars)) # Columns ordered as in call
+    splitdat <- data.table::melt(data=splitdat,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
+    setkeyv(splitdat,"pnrnum")
+    splitdat[,"_variable_":=NULL]
+    splitdat[,number_:=1:.N,by="pnrnum"] 
+    splitdat <- splitdat[!is.na(value_)]
+    splitdat[,numcov:=.N,by="pnrnum"]
+    setkeyv(splitdat,c("pnrnum","value_"))
+    splitdat[,value_:=as.numeric(value_)]
+    splitdat <- as.matrix(splitdat) 
+  } else { # format=long
+    setnames(splitdat,splitvars[2:3],c("name","value_"))
+    splitvars <- as.character(unique(splitdat[,"name"])$name)
+    toNumber <- data.table(name=splitvars,number_=1:length(splitvars))
+    splitdat <- merge(splitdat,toNumber,by="name",all.x=TRUE) # attach names of splitvars
+    splitdat[,name:=NULL]
+    #Number of covariates for each case
+    splitdat[,numcov:=.N,by="pnrnum"]
+    setkeyv(splitdat,c("pnrnum","number_"))
+    # Check for repeated "name"/number in one pnr
+    temp <- splitdat[shift(number_)==number_,.SD,.SDcols="pnrnum",by="pnrnum"]
+    if (dim(temp)[1]>=1) stop("Error - repeated split variables in at least one id-group")
+    setkeyv(splitdat,c("pnrnum","value_"))
+    setcolorder(splitdat,c("pnrnum","value_","number_","numcov"))
+    splitdat[,value_:=as.numeric(value_)]
+    splitdat <- as.matrix(splitdat)
+  }
   OUT <- .Call("_heaven_split2",PACKAGE = "heaven",indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
   #OUT <- split2(indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
   OUT <- cbind(setDT(OUT[1:5]),setDT(do.call(cbind,OUT[6])))
+  if(isdate){
+    OUT[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
+  }
   setnames(OUT, c("pnrnum","mergevar",invars[2:4],splitvars))
   OUT <- merge(OUT,RESTDAT,by="mergevar")
   setnames(OUT,"pnr",invars[1])
-  OUT[,c("pnrnum","mergevar"):=NULL] # remove number version of pnr   setnames(OUT,c("pnr","inn","out","dead"),invars)
+  OUT[,c("pnrnum","mergevar"):=NULL] # remove number version of pnr
   OUT[]
 }

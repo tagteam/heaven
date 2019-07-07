@@ -89,30 +89,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // split2
-List split2(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerMatrix split, int numcov);
+List split2(IntegerVector pnrnum, NumericVector inn, NumericVector out, IntegerVector event, IntegerVector mergevar, NumericMatrix split, int numcov);
 RcppExport SEXP _heaven_split2(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP splitSEXP, SEXP numcovSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type pnrnum(pnrnumSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type inn(innSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type out(outSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
-    Rcpp::traits::input_parameter< IntegerMatrix >::type split(splitSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type split(splitSEXP);
     Rcpp::traits::input_parameter< int >::type numcov(numcovSEXP);
     rcpp_result_gen = Rcpp::wrap(split2(pnrnum, inn, out, event, mergevar, split, numcov));
     return rcpp_result_gen;
 END_RCPP
 }
 // splitDate
-List splitDate(IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector seq, IntegerVector varname);
+List splitDate(NumericVector inn, NumericVector out, IntegerVector event, IntegerVector mergevar, IntegerVector seq, IntegerVector varname);
 RcppExport SEXP _heaven_splitDate(SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP seqSEXP, SEXP varnameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type inn(innSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type out(outSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type seq(seqSEXP);
@@ -122,23 +122,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // splitFT
-List splitFT(IntegerVector pnrnum, IntegerVector inn, IntegerVector out, IntegerVector event, IntegerVector mergevar, IntegerVector Spnrnum, std::vector<std::string> val, IntegerVector start, IntegerVector end, IntegerVector num, int numcov);
-RcppExport SEXP _heaven_splitFT(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP SpnrnumSEXP, SEXP valSEXP, SEXP startSEXP, SEXP endSEXP, SEXP numSEXP, SEXP numcovSEXP) {
+List splitFT(IntegerVector pnrnum, NumericVector inn, NumericVector out, IntegerVector event, IntegerVector mergevar, IntegerVector Spnrnum, std::vector<std::string> val, NumericVector start, NumericVector end, IntegerVector num, int numcov, String default_);
+RcppExport SEXP _heaven_splitFT(SEXP pnrnumSEXP, SEXP innSEXP, SEXP outSEXP, SEXP eventSEXP, SEXP mergevarSEXP, SEXP SpnrnumSEXP, SEXP valSEXP, SEXP startSEXP, SEXP endSEXP, SEXP numSEXP, SEXP numcovSEXP, SEXP default_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type pnrnum(pnrnumSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type inn(innSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type out(outSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type inn(innSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type out(outSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type event(eventSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type mergevar(mergevarSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type Spnrnum(SpnrnumSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type val(valSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type start(startSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type end(endSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type start(startSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type end(endSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type num(numSEXP);
     Rcpp::traits::input_parameter< int >::type numcov(numcovSEXP);
-    rcpp_result_gen = Rcpp::wrap(splitFT(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov));
+    Rcpp::traits::input_parameter< String >::type default_(default_SEXP);
+    rcpp_result_gen = Rcpp::wrap(splitFT(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov, default_));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -151,7 +152,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_nccSamplingCpp", (DL_FUNC) &_heaven_nccSamplingCpp, 6},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
-    {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 11},
+    {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 12},
     {NULL, NULL, 0}
 };
 

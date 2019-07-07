@@ -31,7 +31,7 @@
 #'   controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
 #' matchReport(dataout,"ptid","case","caseid")   
 matchReport <- function(data){
-    .SD=.N=N=NULL
+    .SD=.N=N=caseid=NULL
     vnames <- names(data)[1:3]
     id=vnames[1]
     case=vnames[2]
