@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Jan 13 2019 (13:41) 
+## last-updated: Jul  4 2019 (12:23) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 20
+##     Update #: 21
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -28,7 +28,7 @@
 ##' @examples
 ##' \dontrun{
 ##' pop <- as.data.table(data(sample.diag))
-##' ## Varaibles have default names
+##' ## Variables have default names
 ##' newpop <- getAdmLimits(pop)
 ##' 
 ##' ## Varaibles have custom names
@@ -113,7 +113,7 @@ inddtoxTempName <- uddtoxTempName <- pnrxTempName <- startadm <- max.outdate <- 
   setnames(wdt,'inddtoxTempName',inddto)
   setnames(wdt,'pnrxTempName',pnr)
   ## Create list and return
-  wdtList <- list("AdmLimits"=wdt,"RowErrors"=wdterror)   
+  wdtList <- list("AdmLimits"=wdt[],"RowErrors"=wdterror[])   
   wdtList
 }
 
