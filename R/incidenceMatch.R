@@ -138,10 +138,10 @@
 #' 
 #' # Case control matching with requirement of minimum exposure time in each
 #' # group
-#' ew <- incidenceMatch("ptid","case",c("byear","sex"),
+#' ew <- incidenceMatch(ptid="ptid",event="case",terms=c("byear","sex"),
 #'       data=dat,n.controls=2,case.index="case.Index",
 #'       end.followup="control.Index",cores=1,
-#'       duration.terms=list(c(start="startDisease",min=15)))
+#'       duration.terms=list(list(start="startDisease",min=15)))
 #' ew
 #'
 #' @include riskSetMatch.R

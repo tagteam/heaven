@@ -12,7 +12,8 @@
 ##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
 ##'                  na.strings=".",date.vars, character.vars="pnr",
 ##'                  numeric.vars = NULL,sas.program,sas.switches,
-##'                  sas.runner, skip.date.conversion=FALSE, verbose=TRUE,...)
+##'                  sas.runner, skip.date.conversion=FALSE,
+##'                  sas.data.extension="sas7bdat", verbose=TRUE,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' So, \code{"x:/data/rawdata/701111/lmdb.sas7bdat"} and also
@@ -165,7 +166,7 @@
 ##'
 ##' }
 ##' @export
-importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
+importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
                        obs = NULL, filter = NULL, filter.by = NULL, filter.cond = c(1, 1),
                        set.hook = NULL, step.hook = NULL, pre.hook = NULL,
                        post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = TRUE,

@@ -51,6 +51,8 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         start.vars <- sapply(duration.terms,function(x){x[["start"]]})
         if (!is.character(start.vars)) stop("All duration terms need to have an element named 'start' which provides the name of the variable that indicates the start of the duration.")
         duration.min <- sapply(duration.terms,function(x){x[["min"]]})
+        duration.min <- as.double(duration.min)
+        if (any(is.na(duration.min))) stop("Parsing error in argument duration.min which has to be convertable to numeric.")
         cols <- c(cols,start.vars)
     }else{
         start.vars=NULL
@@ -175,7 +177,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     if (progressbar) cat("\n") 
     setnames(selected.controls, c("case.id", "pnrnum"))
     ## prepare cases for rbind
-    cases <- work.data[work.data[[event]] == 1,.(case.id=pnrnum,pnrnum=pnrnum,event=1 )]
+    cases <- work.data[work.data[[event]] == 1,data.table::data.table(case.id=pnrnum,pnrnum=pnrnum,event=1 )]
     FINAL <- rbind(cases, cbind(selected.controls,event=0))
     setnames(FINAL,"event",event)
     ## merge with data
@@ -186,7 +188,10 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     setkeyv(FINAL,c("case.id",event))
     ## Add relevant case.id to controls
     ## FINAL[,eval(case.index):=.SD[.N],.SDcols=c(case.index),by=case.id]
-    if (output.count.controls)
+    if (output.count.controls){
         FINAL[,n.controls:=(.N-1),by="case.id"]
+    }
+    attr(FINAL,"id") <- ptid
+    attr(FINAL,"event") <- event
     FINAL[]
 }

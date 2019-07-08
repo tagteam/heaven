@@ -13,7 +13,8 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
                  na.strings=".",date.vars, character.vars="pnr",
                  numeric.vars = NULL,sas.program,sas.switches,
-                 sas.runner, skip.date.conversion=FALSE, verbose=TRUE,...)
+                 sas.runner, skip.date.conversion=FALSE,
+                 sas.data.extension="sas7bdat", verbose=TRUE,...)
        contentSAS(filename,wd=NULL)
 }
 \arguments{
