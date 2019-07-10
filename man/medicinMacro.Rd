@@ -7,7 +7,7 @@
 medicinMacro(drugs, drugdb, admdb, drugdb.datevar = "eksd",
   admdb.datevars = c("inddto", "uddto"), id = "pnr",
   strength.var = "strnum", packsize.var = "packsize",
-  apk.var = "apk", splitting = FALSE)
+  apk.var = "apk", splitting = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{drugs}{A named list of drugs. Each element of this list should be a list

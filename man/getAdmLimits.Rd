@@ -33,11 +33,21 @@ by which admissions are available in Statistics Denmark.
 set.seed(8)
 lpr <- simAdmissionData(10)
 ## Variables have default names
-lpr1 <- getAdmLimits(lpr)
+adm <- getAdmLimits(lpr)
+
+## with errors
+lpr1 <- lpr
+lpr1 <- lpr1[uddto>as.Date("2010-01-01"),uddto:=NA]
+adm1 <- getAdmLimits(lpr1)
+adm1 <- getAdmLimits(lpr1,error="remove")
+adm1 <- getAdmLimits(lpr1,error="flag")
 
 ## case where Variables have custom names
 data.table::setnames(lpr, c('pnr','inddto','uddto'), c('personid', 'Entrydate','Outdate'))
 lpr2 <- getAdmLimits(lpr,pnr='personid',inddto='Entrydate',uddto='Outdate')
+
+## duplicated and overlap
+
 
 }
 \author{

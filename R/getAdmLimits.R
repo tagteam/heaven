@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Jul  9 2019 (16:20) 
+## last-updated: Jul 10 2019 (08:50) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 55
+##     Update #: 74
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -31,11 +31,24 @@
 ##' set.seed(8)
 ##' lpr <- simAdmissionData(10)
 ##' ## Variables have default names
-##' lpr1 <- getAdmLimits(lpr)
+##' adm <- getAdmLimits(lpr)
+##'
+##' ## with errors
+##' lpr1 <- lpr
+##' lpr1 <- lpr1[uddto>as.Date("2010-01-01"),uddto:=NA]
+##' adm1 <- getAdmLimits(lpr1)
+##' adm1 <- getAdmLimits(lpr1,error="remove")
+##' adm1 <- getAdmLimits(lpr1,error="flag")
 ##' 
 ##' ## case where Variables have custom names
 ##' data.table::setnames(lpr, c('pnr','inddto','uddto'), c('personid', 'Entrydate','Outdate'))
-##' lpr2 <- getAdmLimits(lpr,pnr='personid',inddto='Entrydate',uddto='Outdate')
+##' adm2 <- getAdmLimits(lpr,pnr='personid',inddto='Entrydate',uddto='Outdate')
+##'
+##' ## duplicated and overlap
+##' set.seed(8)
+##' lpr3 <- simAdmissionData(10)
+##' lpr3 <- lpr3[sample(1:NROW(lpr3),replace=TRUE,size=round(NROW(lpr3)*1.5))]
+##' adm3 <- getAdmLimits(lpr3,collapse=TRUE)
 ##' 
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
@@ -70,12 +83,12 @@ getAdmLimits <- function(dt,
     switch(error,"flag"={
         ## done this already
     },"remove"={
-        wdt <- wdt[!error]
+        wdt <- wdt[wdt[["error"]]==FALSE]
         wdt[,error:=NULL]
     },"warn"={
         if (any(wdt[["error"]])){
             warning("Data have errors: ",immediate.=TRUE)
-            print(wdt[error])
+            print(wdt[wdt[["error"]]])
         }else{
             wdt[,error:=NULL]
             message("No data errors.")
@@ -110,6 +123,13 @@ getAdmLimits <- function(dt,
     }
     wdt[,first.indate:=as.Date(first.indate,origin="1970-01-01")]
     wdt[,last.outdate:=as.Date(last.outdate,origin="1970-01-01")]
+    if (collapse){
+        ## wdt <- wdt[,.SD[1],by=c(pnr,"first.indate","last.outdate")]
+        n.before <- NROW(wdt)
+        collapse.cols <- c(pnr,"first.indate","last.outdate")
+        wdt <- wdt[wdt[, .I[1],by=collapse.cols]$V1]
+        message("Collapsed ",n.before," rows with multiple and overlapping periods into ",NROW(wdt)," rows.")
+    }
     ## Create list and return
     class(wdt) <- c("admlimits",class(wdt))
     wdt[]

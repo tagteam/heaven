@@ -182,6 +182,13 @@ df2 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 str(df2)
 df2
 
+## Sometimes the sas data file cannot be read due to unknown formats
+## here is how to solve this:
+df2a <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
+                 obs=101,
+                 pre.hook="options nofmterr;")
+                 
+
 # The hooks set.hook and step.hook can be used as follows:
 df3 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
                  obs=101,
