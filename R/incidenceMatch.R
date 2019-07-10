@@ -129,8 +129,8 @@
 #' library(parallel)
 #' library(foreach)
 #' \dontrun{
-#' matchdat2 <- incidenceMatch("ptid","case",c("byear","sex"),data=dat,2,case.index=
-#'   "case.Index",end.followup="control.Index"
+#' matchdat2 <- incidenceMatch("ptid","case",c("byear","sex"),data=dat,
+#'    n.controls=2,case.index="case.Index",end.followup="control.Index"
 #'   ,cores=2,seed=8)
 #' matchdat2
 #' all.equal(matchdat,matchdat2)

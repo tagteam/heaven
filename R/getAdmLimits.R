@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Jul  8 2019 (12:42) 
+## last-updated: Jul  9 2019 (16:20) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 53
+##     Update #: 55
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -89,7 +89,7 @@ getAdmLimits <- function(dt,
         set(wdt,j=uddto,value=as.integer(wdt[[uddto]]))
     }
     ## Sort by pnr and admission dates
-    setkeyv(wdt,pnr,inddto)
+    setkeyv(wdt,c(pnr,inddto))
     ## Latest admission date by pnr
     wdt[,`:=`(last.outdate=cummax(.SD[[1]])),.SDcols=uddto,by=pnr] 
     ## Start of each admission 
