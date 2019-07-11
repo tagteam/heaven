@@ -78,7 +78,7 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     }
     ## Include part of code
     if(ii > 0){
-        cov <- matrix(NA,nrow=nrow(tmp),ncol=ii)
+        cov <- as.data.frame(matrix(NA,nrow=nrow(tmp),ncol=ii))
         for(i in 1:ii){
             v <- include[[i]]
             cov[,i] <- v[match(tmp$pnr,pnr)]
@@ -91,7 +91,7 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     tmp <- tmp[pnr!=0,]
     if(sum(tmp$status==0) != (sum(tmp$status==1)*Ncontrols))
         warning(paste0("Some stratas incomplete due to too few observations at risk"))
-    colnames(tmp)[1:3] <- c("pnr","strata", "CaseControl")
+    colnames(tmp)[1:3] <- c("pnr","strata", "Case")
     tmp$strata <- match(tmp$strata, tmp$strata)
     tmp[order(strata),]
 }
