@@ -20,7 +20,8 @@
 #' status <- sample(0:1,n,replace=TRUE,prob=c(.99,.01))
 #' sex <- sample(c("M","F"),n,replace=TRUE)
 #' age <- sample(c("y","m","o"),n,replace=TRUE)
-#' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
+#' data <- data.frame(pnr=pnr,time=time,status=status,match=list(sex,age))
+#' d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex,age),data=data,Ncontrols=5)
 #' }
 #' @export
 #' @useDynLib heaven
@@ -28,7 +29,9 @@
 nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,include=NULL,
                         Tstart=rep(0,length(pnr)),exposureWindow=0,cores=1){
     tmp <- NULL
+    match <- eval(substitute(match),data)
     if(is.null(include)) include <- match
+    include <- eval(substitute(include),data)
     pnr <- eval(substitute(pnr),data)
     time <- eval(substitute(time),data)
     status <- eval(substitute(status),data)
@@ -43,7 +46,10 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     ii <- length(include)
     for(i in 1:ii) include[[i]] <- include[[i]][sub]
     exposureWindow <- rep(exposureWindow, length(pnr))
-    if(!is.numeric(pnr)) pnr <- as.numeric(as.factor(pnr))
+    if(!is.numeric(pnr)){
+        pnr <- as.numeric(as.factor(pnr))
+        warning("pnr not numeric - output pnr might be different from input pnr")
+    } 
     ## Matching part of code
     ifelse(is.null(match), grp <- rep(1,length(time)), grp <- as.numeric(interaction(match)))
     if(cores==1){
@@ -59,7 +65,7 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
         }
     }
     else{
-        registerDoMC <- cores
+        registerDoMC(cores)
         tmp <- foreach(i=1:length(unique(grp)), .combine = "rbind") %dopar% {
             ind <- (grp==i)
             tmppnr <- pnr[ind]
@@ -83,5 +89,9 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     ## Return as sorted data table
     setDT(tmp)
     tmp <- tmp[pnr!=0,]
-    tmp[order(time),]
+    if(sum(tmp$status==0) != (sum(tmp$status==1)*Ncontrols))
+        warning(paste0("Some stratas incomplete due to too few observations at risk"))
+    colnames(tmp)[1:3] <- c("pnr","strata", "CaseControl")
+    tmp$strata <- match(tmp$strata, tmp$strata)
+    tmp[order(strata),]
 }
