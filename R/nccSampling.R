@@ -92,6 +92,6 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     if(sum(tmp$status==0) != (sum(tmp$status==1)*Ncontrols))
         warning(paste0("Some stratas incomplete due to too few observations at risk"))
     colnames(tmp)[1:3] <- c("pnr","strata", "Case")
-    tmp$strata <- match(tmp$strata, tmp$strata)
+    tmp$strata <- as.numeric(as.factor(match(tmp$strata, tmp$strata)))
     tmp[order(strata),]
 }
