@@ -44,10 +44,13 @@ adm1 <- getAdmLimits(lpr1,error="flag")
 
 ## case where Variables have custom names
 data.table::setnames(lpr, c('pnr','inddto','uddto'), c('personid', 'Entrydate','Outdate'))
-lpr2 <- getAdmLimits(lpr,pnr='personid',inddto='Entrydate',uddto='Outdate')
+adm2 <- getAdmLimits(lpr,pnr='personid',inddto='Entrydate',uddto='Outdate')
 
 ## duplicated and overlap
-
+set.seed(8)
+lpr3 <- simAdmissionData(10)
+lpr3 <- lpr3[sample(1:NROW(lpr3),replace=TRUE,size=round(NROW(lpr3)*1.5))]
+adm3 <- getAdmLimits(lpr3,collapse=TRUE)
 
 }
 \author{

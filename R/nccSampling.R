@@ -11,8 +11,7 @@
 #' @param Tstart Time of treatment start
 #' @param exposureWindow Minimum required time of exposure to be included both as a case and as a control
 #' @param cores Number of cores to use
-#' @return A data.table with the variables pnr, time, status and chosen covariates
-#' @details The time variable can be used as strata variable in clogit
+#' @return A data.table with the variables pnr, strata, case and chosen covariates
 #' @examples
 #' \dontrun{n <- 100000
 #' pnr <- 1:n
@@ -91,7 +90,7 @@ nccSampling <- function(pnr,time,status,Ncontrols=10L,data=NULL,match=NULL,inclu
     tmp <- tmp[pnr!=0,]
     if(sum(tmp$status==0) != (sum(tmp$status==1)*Ncontrols))
         warning(paste0("Some stratas incomplete due to too few observations at risk"))
-    colnames(tmp)[1:3] <- c("pnr","strata", "Case")
+    colnames(tmp)[1:3] <- c("pnr","strata", "case")
     tmp$strata <- as.numeric(as.factor(match(tmp$strata, tmp$strata)))
     tmp[order(strata),]
 }

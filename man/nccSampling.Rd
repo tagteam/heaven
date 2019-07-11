@@ -30,13 +30,10 @@ nccSampling(pnr, time, status, Ncontrols = 10L, data = NULL,
 \item{cores}{Number of cores to use}
 }
 \value{
-A data.table with the variables pnr, time, status and chosen covariates
+A data.table with the variables pnr, strata, case and chosen covariates
 }
 \description{
 Dataset for nested case-control
-}
-\details{
-The time variable can be used as strata variable in clogit
 }
 \examples{
 \dontrun{n <- 100000
@@ -45,8 +42,8 @@ time <- rexp(n)
 status <- sample(0:1,n,replace=TRUE,prob=c(.99,.01))
 sex <- sample(c("M","F"),n,replace=TRUE)
 age <- sample(c("y","m","o"),n,replace=TRUE)
-d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
-d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex=sex,age=age))
+data <- data.frame(pnr,time,status,sex,age)
+d <- nccSampling(pnr,time,status,Ncontrols=5,match=list(sex,age),data=data,Ncontrols=5)
 }
 }
 \author{
