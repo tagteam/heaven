@@ -12,13 +12,18 @@
 ##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
 ##'                  na.strings=".",date.vars, character.vars="pnr",
 ##'                  numeric.vars = NULL,sas.program,sas.switches,
-##'                  sas.runner, skip.date.conversion=FALSE, verbose=TRUE,...)
+##'                  sas.runner, skip.date.conversion=FALSE,
+##'                  sas.data.extension="sas7bdat", verbose=TRUE,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
+##' So, \code{"x:/data/rawdata/701111/lmdb.sas7bdat"} and also
+##' \code{"v:/data/workdata/701111/MeMe/project1/data/mydata.sas7bdat"} work but \code{"./data/mydata.sas7bdat"}
+##' does not even not if the working directory is set to \code{"v:/data/workdata/701111/MeMe/project1/"}.
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to
-##' have permission to write to this directory. The default value is the current working directory, see \code{getwd()},
-##' (which you may not have access to write to!).
-##' @param keep Specifies the variables (columns) to include from the dataset. Default is to include all variables. 
+##'           have permission to write to this directory. The default value is the current working directory, see \code{getwd()},
+##'           (which you may not have access to write to!). On Gentofte's Danmark Statistics servers it may help to set
+##'           the working directory to the fast X drive. 
+##' @param keep A vector of variable names, i.e., the variables (columns) to read and keep from the dataset. Default is to read and keep all variables. 
 ##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.
 ##' @param where Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).
 ##' @param obs Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.  
@@ -49,6 +54,7 @@
 ##' @param sas.switches On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}
 ##' @param sas.runner How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.
 ##' @param skip.date.conversion if TRUE do not try to convert any dates.
+##' @param sas.data.extension String to be checked against the file extenstion of filename. Default is \code{"sas7bdat"}.
 ##' @param verbose Logical. Bla bla on the screen?
 ##' @param ... Arguments passed to \code{fread} for reading the created .csv file. 
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
@@ -74,10 +80,10 @@
 ##' str(df101)
 ##' df101
 ##'
-##' # Format, dates, numeric, character, colClasses
+##' # Format, dates, numeric, character
 ##' df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
 ##'                    save.tmp=TRUE,date.vars="inddto",
-##'                    colClasses=list("numeric"="pnr","factor"=packsize))
+##'                    numeric.vars="pnr",character.vars="packsize")
 ##' 
 ##' # we can also use the pre.hook to limit the number of observations via sas options:
 ##' importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
@@ -136,6 +142,13 @@
 ##' str(df2)
 ##' df2
 ##'
+##' ## Sometimes the sas data file cannot be read due to unknown formats
+##' ## here is how to solve this:
+##' df2a <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
+##'                  obs=101,
+##'                  pre.hook="options nofmterr;")
+##'                  
+##'
 ##' # The hooks set.hook and step.hook can be used as follows:
 ##' df3 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 ##'                  obs=101,
@@ -160,15 +173,25 @@
 ##'
 ##' }
 ##' @export
-importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
-                        obs = NULL, filter = NULL, filter.by = NULL, filter.cond = c(1, 1),
-                        set.hook = NULL, step.hook = NULL, pre.hook = NULL,
-                        post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = TRUE,
-                        save.tmp = FALSE, content = FALSE, na.strings = ".", date.vars = NULL,
-                        character.vars = "pnr", numeric.vars = NULL, sas.program,
-                        sas.switches, sas.runner, skip.date.conversion = FALSE, verbose = TRUE,
-                        ...)
+importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
+                       obs = NULL, filter = NULL, filter.by = NULL, filter.cond = c(1, 1),
+                       set.hook = NULL, step.hook = NULL, pre.hook = NULL,
+                       post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = TRUE,
+                       save.tmp = FALSE, content = FALSE, na.strings = ".", date.vars = NULL,
+                       character.vars = "pnr", numeric.vars = NULL, sas.program,
+                       sas.switches, sas.runner, skip.date.conversion = FALSE, 
+                       sas.data.extension="sas7bdat",verbose = TRUE,
+                       ...)
 {
+    if (!file.exists(filename)){
+        stop(paste0("A file with name ",filename," does not exist."))
+    }else{
+        if (tolower(tools::file_ext(filename))!=sas.data.extension)
+            stop("The filename exists, but file extension does not match sas.data.extension: ",sas.data.extension)
+    }
+    ## DD <- dirname(filename)
+    ## FF <- basename(filename)
+    ## fullname <- list.files(path=DD,pattern=paste0("^",filename,"$"),full.names=TRUE)
     .SD = NULL
     keep <- tolower(keep)
     drop <- tolower(drop)
@@ -179,7 +202,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
     }else{
         setwd(wd)
     }
-    # cleaning up old temporary directories
+                                        # cleaning up old temporary directories
     olddirectories <- list.files(wd,pattern="heaven_tempSASfiles[a-z0-9]+")
     for (old in olddirectories){
         message("Cleaning up temporary directories from previous calls.")
@@ -278,26 +301,8 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
             file.remove(file)
     }
     cond <- ""
-    if (length(keep) > 0) {
-        cond <- paste(cond, "keep=", paste(keep, collapse = " "),
-                      " ", sep = "")
-    }
-    if (length(drop) > 0) {
-        cond <- paste(cond, "drop=", paste(drop, collapse = " "),
-                      " ", sep = "")
-    }
-    if (length(where) > 0) {
-        cond <- paste(cond, "where=(", where, ") ", sep = "")
-    }
-    if (length(obs) > 0 && !is.infinite(obs)) {
-        cond <- paste(cond, "obs=", format(obs, scientific = FALSE),
-                      " ", sep = "")
-    }
-    if (length(cond) > 0) {
-        if (length(set.hook) > 0 & is.character(set.hook))
-            cond <- paste("(", cond, set.hook, ")", sep = " ")
-        else cond <- paste("(", cond, ")", sep = " ")
-    }
+
+    ## ----------------------------- start proc contents -------------------------
     file.create(tmp.SASproccont)
     cat("ods listing close;\nODS OUTPUT variables=dcontent; \n proc contents data='",
         filename, "';\nrun;\nproc sort data=dcontent;\nby num;\nrun; \ndata _NULL_; \nset dcontent; \n file '",
@@ -322,6 +327,33 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
     var.names <- tolower(dt.content$Variable)
     var.format <- dt.content$Informat
     var.type <- dt.content$Type
+    ## ----------------------------- end proc contents -------------------------
+
+    if (length(keep) > 0) {
+        ## make life easier for the user
+        keep <- c(keep, date.vars, numeric.vars, character.vars)
+        if ("pnr" %in% var.names) {
+            if (!("pnr" %in% keep)) keep <- c("pnr",keep)
+        }
+        cond <- paste(cond, "keep=", paste(keep, collapse = " "),
+                      " ", sep = "")
+    }
+    if (length(drop) > 0) {
+        cond <- paste(cond, "drop=", paste(drop, collapse = " "),
+                      " ", sep = "")
+    }
+    if (length(where) > 0) {
+        cond <- paste(cond, "where=(", where, ") ", sep = "")
+    }
+    if (length(obs) > 0 && !is.infinite(obs)) {
+        cond <- paste(cond, "obs=", format(obs, scientific = FALSE),
+                      " ", sep = "")
+    }
+    if (length(cond) > 0) {
+        if (length(set.hook) > 0 & is.character(set.hook))
+            cond <- paste("(", cond, set.hook, ")", sep = " ")
+        else cond <- paste("(", cond, ")", sep = " ")
+    }
     is.date <- grepl("date", var.format, ignore.case = TRUE) |
         grepl("dato", var.format, ignore.case = TRUE)
     is.num <- grepl("num", var.type, ignore.case = TRUE)
@@ -370,8 +402,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
             "out = csv_import \ndbms =csv; \nrun; \n", sep = "",
             file = tmp.SASfile, append = TRUE)
     }
-    cat("data df; \nset '", filename, "'", cond, ";\n", format.statement,
-        sep = "", file = tmp.SASfile, append = TRUE)
+    cat("data df; \nset '",filename,"'",cond,";\n",format.statement,sep = "",file = tmp.SASfile,append = TRUE)
     if (length(step.hook) > 0 & is.character(step.hook)) {
         cat(step.hook, sep = "", file = tmp.SASfile, append = TRUE)
     }
@@ -491,7 +522,7 @@ importSAS <- function (filename, wd = NULL, keep = NULL, drop = NULL, where = NU
                                                            ia$colClasses[["numeric"]]))
                 }
             }
-            # reset filternames
+                                        # reset filternames
             if (length(filter) > 0){
                 setnames(filter,orig.filter.names)
             }

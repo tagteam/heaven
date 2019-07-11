@@ -7,7 +7,7 @@
 #' id/from/to/value/name - that may represent multiple conditions with from/to and with "name" to
 #' distinguish.
 #' @usage
-#' lexisFromTo(indat,splitdat,invars,splitvars)
+#' lexisFromTo(indat,splitdat,invars,splitvars,default="0")
 #' @author Christian Torp-Pedersen
 #' @param indat - base data with id, start, end, event and other data - possibly 
 #' already split
@@ -17,6 +17,7 @@
 #' example: c("id","start","end","event")
 #' @param splitvars - vector of column names containing dates to split by.
 #' example: c("id","start","end","value","name") - must be in that order!
+#' @param default - Value given to intervels not given a value by the function.
 #' @return
 #' The function returns a new data table where records have been split according 
 #' to the splittingguide dataset. Variables
@@ -53,22 +54,25 @@
 #'                    ,split # Data with id and dates
 #'                    ,c("id","start","end","event") #names of id/in/out/event - in that order
 #'                   ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-#' temp[]
 #' @export
 lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly other variables
                        ,splitdat # Data with from/to/Value
                        ,invars #names of id/in/out/event - in that order
                        ,splitvars #Names in splitdat with pnr/from/to/value/name
+                       ,default="0"
                         ){
- 
-    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=event=out=num=NULL
-#browser()    
+    .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=event=out=num=isdate=NULL
     setDT(indat)
     setDT(splitdat)
     #Tests of data
     INDAT <- indat[,invars,with=FALSE] # Necessary variables for split
     INDAT[,mergevar:=1:.N] # Variable to merge by after split;
     setnames(INDAT,invars,c("pnr","inn","out","event"))
+    if (lubridate::is.Date(INDAT[,inn])){
+      isdate <- TRUE
+      INDAT[,':='(inn=as.numeric(inn),out=as.numeric(out))] 
+    }
+    
     if (!class(INDAT[,event]) %in% c("numeric","integer")) stop("event variable must be integer - zero or one") 
     setkey(INDAT,pnr)
     INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
@@ -113,7 +117,8 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                 csplit[,start], # Interval start - split guide
                 csplit[,slut], # Interval end - split guide
                 csplit[,num], #Covariate number
-                length(nams)) # Number of covariate to split by) # Call c++
+                length(nams),
+                default) # Number of covariate to split by) # Call c++
     # OUT<- splitFT(INDAT[,pnrnum], # PNR as sequence number - base data
     #               INDAT[,inn], # Starttimes - base data
     #               INDAT[,out], # Endtimes - base data
@@ -124,11 +129,16 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     #               csplit[,start], # Interval start - split guide
     #               csplit[,slut], # Interval end - split guide
     #               csplit[,num], #Covariate number
-    #               length(nams)) # Number of covariate to split by
+    #               length(nams), # Number of covariate to split by
+    #               default)
     OUT1 <- cbind(setDT(OUT[1:5]))
     OUT2 <- setDT(do.call(cbind,OUT[6]))
     setnames(OUT2,nams)
     OUT <- cbind(OUT1,OUT2)
+    
+    if(isdate){
+      OUT[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
+    }
     setkey(OUT, mergevar, inn)
     setkey(RESTDAT, mergevar)
     OUT <- merge(OUT,RESTDAT, by=c("mergevar"),all=TRUE)

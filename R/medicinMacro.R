@@ -79,9 +79,9 @@ medicinMacro <- function(drugs,
                          strength.var = "strnum",
                          packsize.var="packsize",
                          apk.var="apk",
-                         splitting = FALSE){
+                         splitting = FALSE,verbose=TRUE){
     atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
-    # Set the right structure for processed object
+                                        # Set the right structure for processed object
     processed <- structure(list(),class = "medicinmacro")
     if (missing(drugs) || is.null(drugs)) stop("Sorry, no drugs have been specified.")
     if (missing(drugdb) || is.null(drugdb)) stop("No drug purchase data provided")
@@ -102,11 +102,17 @@ medicinMacro <- function(drugs,
             setnames(drugdb.work,drugdb.datevar,"eksd")
         }
         if (NROW(admdb)>0){
-            # Why not changing names of admdb "id" too?
+            if (verbose){
+                message("Assuming that argument admdb has been prepared according to:\n1. No duplicated or overlapping admission periods per person.\n2. Only real admissions, i.e., pattype==0.")
+            }
+                                        # Why not changing names of admdb "id" too?
             admdb.work <-  copy(admdb)
             if (any(admdb.datevars!=c("inddto","uddto"))) {
                 setnames(admdb.work,admdb.datevars[1],"inddto")
                 setnames(admdb.work,admdb.datevars[2],"uddto")
+                if (any(dups <- duplicated(admdb.work[,c(id,admdb.datevars),with=FALSE]))){
+                    warning("Duplicated admission records in argument admdb.")
+                }
             }
         }
         drugdb.work   <- drugdb.work[atc %in% atcs & eksd <= period[2] & eksd >= period[1], ]
@@ -122,19 +128,22 @@ medicinMacro <- function(drugs,
         }
         ##--- unique id's
         idunique <- unique(drugdb.work[["pnr"]])
-        # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
-        if(typeof(idunique)=="character"){
+                                        # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
+        id.character <- typeof(idunique)=="character"
+        if(id.character){
             db = data.table(pnr.db=idunique)
             db[,tmp.index:=1:.N]
             drugdb.work = merge(drugdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
             if(NROW(admdb.work)>0)
                 admdb.work = merge(admdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
+            ## now continue with numeric id
+            idunique <- db[["tmp.index"]]
         }
         if (length(idunique)==0) {
             warning(paste0("No individual purchased ",paste0(atcs,collapse=", ")," in this period"))
             processed[[drugname]] <- NULL
         }else{
-            # Check if data is OK for calculating exposure periods
+                                        # Check if data is OK for calculating exposure periods
             if (length(prescriptionwindow) == 0) prescriptionwindow = 2
             if (length(maxdepot) == 0) stop("Argument max depot missing\n")
             if (length(period) == 0) stop("Argument period missing\n")
@@ -177,7 +186,7 @@ medicinMacro <- function(drugs,
                 setkey(out,pnr,firstday)
             }
             ## Revert pnr type change
-            if(typeof(idunique)=="character")
+            if(id.character)
                 out = merge(out,db,by.x="pnr",by.y="tmp.index",all.x=TRUE)[,pnr:=pnr.db][,pnr.db:=NULL][]
             processed[[drugname]] <- out
         }

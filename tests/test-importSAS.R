@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Nov  2 2018 (07:57) 
 ## Version: 
-## Last-Updated: Nov  5 2018 (20:31) 
+## Last-Updated: Jul  8 2019 (16:59) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 10
+##     Update #: 16
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -33,7 +33,20 @@ if(!sas.exists){
         testB <- try(importSAS(file=sas.file,obs=10,date.vars="eksd"))
         testC <- try(importSAS(file=sas.file,
                                obs=10,
-                               colClasses=list(character=c("pnr","packsize"),"numeric"="apk","factor"="eksd")))
+                               colClasses=list(character=c("pnr","packsize"),"numeric"="apk","character"="eksd")))
+        testD <- try(importSAS(file=sas.file,obs=113,date.vars="eksd",keep="eksd",character.vars="strnum"))
+        testE <- try(importSAS(file=sas.file,
+                               obs=113,
+                               date.vars="EksD",
+                               keep="eksd",
+                               numeric.vars=c("PNR"),
+                               character.vars=c("strnum")))
+        testF <- try(importSAS(file=sas.file,
+                               obs=113,
+                               date.vars="EksA",
+                               keep="eksd",
+                               numeric.vars=c("PNR"),
+                               character.vars=c("strnum")))
     })
 }
 

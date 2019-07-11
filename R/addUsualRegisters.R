@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Apr  9 2019 (15:17) 
 ## Version: 
-## Last-Updated: Apr  9 2019 (15:51) 
+## Last-Updated: Jun 27 2019 (14:10) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 4
+##     Update #: 6
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -49,7 +49,7 @@ addUsualRegisters <- function(x,
         if (is.character(pop))
             pop.file <- pop
         else
-            pop.file <- grep("pop.sas7bdat",files,value=TRUE)
+            pop.file <- grep("^pop.sas7bdat$",files,value=TRUE)
         if (length(pop.file)>0 && file.exists(pop.file)){
             message("checking in registry 'pop' at: ",pop.file)
             addData(x,name="pop",variables=c("sex","date"="fdato")) <- pop.file
@@ -61,7 +61,7 @@ addUsualRegisters <- function(x,
         if (is.character(dod))
             dod.file <- dod
         else
-            dod.file <- grep("doede.sas7bdat",files,value=TRUE)
+            dod.file <- grep("^doede.sas7bdat$",files,value=TRUE)
         if (length(dod.file)> 0 && file.exists(dod.file)){
             message("checking in registry 'dod' at: ",dod.file)
             addData(x,name="dod",variables=c("date"="doddato")) <- dod.file
@@ -73,7 +73,7 @@ addUsualRegisters <- function(x,
         if (is.character(lmdb))
             lmdb.file <- lmdb
         else
-            lmdb.file <- grep("lmdb.sas7bdat",files,value=TRUE)
+            lmdb.file <- grep("^lmdb.sas7bdat$",files,value=TRUE)
         if (length(lmdb.file)>0 && file.exists(lmdb.file)){
                         message("checking in registry 'lmdb' at: ",lmdb.file)
             addData(x,name="lmdb",variables=c("atc","date"="eksd")) <- lmdb.file
@@ -85,7 +85,7 @@ addUsualRegisters <- function(x,
         if (is.character(lpr))
             lpr.file <- lpr
         else
-            lpr.file <- grep("diag_indl.sas7bdat",files,value=TRUE)
+            lpr.file <- grep("^diag_indl.sas7bdat$",files,value=TRUE)
         if (length(lpr.file)>0 && file.exists(lpr.file)){
             message("checking in registry 'lpr' at: ",lpr.file)
             addData(x,name="lpr",variables=c("diag","diagtype","date"="inddto","date"="uddto","pattype")) <- lpr.file
@@ -97,7 +97,7 @@ addUsualRegisters <- function(x,
         if (is.character(opr))
             opr.file <- opr
         else
-            opr.file <- grep("opr.sas7bdat",files,value=TRUE)
+            opr.file <- grep("^opr.sas7bdat$",files,value=TRUE)
         if (length(opr.file)>0 &&  file.exists(opr.file)){
             message("checking in registry 'opr' at: ",opr.file)
             addData(x,name="opr",variables=c("opr","tilopr","date"="odto","date"="inddto","date"="uddto","pattype")) <- opr.file

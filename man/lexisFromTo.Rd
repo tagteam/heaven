@@ -4,7 +4,7 @@
 \alias{lexisFromTo}
 \title{lexisFromTo}
 \usage{
-lexisFromTo(indat,splitdat,invars,splitvars)
+lexisFromTo(indat,splitdat,invars,splitvars,default="0")
 }
 \arguments{
 \item{indat}{- base data with id, start, end, event and other data - possibly 
@@ -18,6 +18,8 @@ example: c("id","start","end","event")}
 
 \item{splitvars}{- vector of column names containing dates to split by.
 example: c("id","start","end","value","name") - must be in that order!}
+
+\item{default}{- Value given to intervels not given a value by the function.}
 }
 \value{
 The function returns a new data table where records have been split according 
@@ -65,7 +67,6 @@ temp <- lexisFromTo(dat # inddato with id/in/out/event
                    ,split # Data with id and dates
                    ,c("id","start","end","event") #names of id/in/out/event - in that order
                   ,c("id","start","end","value","name")) #Nmes var date-vars to split by
-temp[]
 }
 \author{
 Christian Torp-Pedersen

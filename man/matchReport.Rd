@@ -2,24 +2,12 @@
 % Please edit documentation in R/matchReport.R
 \name{matchReport}
 \alias{matchReport}
-\title{matchReport - report of matching from riskSetMatch}
+\title{matchReport - report of matching from incidenceMatch and exposureMatch}
 \usage{
-matchReport(dat, id, case, caseid,oldcase="oldevent")
+matchReport(x)
 }
 \arguments{
-\item{dat}{- data.table with result from riskSetMatch}
-
-\item{id}{- variable with participant id}
-
-\item{case}{- 0=control, 1=case}
-
-\item{caseid}{- variable defining the groups of matching cases/controls}
-
-\item{oldcase}{- Variable holding case/control=0/1 prior to matching. Distinguishes
-cases reused as controls}
-}
-\value{
-Three small tables - Number of controls for cases, use/reuse of controls, use/reuse of cases
+\item{x}{result of exposureMatch or incidenceMatch}
 }
 \description{
 The function provides very simple tables of the success of finding controls and
@@ -27,8 +15,11 @@ the reuse of cases and controls. Designed to deal with the results of function
 riskSetMatch
 }
 \details{
-This function can be helpful to define matching options.  If there is excessive reuse of controls or many
-cases do not find controls it may be desirable to do further rounding of matching variables.
+This function can be helpful to reevaluate matching options after exact matching.
+If many
+cases do not find controls it may be desirable to reduce the number of
+matching terms or to do 
+further rounding of continuous matching variables.
 }
 \examples{
 require(data.table)
@@ -41,13 +32,13 @@ controlIndex <- caseIndex
 library(data.table)
 dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 # Very simple match without reuse - no dates to control for
-dataout <- riskSetMatch("ptid","case",c("byear","sex"),dat,2,caseIndex="caseIndex",
-  controlIndex="controlIndex",reuseCases=TRUE,reuseControls=TRUE)
-matchReport(dataout,"ptid","case","caseid")   
+matched.data <- incidenceMatch(ptid="ptid",event="case",terms=c("byear","sex"),data=dat,n.controls=2,
+case.index="caseIndex",end.followup="controlIndex")
+matchReport(matched.data)
 }
 \seealso{
-riskSetMatch
+incidenceMatch exposureMatch
 }
 \author{
-Christian Torp-Pedersen
+Christian Torp-Pedersen & Thomas Alexander Gerds
 }

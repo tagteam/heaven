@@ -4,12 +4,12 @@
 using namespace Rcpp;
 // [[Rcpp::export]]
 List split2(IntegerVector pnrnum, // PNR as sequence number - base data
-              IntegerVector inn, // Starttimes - base data
-              IntegerVector out, // Endtimes - base data
+              NumericVector inn, // Starttimes - base data
+              NumericVector out, // Endtimes - base data
               IntegerVector event, // Event at end of interval 0/1 - base data
               IntegerVector mergevar, // Merge variable, multiple records can have same pnr - base data
-              IntegerMatrix split, // split guide matrix - pnrnum and date columns
-              int numcov){ // Number of covariate dates for each individual 
+              NumericMatrix split, // split guide matrix - pnrnum and date columns
+              int numcov){ // Max number of covariate dates for each individual 
 
 // This function received "base data" with pnrnum (integer consecutive version of pnr),
 //                                    inn/out (start/end of interval)
@@ -24,9 +24,9 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
   Opnrnum.reserve(pnrnum.size()*2);
   std::vector<int> Omergevar;
   Omergevar.reserve(pnrnum.size()*2);
-  std::vector<int> Oinn;  // Starttimes output
+  std::vector<double> Oinn;  // Starttimes output
   Oinn.reserve(pnrnum.size()*2);
-  std::vector<int> Oout; // Endtimes output
+  std::vector<double> Oout; // Endtimes output
   Oout.reserve(pnrnum.size()*2);
   std::vector<int> Oevent; // Event at end 0/1
   Oevent.reserve(pnrnum.size()*2);
@@ -37,6 +37,7 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
   for(int i=0; i<numcov;i++)Osplit[i].reserve(pnrnum.size()*2);
   int l1=pnrnum.size(); // length of base data
   int l2=split.nrow();
+   l2=l2-split(l2-1,3); // start of last element of splitting guide
   int counter=0; // counts through split guide
   int INN=-1; // start of pnr-range in output data
   int OUT=-1; // end of pnr-range in output data
@@ -46,7 +47,7 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
   // prior to interrogating next pnr
    for(int i=0; i<l1; i++){ // Loop through base data
       INN=OUT+1;  // Start of next pnr-sequence - INN/OUT necessary because record can be split and reanalyzed
-      while (counter<(l2-numcov) && split(counter,0)<pnrnum(i)) counter+=numcov; // Increase row by number of covariates in splitting guide until match - or end passed
+      while (counter<l2 && split(counter,0)<pnrnum(i)) counter+=split(counter,3); // Increase row by number of covariates in splitting guide until match - or end passed
        //Searching in splitting guide until match found or passed - counter maintains place in splitting guide
       OUT+=1;
       // Start by pushing the record with all comorbidities=0
@@ -58,9 +59,9 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
       for(int j=0; j<numcov;j++) Osplit[j].push_back(0);
        // Any splitting?
        if (split(counter,0) == pnrnum(i)) { // Match and potentially split
-        for (int ii=0; ii<numcov; ii++){ // Outer loop through elements of splitting guide for current pnr
+        for (int ii=0; ii<split(counter+ii,3); ii++){ // Outer loop through elements of splitting guide for current pnr
           OUT=OUT+OUText; // No relevant action on initialisation - but relevant after splitting which lengthens number of records
-          OUText=0; // reset - so far just one record
+          OUText=0; // reset - on first pass, just one record
           for (int iii=INN; iii<=OUT; iii++){ // inner loop - Output data - just one record prior to split - iii refers to O-copy of base records
              if (split(counter+ii,1)<-2000000000 || split(counter+ii,1)>Oout[iii]) {
              //std::cout<<"splitvalue="<<  split(counter+ii,1) <<"\n";            

@@ -4,7 +4,8 @@
 \alias{getAdmLimits}
 \title{Get Admission time}
 \usage{
-getAdmLimits(dt, pnr = "pnr", inddto = "inddto", uddto = "uddto")
+getAdmLimits(dt, pnr = "pnr", inddto = "inddto", uddto = "uddto",
+  collapse = FALSE, error = "warn")
 }
 \arguments{
 \item{dt}{data.table containing the variables}
@@ -14,30 +15,40 @@ getAdmLimits(dt, pnr = "pnr", inddto = "inddto", uddto = "uddto")
 \item{inddto}{Variable with entry times. Must be date or numeric (default is \code{inddto}).}
 
 \item{uddto}{Variable with exit times. Must be date or numeric (default is \code{uddto}).}
+
+\item{collapse}{if \code{TRUE} return only the lines with non-overlapping admissions}
+
+\item{error}{Character. One of \code{"warn"}, \code{"remove"} remove lines with errors,
+\code{"flag"} add a new variable called error. An error is defined as either a missing value in
+either inddto or uddto or when inddto>uddto.}
 }
 \value{
-List containing two datasets. 
-        First contains the same data.table as for input but with 2 new variables first.inddto and last.outdate.
-        Second contains all rows with missing data or where inddto > uddto.
+data.table with two new variables first.indate and last.outdate.
 }
 \description{
 Adds first admission date and last discharge date to a sequence of admissions. The default input data.table is the current standard
 by which admissions are available in Statistics Denmark.
 }
 \examples{
-\dontrun{
-pop <- as.data.table(data(sample.diag))
-## Varaibles have default names
-newpop <- getAdmLimits(pop)
+set.seed(8)
+lpr <- simAdmissionData(10)
+## Variables have default names
+adm <- getAdmLimits(lpr)
 
-## Varaibles have custom names
-setnames(pop, c('pnr','inddto','uddto'), c('personid', 'Entrydate','Outdate'))
-newpop <- getAdmLimits(pop,pnr='personid',inddto='Entrydate',uddto='Outdate')
+## with errors
+lpr1 <- lpr
+lpr1 <- lpr1[uddto>as.Date("2010-01-01"),uddto:=NA]
+adm1 <- getAdmLimits(lpr1)
+adm1 <- getAdmLimits(lpr1,error="remove")
+adm1 <- getAdmLimits(lpr1,error="flag")
 
-## List is returned containing two data.tables
-newpopData <- newpop[[1]]
-newpopError <- newpop[[2]]
-}
+## case where Variables have custom names
+data.table::setnames(lpr, c('pnr','inddto','uddto'), c('personid', 'Entrydate','Outdate'))
+lpr2 <- getAdmLimits(lpr,pnr='personid',inddto='Entrydate',uddto='Outdate')
+
+## duplicated and overlap
+
+
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

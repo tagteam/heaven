@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Mar 11 2019 (10:30) 
 ## Version: 
-## Last-Updated: Apr  9 2019 (16:51) 
+## Last-Updated: May 30 2019 (13:21) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 14
+##     Update #: 23
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -27,7 +27,7 @@
 #' 
 #' See examples for common use of the output
 #' @usage
-#' findCondition(data, vars, keep, conditions, match="contain",variable.name="variable")
+#' findCondition(data, vars, keep, conditions, match="contain",condition.name)
 #' 
 #' @param data Data in which to search for conditions
 #' @param vars Name(s) of variable(s) in which to search.
@@ -38,10 +38,10 @@
 #' "exact"=exactly matches the search string, "contains"=contains the search
 #' string, "starts"=Starts with the search string, "end"=Ends with the search
 #' string
-#' @param variable.name Name of variable where values define conditions.  The values
-#' of this variable are the names from paramter "conditions".
+#' @param condition.name Name of variable(s) where values define conditions. The values
+#' of this variable are the names from parameter "conditions".
 #' @return
-#' A data table that includes the "keep-variables" and a variable "cond" which
+#' A data table that includes the "keep-variables" and a variable named \code{condition.name} which
 #' identifies the condition searched for
 #' @examples
 #' library(heaven)
@@ -55,7 +55,7 @@
 #' Cond3=c('A1','C20','B2'))
 #'
 #' out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
-#' conditions=search,match="start",variable.name="cond")
+#'         conditions=search,match="start",condition.name="cond")
 #' ### And how to use the result:
 #' # Find first occurence of each condition and then use "dcast" to create
 #' # a data.table with vectors corresponding to each condition.
@@ -69,16 +69,15 @@
 #' test3 <- merge(out,dates,by="pnr")
 #' test3[,before:=as.numeric(odto<=basedate)] # 1 when condition fulfilled
 #' test4 <- dcast(pnr~cond,value.var="before",data=test3)
-#' # Whether to conver NAs to zero depends on application
-#' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <ta
-#' tag@biostat.ku.dk>
+#' # Whether to convert NAs to zero depends on the situation
+#' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <tag@biostat.ku.dk>
 #' @export
 findCondition <- function(data,
                           vars,
                           keep,
                           conditions,
                           match="contain",
-                          variable.name="variable"){
+                          condition.name="X"){
   cond=NULL
   match <-match.arg(match,c("exact","contains","start"))
   if (!is.character(vars) | !is.character(keep)) stop ("Error -  vars or keep not character")  
@@ -112,10 +111,11 @@ findCondition <- function(data,
     }
   }
   out <- out[,c("cond",keep),with=FALSE]
-  setnames(out,"cond",variable.name)
+  setnames(out,"cond",condition.name)
   out
 }
 
 
 ######################################################################
 ### findCondition.R ends here
+

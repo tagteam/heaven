@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: Apr  9 2019 (16:42) 
+## Last-Updated: Jun 27 2019 (14:41) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 235
+##     Update #: 239
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -958,31 +958,51 @@ process <- function (x, n = Inf, fish = "studypop", verbose = TRUE, show.sas.cod
     x
 }
 
+
+##' Add a drug to an existing dpp object 
+##'
+##' Add a drug to an existing dpp object 
+##' @title Add drug
+##' @param x dpp object
+##' @param target name of dataset 
+##' @param drug character string which should match \code{names(diseasecode)}
+##' @param ... not used
+##' @return updated object
+##' @seealso addSex, addAge, addVariable, addComo
+##' @examples # see help(dpp)
+##' @export 
+##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 addDrug <- function(x,target,drug,...){
+    ## extraction of drug
+    utils::data(diseasecode)
     drug.match <- grep(drug,names(diseasecode),ignore.case=TRUE,value=TRUE)
+    if (length(drug.match)==0) stop("Cannot find definition of drug ",drug," in list of known drugs.\nSee data diseasecode for known drugs.")
     atc <- paste0(diseasecode[drug.match][[1]],collapse="|")
     addVariable(x,target=target,type="join") <- selector(data="lmdb",
-                                             var="atc",
-                                             name=drug,
-                                             sortkey="eksd",
-                                             search.term=atc,
-                                             select="first")
+                                                         var="atc",
+                                                         name=drug,
+                                                         sortkey="eksd",
+                                                         search.term=atc,
+                                                         select="first")
     x
 }
+
 ##' Add a comorbidity to an existing dpp object 
 ##'
 ##' Add a comorbidity to an existing dpp object 
 ##' @title Add comorbidity
 ##' @param x dpp object
 ##' @param target name of dataset 
-##' @param como character string which should 
+##' @param como character string which should match \code{names(diseasecode)}
 ##' @param ... not used
 ##' @return updated object
-##' @seealso addSex, addAge, addVariable
+##' @seealso addSex, addAge, addVariable, addDrug
 ##' @examples # see help(dpp)
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 addComo <- function(x,target,como,...){
+    ## extraction of diagnoses
+    utils::data(diseasecode)
     como.match <- grep(como,names(diseasecode),ignore.case=TRUE,value=TRUE)
     if (length(como.match)==0) stop("Cannot find definition of comorbidity ",como," in list of known comorbidities.\nSee diseasecode for known comorbidities.")
     icd <- paste0(diseasecode[como.match][[1]],collapse="|")
@@ -1040,8 +1060,8 @@ addAge <- function(x,target,...){
                                              select="variable",
                                              collect="fdato")
     ## age at index
-    expr <- expression(round(as.numeric(index-birthday)/365.25,1))
-    addVariable(x,target=target) <- selector(data="afbsl",
+    expr <- expression(round(as.numeric(index-fdato)/365.25,1))
+    addVariable(x,target=target) <- selector(data="pop",
                                              var="age",
                                              sortkey=NULL,
                                              search.term=NULL,
