@@ -160,6 +160,7 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
     indat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
     isdate <- TRUE
   }
+  else isdate <- FALSE
   ## TEST
   temp <- indat[,list(num=sum(out<inn))]
   if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")

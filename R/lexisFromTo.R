@@ -72,7 +72,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
       isdate <- TRUE
       INDAT[,':='(inn=as.numeric(inn),out=as.numeric(out))] 
     }
-    
+    else isdate <- FALSE
     if (!class(INDAT[,event]) %in% c("numeric","integer")) stop("event variable must be integer - zero or one") 
     setkey(INDAT,pnr)
     INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence

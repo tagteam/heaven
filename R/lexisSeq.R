@@ -108,6 +108,7 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
     splitdat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
     isdate <- TRUE
   }
+  else isdate <- FALSE
   if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
   datt[, `:=`((invars[2:4]), NULL)]
   if (!(format %in% c("vector", "seq"))) 
