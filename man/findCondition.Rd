@@ -4,7 +4,8 @@
 \alias{findCondition}
 \title{Find conditions in registry data}
 \usage{
-findCondition(data, vars, keep, conditions, match="contain",condition.name)
+findCondition(data, vars, keep, conditions, exclusions, 
+match="contain",condition.name)
 }
 \arguments{
 \item{data}{Data in which to search for conditions}
@@ -16,17 +17,20 @@ output}
 
 \item{conditions}{A named list of (vectors of) search strings. See examples.}
 
+\item{exclusions}{A names list of (vectors of) search strings to exclude
+from the output.}
+
 \item{match}{A variable to tell how to use the character vectors:
 "exact"=exactly matches the search string, "contains"=contains the search
 string, "starts"=Starts with the search string, "end"=Ends with the search
 string}
 
-\item{condition.name}{Name of variable(s) where values define conditions. The values
-of this variable are the names from parameter "conditions".}
+\item{condition.name}{Name of variable(s) where values define conditions. 
+The values of this variable are the names from parameter "conditions".}
 }
 \value{
-A data table that includes the "keep-variables" and a variable named \code{condition.name} which
-identifies the condition searched for
+A data table that includes the "keep-variables" and a variable named 
+\code{condition.name} which #' identifies the condition searched for
 }
 \description{
 This functions is useful for the very common task of selecting cases based 
@@ -36,7 +40,10 @@ ables.
 The function is designed to search a group of variables (character) for 
 multiple conditions defined in a list of named character vectors. The func-
 tion will produce a data.table with selected variables for cases where a
-match is found.
+match is found.  In addition a list of names character vectors can have
+exclusions from the search.  This last facility is useful if e.g. all
+cancer except non melanoma skin cancer is sought.  In that case inclusion 
+can have all cancers and the exclusions just the non-melanoma skin cancer.
 
 See examples for common use of the output
 }
@@ -51,8 +58,11 @@ opr <- data.table(
 search <- list(Cond1=c('A1','A2'),Cond2=c('B10','B40','B5'),
 Cond3=c('A1','C20','B2'))
 
+excl <- list(Cond2='B100')
+
 out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
-        conditions=search,match="start",condition.name="cond")
+        conditions=search, exclusions=excl,
+        match="start",condition.name="cond")
 ### And how to use the result:
 # Find first occurence of each condition and then use "dcast" to create
 # a data.table with vectors corresponding to each condition.
