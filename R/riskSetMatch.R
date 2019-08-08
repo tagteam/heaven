@@ -187,7 +187,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     setnames(FINAL, "pnrnum",ptid)
     setkeyv(FINAL,c("case.id",event))
     ## Add relevant case.id to controls
-    ## FINAL[,eval(case.index):=.SD[.N],.SDcols=c(case.index),by=case.id]
+    FINAL[,eval(case.index):=.SD[.N],.SDcols=c(case.index),by=case.id]
     if (output.count.controls){
         FINAL[,n.controls:=(.N-1),by="case.id"]
     }
