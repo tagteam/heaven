@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Jul 10 2019 (08:50) 
+## last-updated: Aug  6 2019 (11:03) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 74
+##     Update #: 75
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -58,6 +58,7 @@ getAdmLimits <- function(dt,
                          uddto="uddto",
                          collapse=FALSE,
                          error="warn"){
+    .SD=.I=NULL
     first.indate <- .N <- last.outdate <- NULL
     ## take a hard copy
     wdt=data.table::copy(dt)

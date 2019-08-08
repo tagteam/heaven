@@ -25,7 +25,8 @@
 #' library(data.table)
 #' dat <- data.table(ptid,case,sex,byear,caseIndex,controlIndex)
 #' # Very simple match without reuse - no dates to control for
-#' matched.data <- incidenceMatch(ptid="ptid",event="case",terms=c("byear","sex"),data=dat,n.controls=2,
+#' matched.data <- incidenceMatch(ptid="ptid",event="case",terms=c("byear","sex"),
+#' data=dat,n.controls=2,
 #' case.index="caseIndex",end.followup="controlIndex")
 #' matchReport(matched.data)
 matchReport <- function(x){

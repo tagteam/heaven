@@ -79,7 +79,7 @@ medicinMacro <- function(drugs,
                          strength.var = "strnum",
                          packsize.var="packsize",
                          apk.var="apk",
-                         splitting = FALSE,verbose=TRUE){
+                         splitting = FALSE){
     atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
                                         # Set the right structure for processed object
     processed <- structure(list(),class = "medicinmacro")
@@ -102,9 +102,7 @@ medicinMacro <- function(drugs,
             setnames(drugdb.work,drugdb.datevar,"eksd")
         }
         if (NROW(admdb)>0){
-            if (verbose){
-                message("Assuming that argument admdb has been prepared according to:\n1. No duplicated or overlapping admission periods per person.\n2. Only real admissions, i.e., pattype==0.")
-            }
+            message("Assuming that argument admdb has been prepared according to:\n1. No duplicated or overlapping admission periods per person.\n2. Only real admissions, i.e., pattype==0.")
                                         # Why not changing names of admdb "id" too?
             admdb.work <-  copy(admdb)
             if (any(admdb.datevars!=c("inddto","uddto"))) {
