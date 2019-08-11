@@ -56,7 +56,7 @@
 ##' @param skip.date.conversion if TRUE do not try to convert any dates.
 ##' @param sas.data.extension String to be checked against the file extenstion of filename. Default is \code{"sas7bdat"}.
 ##' @param verbose Logical. Bla bla on the screen?
-##' @param ... Arguments passed to \code{fread} for reading the created .csv file. 
+##' @param ... Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars} and \code{numeric.vars}.
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
 ##' @references This function is based on pioneering work by Jesper Lindhardsen.
@@ -502,8 +502,11 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
             info <- file.info(outfile)
             ia <- c(list(file = outfile, header = TRUE, na.strings = na.strings),
                     list(...))
-            if (length(ia$colClasses) == 0)
+            if (length(ia$colClasses) == 0){
                 ia$colClasses <- list(character = NULL, numeric = NULL)
+            }else{
+                ia$colClasses <- lapply(ia$colClasses,tolower)
+            }
             for (v in character.vars) {
                 if (length(vname <- grep(v, dt.content$Variable,
                                          value = TRUE, ignore.case = TRUE)) > 0)

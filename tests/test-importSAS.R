@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Nov  2 2018 (07:57) 
 ## Version: 
-## Last-Updated: Jul  8 2019 (16:59) 
+## Last-Updated: Aug  9 2019 (18:44) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 16
+##     Update #: 18
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -20,7 +20,7 @@ library(testthat)
 library(heaven)
 library(data.table)
 context("importSAS")
-
+setwd("~/research/SoftWare/heaven/")
 sas.file <- system.file("sandbox/lmdb.sas7bdat", package="heaven")
 ## sas.file <- "~/research/SoftWare/heaven/sandbox/lmdb.sas7bdat"
 
@@ -29,7 +29,10 @@ if(!sas.exists){
     cat("SAS not available so skipping SAS tests.")
 }else{
     test_that("importSAS loads test dataset",{
-        testA <- try(importSAS(file=sas.file,obs=10))
+        testA <- try(importSAS(file=sas.file,obs=1000))
+        filterA <- data.table(pnr=c("1","8"))
+        filterA2 <- data.table(pnr=c(1,8))
+        testAf <- try(importSAS(file=sas.file,obs=1000,filter=filterA2,save.tmp=0))        
         testB <- try(importSAS(file=sas.file,obs=10,date.vars="eksd"))
         testC <- try(importSAS(file=sas.file,
                                obs=10,

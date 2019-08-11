@@ -92,10 +92,11 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         message("Matching terms split the data into ",length(split.work.data)," subsets",
                 "\nThere are ",Nsmallgroups," subsets which contain less subjects (case-control-mix)\n",
                 "than the number of requested controls for one case.\n")
-    if ((Ntinygroups <- sum(Nsub<2))>0)
+    if ((Ntinygroups <- sum(Nsub<2))>0){
         message("There are ",Ntinygroups," subsets that have less than two subjects\nIMPORTANT: These are ignored with side effect.\n")
-    message("You should reduce",
-            "\n  - the number matching variables\n  - the number of values of the matching variables\n  - or both.\n")
+        message("You should reduce",
+                "\n  - the number matching variables\n  - the number of values of the matching variables\n  - or both.\n")
+    }
     if (cores>1){
         CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
     }else{
@@ -177,7 +178,8 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     if (progressbar) cat("\n") 
     setnames(selected.controls, c("case.id", "pnrnum"))
     ## prepare cases for rbind
-    cases <- work.data[work.data[[event]] == 1,data.table::data.table(case.id=pnrnum,pnrnum=pnrnum,event=1 )]
+    has.case <- work.data[[event]] == 1
+    cases <- work.data[has.case,data.table::data.table(case.id=pnrnum,pnrnum=pnrnum,event=1 )]
     FINAL <- rbind(cases, cbind(selected.controls,event=0))
     setnames(FINAL,"event",event)
     ## merge with data
