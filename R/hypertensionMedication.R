@@ -26,12 +26,11 @@
 #' antihypertensive medication.  The default versionis
 #' \itemize{
 #' \item{AntiAdrenerg:  }{'C02A','C02B','C02C'}
-#' \item{Diuretic:  }{'C02DA','C03A','C03B','C03D','C03E','C03X','C02DA','C07B','C07C','C07D','C08G','C09BA','C09DA','C09XA52'}
+#' \item{Diuretic:  }{'C02DA','C03A','C03B','C03D','C03E','C03X','C02DA','C07B','C07C','C07D','C08G','C09BA','C09DA','C09XA52','C02L'}
 #' \item{Vasodilator:  }{'C02DB','C02DD','C02DG'}
 #' \item{BetaBlocker:  }{'C07A','C07B','C07C','C07D','C07F'}
-#' \item{CalciumAntagonist:  }{'C07F','C08','C08G','C09BB','C09DB'}
+#' \item{CalciumAntagonist:  }{'C07FB','C08','C08G','C09BB','C09DB'}
 #' \item{ReninAngiotensinInhibitor;  }{'C09AA','C09BA','C09BB','C09CA','C09DA','C09DB','C09XA02','C09XA52'}
-#' \item{Other}{'C02L'}
 #' }
 #' @return A data.table with the following variables
 #' \itemize{
@@ -61,11 +60,11 @@
 hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
       "prescription.date"), index.date=NULL,medication.definition=NULL)
 {
-  dat=index=.SD=.N=hypertension=numDrugs=newdate=olddate=NULL
+  index=.SD=.N=hypertension=numDrugs=newdate=olddate=NULL
   datt <- copy(dat)
   setDT(datt)
   for (x in vars) if(!x %in% names(datt)) stop("variables not in data")
-  if (is.null(medication.definition) & !exists("hypertensionATC")) data(hypertensionATC)
+  if (is.null(medication.definition) & !exists("hypertensionATC")) hypertensionATC <- hypertensionATC
   if (!is.null(medication.definition)) hypertensionATC <- medication.definition
   if (!is.list(hypertensionATC)) stop ("Hypertension drugs not a list")
   setnames(datt,vars,c("pt","atc","date")) 

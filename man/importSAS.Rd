@@ -87,7 +87,7 @@ excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{verbose}{Logical. Bla bla on the screen?}
 
-\item{...}{Arguments passed to \code{fread} for reading the created .csv file.}
+\item{...}{Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars} and \code{numeric.vars}.}
 }
 \value{
 The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
