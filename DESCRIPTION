@@ -53,6 +53,7 @@ Collate:
     'guessRawdataDirectory.R'
     'heaven-data.R'
     'heaven-package.R'
+    'hypertensionMedication.R'
     'importDREAM.R'
     'importSAS.R'
     'incidenceMatch.R'

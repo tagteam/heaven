@@ -66,4 +66,13 @@
 #' @keywords datasets
 #' @name Framingham
 
-"Framingham"
+"HypertensionATC"
+
+#' hypertensionATC
+#'
+#' List with pre-specified ATC codes for classes of antihypertensive medication
+
+#' @format A list
+#' @docType data
+#' @keywords datasets
+#' @name hypertensionATC
