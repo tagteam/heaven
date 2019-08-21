@@ -58,13 +58,6 @@
  
 "edu_code"
 
-#' "Framingham"
-#' 
-#' data.frame with Framingham data
-#' @format A data.frame
-#' @docType data
-#' @keywords datasets
-#' @name Framingham
 
 "HypertensionATC"
 
