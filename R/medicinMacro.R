@@ -79,12 +79,28 @@ medicinMacro <- function(drugs,
                          strength.var = "strnum",
                          packsize.var="packsize",
                          apk.var="apk",
-                         splitting = FALSE){
+                         splitting = FALSE,verbose=FALSE){
     atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
                                         # Set the right structure for processed object
     processed <- structure(list(),class = "medicinmacro")
     if (missing(drugs) || is.null(drugs)) stop("Sorry, no drugs have been specified.")
     if (missing(drugdb) || is.null(drugdb)) stop("No drug purchase data provided")
+    if (NROW(admdb)>0){
+        if (any(dups <- duplicated(admdb[,c(id,admdb.datevars),with=FALSE]))){
+            stop(paste0("Admission data argument 'admdb' has not been prepared correctly:\nThere are duplicated (and/or overlapping) admission periods in at least one person."))
+        }
+        if ((length(ptype <- grep("pattype",names(admdb),ignore.case=TRUE,value=TRUE)[[1]])>0) && any(admdb[[ptype]]!=0)){
+            warning("Admission data argument 'admdb' contains admissions that are not overnight hospital admissions, i.e., pattype!=0.")
+        }
+        admdb.work <-  copy(admdb)
+        if (any(admdb.datevars!=c("inddto","uddto"))) {
+            setnames(admdb.work,admdb.datevars[1],"inddto")
+            setnames(admdb.work,admdb.datevars[2],"uddto")
+        }
+        ## convert dates to numeric: number of days since 1995-01-01
+        admdb.work[,inddto:=as.numeric(inddto-as.Date("1995-01-01"))]
+        admdb.work[,uddto:=as.numeric(uddto-as.Date("1995-01-01"))]
+    }
     for (drugname in names(drugs)){
         ## treatfun <- function(drugname) {
         j            <- (1:length(drugs))[names(drugs) == drugname]
@@ -101,26 +117,11 @@ medicinMacro <- function(drugs,
         if (drugdb.datevar!="eksd") {
             setnames(drugdb.work,drugdb.datevar,"eksd")
         }
-        if (NROW(admdb)>0){
-            message("Assuming that argument admdb has been prepared according to:\n1. No duplicated or overlapping admission periods per person.\n2. Only real admissions, i.e., pattype==0.")
-                                        # Why not changing names of admdb "id" too?
-            admdb.work <-  copy(admdb)
-            if (any(admdb.datevars!=c("inddto","uddto"))) {
-                setnames(admdb.work,admdb.datevars[1],"inddto")
-                setnames(admdb.work,admdb.datevars[2],"uddto")
-                if (any(dups <- duplicated(admdb.work[,c(id,admdb.datevars),with=FALSE]))){
-                    warning("Duplicated admission records in argument admdb.")
-                }
-            }
-        }
         drugdb.work   <- drugdb.work[atc %in% atcs & eksd <= period[2] & eksd >= period[1], ]
         ## convert dates to numeric: number of days since 1995-01-01
         drugdb.work[,eksd:=as.numeric(eksd-as.Date("1995-01-01"))]
         if (NROW(admdb)>0){
             admdb.work   <- admdb.work[inddto<= period[2] & uddto >= period[1], ]
-            ## convert dates to numeric: number of days since 1995-01-01
-            admdb.work[,inddto:=as.numeric(inddto-as.Date("1995-01-01"))]
-            admdb.work[,uddto:=as.numeric(uddto-as.Date("1995-01-01"))]
         }else{
             admdb.work <- data.frame(pnr=numeric(0),inddto=numeric(0),uddto=numeric(0))
         }
@@ -165,7 +166,7 @@ medicinMacro <- function(drugs,
                                                                      doses=doses,
                                                                      idunique=split.id,
                                                                      prescriptionwindow=prescriptionwindow,
-                                                                     maxdepot=maxdepot))
+                                                                     maxdepot=maxdepot,verbose=verbose))
                 }
                 out <- rbindlist(out.list)
             }else{
@@ -174,7 +175,7 @@ medicinMacro <- function(drugs,
                                                    doses=doses,
                                                    idunique=as.numeric(idunique),
                                                    prescriptionwindow=prescriptionwindow,
-                                                   maxdepot=maxdepot))
+                                                   maxdepot=maxdepot,verbose=verbose))
                 setnames(out,"X","dose")
                 out[,B:=as.Date("1995-01-01")+B]
                 out[,E:=as.Date("1995-01-01")+E]

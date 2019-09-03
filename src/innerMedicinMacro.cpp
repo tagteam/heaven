@@ -16,11 +16,12 @@ using namespace arma;
 //' @export
 // [[Rcpp::export]]
 Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
-			Rcpp::DataFrame admdat,
-			Rcpp::List doses, 
-			NumericVector idunique,
-			double prescriptionwindow, 
-			double maxdepot
+			      Rcpp::DataFrame admdat,
+			      Rcpp::List doses, 
+			      NumericVector idunique,
+			      double prescriptionwindow, 
+			      double maxdepot,
+			      double verbose
 			) {
   // NOTATION
   // T(k) sequence of purchase dates
@@ -53,7 +54,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
     // if (i == 1000 || i == 2000 || i==3000){
     // Rcout << "==============i = " << i << "===============\n\n"<< std::endl;
     // }
-
+    if (verbose>0) Rcout << "==============subject: = " << i << "===============\n"<< std::endl;
     double thisid = idunique(i); 
     arma::uvec did = find(INid==thisid); //OK, index (?)
     arma::uvec aid = find(INaid==thisid); //OK, index (?)
@@ -112,14 +113,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       arma::vec strength1 = strength.elem(datekid);
       arma::vec npack1    = npack.elem(datekid);
       arma::vec ppp1      = ppp.elem(datekid);
-      // Rcout << "0b" << std::endl;
       
       for (uword g = 0; g < ndatekid; g++) {
 	S(k) += strength1(g);
 	double numberunits = npack1(g) * ppp1(g) * strength1(g);
-	//--- compute total amount of drug purchased on date Tk. 
-	// Rcout << "T(k)=" << T(k) << std::endl;
-	// Rcout << "dates1(g)=" << dates1(g) << std::endl;
+	//--- compute total amount of drug purchased on date T(k). 
 	// Rcout << "strength1(g)=" << strength1(g) << std::endl;
 	// Rcout << "npack1(g)=" << npack1(g) << std::endl;
 	// Rcout << "ppp1(g)=" << ppp1(g) << std::endl;      
@@ -138,6 +136,12 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  }
 	}
       }
+      Function formatDate("format.Date");
+      if (verbose>0){
+	Rcout << "Date    : " << as<std::string>(formatDate(wrap(Date((T(k)))))) << std::endl;
+	if (k<K-1) Rcout << "Next    : " << as<std::string>(formatDate(wrap(Date((T(k+1)))))) << std::endl;
+      }
+      
       // Rcout << "Armadillo matrix n is" << std::endl << n << std::endl;
       S(k) = S(k) / (double) ndatekid;
 
@@ -150,23 +154,25 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       } else {
 	daysperiod(k) = -9;
       }
-      
       // maximal number of days of drug supply 
+      if (verbose>0){
+	Rcout << "Hospital: " << dayshospital(k) << std::endl;
+	Rcout << "# Days  : " << daysperiod(k) << std::endl;
+      }
       
       maximalreach(k) = sum(n.row(k));
-      
+      if (verbose) {
+	Rcout << "Purchase: " << currentpurchase(k) << std::endl;
+	Rcout << "Stash   : " << stash(k) << std::endl;
+	Rcout << "Total   : " << currentpurchase(k)+stash(k) << std::endl;
+      }
       // check if there is overlap (if the current period reaches the next)
-      // Rcout << "------k=" << k << std::endl;      
-      // Rcout << "daysperiod(k)=" << daysperiod(k) << std::endl;
-      // Rcout << "number days by current purchase maximalreach(k): " <<  maximalreach(k) << std::endl;
-      // Rcout << "stash(k): " <<  stash(k) << std::endl;
-      // Rcout << "number days covered (since T(k-1)): maximalreach(k)=" << maximalreach(k) + stash(k) << std::endl;
-      // hahaha: due to collapsing periods we need to add the stash to maximalreach
+      // due to collapsing periods we need to add the stash to maximalreach
       if (k<K-1){
-	if (stash(k) + maximalreach(k) > daysperiod(k) && k < K-1) reach(k) = 1;
+	if (stash(k) + maximalreach(k) > daysperiod(k)) reach(k) = 1;
 	// Rcout << "reach(k)=" << reach(k) << std::endl;      
       }else{
-	reach(k) = 99;
+	reach(k) = 0; // anything not 1 works
       }
       // identify the nearest drug strength that does not exceed the first preliminary average strength
       for (uword j = 0; j < J; j++) {
@@ -212,7 +218,6 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	M(k) = ddef(jk(k));
       double vmax = (M(k) > dmax(jk(k)));
       double vmin = (M(k) < dmin(jk(k)));
-      
       // Final dose formula
       if (k>0){
 	if (reach(k-1)==0){ // cannot reach
@@ -227,12 +232,17 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       // ----------------------------------------------------------------------------------------------
       // compute the end dates of exposure
       // ----------------------------------------------------------------------------------------------
-      // Rcout << "T(k)=" << T(k) << std::endl;
-      // Rcout << "currentpurchase(k)=" << currentpurchase(k) << std::endl;
-      // Rcout << "stash(k)=" << stash(k) << std::endl;      
       EndExposure(k) = (T(k) - 1.0 + floor((currentpurchase(k) + stash(k)) / (double) X(k)));
       // set all id values
-      idout(k) = id(0); 
+      idout(k) = id(0);
+      if (verbose){
+	if (k>0) Rcout << "Reach   : " << reach(k-1) << std::endl;
+	if (k>0) Rcout << "Weight  : " << w(k-1) << std::endl;
+	Rcout << "Dosis   : " << X(k) << std::endl;
+	Rcout << "Covered : " << floor((currentpurchase(k) + stash(k)) / (double) X(k)) << " days "<< std::endl;
+	Rcout << "Reached : " << as<std::string>(formatDate(wrap(Date((EndExposure(k)))))) << std::endl;
+      }
+
       // -------------------------------------------------------------------------------------------------------
       // calculate stash (rest) for next period (leftover dosis from current period)
       // and truncate EndExposure at T(k+1)-1 
@@ -250,7 +260,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  if (stash(k+1) > maxdepot) stash(k+1) = maxdepot;
 	  EndExposure(k)=  T(k+1)-1;
 	} // no else because we just use the remaining units until the stash is completely empty
-      }// no else because stash(k+1) is initialized as 0.0 
+      }// no else because stash(k+1) is initialized as 0.0
+
       // -------------------------------------------------------------------------------------------------------
       // check if previous period can be collapsed. if so, reset T(k) to T(k-1)
       // -------------------------------------------------------------------------------------------------------
@@ -279,6 +290,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       }
       B(k) = T(k);
       E(k) = EndExposure(k);
+      if (verbose){
+	Rcout << "Start   : " << as<std::string>(formatDate(wrap(Date((B(k)))))) << std::endl;
+	Rcout << "End     : " << as<std::string>(formatDate(wrap(Date((E(k)))))) << std::endl;
+	Rcout << "---------------\n\n" << std::endl;
+      }
     } // end loop over unique prescription dates
   
     yk(K-1) = 1; 

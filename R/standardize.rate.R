@@ -8,14 +8,14 @@
 ##'          Each element of the list contains the names of two variables in the
 ##'          dataset: the first variable contains the number of events and the second
 ##'          variable contains the number of subjects or person years.
-##' @param age Name of categorical age variable. 
+##' @param age Name of categorical age variable.
 ##' @param exposure Name of the exposure variable for rate ratios.
 ##' @param by Vector of names of further categorical strata variables
 ##' @param standardize.to what population to use for standardization.
 ##' @param data Data set which contains all the variables
 ##' @param method Character. The method for calculating confidence intervals.
 ##'        If "gamma" use gamma distribution (see Fay et al.). If "wald" or "wald-log" use
-##'        normal or log-normal approximation. 
+##'        normal or log-normal approximation.
 ##' @param level Confidence level
 ##' @param crude Logical. If \code{TRUE} calculate crude rates too.
 ##' @param ... Not (yet) used
@@ -27,7 +27,7 @@
 ##' Niels Keiding, David Clayton, et al. Standardization and control for
 ##' confounding in observational studies: a historical perspective. Statistical
 ##' Science, 29(4):529--558, 2014.
-##' @return Data table with standardized rates (and crude rates if asked for) 
+##' @return Data table with standardized rates (and crude rates if asked for)
 ##' @seealso standardize.prodlim standardize.proportion epitools::ageadjust.direct
 ##' @examples
 ##' library(riskRegression)
@@ -62,18 +62,18 @@
 ##' standardize.rate(x=list(c("e1","rt1")),
 ##'                  age="agegroups",exposure="groups",data=D,standardize.to="mean")
 ##' }
-##' @export 
+##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
-standardize.rate <- function(x,
-                             age="agegroups",
-                             exposure,
-                             by,
-                             standardize.to="ref.level",
-                             data,
-                             method="gamma",
-                             level=0.95,
-                             crude=TRUE,
-                             ...){
+standardize.rate2 <- function(x,
+                              age="agegroups",
+                              exposure,
+                              by,
+                              standardize.to="ref.level",
+                              data,
+                              method="gamma",
+                              level=0.95,
+                              crude=TRUE,
+                              ...){
     requireNamespace("data.table")
     .N=N=.SD=weight=NULL
     setDT(data)
@@ -95,20 +95,20 @@ standardize.rate <- function(x,
         data[[exposure]] <- factor(data[[exposure]])
     }
     exposure.levels <- levels(data[[exposure]])
-    if (missing(standardize.to)) {                                                  
+    if (missing(standardize.to)) {
         standardize.to <- "ref.level"
     } else{
-        if (!is.character(standardize.to)) stop("Argument 'standardize.to' is not character. It has characterize the standard population.")        
+        if (!is.character(standardize.to)) stop("Argument 'standardize.to' is not character. It has characterize the standard population.")
     }
     N <- NROW(data)
     n0 <- length(exposure.levels)
     out <- data[,{
         xout <- rbindlist(lapply(1:length(x),function(v){
             counts <- .SD[[x[[v]][[1]]]]
-            pops <- .SD[[x[[v]][[2]]]]  
+            pops <- .SD[[x[[v]][[2]]]]
             egroups <- .SD[[exposure]]
             e1 <- egroups==exposure.levels[[1]]
-            std.x <- NULL
+            std.out <- NULL
             for(i in 2:n0){
                 e2 <- egroups==exposure.levels[i]
                 stdpop <- switch(standardize.to, ref.level = {
@@ -116,16 +116,23 @@ standardize.rate <- function(x,
                 }, mean = {
                     (pops[e1] + pops[e2])/2
                 }, pops[e2])
-                std.x <- rbind(std.x, dsr(count0=counts[e1], count1=counts[e2],
-                                          pop0=pops[e1], pop1=pops[e2], stdpop=stdpop,
-                                          method=method,crude=crude))
+                std.x <- dsr2(count0=counts[e1], count1=counts[e2],
+                             pop0=pops[e1], pop1=pops[e2], stdpop=stdpop,
+                             method=method,crude=crude)
+                std.x[,group:=as.character(factor(group,levels=c(0,1),labels=exposure.levels[c(1,i)]))]
+                std.out <- rbind(std.out, std.x)
+                std.out
             }
             xname <- ifelse(length(names(x)[v])==0,x[[v]][1],names(x)[v])
-            std.x <- cbind(x=xname,std.x)
+            std.out <- cbind(x=xname,std.out)
+            std.out
         }))
         xout
     },.SDcols=c(unlist(x),exposure),by = by]
-    out
+    out <- out[!duplicated(interaction(type,group))]
+    out[,group:=factor(group,levels=exposure.levels)]
+    setkey(out,type,group)
+    out[]
 }
 
 ##' Function to Compute confidence interval for directly standardized rates and rate ratios
@@ -137,13 +144,13 @@ standardize.rate <- function(x,
 ##' and some Wald confidence interval (also on log-scale) for comparison purpose.
 ##' @title Confidence intervals for age standardized rates and rate ratios
 ##' @param count1 counts for group 1 (e.g. exposed)
-##' @param pop1 number of subjects of person-years in group 1 
+##' @param pop1 number of subjects of person-years in group 1
 ##' @param count0 counts for group 1 (e.g. exposed)
-##' @param pop0 number of subjects of person-years in group 0 
-##' @param stdpop number of subjects of person-years in stdpop population 
+##' @param pop0 number of subjects of person-years in group 0
+##' @param stdpop number of subjects of person-years in stdpop population
 ##' @param conf.level confidence level of confidence intervals
 ##' @param method method for calculating confidence intervals
-##' @param crude logical. if \code{TRUE} also calculate crude rates 
+##' @param crude logical. if \code{TRUE} also calculate crude rates
 ##' @references
 ##' Fay, Michael P., and Eric J. Feuer. "Confidence intervals for directly
 ##' standardized rates: a method based on the gamma distribution." Statistics
@@ -166,9 +173,9 @@ standardize.rate <- function(x,
 ##'
 ##' Fay, Michael P. "Two-sided exact tests and matching confidence intervals
 ##' for discrete data." R journal 2.1 (2010): 53-58.
-##' 
-##' @return 
-##' List with crude and standardized rates and rate ratios. 
+##'
+##' @return
+##' List with crude and standardized rates and rate ratios.
 ##'
 ##' @seealso epitools::ageadjust.direct
 ##' @examples
@@ -189,10 +196,10 @@ standardize.rate <- function(x,
 ##' dsr(count1=D[sex=="m",e1], pop1=D[sex=="m",rt1],
 ##' count0=D[sex=="f",e1], pop0=D[sex=="f",rt1],
 ##' stdpop=D[sex=="f",rt1])
-##' @export 
+##' @export
 ##' @author Paul F Blanche  <pabl@@sund.ku.dk> and Thomas A. Gerds <tag@@biostat.ku.dk>
 ### Code:
-dsr <- function(count1,
+dsr2 <- function(count1,
                 pop1,
                 count0,
                 pop0,
@@ -218,7 +225,7 @@ dsr <- function(count1,
     if (tolower(method)%in%c("gamma")){
         # as (from)  poisson.test (except alpha -> alpha/2 inside function)
         p.L <- function(x, alpha) {
-            if (x == 0) 
+            if (x == 0)
                 0
             else stats::qgamma(alpha/2, x)
         }
@@ -256,7 +263,7 @@ dsr <- function(count1,
             std.upper <- c(DSR0 + qalpha*sqrt(varDSR0),DSR1 + qalpha*sqrt(varDSR1))
         }
     }
-    ## }}}    
+    ## }}}
 
     ## Gamma CI for each DSR
     # similar to  epitools::ageadjust.direct
@@ -276,7 +283,7 @@ dsr <- function(count1,
                                scale = varDSR1/DSR1)
         uci.1 <- stats::qgamma(1 - alpha/2,
                                shape = ((DSR1 + wM1)^2)/(varDSR1 + wM1^2),
-                               scale = (varDSR1 + wM1^2)/(DSR1 + wM1))   
+                               scale = (varDSR1 + wM1^2)/(DSR1 + wM1))
         gammaCIDSR <- rbind(c(lci.0,uci.0),
                             c(lci.1,uci.1))
         colnames(gammaCIDSR) <- c("lower","upper")

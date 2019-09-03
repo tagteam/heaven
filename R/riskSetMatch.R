@@ -13,7 +13,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                         ,seed # Seed for random sort
                         ,progressbar=TRUE
                          ){
-    .SD=cterms=temp.id=.N=NULL
+    .SD=cterms=tEmP.iD=.N=NULL
                                         #check
     vnames <- colnames(data)
     if (length(ptid)!=1 || !is.character(ptid) || match(ptid,vnames,nomatch=0)==0)
@@ -38,11 +38,11 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     ##Check that patient IDs are unique:
     if ((repetitians <- sum(duplicated(DATA[["ptid"]])))>0)
         stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
-    DATA[,temp.id:=1:.N]
+    DATA[,tEmP.iD:=1:.N]
     ## combine matching variables to single term - cterms
     DATA[, cterms :=interaction(.SD,drop=TRUE),.SDcols=terms]
     ## Select relevant part of table for matching - and provide internal names
-    cols <-c("temp.id",event,"cterms",case.index,end.followup)
+    cols <-c("tEmP.iD",event,"cterms",case.index,end.followup)
     if (!is.null(date.terms)){
         cols <- c(cols,date.terms)
     }
@@ -122,12 +122,12 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         ## find lengths of controls and cases
         Tcontrols<-NROW(controls)
         ## Setnames because data.table called from function
-        setkeyv(controls,c(event,"temp.id"))
+        setkeyv(controls,c(event,"tEmP.iD"))
         ## Define cases in selected match-group
         isCase <- controls[[event]]==1
         cases <- controls[isCase]
         ##find lengths of cases
-        setkey(cases,temp.id)
+        setkey(cases,tEmP.iD)
         Ncases<-NROW(cases)
         if (Ncases==0){return(NULL)}
         ## dateterm matrix
@@ -153,8 +153,8 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                           Ncases,
                           as.double(controls[[end.followup]]),
                           as.double(cases[[case.index]]),
-                          controls[["temp.id"]],
-                          cases[["temp.id"]],
+                          controls[["tEmP.iD"]],
+                          cases[["tEmP.iD"]],
                           n.date.terms,
                           dates.cases,
                           dates.controls,
@@ -176,17 +176,17 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         setDT(selected.controls)
     }  #end cores>1
     if (progressbar) cat("\n") 
-    setnames(selected.controls, c("case.id", "temp.id"))
+    setnames(selected.controls, c("case.id", "tEmP.iD"))
     ## prepare cases for rbind
     has.case <- work.data[[event]] == 1
-    cases <- work.data[has.case,data.table::data.table(case.id=temp.id,temp.id=temp.id,event=1 )]
+    cases <- work.data[has.case,data.table::data.table(case.id=tEmP.iD,tEmP.iD=tEmP.iD,event=1 )]
     FINAL <- rbind(cases, cbind(selected.controls,event=0))
     setnames(FINAL,"event",event)
     ## merge with data
     DATA[,c("cterms"):=NULL] # remove cterms
     DATA[,(event):=NULL]
-    FINAL <- merge(FINAL,DATA,by="temp.id")
-    FINAL[["temp.id"]] <- NULL
+    FINAL <- merge(FINAL,DATA,by="tEmP.iD")
+    FINAL[["tEmP.iD"]] <- NULL
     setkeyv(FINAL,c("case.id",event))
     ## Add relevant case.id to controls
     FINAL[,eval(case.index):=.SD[.N],.SDcols=c(case.index),by=case.id]
