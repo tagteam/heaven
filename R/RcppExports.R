@@ -19,8 +19,8 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @param maxdepot see medicine macro
 #' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 #' @export
-innerMedicinMacro <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot) {
-    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot)
+innerMedicinMacro <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, verbose) {
+    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot, verbose)
 }
 
 na_locf <- function(x) {

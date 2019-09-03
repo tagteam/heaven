@@ -5,7 +5,7 @@
 \title{The heart of the medicin macro}
 \usage{
 innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow,
-  maxdepot)
+  maxdepot, verbose)
 }
 \arguments{
 \item{dat}{data set}
