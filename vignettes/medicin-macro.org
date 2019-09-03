@@ -1,0 +1,209 @@
+* Only one recept
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+library(heaven)
+library(data.table)
+library(Publish)
+lmdb0 <- data.table(pnr=8,
+                    eksd=as.Date("2005-01-25"),
+                    apk=1,
+                    atc="C10AA01",
+                    strnum=10,
+                    packsize=0.0999998)
+org("Purchases data:")
+org(lmdb0)
+#+END_SRC
+
+#+RESULTS[<2019-09-03 10:53:32> 795f0fb0dd239607403df67412aee31ef44a1cea]:
+:results:
+
+Purchases data:
+|  pnr |       eksd | apk |     atc | strnum |  packsize |
+|------+------------+-----+---------+--------+-----------|
+|    8 | 2005-01-25 |   1 | C10AA01 |     10 | 0.0999998 |
+:end:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+simva <- list(atc="C10AA01",maxdepot=8000,
+              period=as.Date(c("2004-01-01","2015-12-31")),
+              prescriptionwindow=2, ## consider 2 previous purchases and current
+              doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
+## Rcpp::sourceCpp("~/research/SoftWare/heaven/src/innerMedicinMacro.cpp")
+x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb0,admdb=NULL)
+org("Estimated doses data using R:")
+org(x$simva[])
+#+END_SRC
+
+#+RESULTS[<2019-09-03 10:53:54> fd9c41e8639f67f34c02c722cf8a5cbfc1d3f12f]:
+:results:
+
+Estimated doses data using R:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-01-24 |       -1 days |
+:end:
+
+* More than one recept
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+library(heaven)
+library(data.table)
+library(Publish)
+lmdb <- data.table(pnr=rep(8,5),
+                   eksd=as.Date(c("2005-01-25","2005-03-03","2006-01-11","2006-04-15","2006-07-31")),
+                   apk=rep(1,5),
+                   atc=rep("C10AA01",5),strnum=c(10,10,10,10,20),packsize=rep(100,5))
+org("Purchases data:")
+org(lmdb)
+#+END_SRC
+
+#+RESULTS[<2019-09-03 08:26:47> fb7236a55ccfda8a7b15057ef02cfbae62006211]:
+:results:
+
+Purchases data:
+|  pnr |       eksd | apk |     atc | strnum | packsize |
+|------+------------+-----+---------+--------+----------|
+|    8 | 2005-01-25 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2005-03-03 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2006-01-11 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2006-04-15 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2006-07-31 |   1 | C10AA01 |     20 |      100 |
+:end:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+simva <- list(atc="C10AA01",maxdepot=8000,
+              period=as.Date(c("2004-01-01","2015-12-31")),
+              prescriptionwindow=2, ## consider 2 previous purchases and current
+              doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
+              ## doses=list(value=c(10,20,30),min=c(10,20,30),max=c(10,20,30),def=c(10,20,30)))
+Rcpp::sourceCpp("~/research/SoftWare/heaven/src/innerMedicinMacro.cpp")
+x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL,verbose=1)
+org("Estimated doses data using R:")
+org(x$simva[])
+#+END_SRC
+
+#+RESULTS[<2019-09-03 09:03:42> 7eb771328af5e63af86d639942af553ebb002519]:
+:results:
+==============subject: = 0===============
+
+Date    : 1980-01-26
+Next    : 1980-03-03
+Hospital: 0
+# Days  : 37
+Purchase: 1000
+Stash   : 0
+Total   : 1000
+Dosis   : 10
+Covered : 100 days 
+Reached : 1980-05-04
+Start   : 1980-01-26
+End     : 1980-03-02
+---------------
+
+
+Date    : 1980-03-03
+Next    : 1981-01-11
+Hospital: 0
+# Days  : 314
+Purchase: 1000
+Stash   : 630
+Total   : 1630
+Reach   : 1
+Weight  : 1
+Dosis   : 20
+Covered : 81 days 
+Reached : 1980-05-22
+Start   : 1980-03-03
+End     : 1980-05-22
+---------------
+
+
+Date    : 1981-01-11
+Next    : 1981-04-15
+Hospital: 0
+# Days  : 94
+Purchase: 1000
+Stash   : 0
+Total   : 1000
+Reach   : 1
+Weight  : 1
+Dosis   : 5
+Covered : 200 days 
+Reached : 1981-07-29
+Start   : 1981-01-11
+End     : 1981-04-14
+---------------
+
+
+Date    : 1981-04-15
+Next    : 1981-07-31
+Hospital: 0
+# Days  : 107
+Purchase: 1000
+Stash   : 530
+Total   : 1530
+Reach   : 1
+Weight  : 1
+Dosis   : 5
+Covered : 306 days 
+Reached : 1982-02-14
+Start   : 1981-01-11
+End     : 1981-07-30
+---------------
+
+
+Date    : 1981-07-31
+Hospital: 0
+# Days  : -9
+Purchase: 2000
+Stash   : 995
+Total   : 2995
+Reach   : 1
+Weight  : 0
+Dosis   : 10
+Covered : 299 days 
+Reached : 1982-05-25
+Start   : 1981-07-31
+End     : 1982-05-25
+---------------
+
+Estimated doses data using R:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
+|    8 |   20 | 2005-03-03 | 2005-05-22 |       80 days |
+|    8 |    0 | 2005-05-23 | 2006-01-10 |      232 days |
+|    8 |    5 | 2006-01-11 | 2006-07-30 |      200 days |
+|    8 |   10 | 2006-07-31 | 2007-05-25 |      298 days |
+:end:
+
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+adm <- simAdmissionData(4)
+y <- xrecepter(drugdb=lmdb,
+               adm=adm,
+               atc="C10AA01",
+               period=c("'2004jan01'd","'2015dec31'd"),
+               maxdepot=8000,
+               value=c(10,20,30,40),
+               min=c(5,10,15,20),
+               max=c(20,40,60,80),
+               def=c(10,20,30,40))
+org("Estimated doses data using SAS:")
+org(y)
+#+END_SRC
+
+#+RESULTS[<2019-09-01 19:46:13> cc90e30645b51ba052219c7f7e1327f529705ea4]:
+:results:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
+|    8 |   20 | 2005-03-03 | 2005-05-23 |       81 days |
+|    8 |    5 | 2006-01-11 | 2006-04-14 |       93 days |
+|    8 |   10 | 2006-04-15 | 2007-04-06 |      356 days |
+:end:
