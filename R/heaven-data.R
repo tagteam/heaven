@@ -58,14 +58,12 @@
  
 "edu_code"
 
-
-"HypertensionATC"
-
 #' hypertensionATC
 #'
 #' List with pre-specified ATC codes for classes of antihypertensive medication
-
 #' @format A list
 #' @docType data
 #' @keywords datasets
 #' @name hypertensionATC
+
+"hypertensionATC"

@@ -110,7 +110,7 @@ findCondition <- function (data, vars, keep, conditions,exclusions=NULL, match =
                      start    = paste0("^",cc, collapse = "|"),
                      end      = paste0("$",cc,collapse="|"))
     if (!is.null(exclusions) & name %in% names(exclusions)){
-      ee <- exclusions[name]
+      ee <- exclusions[[name]]
       regexpEx <- switch(match, 
                          exact    = paste0("^", ee,"$",collapse = "|"), 
                          contains = paste0(ee,collapse = "|"), 
