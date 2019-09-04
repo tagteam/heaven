@@ -45,11 +45,7 @@ export(simPrescriptionData)
 export(simpoisson)
 export(standardize.prodlim)
 export(standardize.proportion)
-<<<<<<< HEAD
-export(standardize.rate2)
-=======
 export(standardize.rate)
->>>>>>> d4337358b2696e8ba536b243a75336d25f242b79
 export(xrecepter)
 importFrom(Rcpp,evalCpp)
 importFrom(Rcpp,sourceCpp)

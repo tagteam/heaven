@@ -64,7 +64,7 @@
 ##' }
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
-standardize.rate2 <- function(x,
+standardize.rate <- function(x,
                               age="agegroups",
                               exposure,
                               by,
@@ -199,7 +199,7 @@ standardize.rate2 <- function(x,
 ##' @export
 ##' @author Paul F Blanche  <pabl@@sund.ku.dk> and Thomas A. Gerds <tag@@biostat.ku.dk>
 ### Code:
-dsr2 <- function(count1,
+dsr <- function(count1,
                 pop1,
                 count0,
                 pop0,
