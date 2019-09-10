@@ -302,8 +302,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	} else{
 	  if (X(k-1) != X(k) && EndExposure(k-1) >= (T(k))) {  // Not completely sure what should happen here!
 	    // doses are not the same, gap smaller than 1 day
-	    T(k) = std::max(T(k), EndExposure(k-1) + 1);
-	    EndExposure(k) = std::max(EndExposure(k), T(k) + 1);
+	    T(k) = std::max(T(k), EndExposure(k-1) );
+	    EndExposure(k) = std::max(EndExposure(k), T(k) );
 	    // rows with yk = 1 will be kept
 	    yk(k-1) = 1; 
 	  }else{
