@@ -95,6 +95,12 @@
 #' The function performs exact matching and hence 
 #' all matching variables must be factor variables or character.
 #' 
+#' In some cases there is a necessity to account for delayed entry. An example
+#' could be to ensure that people are not selected as controls prior to
+#' immigration to the country.  This can be handled with "date.terms". Cases and
+#' controls can as an example be provided with a date.term that is maximum of 
+#' the date of birth and the date of immigration.
+#' 
 #' In some cases it makes sense to think about the study population of a hypothetical study
 #' with randomized treatment allocation. Then, the aim of the function is similar to
 #' that of propensity score analysis and exact matching may be preferred as it does not
