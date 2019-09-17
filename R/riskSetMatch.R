@@ -193,7 +193,9 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     if (output.count.controls){
         FINAL[,n.controls:=(.N-1),by="case.id"]
     }
+    FINAL[,case.id:=NULL]   
     attr(FINAL,"id") <- ptid
     attr(FINAL,"event") <- event
     FINAL[]
 }
+

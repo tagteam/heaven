@@ -61,7 +61,7 @@ hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
       "prescription.date"), index.date=NULL,medication.definition=NULL)
 {
   index=.SD=.N=hypertension=numDrugs=newdate=olddate=NULL
-  datt <- copy(dat)
+  datt <- copy(data)
   setDT(datt)
   for (x in vars) if(!x %in% names(datt)) stop("variables not in data")
   if (is.null(medication.definition) & !exists("hypertensionATC")) hypertensionATC <- hypertensionATC
