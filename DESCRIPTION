@@ -47,7 +47,6 @@ Collate:
     'dpp.R'
     'riskSetMatch.R'
     'exposureMatch.R'
-    'extractCode.R'
     'findConditions.R'
     'getAdmLimits.R'
     'guessRawdataDirectory.R'

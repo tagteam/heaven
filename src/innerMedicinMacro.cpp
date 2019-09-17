@@ -115,7 +115,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       arma::vec ppp1      = ppp.elem(datekid);
       
       for (uword g = 0; g < ndatekid; g++) {
-	S(k) += strength1(g);
+	// calculate mean strength across purchase on same date  
+	S(k) += strength1(g) / (double) ndatekid;
 	double numberunits = npack1(g) * ppp1(g) * strength1(g);
 	//--- compute total amount of drug purchased on date T(k). 
 	// Rcout << "strength1(g)=" << strength1(g) << std::endl;
@@ -142,9 +143,6 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	if (k<K-1) Rcout << "Next    : " << as<std::string>(formatDate(wrap(Date((T(k+1)))))) << std::endl;
       }
       
-      // Rcout << "Armadillo matrix n is" << std::endl << n << std::endl;
-      S(k) = S(k) / (double) ndatekid;
-
       // Compute number of days non-hospitalized in the period from Tk to Tk+1
       if (k < K-1) {
 	for (uword q = 0; q < admin.size(); ++q) {
