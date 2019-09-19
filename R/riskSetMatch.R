@@ -186,14 +186,14 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     DATA[,c("cterms"):=NULL] # remove cterms
     DATA[,(event):=NULL]
     FINAL <- merge(FINAL,DATA,by="tEmP.iD")
-    FINAL[["tEmP.iD"]] <- NULL
+    FINAL[,tEmP.iD:=NULL]
     setkeyv(FINAL,c("case.id",event))
-    ## Add relevant case.id to controls
+    ## Add case.index to controls
     FINAL[,eval(case.index):=.SD[.N],.SDcols=c(case.index),by=case.id]
     if (output.count.controls){
-        FINAL[,n.controls:=(.N-1),by="case.id"]
+        FINAL[,n.controls:=(.N-1),by=case.id]
     }
-    FINAL[,case.id:=NULL]   
+    ## FINAL[,case.id:=NULL]   
     attr(FINAL,"id") <- ptid
     attr(FINAL,"event") <- event
     FINAL[]
