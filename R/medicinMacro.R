@@ -177,16 +177,11 @@ medicinMacro <- function(drugs,
                                                    prescriptionwindow=prescriptionwindow,
                                                    maxdepot=maxdepot,verbose=verbose))
                 setnames(out,"X","dose")
-                out[,B:=as.Date("1995-01-01")+B] # AM: Why this??
+                out[,B:=as.Date("1995-01-01")+B] 
                 out[,E:=as.Date("1995-01-01")+E]
                 setnames(out,"B","firstday")
                 setnames(out,"E","lastday")
                 out[,exposure.days:=lastday-firstday]
-                # Possible other fix here, if the inner file is not changed:
-                ## By construction, the last day of exposure will alway maximally be the day before the first day of next exposure period.
-                ## Therefore, we need to include the both the first and last days of exposure in the count of exposure days.
-                ## --> The +1 below. 
-                ## out[,exposure.days:=lastday-firstday+1]
                 setkey(out,pnr,firstday)
             }
             ## Revert pnr type change

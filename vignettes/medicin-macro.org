@@ -1,5 +1,400 @@
-* Only one recept
-** Old version with bugs
+* HEADER :noexport:
+
+#+TITLE: 
+#+Author: Anders Munch
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc author:t
+#+LaTeX_CLASS: org-article
+#+LaTeX_HEADER:\usepackage{authblk, arydshln}
+#+LaTeX_HEADER:\author{Anders Munch}
+# #+LaTeX_HEADER:\affil{Department of Biostatistics, University of Copenhagen, Copenhagen, Denmark}
+#+PROPERTY: header-args :session *R*
+#+PROPERTY: header-args :tangle yes
+#+PROPERTY: header-args :cache yes
+
+* Setup :noexport:
+#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+  library(heaven)
+  library(data.table)
+  library(Publish)
+  # Set wd to package dir to load fixed version
+  ## setwd("~/Rpackages/heaven")
+#+END_SRC
+
+#+RESULTS[<2019-09-10 16:19:42> 5fc6f3042685a0d88b9f053e04ac790afeeb22e9]:
+:RESULTS:
+
+LOL: This is heaven! Version 2019.9.3
+A good place to get started is vignette('user-heaven').
+
+Attaching package: ‘heaven’
+
+The following objects are masked _by_ ‘.GlobalEnv’:
+
+    innerMedicinMacro, medicinMacro
+data.table 1.12.2 using 2 threads (see ?getDTthreads).  Latest news: r-datatable.com
+Loading required package: prodlim
+:END:
+
+
+* Introduction
+Something something...
+
+* Formulas
+
+** The data and user input
+
+The data consists of $N$ rows of observations of individual purchases
+for individual patients. For each patient and each drug purchase, the
+ATC and strength of the drug is recorded along with the number of
+units in the purchased packs and the number of packs purchased. We
+also need information about the hospitalization periods for each
+individual, summarized as a sequence of admission and discharge
+dates. All the information in the data is summarized in table
+ref:tab-data; the abbreviations are the same as the ones used in DST.
+The information about the hospitalization are displayed below the
+dashed line because they are given separately to the program and are
+indexed differently from the rest of the data.
+
+Besides the data the algorithm also needs some user-specified
+values. First of all we have to specify which period and which ATC
+values we want to calculate the individual exposure times for. We also
+have to tell the program what the minimal, typical (default), and
+maximal doses are for each of the possible drug strengths. The
+possible drug strengths are in turn determined by the chosen
+ATC's. Finally, we have to specify two slightly more technical values:
+A cap on the amount of drug a patient can store, and how many
+prescription dates back in time we want to use in our
+estimation. Thus, the needed user-specified information is summarized
+in ref:tab-user-spec. Of course, this information is common for all
+the individual patients. Note that both the number $A$ of specified
+ATC's and the number $J$ of drug strengths (and corresponding doses)
+are given by the user, but that all possible doses arising from the
+specified ATC's should be present among the $J$ drug strengths; if
+not, the program will fail.
+
+The exposures are calculated individually so we will now consider data
+for one isolated individual. Using the user-specified values for the
+ATC's to use and the period to consider, we get $N_i$ purchases for
+each individual $i$. Ordering the purchase dates for this individual,
+we can summarize the data for individual $i$ as in table
+ref:tab-indiv-data. Note that one individual can still make several
+purchases on the same date (for example, this would be the case if an
+individual purchases a drug of different strengths on the same
+date). Again, we display the hospitalization information
+below a dashed line because this data is on a different format (for
+example, a patient might not have been hospitalized at all, and thus
+the last row would be empty).
+
+From these data and user-specified input we want to calculate
+individual exposure period. The output we get out will be on the form
+shown in table ref:tab-indiv-out. For each individual $i$ we get a
+collection of $G_i$ exposure periods, which are reported by a start
+date ($SD$) and end date ($ED$) together with the (estimated) daily
+dose and the length of the period. The $G_i$ periods cover the whole
+time span specified by the user in table ref:tab-user-spec; therefore,
+some of the daily doses might be 0, reflecting a period with no
+exposure.
+
+#+BEGIN_EXPORT latex
+\begin{table}\label{tab-data}\caption{The data needed for the algorithm.}
+\renewcommand*{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|l @{ : $\;$ } l|}
+    \hline
+    \multicolumn{2}{|c|}{\textbf{All the data}} \\
+    \hline
+    ID & $\text{pnr}_1 , \text{pnr}_2 , \dots , \text{pnr}_{N}$ \\
+    ATC & $\text{atc}_1 , \text{atc}_2 , \dots , \text{atc}_{N}$ \\
+    Purchase dates & $\text{eksd}_1 , \text{eksd}_2 , \dots , \text{eksd}_{N}$ \\
+    Drug strength & $\text{strnum}_1 , \text{strnum}_2 , \dots , \text{strnum}_{N}$ \\
+    Number of units in pack & $\text{packsize}_1 , \text{packsize}_2 , \dots , \text{packsize}_{N}$ \\
+    Number of packs & $\text{apk}_1 , \text{apk}_2 , \dots , \text{apk}_{N}$ \\ \hdashline
+    ID & $\text{pnr}_1 , \text{pnr}_2 , \dots , \text{pnr}_{\tilde{N}}$ \\
+    Admission dates & $\text{inddto}_1 , \text{inddto}_2 , \dots , \text{inddto}_{\tilde{N}}$ \\
+    Discharge dates & $\text{uddto}_1 , \text{uddto}_2 , \dots , \text{uddto}_{\tilde{N}}$ \\
+    \hline
+  \end{tabular}
+\end{table}
+#+END_EXPORT
+
+#+BEGIN_EXPORT latex
+\begin{table}\label{tab-user-spec}\caption{The information needed from the user.}
+  \renewcommand*{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|l @{ : $\;$ } l|}
+    \hline
+    \multicolumn{2}{|c|}{\textbf{User input}} \\
+    \hline
+    ATC's to use & $a_1, a_2, \dots , a_{A}$ \\
+    Highest amount of stored drugs & $md \in \mathbb{R}$ \\
+    Prescription window & $pw \in \mathbb{N}$ \\
+    Period & $[d_{\text{start}}, d_{\text{end}}]$ \\[5pt]
+    Drug doses &
+                 \begin{tabular}{|c|ccc|}
+                   \hline
+                   Strength & Minumum & Default & Maximum  \\
+                   \hline
+                   $s_1$ & $\min(s_1)$ & $\mathrm{def}(s_1)$ & $\max(s_1)$    \\
+                   $\vdots $ & $\vdots$ & $\vdots$ & $\vdots$   \\
+                   $s_J$ & $\min(s_J)$ & $\mathrm{def}(s_J)$ & $\max(s_J)$    \\
+                   \hline 
+                 \end{tabular} \\[35pt]
+    \hline
+  \end{tabular}
+\end{table}
+#+END_EXPORT
+
+#+BEGIN_EXPORT latex
+\begin{table}\label{tab-indiv-data}\caption{The data for a single individual.}
+\renewcommand*{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|l @{ : $\;$ } l|}
+    \hline
+    \multicolumn{2}{|c|}{\textbf{Data for subject $i$}} \\
+    \hline
+    ID & $\text{pnr}_1 = \text{pnr}_2  = \dots = \text{pnr}_{N_i}$ \\
+    ATC & $\text{atc}_1 , \text{atc}_2 , \dots , \text{atc}_{N_i} \in \{a_1, a_2, \dots , a_{A}\}$ \\
+    Purchase dates & $d_{\text{start}} \leq \text{eksd}_1 \leq \text{eksd}_2 \leq \dots \leq \text{eksd}_{N_i} \leq d_{\text{end}}$ \\
+    Drug strength & $\text{strnum}_1 , \text{strnum}_2 , \dots , \text{strnum}_{N_i}$ \\
+    Number of units in pack & $\text{packsize}_1 , \text{packsize}_2 , \dots , \text{packsize}_{N_i}$ \\
+    Number of packs & $\text{apk}_1 , \text{apk}_2 , \dots , \text{apk}_{N_i}$\\ \hdashline
+    Hospitalization & $d_{\text{start}} \leq \text{inddto}_1 \leq  \text{uddto}_1 \leq  \text{inddto}_2  \leq \dots \leq \text{uddto}_{\tilde{N}_i} \leq d_{\text{end}}$ \\
+    \hline
+  \end{tabular}
+\end{table}
+#+END_EXPORT
+
+#+BEGIN_EXPORT latex
+\begin{table}\label{tab-indiv-out}\caption{The output for a single individual.}
+\renewcommand*{\arraystretch}{1.3}
+  \centering
+  \begin{tabular}{|l @{ : $\;$ } l|}
+    \hline
+    \multicolumn{2}{|c|}{\textbf{Output for individual $i$}} \\
+    \hline
+    Start dates & $SD_1< SD_2< \cdots< SD_{G_i}$ \\ % \in \{\text{eksd}_1, \dots, \text{eksd}_{N_i} \}$ \\
+    End dates & $ED_1< ED_2< \cdots< ED_{G_i}, \; ED_l = SD_{l+1} $\\
+    Daily dose & $X_1 , X_2 ,  \cdots ,  X_{G_i}, \; X_l \not = X_{l+1} $ \\
+    Number of exposed day & $\text{Days}_1, \text{Days}_2, \cdots, \text{Days}_{G_i}$ \\ 
+    \hline
+  \end{tabular}
+\end{table}
+#+END_EXPORT
+
+** Estimating the daily dose
+To find the daily dose and the exposure periods for an individual $i$,
+we first find the unique $K_i$ purchase dates for this individual,
+which we denote by $T_k$. For each of these dates we then collect the
+total amount of drugs purchased on that date in the variables
+$D_k$. We also calculate the maximal number of days of supply by
+normalizing the drug strength with their corresponding minimal daily
+dose, and denote this quantity by $M_k$. In formulas we have:
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  \begin{aligned}
+    T_1 <   T_2 <  \dots <  T_{K_i}, \quad &T_k \in \{ \text{eksd}_1, \dots, \text{eksd}_{N_i} \},  \\
+    D_1, D_2,    \dots,  D_{K_i}, \quad &
+    D_k := \sum_{l \colon \text{eksd}_l = T_k} \text{apk}_l \cdot \text{packsize}_l \cdot \text{strnum}_l, \\
+    M_1, M_2,    \dots,  M_{K_i}, \quad &
+    M_k := \sum_{l \colon \text{eksd}_l = T_k} \text{apk}_l \cdot \text{packsize}_l \cdot \frac{\text{strnum}_l}{\min(s_l)}.
+  \end{aligned}
+\end{equation*}
+#+END_EXPORT
+
+We also calculate two intermediate values for the final estimation: We
+calculate $A_k$ as the average strength purchase on date $T_k$, and
+use this quantity to estimate the nearest /possible/ drug strength,
+$\hat{S}_k$, for the period $[T_k, T_{k+1})$. That is,
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  \begin{aligned}
+    A_1, A_2,    \dots,  A_{K_i}, \quad &
+    A_k := \frac{1}{\#\{l \mid \text{eksd}_l = T_k\} }\sum_{l \colon \text{eksd}_l = T_k} \text{strnum}_l, \\
+    \hat{S}_1, \hat{S}_2,    \dots,  \hat{S}_{K_i}, \quad &
+    \hat{S}_k := \max\{s_1, \dots, s_J \mid s_j \leq A_k\}.
+  \end{aligned}
+\end{equation*}
+#+END_EXPORT
+
+From the admission data, the number of non-hospitalized days in the
+period $[T_k, T_{k+1})$ are easily calculated. We denote these as
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  H_1, H_2, \dots, H_{K_i}.
+\end{equation*}
+#+END_EXPORT
+
+In the following we use $\lfloor x \rfloor$ to denote the rounded down
+value of $x$, i.e., the largest integer smaller than $x$. Similarly we
+shall use the notation
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  [ x ]_a := 
+  \begin{cases}
+    a, & x < a \\
+    x, & x \geq a
+  \end{cases}
+  , \quad
+  [ x ]^b := 
+  \begin{cases}
+    b, & x > b \\
+    x, & x \leq b
+  \end{cases}
+  , \quad
+  [ x ]_a^b := 
+  \begin{cases}
+    b, & x > b \\
+    a, & x < a \\
+    x, & a \leq x \leq b.
+  \end{cases}
+\end{equation*}
+#+END_EXPORT
+This simply means that, e.g., $[x]^b$ returns $x$ whenever $x$ is
+smaller than $b$, and caps the value to $b$ if $x$ is larger than $b$.
+
+With the above quantities defined we can calculate the estimate of
+the end of the exposure periods ($ED_k$) and the daily dose ($X_k$). These estimates are calculated
+recursively over the $K_i$ unique purchase dates, and depend on two auxiliary
+variables: A variable, $\mathrm{Reach}_k$, indicating whether or not
+the supply of drugs at date $T_k$ is enough to cover the time until
+the next purchase date $T_{k+1}$; and a variable, $\mathrm{Stash}_k$,
+giving the amount of leftover drug from the previous purchases. In
+formulas, we can write these as:
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  \begin{aligned}
+    0=\mathrm{Stash}_1, \mathrm{Stash}_2, \dots, \mathrm{Stash}_{K_i}, &    \quad \mathrm{Stash}_k := \left[ \mathrm{stash}_{k-1} + D_{k-1} - \mathrm{cons}_{k-1} \right]^{md} \\
+    \mathrm{Reach}_1, \mathrm{Reach}_2, \dots, \mathrm{Reach}_{K_i-1}, & \quad  \mathrm{Reach}_k := 1_{\{\mathrm{stash}_k + M_k \geq H_k\}},
+  \end{aligned}
+\end{equation*}
+#+END_EXPORT
+where $\mathrm{cons}_{k}$ is simply defined as the amount of drugs consumed
+in period $[T_{k}, T_{k+1})$, which is calculated as
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  \mathrm{cons}_{k} := X_k (ED_k - SD_k -H_k).
+\end{equation*}
+#+END_EXPORT
+Remember that the value $md$, by which we cap the value in the
+calculation of the stash, denotes the user-specified, assumed maximum
+amount of stored drugs (see table ref:tab-user-spec).
+
+Finally, we are ready to calculate the estimated daily dose. The
+calculation is divided into 3 different cases, depending on how much
+information (we think) we can use from the previous purchases. The
+idea is that if the drug supply from one purchase date is enough to
+reach the next, then we assume that the purchases are related to the
+same treatment, and thus we can use both periods to estimate the daily
+dose; exactly how we calculate the dose then again depends on whether
+or not the drug strength seems to change from one period to the next.
+Concretely, the 3 cases are:
+1) The drug supply from the last purchase date does /not/ reach this
+   period, so we have no useful information from previous purchases.
+2) The drug supply from the last purchase date /does/ reach this
+   period, /but/ the drug strength seems to change; thus we have some
+   information to use, but this can only be used partially as there
+   seems to be some change in the level of treatment.
+3) The drug supply from the last purchase date /does/ reach this
+   period, /and/ the drug strength seems to stay the same; thus we
+   guess that the patient is continuing with exactly the same kind and
+   level of treatment, and we are therefore more confident in using
+   the previous purchases in the estimation.
+The exact calculations for the three cases go as follows and depend on
+the preliminary values we have calculated above in this section and
+the user-specified values from table ref:tab-user-spec.
+#+BEGIN_EXPORT latex
+\begin{enumerate}
+\item No information: In formulas, this means that $\mathrm{Reach}_{k-1} = 0$. In this case, we simply put
+  \begin{equation*}
+    X_k := \mathrm{def}(\hat{S}_k),
+  \end{equation*}
+  because we do not have any better guess. 
+\item Some information: In formulas, this means that
+  $\mathrm{Reach}_{k-1} = 1$ but $\hat{S}_{k} \not =
+  \hat{S}_{k-1}$. In this case, we use the values as long back in time
+  as we have a continuous supply and until we reach the allowed,
+  user-specified value of maxium number of previous prescriptions to
+  use, $pw$. For this, we first calculate
+  \begin{equation*}
+    X'_k := \frac{\sum_{l = I_k}^{k-1} D_l}{\sum_{l = I_k}^{k-1} H_l}, \quad \text{where } I_k := \left[\min\{ l \leq k-1 \mid \mathrm{Reach}_l = 1\}\right]_{pw},
+  \end{equation*}
+  and then put
+  \begin{equation*}
+    X_k :=
+    \begin{cases}
+      \min(\hat{S}_k), & X'_k < \min(\hat{S}_k) \\
+      \max(\hat{S}_k), & X'_k > \max(\hat{S}_k) \\
+      \mathrm{def}(\hat{S}_k), & \min(\hat{S}_k) \leq X'_k \leq \max(\hat{S}_k)
+    \end{cases}.
+  \end{equation*}
+\item Most information: In formulas, this means that
+  $\mathrm{Reach}_{k-1} = 1$ and $\hat{S}_{k} = \hat{S}_{k-1}$. In
+  this case, we use a similar approach but now also demand that the values used back in time have the
+  same estimated drug strengths. We thus first calculate
+  \begin{equation*}
+    X'_k := \frac{\sum_{l = \tilde{I}_k}^{k-1} D_l}{\sum_{l = \tilde{I}_k}^{k-1} H_l}, 
+    \quad \tilde{I}_k := \left[\min\{ l \leq k-1 \mid \mathrm{Reach}_l = 1, \hat{S}_l=\hat{S}_{k} \}\right]_{pw},
+  \end{equation*}
+  and then normalize this quantity to the minimal daily dose scale
+  \begin{equation*}
+    X''_k := \left\lfloor \frac{X'_k}{\min(\hat{S}_k)} \right\rfloor \min(\hat{S}_k).
+  \end{equation*}
+  We put the final estimate equal to
+    \begin{equation*}
+    X_k := 
+    \left[
+      X''_k
+    \right]^{\max(\hat{S}_k)}_{\min(\hat{S}_k)}
+    =
+    \begin{cases}
+      \min(\hat{S}_k), & X''_k < \min(\hat{S}_k) \\
+      \max(\hat{S}_k), & X''_k > \max(\hat{S}_k) \\
+      X''_k, & \min(\hat{S}_k) \leq X''_k \leq \max(\hat{S}_k)
+    \end{cases}.
+  \end{equation*}
+\end{enumerate}
+#+END_EXPORT
+Note the difference between case 2 and 3: In both cases our estimate
+is a simply sum over the amount of drugs purchased in a suitable time
+span, normalized by the number of days the patient has needed to
+supply himself in this time span. Besides the difference in how these
+times spans are defined, we also have that in case 2, the final
+estimate can only take on one of the three possible values of either
+maximal, minimal or typical dose for the preliminary estimated drug
+strength $\hat{S}_k$, while in case 3 we are confident enough to let
+the final estimate take on values that lie within the minimal and
+maximal dose, but might be different from the typical dose.
+
+With the estimated daily dose in hand, the end of the $k$'th exposure
+period is simply calculated as
+#+BEGIN_EXPORT latex
+\begin{equation*}
+  ED_k := 
+  \left[
+    T_k + 
+    \left\lfloor
+      \frac{D_k + \mathrm{Stash}_k}{X_k}
+    \right\rfloor
+  \right]^{T_{k+1}},
+\end{equation*}
+#+END_EXPORT
+that is, we just use the estimated dose, $X_k$, for the period to
+normalize the stash and the amount of drug purchased.
+
+As a final step we concatenate periods with the same estimated daily
+dose. That is, if $ED_l = SD_{l+1}$ and $X_l = X_{l+1}$, we join the
+periods $[SD_l, ED_l)$ and $[SD_{l+1}, ED_{l+1})$ to one period
+$[SD_{l}, ED_{l+1})$ with daily exposure $X_l$. Also, if we have gaps
+between the periods, meaning $ED_l < SD_{l+1}$, we define a new period
+$[ED_l, SD_{l+1})$ with estimated daily exposure 0. This shapes the
+output into the form of ref:tab-indiv-out.
+
+* Debuggin / examples
+
+** Only one recept
+*** Old version with bugs
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
   library(heaven)
@@ -45,7 +440,7 @@ Estimated doses data using R:
 |    8 |   10 | 2005-01-25 | 2005-01-24 |       -1 days |
 :END:
 
-** Fixing/testing
+*** Fixing/testing
 
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes 
   lmdb0 <- data.table(pnr=8,
@@ -58,14 +453,13 @@ Estimated doses data using R:
 		period=as.Date(c("2004-01-01","2015-12-31")),
 		prescriptionwindow=2, ## consider 2 previous purchases and current
 		doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp") # Using fixed version
-  source("~/Rpackages/heaven/R/medicinMacro.R")
+  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using fixed version
   x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb0,admdb=NULL)
   org("Estimated doses data using R:") 
-  org(x$simva[])
+  org(x$simva[]) 
 #+END_SRC
 
-#+RESULTS[<2019-09-10 13:10:39> 58de0c26be2c70d010e42543d45ddfa911bd3abe]:
+#+RESULTS[<2019-09-10 16:20:17> bddc0a7fdb56f30d3ec2238eb92a39a1580d3535]:
 :RESULTS:
 
 Estimated doses data using R:
@@ -77,7 +471,7 @@ Estimated doses data using R:
 
 
 
-* More than one recept
+** More than one recept
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
@@ -240,10 +634,72 @@ org(y)
 |    8 |   10 | 2006-04-15 | 2007-04-06 |      356 days |
 :end:
 
+*** Fixing
 
-* Two purchases
+SAS results:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
+|    8 |   20 | 2005-03-03 | 2005-05-23 |       81 days |
+|    8 |    5 | 2006-01-11 | 2006-04-14 |       93 days |
+|    8 |   10 | 2006-04-15 | 2007-04-06 |      356 days |
 
-** Two purchases with overlap
+Old R version:
+#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+  lmdb <- data.table(pnr=rep(8,5),
+		     eksd=as.Date(c("2005-01-25","2005-03-03","2006-01-11","2006-04-15","2006-07-31")),
+		     apk=rep(1,5),
+		     atc=rep("C10AA01",5),strnum=c(10,10,10,10,20),packsize=rep(100,5))
+  simva <- list(atc="C10AA01",maxdepot=8000,
+		period=as.Date(c("2004-01-01","2015-12-31")),
+		prescriptionwindow=2, ## consider 2 previous purchases and current
+		doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
+		## doses=list(value=c(10,20,30),min=c(10,20,30),max=c(10,20,30),def=c(10,20,30)))
+
+  Rcpp::sourceCpp("src/innerMedicinMacro.cpp") # Why does it not work before this?
+  x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)
+  org("Estimated doses data using old R version:")
+  org(x$simva[])
+#+END_SRC
+
+#+RESULTS[<2019-09-13 12:18:27> 09d94684e08d0c3e3cf7d282af877c854fdccc50]:
+:RESULTS:
+
+Estimated doses data using old R version:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
+|    8 |   20 | 2005-03-03 | 2005-05-22 |       80 days |
+|    8 |    0 | 2005-05-23 | 2006-01-10 |      232 days |
+|    8 |    5 | 2006-01-11 | 2006-07-30 |      200 days |
+|    8 |   10 | 2006-07-31 | 2007-05-25 |      298 days |
+:END:
+
+Fixed R version:
+#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+  Rcpp::sourceCpp("src/innerMedicinMacro-fixing.cpp") # Why does it not work before this?
+  x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)
+  org("Estimated doses data using fixing version:")
+  org(x$simva[])
+#+END_SRC
+
+#+RESULTS[<2019-09-13 12:15:27> 176b47b21ed33a3382a8a0fb07754034eb225cf9]:
+:RESULTS:
+
+Estimated doses data using fixing version:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-03 |       37 days |
+|    8 |   20 | 2005-03-03 | 2005-05-23 |       81 days |
+|    8 |    0 | 2005-05-23 | 2006-01-11 |      233 days |
+|    8 |    5 | 2006-01-11 | 2006-07-31 |      201 days |
+|    8 |   10 | 2006-07-31 | 2007-05-26 |      299 days |
+:END:
+
+
+** Two purchases
+
+*** Two purchases with overlap
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
   lmdb1 <- data.table(pnr=c(8,8),
 		      eksd=as.Date(c("2005-01-16","2005-01-19")),
@@ -260,14 +716,14 @@ org(y)
   org("Two purchases with overlap")
   org(lmdb1)
   org("Old version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+  Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
   org("Corrected version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
+  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
 #+END_SRC
 
-#+RESULTS[<2019-09-10 10:44:13> 95494132cce740281169d2aa47183e22a423ff8a]:
+#+RESULTS[<2019-09-10 16:21:21> dec007d84b1e89aca14d0f01d451a42f70817fc4]:
 :RESULTS:
 
 Two purchases with overlap
@@ -287,21 +743,21 @@ Corrected version
 |    8 |   10 | 2005-01-16 | 2005-01-26 |       10 days |
 :END:
 
-** Two purchases without overlap
+*** Two purchases without overlap
 
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
 org("Two purchases without overlap")
 lmdb1$eksd[2] <- as.Date("2005-01-23")
 org(lmdb1)
 org("Old version")
-Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
 org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
 org("Corrected version")
-Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
+Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
 org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
 #+END_SRC
 
-#+RESULTS[<2019-09-10 10:44:37> f6974b51de145bc04fac4aa8a0d3dc5c3a7ff3b7]:
+#+RESULTS[<2019-09-10 16:21:31> 62ac66854c8d5c481824a9a4da191e3232b84fda]:
 :RESULTS:
 
 Two purchases without overlap
@@ -326,9 +782,15 @@ Corrected version
 :END:
 
 
-* Different doses
+** Different doses
 
-A patient purchases 5 pills of strength 10 with daily dosis 10; this gives a supply for 5 days. But then after 2 days, he purchases 5 pills of strength 30 with dose 15; this gives (in isolation) supplies for an additional 10 days. If we assume that the patient has changed his daily dosis when purchasing the new pills, it means that the stash of 3 pills after 2 days is only enough for 2 days -- because now he needs a daily dosis of 15. Correct?
+A patient purchases 5 pills of strength 10 with daily dosis 10; this
+gives a supply for 5 days. But then after 2 days, he purchases 5 pills
+of strength 30 with dose 15; this gives (in isolation) supplies for an
+additional 10 days. If we assume that the patient has changed his
+daily dosis when purchasing the new pills, it means that the stash of
+3 pills after 2 days is only enough for 2 days -- because now he needs
+a daily dosis of 15. Correct?
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
   lmdb1 <- data.table(pnr=c(8,8),
 		      eksd=as.Date(c("2005-01-16","2005-01-18")),
@@ -342,14 +804,14 @@ A patient purchases 5 pills of strength 10 with daily dosis 10; this gives a sup
 		 doses=list(value=c(10,30),min=c(10,15),max=c(10,15),def=c(10,15))) # Fixing doses for now
 
   org("Old version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+  Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
   org("Corrected version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
+  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL, verbose=F)$simva1)
 #+END_SRC
 
-#+RESULTS[<2019-09-10 15:18:47> 52d0dfd47c9ab41e0e2327d36d6a32332dd88679]:
+#+RESULTS[<2019-09-10 16:21:39> 9674085ea2bbb536299434ce68e24e79eda1246d]:
 :RESULTS:
 
 Old version
@@ -366,7 +828,7 @@ Corrected version
 :END:
 
 
-* Purchasing several different drug packages
+** Purchasing several different drug packages
 
 What happens when we buy the same drug but with different doses?
 
@@ -383,14 +845,14 @@ What happens when we buy the same drug but with different doses?
 		 doses=list(value=c(10,30),min=c(10,15),max=c(10,15),def=c(10,15))) # Fixing doses for now
   org("Different types of the same drug purchased on the same day:")
   org("Old version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+  Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL, verbose=F)$simva1)
   org("Corrected version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
+  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL, verbose=F)$simva1)
 #+END_SRC
 
-#+RESULTS[<2019-09-10 15:50:42> 491bf89217544ad87a6aa62eca720a8655f431a9]:
+#+RESULTS[<2019-09-10 16:21:45> 1c99170995c997eae496f167b1ddadce0d73b8a7]:
 :RESULTS:
 
 Different types of the same drug purchased on the same day:
@@ -422,14 +884,14 @@ Case with one purchase and then two purchases on the same day a bit later:
 		 prescriptionwindow=2, ## consider 2 previous purchases and current
 		 doses=list(value=c(10,30),min=c(10,15),max=c(10,15),def=c(10,15))) # Fixing doses for now
   org("Old version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+  Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL, verbose=F)$simva1)
   org("Corrected version")
-  Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
+  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
   org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL, verbose=F)$simva1)
 #+END_SRC 
 
-#+RESULTS[<2019-09-10 15:54:48> dabc810eda1e1a654c2c84986185f7180531f5d1]:
+#+RESULTS[<2019-09-10 16:21:55> fa9aad8578df7dfa9a6f7e84dfa31f0b49a845f7]:
 :RESULTS:
 
 Old version
@@ -443,6 +905,7 @@ Corrected version
 |    8 |   10 | 2005-01-13 | 2005-02-07 |       25 days |
 :END:
 
-* Calculating the estimated average daily dose 
+
+** Calculating the estimated average daily dose 
 
 Need to test the different cases. Don't understand when we use case 1 and 2?

@@ -184,29 +184,29 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       // Dsum is the numerator,
       // Hsum is the denominator 
       if (k > 0 && jk(k) == jk(k-1)) w(k-1) = 1; 
-      i0(k) = 0;
+      i0(k) = 0; // AM: What is this for? Doesn't seem to be used...
       double Dsum = 0; 
       double Hsum = 0;
       for (uword l = 1; l < prescriptionwindow+1; ++l) {
 	if (k>=l) {
 	  // check first if dosis is the same
-	  if (w(k-1) == 1) {
+	  if (w(k-1) == 1) { 
 	    // check if overlap, i.e. Case I
-	    if (reach(k-l) == 1 && w(k-l) == 1) {
+	    if (reach(k-l) == 1 && w(k-l) == 1) { 
 	      i0(k) = l;
 	      Dsum += currentpurchase(k-l);
 	      Hsum += daysperiod(k-l);
 	    }
 	    // if not overlap
 	    else 
-	      l = prescriptionwindow+1; 
+	      l = prescriptionwindow+1; // Breaks the loop because the overlap breaks
 	  } else { // if dosis not the same
-	    if (reach(k-l) == 1) { // if overlap, i.e. Case II
+	    if (reach(k-l) == 1) { // if overlap, i.e. Case II // 
 	      i0(k) = l;
 	      Dsum += currentpurchase(k-l);
 	      Hsum += daysperiod(k-l);
 	    } else // if not overlap
-	      l = prescriptionwindow+1; 
+	      l = prescriptionwindow+1; // Breaks the loop because the overlap breaks
 	  }
 	}
       }
@@ -254,8 +254,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  // Rcout << "T(k+1)-1=" << T(k+1)-1 << std::endl;
 	  // Rcout << "EndExposure(k)=" << EndExposure(k) << std::endl;
 	  // Rcout << "(EndExposure(k) - T(k+1) + 1 - dayshospital(k)):=" << (EndExposure(k) - T(k+1) + 1 - dayshospital(k)) << std::endl;	  
-          // stash(k+1)=(currentpurchase(k) + stash(k) - X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k)));
-          stash(k+1)= X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k));
+          // stash(k+1)=(currentpurchase(k) + stash(k) - X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k))); 
+          stash(k+1)= X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k)); // AM: Why not using the above anymore??
 	  // Rcout << "stash(k+1)=" << stash(k+1) << std::endl;
 	  if (stash(k+1) > maxdepot) stash(k+1) = maxdepot;
 	  EndExposure(k)=  T(k+1)-1;
