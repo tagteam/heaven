@@ -13,8 +13,8 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                         ,seed # Seed for random sort
                         ,progressbar=TRUE
                          ){
-    .SD=cterms=tEmP.iD=.N=NULL
-                                        #check
+    .SD=cterms=tEmP.iD=.N=miscol=NULL
+    #check
     vnames <- colnames(data)
     if (length(ptid)!=1 || !is.character(ptid) || match(ptid,vnames,nomatch=0)==0)
         stop ("Argument 'ptid' must be the name of a variable in the dataset.")
@@ -40,7 +40,9 @@ riskSetMatch <- function(ptid     # Unique patient identifier
         stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
     DATA[,tEmP.iD:=1:.N]
     ## combine matching variables to single term - cterms
-    DATA[, cterms :=interaction(.SD,drop=TRUE),.SDcols=terms]
+    miscol <- DATA[, lapply(.SD, function(x) sum(is.na(x))), .SDcols = terms ]
+    if (sum(miscol)>0) stop("Data columns corresponding to 'terms' have missing values")
+    DATA[,cterms :=interaction(.SD,drop=TRUE),.SDcols=terms]
     ## Select relevant part of table for matching - and provide internal names
     cols <-c("tEmP.iD",event,"cterms",case.index,end.followup)
     if (!is.null(date.terms)){
