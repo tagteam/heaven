@@ -391,7 +391,7 @@ between the periods, meaning $ED_l < SD_{l+1}$, we define a new period
 $[ED_l, SD_{l+1})$ with estimated daily exposure 0. This shapes the
 output into the form of ref:tab-indiv-out.
 
-* Debuggin / examples
+* Examples
 
 ** Only one recept
 *** Old version with bugs
@@ -443,6 +443,10 @@ Estimated doses data using R:
 *** Fixing/testing
 
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes 
+  library(heaven)
+  library(data.table)
+  library(Publish)
+
   lmdb0 <- data.table(pnr=8,
 		      eksd=as.Date("2005-01-25"),
 		      apk=1,
@@ -453,7 +457,17 @@ Estimated doses data using R:
 		period=as.Date(c("2004-01-01","2015-12-31")),
 		prescriptionwindow=2, ## consider 2 previous purchases and current
 		doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
-  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using fixed version
+
+  #Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+  setwd("~/Rpackages/heaven")
+  library(devtools)
+  library(tools)
+  pkgbuild::compile_dll()
+  Rcpp::compileAttributes()
+  document()
+  build()
+  install()
+
   x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb0,admdb=NULL)
   org("Estimated doses data using R:") 
   org(x$simva[]) 
@@ -490,122 +504,40 @@ org(lmdb)
 :results:
 
 Purchases data:
-|  pnr |       eksd | apk |     atc | strnum | packsize |
-|------+------------+-----+---------+--------+----------|
-|    8 | 2005-01-25 |   1 | C10AA01 |     10 |      100 |
-|    8 | 2005-03-03 |   1 | C10AA01 |     10 |      100 |
-|    8 | 2006-01-11 |   1 | C10AA01 |     10 |      100 |
-|    8 | 2006-04-15 |   1 | C10AA01 |     10 |      100 |
-|    8 | 2006-07-31 |   1 | C10AA01 |     20 |      100 |
+| pnr |       eksd | apk | atc     | strnum | packsize |
+|-----+------------+-----+---------+--------+----------|
+|   8 | 2005-01-25 |   1 | C10AA01 |     10 |      100 |
+|   8 | 2005-03-03 |   1 | C10AA01 |     10 |      100 |
+|   8 | 2006-01-11 |   1 | C10AA01 |     10 |      100 |
+|   8 | 2006-04-15 |   1 | C10AA01 |     10 |      100 |
+|   8 | 2006-07-31 |   1 | C10AA01 |     20 |      100 |
 :end:
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
 simva <- list(atc="C10AA01",maxdepot=8000,
               period=as.Date(c("2004-01-01","2015-12-31")),
-              prescriptionwindow=2, ## consider 2 previous purchases and current
+              prescriptionwindow=1, ## Use 1 instead! 
               doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
               ## doses=list(value=c(10,20,30),min=c(10,20,30),max=c(10,20,30),def=c(10,20,30)))
-Rcpp::sourceCpp("~/research/SoftWare/heaven/src/innerMedicinMacro.cpp")
-x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL,verbose=1)
-org("Estimated doses data using R:")
+Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
+x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)
+org("Estimated doses data using old version in R:")
 org(x$simva[])
 #+END_SRC
 
-#+RESULTS[<2019-09-03 09:03:42> 7eb771328af5e63af86d639942af553ebb002519]:
-:results:
-==============subject: = 0===============
+#+RESULTS[<2019-09-24 12:46:44> ab9fb4631e2122886ac0bc7913e2abd7f5a4aafc]:
+:RESULTS:
 
-Date    : 1980-01-26
-Next    : 1980-03-03
-Hospital: 0
-# Days  : 37
-Purchase: 1000
-Stash   : 0
-Total   : 1000
-Dosis   : 10
-Covered : 100 days 
-Reached : 1980-05-04
-Start   : 1980-01-26
-End     : 1980-03-02
----------------
-
-
-Date    : 1980-03-03
-Next    : 1981-01-11
-Hospital: 0
-# Days  : 314
-Purchase: 1000
-Stash   : 630
-Total   : 1630
-Reach   : 1
-Weight  : 1
-Dosis   : 20
-Covered : 81 days 
-Reached : 1980-05-22
-Start   : 1980-03-03
-End     : 1980-05-22
----------------
-
-
-Date    : 1981-01-11
-Next    : 1981-04-15
-Hospital: 0
-# Days  : 94
-Purchase: 1000
-Stash   : 0
-Total   : 1000
-Reach   : 1
-Weight  : 1
-Dosis   : 5
-Covered : 200 days 
-Reached : 1981-07-29
-Start   : 1981-01-11
-End     : 1981-04-14
----------------
-
-
-Date    : 1981-04-15
-Next    : 1981-07-31
-Hospital: 0
-# Days  : 107
-Purchase: 1000
-Stash   : 530
-Total   : 1530
-Reach   : 1
-Weight  : 1
-Dosis   : 5
-Covered : 306 days 
-Reached : 1982-02-14
-Start   : 1981-01-11
-End     : 1981-07-30
----------------
-
-
-Date    : 1981-07-31
-Hospital: 0
-# Days  : -9
-Purchase: 2000
-Stash   : 995
-Total   : 2995
-Reach   : 1
-Weight  : 0
-Dosis   : 10
-Covered : 299 days 
-Reached : 1982-05-25
-Start   : 1981-07-31
-End     : 1982-05-25
----------------
-
-Estimated doses data using R:
+Estimated doses data using old version in R:
 |  pnr | dose |   firstday |    lastday | exposure.days |
 |------+------+------------+------------+---------------|
 |    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
 |    8 |   20 | 2005-03-03 | 2005-05-22 |       80 days |
 |    8 |    0 | 2005-05-23 | 2006-01-10 |      232 days |
-|    8 |    5 | 2006-01-11 | 2006-07-30 |      200 days |
-|    8 |   10 | 2006-07-31 | 2007-05-25 |      298 days |
-:end:
+|    8 |    5 | 2006-01-11 | 2006-04-14 |       93 days |
+|    8 |   10 | 2006-04-15 | 2007-04-02 |      352 days |
+:END:
 
 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -644,6 +576,24 @@ SAS results:
 |    8 |    5 | 2006-01-11 | 2006-04-14 |       93 days |
 |    8 |   10 | 2006-04-15 | 2007-04-06 |      356 days |
 
+Estimated doses data using old version in R:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
+|    8 |   20 | 2005-03-03 | 2005-05-22 |       80 days |
+|    8 |    0 | 2005-05-23 | 2006-01-10 |      232 days |
+|    8 |    5 | 2006-01-11 | 2006-04-14 |       93 days |
+|    8 |   10 | 2006-04-15 | 2007-04-02 |      352 days |
+
+Estimated doses data using fixing version:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-25 | 2005-03-03 |       37 days |
+|    8 |   20 | 2005-03-03 | 2005-05-23 |       81 days |
+|    8 |    0 | 2005-05-23 | 2006-01-11 |      233 days |
+|    8 |    5 | 2006-01-11 | 2006-04-15 |       94 days |
+|    8 |   10 | 2006-04-15 | 2007-04-03 |      353 days |
+
 Old R version:
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
   lmdb <- data.table(pnr=rep(8,5),
@@ -652,7 +602,7 @@ Old R version:
 		     atc=rep("C10AA01",5),strnum=c(10,10,10,10,20),packsize=rep(100,5))
   simva <- list(atc="C10AA01",maxdepot=8000,
 		period=as.Date(c("2004-01-01","2015-12-31")),
-		prescriptionwindow=2, ## consider 2 previous purchases and current
+		prescriptionwindow=1, ## Use 1 instead!
 		doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
 		## doses=list(value=c(10,20,30),min=c(10,20,30),max=c(10,20,30),def=c(10,20,30)))
 
@@ -677,13 +627,13 @@ Estimated doses data using old R version:
 
 Fixed R version:
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
-  Rcpp::sourceCpp("src/innerMedicinMacro-fixing.cpp") # Why does it not work before this?
-  x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)
-  org("Estimated doses data using fixing version:")
-  org(x$simva[])
+Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro-fixing.cpp")
+x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)  
+org("Estimated doses data using fixing version:")
+org(x$simva[])
 #+END_SRC
 
-#+RESULTS[<2019-09-13 12:15:27> 176b47b21ed33a3382a8a0fb07754034eb225cf9]:
+#+RESULTS[<2019-09-24 12:47:34> ea39e97c733e235eb43ed8bf341f37422f7c4c6f]:
 :RESULTS:
 
 Estimated doses data using fixing version:
@@ -692,8 +642,8 @@ Estimated doses data using fixing version:
 |    8 |   10 | 2005-01-25 | 2005-03-03 |       37 days |
 |    8 |   20 | 2005-03-03 | 2005-05-23 |       81 days |
 |    8 |    0 | 2005-05-23 | 2006-01-11 |      233 days |
-|    8 |    5 | 2006-01-11 | 2006-07-31 |      201 days |
-|    8 |   10 | 2006-07-31 | 2007-05-26 |      299 days |
+|    8 |    5 | 2006-01-11 | 2006-04-15 |       94 days |
+|    8 |   10 | 2006-04-15 | 2007-04-03 |      353 days |
 :END:
 
 
@@ -905,7 +855,3 @@ Corrected version
 |    8 |   10 | 2005-01-13 | 2005-02-07 |       25 days |
 :END:
 
-
-** Calculating the estimated average daily dose 
-
-Need to test the different cases. Don't understand when we use case 1 and 2?

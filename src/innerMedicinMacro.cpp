@@ -184,29 +184,29 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       // Dsum is the numerator,
       // Hsum is the denominator 
       if (k > 0 && jk(k) == jk(k-1)) w(k-1) = 1; 
-      i0(k) = 0; // AM: What is this for? Doesn't seem to be used...
+      i0(k) = 0;
       double Dsum = 0; 
       double Hsum = 0;
       for (uword l = 1; l < prescriptionwindow+1; ++l) {
 	if (k>=l) {
 	  // check first if dosis is the same
-	  if (w(k-1) == 1) { 
+	  if (w(k-1) == 1) {
 	    // check if overlap, i.e. Case I
-	    if (reach(k-l) == 1 && w(k-l) == 1) { 
+	    if (reach(k-l) == 1 && w(k-l) == 1) {
 	      i0(k) = l;
 	      Dsum += currentpurchase(k-l);
 	      Hsum += daysperiod(k-l);
 	    }
 	    // if not overlap
 	    else 
-	      l = prescriptionwindow+1; // Breaks the loop because the overlap breaks
+	      l = prescriptionwindow+1; 
 	  } else { // if dosis not the same
-	    if (reach(k-l) == 1) { // if overlap, i.e. Case II // 
+	    if (reach(k-l) == 1) { // if overlap, i.e. Case II
 	      i0(k) = l;
 	      Dsum += currentpurchase(k-l);
 	      Hsum += daysperiod(k-l);
 	    } else // if not overlap
-	      l = prescriptionwindow+1; // Breaks the loop because the overlap breaks
+	      l = prescriptionwindow+1; 
 	  }
 	}
       }
@@ -232,7 +232,8 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       // ----------------------------------------------------------------------------------------------
       // compute the end dates of exposure
       // ----------------------------------------------------------------------------------------------
-      EndExposure(k) = (T(k) - 1.0 + floor((currentpurchase(k) + stash(k)) / (double) X(k))); // AM: Why -1 here?
+      // EndExposure(k) = (T(k) - 1.0 + floor((currentpurchase(k) + stash(k)) / (double) X(k))); // AM: Why -1 here?
+      EndExposure(k) = (T(k) + floor((currentpurchase(k) + stash(k)) / (double) X(k))); 
       // set all id values
       idout(k) = id(0);
       if (verbose){
@@ -250,37 +251,40 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       // important: we first calculate the stash for the next period and then reset the start time
       // we have a rest
       if (k<K-1) {// T(K-1) is the last date
-	if (EndExposure(k) >= T(k+1)-1){
+	// if (EndExposure(k) >= T(k+1)-1){
+	if (EndExposure(k) >= T(k+1)){ // Corresponding to change in line 236
 	  // Rcout << "T(k+1)-1=" << T(k+1)-1 << std::endl;
 	  // Rcout << "EndExposure(k)=" << EndExposure(k) << std::endl;
 	  // Rcout << "(EndExposure(k) - T(k+1) + 1 - dayshospital(k)):=" << (EndExposure(k) - T(k+1) + 1 - dayshospital(k)) << std::endl;	  
-          // stash(k+1)=(currentpurchase(k) + stash(k) - X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k))); 
-          stash(k+1)= X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k)); // AM: Why not using the above anymore??
+          // stash(k+1)=(currentpurchase(k) + stash(k) - X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k)));
+          // stash(k+1)= X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k));
+	  stash(k+1)= X(k)*(EndExposure(k) - T(k+1) - dayshospital(k)); // Corresponding to change in line 236
 	  // Rcout << "stash(k+1)=" << stash(k+1) << std::endl;
 	  if (stash(k+1) > maxdepot) stash(k+1) = maxdepot;
-	  EndExposure(k)=  T(k+1)-1;
+	  // EndExposure(k)=  T(k+1)-1;
+	  EndExposure(k)=  T(k+1); // Corresponding to change in line 236
 	} // no else because we just use the remaining units until the stash is completely empty
       }// no else because stash(k+1) is initialized as 0.0
 
       // -------------------------------------------------------------------------------------------------------
       // check if previous period can be collapsed. if so, reset T(k) to T(k-1)
       // -------------------------------------------------------------------------------------------------------
-      if (k > 0) {
-	if (X(k-1) == X(k) && EndExposure(k-1) >= (T(k)-1)) {
+      if (k > 0) {  // Corresponding to change in line 236 -- needs to be double checked!
+	if (X(k-1) == X(k) && EndExposure(k-1) >= (T(k))) { // In this setting, we can only have equality of < for the E and T, right?
 	  // if doses are the same, and gap is smaller than 1 day
 	  // then keep the last.
 	  T(k) = T(k-1); // set start date to start date of previous period
 	  // rows with yk = 0 will be removed 
 	  yk(k-1) = 0; 
 	} else{
-	  if (X(k-1) != X(k) && EndExposure(k-1) >= (T(k)-1)) {
+	  if (X(k-1) != X(k) && EndExposure(k-1) >= (T(k))) {  // Not completely sure what should happen here!
 	    // doses are not the same, gap smaller than 1 day
-	    T(k) = std::max(T(k), EndExposure(k-1) + 1);
-	    EndExposure(k) = std::max(EndExposure(k), T(k) + 1);
+	    T(k) = std::max(T(k), EndExposure(k-1) );
+	    EndExposure(k) = std::max(EndExposure(k), T(k) );
 	    // rows with yk = 1 will be kept
 	    yk(k-1) = 1; 
 	  }else{
-	    if (round(EndExposure(k-1)) < (T(k)-1)) { // gap is larger than 1 day
+	    if (round(EndExposure(k-1)) < (T(k))) { // gap is larger than 1 day
 	      // rows with yk = 2 will introduce a period with 0 exposure
 	      yk(k-1) = 2;
 	    }
@@ -323,9 +327,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       if (yk(k)==2){
 	// create a row with zero exposure
 	id1(k1) = id(0);
-	B1(k1) = EndExposure(k)+1;
+	// B1(k1) = EndExposure(k)+1; 
+	B1(k1) = EndExposure(k); // TEST!
 	// Rcout << "T(k+1)=" << T(k) << std::endl;
-	E1(k1) = T(k+1)-1;
+	// E1(k1) = T(k+1)-1;
+	E1(k1) = T(k+1); // TEST!
 	X1(k1) = 0; 
 	k1 += 1;
       }
