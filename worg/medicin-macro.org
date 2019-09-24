@@ -886,6 +886,37 @@ The output consists of:
    period.
 
 
+* Table of notation
+A table of all the variables defined in this report. 
+
+#+ATTR_LATEX: :align l|p{10cm}l
+| Name                            | Meaning                                                                                         |
+|---------------------------------+-------------------------------------------------------------------------------------------------|
+| $T_k, \quad k=1, \dots, K$      | Purchase dates for each individual patient                                                      |
+| $S_j, \quad j=1, \dots, J$      | Strengths / package type for each drug product ($S_1 < S_2 < \dots < S_J$)                      |
+| $s_j^{\min}, s_j^{\max}, s_j^*$ | The minimum, maximum and typical dose per day for the drug of strength $S_j$                    |
+| $G_{jk}$                        | Number of packages of strength $S_j$ purchased on date $T_k$.                                   |
+| $m_{jk}$                        | Total amount of units of strength $S_j$ purchased on date $T_k$                                 |
+| $n_{jk}$                        | Total amount of /smallest/ units of strength $S_j$ purchased on date $T_k$                      |
+| $D_k$                           | Total amount of drug pruchsed on data $T_k$                                                     |
+| $n_k$                           | Maximal number of days of supply based on $D_k$                                                 |
+| $L_q, R_q, \quad q= 1 \dots, Q$ | Admission and discharge days from hospital                                                      |
+| $H_k, \quad k=1, \dots, K$      | Number of days the individual patient is /not/ hospitalized in the period $[T_k, T_{k+1})$      |
+| $u_k \in \{0,1\}$               | Indication of whether or not the supply at $T_k$ is enough to cover the period $[T_k, T_{k+1})$ |
+| $E_k$                           | End date of exposure period $k$                                                                 |
+| $X_k$                           | Estimated average daily exposure strength during exposure period $k$                            |
+| $N$                             | Number of prescription dates (purchase dates?) back in time used to calculate the $X_k$'s       |
+| $A_k$                           | Preliminary average daily dosis (simple mean)                                                   |
+| $C_k$                           | Total number of purchases on date $T_k$                                                         |
+| $b(k) \in \{1, \dots, J \}$     | The largest index of the drug strengths, such that $S_{b(k)}$ does not exceed $A_k$             |
+| $I^{(1)}_k$                     | The closest purchase date back in time such that there is overlap /and/ average dosis match     |
+| $I^{(2)}_k$                     | The closest purchase date back in time such that there is overlap                               |
+| $M^{(1)}_k$                     | The average daily dose based on the index $I^{(1)}_k$                                           |
+| $M^{(2)}_k$                     | The average daily dose based on the index $I^{(2)}_k$                                           |
+| $W_k$                           | The nearest multiple of the minimal dosis $s^{\min}_{b(k)}$ not exceediong $M^{(1)}_k$          |
+| $R_k$                           | The leftover doses from period $k$                                                              |
+
+
 * HEADER :noexport:
 
 #+TITLE: From \texttt{\%x\_recepter} to \texttt{Rcpp}: a mathematical formulation of the algorithm, a new R-user interface and an efficient implementation

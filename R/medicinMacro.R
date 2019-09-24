@@ -177,7 +177,7 @@ medicinMacro <- function(drugs,
                                                    prescriptionwindow=prescriptionwindow,
                                                    maxdepot=maxdepot,verbose=verbose))
                 setnames(out,"X","dose")
-                out[,B:=as.Date("1995-01-01")+B]
+                out[,B:=as.Date("1995-01-01")+B] 
                 out[,E:=as.Date("1995-01-01")+E]
                 setnames(out,"B","firstday")
                 setnames(out,"E","lastday")
