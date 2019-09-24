@@ -20,6 +20,17 @@
   library(Publish)
   # Set wd to package dir to load fixed version
   ## setwd("~/Rpackages/heaven")
+  ## Rcpp::sourceCpp("./src/innerMedicinMacro.cpp") ## This should be fixed
+
+  ## Installation trials.
+  ## setwd("~/Rpackages/heaven")
+  ## library(devtools)
+  ## library(tools)
+  ## pkgbuild::compile_dll()
+  ## Rcpp::compileAttributes()
+  ## document()
+  ## build()
+  ## install()
 #+END_SRC
 
 #+RESULTS[<2019-09-10 16:19:42> 5fc6f3042685a0d88b9f053e04ac790afeeb22e9]:
@@ -40,6 +51,7 @@ Loading required package: prodlim
 
 * Introduction
 Something something...
+
 
 * Formulas
 
@@ -391,156 +403,190 @@ between the periods, meaning $ED_l < SD_{l+1}$, we define a new period
 $[ED_l, SD_{l+1})$ with estimated daily exposure 0. This shapes the
 output into the form of ref:tab-indiv-out.
 
+
 * Examples
 
-** Only one recept
-*** Old version with bugs
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
-  library(heaven)
-  library(data.table)
-  library(Publish)
+** One purchase
+
+The simplest setting is one individual making one purchse. The
+calculations are then straightforward. We can specify the data as follows. 
+
+#+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
   lmdb0 <- data.table(pnr=8,
 		      eksd=as.Date("2005-01-25"),
 		      apk=1,
 		      atc="C10AA01",
 		      strnum=10,
-		      packsize=0.0999998)
-  org("Purchases data:")
-  org(lmdb0)
+		      packsize=3)
 #+END_SRC
 
-#+RESULTS[<2019-09-10 13:10:34> bcdedcf7007e53f21b2d2cbd27cd7f27a4c68a7d]:
+#+RESULTS[<2019-09-24 15:08:32> 4b6c96452063ca4002aa5f0dfe6dcf874d5f5138]:
 :RESULTS:
-
-Purchases data:
-|  pnr |       eksd | apk |     atc | strnum |  packsize |
-|------+------------+-----+---------+--------+-----------|
-|    8 | 2005-01-25 |   1 | C10AA01 |     10 | 0.0999998 |
 :END:
 
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
-  simva <- list(atc="C10AA01",maxdepot=8000,
-		period=as.Date(c("2004-01-01","2015-12-31")),
-		prescriptionwindow=2, ## consider 2 previous purchases and current
-		doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
-  ## Rcpp::sourceCpp("~/research/SoftWare/heaven/src/innerMedicinMacro.cpp")
-  x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb0,admdb=NULL)
-  org("Estimated doses data using R:")
-  org(x$simva[])
+This gives data of the form:
+
+#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+org(lmdb0)
 #+END_SRC
 
-#+RESULTS[<2019-09-10 13:09:17> ece460e41c1877bee4b3d36a40c5e09536e1e440]:
+#+RESULTS[<2019-09-24 15:09:48> 2770cb1b16c4bf3d645dc36d83511d670283ca3d]:
 :RESULTS:
-
-Estimated doses data using R:
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-25 | 2005-01-24 |       -1 days |
-:END:
-
-*** Fixing/testing
-
-#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes 
-  library(heaven)
-  library(data.table)
-  library(Publish)
-
-  lmdb0 <- data.table(pnr=8,
-		      eksd=as.Date("2005-01-25"),
-		      apk=1,
-		      atc="C10AA01",
-		      strnum=10,
-		      packsize=0.0999998)
-  simva <- list(atc="C10AA01",maxdepot=8000,
-		period=as.Date(c("2004-01-01","2015-12-31")),
-		prescriptionwindow=2, ## consider 2 previous purchases and current
-		doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
-
-  #Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
-  setwd("~/Rpackages/heaven")
-  library(devtools)
-  library(tools)
-  pkgbuild::compile_dll()
-  Rcpp::compileAttributes()
-  document()
-  build()
-  install()
-
-  x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb0,admdb=NULL)
-  org("Estimated doses data using R:") 
-  org(x$simva[]) 
-#+END_SRC
-
-#+RESULTS[<2019-09-10 16:20:17> bddc0a7fdb56f30d3ec2238eb92a39a1580d3535]:
-:RESULTS:
-
-Estimated doses data using R:
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-25 | 2005-01-25 |        0 days |
-:END:
-
-
-
-
-** More than one recept
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
-library(heaven)
-library(data.table)
-library(Publish)
-lmdb <- data.table(pnr=rep(8,5),
-                   eksd=as.Date(c("2005-01-25","2005-03-03","2006-01-11","2006-04-15","2006-07-31")),
-                   apk=rep(1,5),
-                   atc=rep("C10AA01",5),strnum=c(10,10,10,10,20),packsize=rep(100,5))
-org("Purchases data:")
-org(lmdb)
-#+END_SRC
-
-#+RESULTS[<2019-09-03 08:26:47> fb7236a55ccfda8a7b15057ef02cfbae62006211]:
-:results:
-
-Purchases data:
 | pnr |       eksd | apk | atc     | strnum | packsize |
 |-----+------------+-----+---------+--------+----------|
-|   8 | 2005-01-25 |   1 | C10AA01 |     10 |      100 |
-|   8 | 2005-03-03 |   1 | C10AA01 |     10 |      100 |
-|   8 | 2006-01-11 |   1 | C10AA01 |     10 |      100 |
-|   8 | 2006-04-15 |   1 | C10AA01 |     10 |      100 |
-|   8 | 2006-07-31 |   1 | C10AA01 |     20 |      100 |
-:end:
-
-#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
-#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
-simva <- list(atc="C10AA01",maxdepot=8000,
-              period=as.Date(c("2004-01-01","2015-12-31")),
-              prescriptionwindow=1, ## Use 1 instead! 
-              doses=list(value=c(10,20,30),min=c(5,10,15),max=c(20,40,60),def=c(10,20,30)))
-              ## doses=list(value=c(10,20,30),min=c(10,20,30),max=c(10,20,30),def=c(10,20,30)))
-Rcpp::sourceCpp("~/Rpackages/heaven/src/innerMedicinMacro.cpp")
-x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)
-org("Estimated doses data using old version in R:")
-org(x$simva[])
-#+END_SRC
-
-#+RESULTS[<2019-09-24 12:46:44> ab9fb4631e2122886ac0bc7913e2abd7f5a4aafc]:
-:RESULTS:
-
-Estimated doses data using old version in R:
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-25 | 2005-03-02 |       36 days |
-|    8 |   20 | 2005-03-03 | 2005-05-22 |       80 days |
-|    8 |    0 | 2005-05-23 | 2006-01-10 |      232 days |
-|    8 |    5 | 2006-01-11 | 2006-04-14 |       93 days |
-|    8 |   10 | 2006-04-15 | 2007-04-02 |      352 days |
+|   8 | 2005-01-25 |   1 | C10AA01 |     10 |        3 |
 :END:
 
+We then give the user specified information corresponding to table
+ref:tab-user-spec as follows.
+#+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
+  user <- list(atc="C10AA01",
+	       maxdepot=8000,
+	       period=as.Date(c("2004-01-01","2015-12-31")),
+	       prescriptionwindow=2, 
+	       doses=list(value=c(10,20,30),
+			  min=c(5,10,15),
+			  max=c(20,40,60),
+			  def=c(10,20,30)))
+#+END_SRC
 
+#+RESULTS[<2019-09-24 15:13:02> 3a3bd7650cca9f75901f884e5e2ac9024f6695c2]:
+:RESULTS:
+:END:
+
+We can then plug this into the program. For now, we do not have any
+admission data so we set this equal to =NULL=. 
+
+#+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
+x <- medicinMacro(drugs=list(user=user),drugdb=lmdb0,admdb=NULL)
+#+END_SRC
+
+#+RESULTS[<2019-09-24 15:13:03> 73a78b9fa59b347532e9f43662183dd0fb94657f]:
+:RESULTS:
+:END:
+
+The results are
+
+#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+org(x$user[])  
+#+END_SRC
+
+#+RESULTS[<2019-09-24 15:13:18> 869dd18f91b98eb50181cb1a02e521d941484efa]:
+:RESULTS:
+| pnr | dose |   firstday |    lastday | exposure.days |
+|-----+------+------------+------------+---------------|
+|   8 |   10 | 2005-01-25 | 2005-01-28 | 3 days        |
+:END:
+
+** Two purchases 
+
+A more complicated example is one individual making two purchases. We consider examples with and without overlap. 
+*** Two purchases without overlap
+The data and user specified information is given in the code
+below. The form of the data and the estimation output is in the table
+below.
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes 
+  lmdb1 <- data.table(pnr=c(8,8),
+		      eksd=as.Date(c("2005-01-16","2005-01-23")),
+		      apk=c(1,1),
+		      atc=c("C10AA01", "C10AA01"),
+		      strnum=c(10,20),
+		      packsize=c(5,5)) 
+  simva1 <- list(atc="C10AA01",maxdepot=8000,
+		 period=as.Date(c("2004-01-01","2015-12-31")),
+		 maxdepot = 10000, 
+		 prescriptionwindow=2, 
+		 doses=list(value=c(10,20,30),min=c(10,10,15),max=c(10,40,60),def=c(10,20,30))) 
+  org("Purchase data:")
+  org(lmdb1) 
+  org("Results from the progam:")
+  org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
+#+END_SRC
+
+#+RESULTS[<2019-09-24 15:33:28> 1263e5ce5b0186d5bd8149485bc66de221d9f9ef]:
+:RESULTS:
+
+Purchase data:
+|  pnr |       eksd | apk |     atc | strnum | packsize |
+|------+------------+-----+---------+--------+----------|
+|    8 | 2005-01-16 |   1 | C10AA01 |     10 |        5 |
+|    8 | 2005-01-23 |   1 | C10AA01 |     20 |        5 |
+
+Results from the progam:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-16 | 2005-01-21 |        5 days |
+|    8 |    0 | 2005-01-21 | 2005-01-23 |        2 days |
+|    8 |   20 | 2005-01-23 | 2005-01-28 |        5 days |
+:END:
+
+*** Two purchases with overlap
+Here, we change the second date to introduce an overlap. This changes
+the total exposure time from 10 to 9 days.
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes 
+  lmdb1$eksd[2] <- as.Date("2005-01-19")
+  org("Purchase data:")
+  org(lmdb1)
+  org("Results from the progam:")
+  org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
+#+END_SRC
+
+#+RESULTS[<2019-09-24 15:33:55> f6b983b160c88759f0b8054c045d0e843e02ee99]:
+:RESULTS:
+
+Purchase data:
+|  pnr |       eksd | apk |     atc | strnum | packsize |
+|------+------------+-----+---------+--------+----------|
+|    8 | 2005-01-16 |   1 | C10AA01 |     10 |        5 |
+|    8 | 2005-01-19 |   1 | C10AA01 |     20 |        5 |
+
+Results from the progam:
+|  pnr | dose |   firstday |    lastday | exposure.days |
+|------+------+------------+------------+---------------|
+|    8 |   10 | 2005-01-16 | 2005-01-19 |        3 days |
+|    8 |   20 | 2005-01-19 | 2005-01-25 |        6 days |
+:END:
+
+** Comparing SAS-macro with =R=-macro
+
+We use a slightly more involved example to compare the output of the
+=R=-program with the old SAS-macro. We have the following data and
+user input.
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+  lmdb <- data.table(pnr=rep(8,5),
+		     eksd=as.Date(c("2005-01-25","2005-03-03","2006-01-11","2006-04-15","2006-07-31")),
+		     apk=rep(1,5),
+		     atc=rep("C10AA01",5),
+		     strnum=c(10,10,10,10,20),
+		     packsize=rep(100,5))
+  simva <- list(atc="C10AA01",maxdepot=8000,
+		period=as.Date(c("2004-01-01","2015-12-31")),
+		prescriptionwindow=1, 
+		doses=list(value=c(10,20,30,40),
+			   min=c(5,10,15,20),
+			   max=c(20,40,60,80),
+			   def=c(10,20,30,40)))
+  org("Purchase data:")
+  org(lmdb)
+#+END_SRC
+
+#+RESULTS[<2019-09-24 15:23:47> 2cd87330c6540aa245af4b454c5e78fe4ff4b577]:
+:RESULTS:
+
+Purchase data:
+|  pnr |       eksd | apk |     atc | strnum | packsize |
+|------+------------+-----+---------+--------+----------|
+|    8 | 2005-01-25 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2005-03-03 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2006-01-11 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2006-04-15 |   1 | C10AA01 |     10 |      100 |
+|    8 | 2006-07-31 |   1 | C10AA01 |     20 |      100 |
+:END:
+
+The results differ a bit. What is most correct should be checked. 
+
+Results using SAS:
 #+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
 adm <- simAdmissionData(4)
 y <- xrecepter(drugdb=lmdb,
@@ -566,7 +612,27 @@ org(y)
 |    8 |   10 | 2006-04-15 | 2007-04-06 |      356 days |
 :end:
 
-*** Fixing
+Results using =R=:
+#+BEGIN_SRC R  :results output raw drawer  :exports both  :session *R* :cache yes  :eval always
+x <- medicinMacro(drugs=list(simva=simva),drugdb=lmdb,admdb=NULL)
+org(x$simva[])
+#+END_SRC
+
+#+RESULTS[<2019-09-24 15:21:44> 65d41c0f36392a5def4cfc998013297f5b5bc8f6]:
+:RESULTS:
+| pnr | dose |   firstday |    lastday | exposure.days |
+|-----+------+------------+------------+---------------|
+|   8 |   10 | 2005-01-25 | 2005-03-03 | 37 days       |
+|   8 |   20 | 2005-03-03 | 2005-05-23 | 81 days       |
+|   8 |    0 | 2005-05-23 | 2006-01-11 | 233 days      |
+|   8 |    5 | 2006-01-11 | 2006-04-15 | 94 days       |
+|   8 |   10 | 2006-04-15 | 2007-04-03 | 353 days      |
+:END:
+
+
+* Some old results :noexport:
+
+** Saved results for sas, old and new R version
 
 SAS results:
 |  pnr | dose |   firstday |    lastday | exposure.days |
@@ -646,90 +712,6 @@ Estimated doses data using fixing version:
 |    8 |   10 | 2006-04-15 | 2007-04-03 |      353 days |
 :END:
 
-
-** Two purchases
-
-*** Two purchases with overlap
-#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
-  lmdb1 <- data.table(pnr=c(8,8),
-		      eksd=as.Date(c("2005-01-16","2005-01-19")),
-		      apk=c(1,1),
-		      atc=c("C10AA01", "C10AA01"),
-		      strnum=c(10,10),
-		      packsize=c(5,5)) # 0.0999998)
-  simva1 <- list(atc="C10AA01",maxdepot=8000,
-		 period=as.Date(c("2004-01-01","2015-12-31")),
-		 maxdepot = 10000, # Does this effect anything? No...
-		 prescriptionwindow=2, ## consider 2 previous purchases and current
-		 doses=list(value=c(10,20,30),min=c(10,10,15),max=c(10,40,60),def=c(10,20,30))) # Fixing dosis
-
-  org("Two purchases with overlap")
-  org(lmdb1)
-  org("Old version")
-  Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
-  org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
-  org("Corrected version")
-  Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
-  org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
-#+END_SRC
-
-#+RESULTS[<2019-09-10 16:21:21> dec007d84b1e89aca14d0f01d451a42f70817fc4]:
-:RESULTS:
-
-Two purchases with overlap
-|  pnr |       eksd | apk |     atc | strnum | packsize |
-|------+------------+-----+---------+--------+----------|
-|    8 | 2005-01-16 |   1 | C10AA01 |     10 |        5 |
-|    8 | 2005-01-19 |   1 | C10AA01 |     10 |        5 |
-
-Old version
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-16 | 2005-01-25 |        9 days |
-
-Corrected version
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-16 | 2005-01-26 |       10 days |
-:END:
-
-*** Two purchases without overlap
-
-#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
-org("Two purchases without overlap")
-lmdb1$eksd[2] <- as.Date("2005-01-23")
-org(lmdb1)
-org("Old version")
-Rcpp::sourceCpp("./src/innerMedicinMacro.cpp")
-org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
-org("Corrected version")
-Rcpp::sourceCpp("./src/innerMedicinMacro-fixing.cpp") # Using "fixed" version
-org(medicinMacro(drugs=list(simva1=simva1),drugdb=lmdb1,admdb=NULL)$simva1)
-#+END_SRC
-
-#+RESULTS[<2019-09-10 16:21:31> 62ac66854c8d5c481824a9a4da191e3232b84fda]:
-:RESULTS:
-
-Two purchases without overlap
-|  pnr |       eksd | apk |     atc | strnum | packsize |
-|------+------------+-----+---------+--------+----------|
-|    8 | 2005-01-16 |   1 | C10AA01 |     10 |        5 |
-|    8 | 2005-01-23 |   1 | C10AA01 |     10 |        5 |
-
-Old version
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-16 | 2005-01-20 |        4 days |
-|    8 |    0 | 2005-01-21 | 2005-01-22 |        1 days |
-|    8 |   10 | 2005-01-23 | 2005-01-27 |        4 days |
-
-Corrected version
-|  pnr | dose |   firstday |    lastday | exposure.days |
-|------+------+------------+------------+---------------|
-|    8 |   10 | 2005-01-16 | 2005-01-21 |        5 days |
-|    8 |    0 | 2005-01-21 | 2005-01-23 |        2 days |
-|    8 |   10 | 2005-01-23 | 2005-01-28 |        5 days |
-:END:
 
 
 ** Different doses
