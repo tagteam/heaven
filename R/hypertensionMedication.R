@@ -10,7 +10,7 @@
 #' hypertension as a date where an individual has picked up at least two classes
 #' of antihypertensive medication for two consecutive periods of 3 months.
 #' @usage hypertensionMedication(data, vars=c("ptid","ATCcode",
-#'  "prescription.date"), index.date=NULL,medication.definition=NULL)
+#'  "prescription.date"), index.date=NULL,medication.definition=hypertensionATC)
 #' @author Christian Torp-Pedersen 
 #' @param data - A data frame/table containing prescription data
 #' @param vars - names of variables containing person identification, ATC code
@@ -58,7 +58,7 @@
 #' noindex
 #' @export
 hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
-      "prescription.date"), index.date=NULL,medication.definition=NULL)
+      "prescription.date"), index.date=NULL,medication.definition=hypertensionATC)
 {
   index=.SD=.N=hypertension=numDrugs=newdate=olddate=NULL
   datt <- copy(data)
