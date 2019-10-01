@@ -1,6 +1,4 @@
-* HEADER :noexport:
-
-#+TITLE: 
+#+TITLE: THE medicine macro
 #+Author: Anders Munch
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
@@ -34,19 +32,8 @@
 #+END_SRC
 
 #+RESULTS[<2019-09-10 16:19:42> 5fc6f3042685a0d88b9f053e04ac790afeeb22e9]:
-:RESULTS:
-
-LOL: This is heaven! Version 2019.9.3
-A good place to get started is vignette('user-heaven').
-
-Attaching package: ‘heaven’
-
-The following objects are masked _by_ ‘.GlobalEnv’:
-
-    innerMedicinMacro, medicinMacro
-data.table 1.12.2 using 2 threads (see ?getDTthreads).  Latest news: r-datatable.com
-Loading required package: prodlim
-:END:
+:results:
+:end:
 
 
 * Introduction
@@ -412,17 +399,17 @@ The simplest setting is one individual making one purchse. The
 calculations are then straightforward. We can specify the data as follows. 
 
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
-  lmdb0 <- data.table(pnr=8,
-		      eksd=as.Date("2005-01-25"),
-		      apk=1,
-		      atc="C10AA01",
-		      strnum=10,
-		      packsize=3)
+lmdb0 <- data.table(pnr=8,
+                    eksd=as.Date("2005-01-25"),
+                    apk=1,
+                    atc="C10AA01",
+                    strnum=10,
+                    packsize=3)
 #+END_SRC
 
 #+RESULTS[<2019-09-24 15:08:32> 4b6c96452063ca4002aa5f0dfe6dcf874d5f5138]:
-:RESULTS:
-:END:
+:results:
+:end:
 
 This gives data of the form:
 
@@ -431,11 +418,11 @@ org(lmdb0)
 #+END_SRC
 
 #+RESULTS[<2019-09-24 15:09:48> 2770cb1b16c4bf3d645dc36d83511d670283ca3d]:
-:RESULTS:
+:results:
 | pnr |       eksd | apk | atc     | strnum | packsize |
 |-----+------------+-----+---------+--------+----------|
 |   8 | 2005-01-25 |   1 | C10AA01 |     10 |        3 |
-:END:
+:end:
 
 We then give the user specified information corresponding to table
 ref:tab-user-spec as follows.
@@ -451,32 +438,32 @@ ref:tab-user-spec as follows.
 #+END_SRC
 
 #+RESULTS[<2019-09-24 15:13:02> 3a3bd7650cca9f75901f884e5e2ac9024f6695c2]:
-:RESULTS:
-:END:
+:results:
+:end:
 
 We can then plug this into the program. For now, we do not have any
 admission data so we set this equal to =NULL=. 
 
 #+BEGIN_SRC R  :results output raw drawer  :exports code  :session *R* :cache yes 
-x <- medicinMacro(drugs=list(user=user),drugdb=lmdb0,admdb=NULL)
+x <- medicinMacro(drugs=list(C10AA01=user),drugdb=lmdb0,admdb=NULL)
 #+END_SRC
 
-#+RESULTS[<2019-09-24 15:13:03> 73a78b9fa59b347532e9f43662183dd0fb94657f]:
-:RESULTS:
-:END:
+#+RESULTS[<2019-09-24 15:53:25> 40c5187148c66996c42a887cf4799b4c10f09718]:
+:results:
+:end:
 
-The results are
+The results are 
 
 #+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
-org(x$user[])  
+org(x[[1]])  
 #+END_SRC
 
-#+RESULTS[<2019-09-24 15:13:18> 869dd18f91b98eb50181cb1a02e521d941484efa]:
-:RESULTS:
+#+RESULTS[<2019-09-24 15:54:07> 11ee1a4cc98510a65a6d4bbb6885f809fec1357d]:
+:results:
 | pnr | dose |   firstday |    lastday | exposure.days |
 |-----+------+------------+------------+---------------|
 |   8 |   10 | 2005-01-25 | 2005-01-28 | 3 days        |
-:END:
+:end:
 
 ** Two purchases 
 

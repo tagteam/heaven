@@ -187,7 +187,7 @@ medicinMacro <- function(drugs,
             ## Revert pnr type change
             if(id.character)
                 out = merge(out,db,by.x="pnr",by.y="tmp.index",all.x=TRUE)[,pnr:=pnr.db][,pnr.db:=NULL][]
-            processed[[drugname]] <- out
+            processed[[drugname]] <- out[]
         }
     }
     processed
