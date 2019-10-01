@@ -1,87 +1,10 @@
----
-title: "UserHeaven"
-author: "Christian Torp-Pedersen & Thomas Gerds"
-date: "9/12/2019"
-output: html_document
----
 
-The heaven package is a set of functions and data designed to ease epidemiological and statistical work using large scale data.  The material is specifically designed for use with the research facilities at Statistics Denmark, but most functions should have general usefullness when the amount of data are massive.  The package further contains datasets for a variety of purposes.
 
-Details of various functions can be found on relevant help-pages.
 
-## createProject
-This creates a directory structure for a project. this function takes a path as argument and creates a directory structure for a project - including suggestions of headers for files.
 
-## contentSAS
-This function takes a path to a SAS dataset as argument and provides a listing of included variables.  The functions requires SAS to be installed.
 
-## importSAS
-This function is designed to read from a SAS dataset and output a R data.table. Presence of SAS is a requirement.  The function can be used in a simple manner to read an entire SAS dataset, but the real advantage of the function is the capability to have SAS extract relevant data in the background and only convert these data to R.  The function has a range of parameters, but understanding the following are important:
 
-- filename  The filename (with full path) of the SAS dataset to import. 
-- wd  Path to working directory.  To increase speed this should be a folder om X on Statistics Denmark
-- keep=  A R-style vector of character values naming variables (c(...)). Use lower case
-- drop=	Similar, variables to drop
-- where=	A string enclosing a SAS style logical condition for observations to keep
-- obs= A number indicating number of observations to keep - very useful for testing 
-- filter= Most useful is reference to a R-data.table with a single column having those id-s that are of interest.	
-- set.hook= A string with SAS syntax that could have been placed in the parenthesis after a SAS filename in a SET statement. Useful for selecting observations when SAS knowledge is at hand.	
-- date.vars=  A R style list of varibles to be interpreted as dates	
-Vector of variables to read as date variables.
-- character.vars= A R style list of variables that should be output as character	
-names of variables that should be converted to character. case does not matter. default is "pnr"
 
-## findCondition
-This function can from a data.table select records where a character variables partially match selected values. Typical use is to define diseases, operations of treatments based on international codes. The function finds multiple conditions in one step.  The most important inputs are:
 
-- data=  The data.table with disease codes or other relevant codes
-- conditions= a named list of character vectors defining conditions - see the predefined list "diseasecode" to see an example
-- vars=  A character vector of names of variables in which to search
-- keep=  A character vector of variables to keep in output
-- match= A character variables defining whether the elements of conditions should be contained or at the start or end of variables in "vars"
 
-findCondition produces a long form output and the examples show how this can be transposed to wide form for various purposes.
-
-## getAdmLimits
-This function is designed for admission type data where a dates corresponding to start and end are present. The function will for each individual examine consecutive admissions and when there is overlap the true initial date and true discharge date are added.
-
-## hypertensionMedication
-This function takes as input a prescription type data.table that includes ATC codes of medication and dates for prescriptions. The function has two options:
-
-- When the variable index.date is not NULL then it defines hypertension as present when at least two antihypertensive drugs have been claimed in a period of 180 days before the date.
-- When the variables index.date is NULL it findes the first date where two antihypertensive drugs have been claimed during two consecutive quaters (3 months)
-
-The ATC codes used for calculations is defined in the available list "hypertensionATC" - and the user can make a modified list if necessary.
-
-## importDREAM
-The DREAM register is a Danish register which holds receipt of public funding on week levels and profession at month levels for any Dane that has received public funding.  It is a valuable source of estimating working status of Danes.  The register is organised with a huge number of variables indicating weekly receips of funding and monthly professional status.  The importDREAM function takes the DREM register as input and outputs in a long form where the periods are provides as dates.  The function can output either funding or profession.
-
-## medicinMacro
-This function is named after a SAS macro that has been used for to extract treatment periods and doses from lists of prescriptions.  This function accepts as input prescription type data that includes ATC codes for medication, dates of prescriptions, number of packages provided, number of tablets in packages and stregnth of tablets.  The output is treatment periods and dose of drug during periods.
-
-The current form of the function is useful for outcome studies where conditioning on the future is not allowed. Thus calculations at any time only uses prescription information from the past.
-
-## xRecepter
-This is a function designed to compare with medicinMacro.  It calls the old SAS function for calculations.
-
-## Lexis functions
-Lexis functions are made to "split" observations to have new values of variables in time periods. The functions are necessary processing for time dependent analyses. For purely preactical reasons there are three functions:
-
-- lexisTwo  This function can split observations in up to two periods as dependent on time for various conditions. A typical use is dates of comorbidities.
-- lexisFromTo This function can split observations in multiple time periods as dependent on start/end of a sequence of periods. Typical use is a list of intervals where selected medications are used.
-- lexisSeq  This function can split observations in multiple periods based on vectors that define periods. Typical use is splitting based on calender periods or age
-
-## Matching
-There are two function available for matching
-
-- incidenceMatch  This function performs incidence density matching for nested case control studies. For each individual which is a case with a case date the function chooses a number of controls that have not yet reached a case status.
-- exposureMatch This function performs exposure density matching. For each case with a date of exposure a number of controls are selcted that do not yet have a status of exposure.
-
-## Datasets
-The package heaven includes several datasets
-
-- hypertensionATC A list of character vectors for ATC codes of antihypertensive medication
-- edu_code  A data.frame with Danish education codes and variables to define
- education (hfaudd) as well as a standrd devision in 5 levels and division accordint to ISCED (9 levels)
-- diseasecode A named list of character vectors defining selected diseases (ICD8/10), operations and medications (ATC)
 

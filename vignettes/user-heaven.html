@@ -3,12 +3,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-04-11 Thu 11:17 -->
+<!-- 2019-10-01 Tue 20:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>R-package heaven</title>
 <meta name="generator" content="Org mode" />
-<meta name="author" content="Thomas Alexander Gerds" />
+<meta name="author" content="Christian Tobias Torp-Pedersen &amp; Thomas Alexander Gerds" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -161,6 +161,19 @@
   .footdef  { margin-bottom: 1em; }
   .figure { padding: 1em; }
   .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
   .inlinetask {
     padding: 10px;
     border: 2px solid gray;
@@ -186,7 +199,7 @@
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2018 Free Software Foundation, Inc.
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -235,75 +248,460 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org82d04d7">1. About</a></li>
-<li><a href="#org76cde11">2. Ordnung muss sein</a></li>
-<li><a href="#orgaf44c1b">3. R user heaven</a>
+<li><a href="#org83e56c4">1. About</a></li>
+<li><a href="#orgc0b6ce4">2. Prelimnaries</a></li>
+<li><a href="#org64eda09">3. Philosophy</a>
 <ul>
-<li><a href="#org0e5da66">3.1. Raw data import</a></li>
-<li><a href="#orgc72ee60">3.2. More soon</a></li>
+<li><a href="#org4d13f15">3.1. What is real</a></li>
+<li><a href="#org3e40d7b">3.2. Ordnung muss sein</a></li>
+<li><a href="#org48ed060">3.3. TMP and TEMP folders are temporary</a></li>
+</ul>
+</li>
+<li><a href="#org63f087b">4. R-studio users</a></li>
+<li><a href="#org2347877">5. Introduction to heaven</a>
+<ul>
+<li><a href="#org33ac6a5">5.1. Raw data import</a></li>
+<li><a href="#org36faafa">5.2. Hypertension medication</a></li>
+<li><a href="#org22e03b2">5.3. DREAM register</a></li>
+<li><a href="#org834a910">5.4. Hospital admissions</a></li>
+<li><a href="#org01d69b4">5.5. Extracting conditions from opr and lpr registers</a></li>
+<li><a href="#org33f23df">5.6. medicinMacro</a></li>
+<li><a href="#org5d4fe34">5.7. Lexis functions</a></li>
+<li><a href="#orgc61c5df">5.8. Matching</a></li>
+</ul>
+</li>
+<li><a href="#org34be458">6. Build-in datasets</a>
+<ul>
+<li><a href="#orgf60e91a">6.1. ATC codes</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-
-<div id="outline-container-org82d04d7" class="outline-2">
-<h2 id="org82d04d7"><span class="section-number-2">1</span> About</h2>
+<div id="outline-container-org83e56c4" class="outline-2">
+<h2 id="org83e56c4"><span class="section-number-2">1</span> About</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 The R package <code>heaven</code> is the natural response to the legendary
-<code>code-from-hell.sas</code>. Heaven includes a series of function that are
+<code>code-from-hell.sas</code>. Heaven includes a series of functions that are
 useful when working with Danish registry data (on the Gentofte
-servers) on Denmark Statistics.
+servers) on Denmark Statistics. See intro below, details of the
+functionality can be found in the other help pages and vignettes.
 </p>
 
 <ul class="org-ul">
-<li>You should know some <code>data.table</code> because data on Denmark Statistics are large</li>
 <li>Thanks to Jesper Lindhardsen and Anders Munch for their work on <code>importSAS</code></li>
-<li>Complain to Thomas Alexander Gerds and Christian Tobias Torp-Pedersen</li>
+<li>In case of R-trouble complain to 
+<ul class="org-ul">
+<li>Christian Torp-Pedersen: <code>christian.tobias.torp-pedersen@regionh.dk</code></li>
+<li>Thomas Alexander Gerds: <code>tag@biostat.ku.dk</code></li>
+</ul></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org76cde11" class="outline-2">
-<h2 id="org76cde11"><span class="section-number-2">2</span> Ordnung muss sein</h2>
+<div id="outline-container-orgc0b6ce4" class="outline-2">
+<h2 id="orgc0b6ce4"><span class="section-number-2">2</span> Prelimnaries</h2>
 <div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li>You should know or learn <code>data.table</code> because data on Denmark
+Statistics are large.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org64eda09" class="outline-2">
+<h2 id="org64eda09"><span class="section-number-2">3</span> Philosophy</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org4d13f15" class="outline-3">
+<h3 id="org4d13f15"><span class="section-number-3">3.1</span> What is real</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Many R-beginners think the objects in the workspace, Enviroment, Data view, and
+in the Console are real. However, it is much better to define the
+R-code (R or Rmd) shown in the Source window and the corresponding
+files as real. 
+</p>
+
+<p>
+The idea is that the the raw data and R-code are sufficient to produce
+the objects in the Enviroment at any time. The advantage of this
+attitude towards the project work is that one reproduce and update
+results, if also the project is set up in a good way.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3e40d7b" class="outline-3">
+<h3 id="org3e40d7b"><span class="section-number-3">3.2</span> Ordnung muss sein</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Working directories corresponding to a phd or other purpose project
+are too often like a one-room appartment where the trash is next to
+the bed. There are few colleagues who are able to use a professional
+program for backing up files
+</p>
+
 <p>
 There is a function to help you set up a clean project:
 </p>
 
 <div class="org-src-container">
 <pre class="src src-R"><span style="color: #008b8b;">library</span>(heaven)
-createProject(<span style="color: #8b2252;">"v:/data/workdata/701234/BlaBlaBla/study"</span>)
+createProject(<span style="color: #8b2252;">"v:/data/workdata/701234/YourName/study-I"</span>)
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgaf44c1b" class="outline-2">
-<h2 id="orgaf44c1b"><span class="section-number-2">3</span> R user heaven</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-org48ed060" class="outline-3">
+<h3 id="org48ed060"><span class="section-number-3">3.3</span> TMP and TEMP folders are temporary</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+To save time when picking up project work at intermediate stages (from
+last time), it is very useful to save some intermediate results
+permanently. It is also useful to save other intermediate results only
+temporary: 
+</p>
+<ul class="org-ul">
+<li>the temporary files can be removed at any time</li>
+<li>the temporary files are easy to reproduce</li>
+<li>the temporary files are superseeded by permanent files</li>
+</ul>
+
+<p>
+It is very <b>good style</b> to remove all temporary files when they are
+not needed any more, e.g., after inspection.
+</p>
+
+<p>
+<b>It is a sin</b> to save a mixture of temporary files and useful files in a
+folder called <code>tmp</code>. It is also a sin to save backup very large or
+very many intermediate results. 
+</p>
 </div>
-<div id="outline-container-org0e5da66" class="outline-3">
-<h3 id="org0e5da66"><span class="section-number-3">3.1</span> Raw data import</h3>
-<div class="outline-text-3" id="text-3-1">
+</div>
+</div>
+
+<div id="outline-container-org63f087b" class="outline-2">
+<h2 id="org63f087b"><span class="section-number-2">4</span> R-studio users</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>Go to Global options under Tools and tell R to never restore <code>.RData</code>
+at startup and to never save workspace data to <code>.RData</code> on exit.</li>
+<li>Learn about projects in R studio and set up an R-studio project for
+each project. This will make your work much more efficient and less
+prone to errors.</li>
+<li>Learn about the version control (via git) offered by R-studio. This
+provides a much better way to keep the project clean still to be
+able to go back to older versions of your files. Much better than 
+calling the backup versions of your file <code>analysis-v1.R</code> &#x2026; <code>analysis-v17.R</code>
+where one of them is the current version.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2347877" class="outline-2">
+<h2 id="org2347877"><span class="section-number-2">5</span> Introduction to heaven</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org33ac6a5" class="outline-3">
+<h3 id="org33ac6a5"><span class="section-number-3">5.1</span> Raw data import</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+Check the raw in this project:
+</p>
+
 <div class="org-src-container">
-<pre class="src src-R">listRawdata()
+<pre class="src src-R"><span style="color: #008b8b;">setwd</span>(<span style="color: #8b2252;">"x:/data/rawdata_hurtig/701234/"</span>)
+listRawdata()
 scanRawdata()
-dc <span style="color: #008b8b;">&lt;-</span> contentSAS(<span style="color: #8b2252;">"x:/data/rawdata_hurtig/701234/diag"</span>)
-d10 <span style="color: #008b8b;">&lt;-</span> importSAS(<span style="color: #8b2252;">"x:/data/rawdata_hurtig/701234/diag"</span>,obs=10)
 </pre>
+</div>
+
+
+<p>
+Read a specific SAS data file:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #b22222;"># </span><span style="color: #b22222;">check the contents of a sas data file </span>
+c <span style="color: #008b8b;">&lt;-</span> contentSAS(<span style="color: #8b2252;">"x:/data/rawdata_hurtig/701234/diag.sas7bdat"</span>)
+<span style="color: #b22222;"># </span><span style="color: #b22222;">read the first 10 rows of the sas data file</span>
+d <span style="color: #008b8b;">&lt;-</span> importSAS(<span style="color: #8b2252;">"x:/data/rawdata_hurtig/701234/diag.sas7bdat"</span>,obs=10)
+help(importSAS)
+</pre>
+</div>
+
+<p>
+The function <code>importSAS</code> is designed to read from a SAS dataset and
+output a R data.table.  Presence of SAS is a requirement.  The
+function can be used in a simple manner to read an entire SAS dataset,
+but the real advantage of the function is the capability to have SAS
+extract relevant data in the background and only convert these data to
+R.  The function has a range of parameters, but understanding the
+following are important:
+</p>
+</div>
+</div>
+
+<div id="outline-container-org36faafa" class="outline-3">
+<h3 id="org36faafa"><span class="section-number-3">5.2</span> Hypertension medication</h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-R">help(hypertensionMedication)
+</pre>
+</div>
+
+<p>
+This function takes as input a prescription type data.table that
+includes ATC codes of medication and dates for prescriptions. The
+function has two options:
+</p>
+
+<ul class="org-ul">
+<li>When the variable index.date is not NULL then it defines
+hypertension as present when at least two antihypertensive drugs
+have been claimed in a period of 180 days before the date.</li>
+<li>When the variables index.date is NULL it findes the first date where
+two antihypertensive drugs have been claimed during two consecutive
+quaters (3 months)</li>
+</ul>
+
+<p>
+By default the ATC codes used for the calculations are defined in the
+list "hypertensionATC" (see below) however the user can make a
+modified list if necessary.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org22e03b2" class="outline-3">
+<h3 id="org22e03b2"><span class="section-number-3">5.3</span> DREAM register</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+The DREAM register is a Danish register which holds receipt of public
+funding on week levels and profession at month levels for any Dane
+that has received public funding.  It is a valuable source of
+estimating working status of Danes.  The register is organised with a
+huge number of variables indicating weekly receips of funding and
+monthly professional status. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(importDREAM)
+</pre>
+</div>
+
+<p>
+The function takes the DREAM
+register as input and outputs in a long form where the periods are
+provides as dates. The function can output either funding or
+profession.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org834a910" class="outline-3">
+<h3 id="org834a910"><span class="section-number-3">5.4</span> Hospital admissions</h3>
+<div class="outline-text-3" id="text-5-4">
+<div class="org-src-container">
+<pre class="src src-R">help(getAdmLimits)
+</pre>
+</div>
+
+<p>
+This function is designed for admission type data where a dates
+corresponding to start and end are present. The function will for each
+individual examine consecutive admissions and when there is overlap
+the true initial date and true discharge date are added.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org01d69b4" class="outline-3">
+<h3 id="org01d69b4"><span class="section-number-3">5.5</span> Extracting conditions from opr and lpr registers</h3>
+<div class="outline-text-3" id="text-5-5">
+<div class="org-src-container">
+<pre class="src src-R">help(findCondition)
+</pre>
+</div>
+
+<p>
+This function can from a data.table select records where a character
+variables partially match selected values. Typical use is to define
+diseases, operations of treatments based on international codes. The
+function finds multiple conditions in one step.
+</p>
+
+<p>
+<code>findCondition</code> produces a long form output and the examples show how
+this can be transposed to wide form for various purposes.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org33f23df" class="outline-3">
+<h3 id="org33f23df"><span class="section-number-3">5.6</span> medicinMacro</h3>
+<div class="outline-text-3" id="text-5-6">
+<div class="org-src-container">
+<pre class="src src-R">help(medicinMacro)
+</pre>
+</div>
+
+<p>
+This function is named after a SAS macro that has been used for to
+extract treatment periods and doses from lists of prescriptions.  This
+function accepts as input prescription type data that includes ATC
+codes for medication, dates of prescriptions, number of packages
+provided, number of tablets in packages and stregnth of tablets.  The
+output is treatment periods and dose of drug during periods.
+</p>
+
+<p>
+The current form of the function is useful for outcome studies where
+conditioning on the future is not allowed. Thus calculations at any
+time only uses prescription information from the past.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(xRecepter)
+</pre>
+</div>
+
+<p>
+This is a function designed to compare with medicinMacro. It calls the
+old SAS function for calculations.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org5d4fe34" class="outline-3">
+<h3 id="org5d4fe34"><span class="section-number-3">5.7</span> Lexis functions</h3>
+<div class="outline-text-3" id="text-5-7">
+<p>
+Lexis functions are made to "split" observations to have new values of
+variables in time periods. The functions are necessary processing for
+time dependent analyses. For purely preactical reasons there are three
+functions:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(lexisTwo)
+</pre>
+</div>
+
+<p>
+This function can split observations in up to two periods as dependent
+on time for various conditions. A typical use is dates of
+comorbidities.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(lexisFromTo)
+</pre>
+</div>
+
+<p>
+This function can split observations in multiple time periods as
+dependent on start/end of a sequence of periods. Typical use is a list
+of intervals where selected medications are used.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(lexisSeq)
+</pre>
+</div>
+<p>
+This function can split observations in multiple periods based on
+vectors that define periods. Typical use is splitting based on
+calender periods or age
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgc61c5df" class="outline-3">
+<h3 id="orgc61c5df"><span class="section-number-3">5.8</span> Matching</h3>
+<div class="outline-text-3" id="text-5-8">
+<p>
+There are two function available for matching
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(incidenceMatch) 
+</pre>
+</div>
+
+<p>
+This function performs incidence density matching for nested case
+control studies in the context of a Cox regression model. A case is an
+individual who has the event and a corresponding date, the case
+date. For each case the function chooses a user defined number of
+subjects from the at-risk set, i.e., from the subjects that are alive
+and event free at the case date. Matching on a variable corresponds to
+stratifying the baseline hazard function of the Cox regression model.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">help(exposureMatch)
+</pre>
+</div>
+
+<p>
+This function performs exposure density matching. For each case with a
+date of exposure a number of controls are selected that are alive and
+event-free and not yet exposed.
+</p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgc72ee60" class="outline-3">
-<h3 id="orgc72ee60"><span class="section-number-3">3.2</span> More soon</h3>
+<div id="outline-container-org34be458" class="outline-2">
+<h2 id="org34be458"><span class="section-number-2">6</span> Build-in datasets</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orgf60e91a" class="outline-3">
+<h3 id="orgf60e91a"><span class="section-number-3">6.1</span> ATC codes</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+A named list of character vectors defining selected diseases
+(ICD8/10), operations and medications (ATC)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">data(diseasecode)
+</pre>
+</div>
+
+<p>
+A list of character vectors for ATC codes of antihypertensive
+medication:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">data(hypertensionATC) 
+</pre>
+</div>
+
+<p>
+A data.frame with Danish education codes and variables to define
+education (hfaudd) as well as a standrd devision in 5 levels and
+division accordint to ISCED (9 levels)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">edu_code  
+</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-Last update: 11 Apr 2019 by Thomas Alexander Gerds.
+Last update: 01 Oct 2019 by Thomas Alexander Gerds.
 </div>
 </body>
 </html>
