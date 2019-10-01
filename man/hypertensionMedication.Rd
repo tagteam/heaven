@@ -6,7 +6,7 @@
 prescriptions}
 \usage{
 hypertensionMedication(data, vars=c("ptid","ATCcode",
- "prescription.date"), index.date=NULL,medication.definition=NULL)
+ "prescription.date"), index.date=NULL,medication.definition=hypertensionATC)
 }
 \arguments{
 \item{data}{- A data frame/table containing prescription data}

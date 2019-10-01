@@ -1,16 +1,21 @@
 #+TITLE: R-package heaven
 #+superman-export-target: html
 
-* About
+* About 
 
 The R package =heaven= is the natural response to the legendary
-=code-from-hell.sas=. Heaven includes a series of function that are
+=code-from-hell.sas=. Heaven includes a series of functions that are
 useful when working with Danish registry data (on the Gentofte
 servers) on Denmark Statistics.
 
-- You should know some =data.table= because data on Denmark Statistics are large
 - Thanks to Jesper Lindhardsen and Anders Munch for their work on =importSAS= 
 - Complain to Thomas Alexander Gerds and Christian Tobias Torp-Pedersen
+
+* Prelimnaries
+
+- You should know or learn =data.table= because data on Denmark
+  Statistics are large.
+
 
 * Ordnung muss sein
 
@@ -19,7 +24,7 @@ There is a function to help you set up a clean project:
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R :exports code :results output raw  :session *R* :cache yes 
 library(heaven)
-createProject("v:/data/workdata/701234/BlaBlaBla/study")
+createProject("v:/data/workdata/701234/YourName/study-I")
 #+END_SRC
   
 * R user heaven
