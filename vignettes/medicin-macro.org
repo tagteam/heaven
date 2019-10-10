@@ -31,8 +31,13 @@
   ## install()
 #+END_SRC
 
-#+RESULTS[<2019-09-10 16:19:42> 5fc6f3042685a0d88b9f053e04ac790afeeb22e9]:
+#+RESULTS[<2019-10-08 07:45:38> 74bb44464814c05c45eff167c1f2f6e733068c88]:
 :results:
+
+LOL: This is heaven! Version 2019.9.3
+A good place to get started is vignette('user-heaven').
+data.table 1.12.2 using 2 threads (see ?getDTthreads).  Latest news: r-datatable.com
+Loading required package: prodlim
 :end:
 
 
