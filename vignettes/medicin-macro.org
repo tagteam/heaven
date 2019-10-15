@@ -40,7 +40,6 @@ data.table 1.12.2 using 2 threads (see ?getDTthreads).  Latest news: r-datatable
 Loading required package: prodlim
 :end:
 
-
 * Introduction
 Something something...
 
