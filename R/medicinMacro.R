@@ -93,7 +93,7 @@
 ##'                       min = c(100, 200, 250,750),
 ##'                       max = c(300, 800, 1000,750),
 ##'                       def = c(200, 400, 500,750)))
-##' x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
+##' x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr[pattype==0])
 ##' x$drug1
 ##'
 ##' ## Examples with other types

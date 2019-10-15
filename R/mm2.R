@@ -1,17 +1,17 @@
-##' Part of the \code{medicinMacro}
-##' 
-##' @title Calculates exposure periods in a given time span
-##' @param drugs 
-##' @param drugdb 
-##' @param admdb 
-##' @param periods 
-##' @param method 
-##' @param stash 
-##' @param cap.values 
-##' @param pre.window 
-##' @param print.time 
-##' @return 
-##' @author Anders Munch
+## Part of the \code{medicinMacro}
+## 
+## @title Calculates exposure periods in a given time span
+## @param drugs 
+## @param drugdb 
+## @param admdb 
+## @param periods 
+## @param method 
+## @param stash 
+## @param cap.values 
+## @param pre.window 
+## @param print.time 
+## @return 
+## @author Anders Munch
 mm2 <- function(drugs,
                 drugdb,
                 admdb,

@@ -1,16 +1,16 @@
-##' Part of the \code{medicinMacro}
-##'
-##' @title Calculates whether patients are exposed or not at a given time
-##' @param drugs 
-##' @param drugdb 
-##' @param admdb 
-##' @param time.points 
-##' @param window 
-##' @param method 
-##' @param stash 
-##' @param cap.values 
-##' @return 
-##' @author Anders Munch
+## Part of the \code{medicinMacro}
+##
+## @title Calculates whether patients are exposed or not at a given time
+## @param drugs 
+## @param drugdb 
+## @param admdb 
+## @param time.points 
+## @param window 
+## @param method 
+## @param stash 
+## @param cap.values 
+## @return 
+## @author Anders Munch
 mm1 <- function(drugs,
                 drugdb,
                 admdb,
