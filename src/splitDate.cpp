@@ -47,7 +47,7 @@ List splitDate(NumericVector inn, // Starttimes - base data
           break;
         } 
         else
-          if(inn(i)<seq_plus[ii] && out(i)>seq_plus[ii]){ //split situation - duration at least 1 day
+          if(inn(i)<=seq_plus[ii] && out(i)>seq_plus[ii]){ //split situation - duration at least 1 day
             Omergevar.push_back(mergevar(i));
             Oinn.push_back(inn(i));
             Ovalue.push_back(seq_num-1); //value prior to seq
