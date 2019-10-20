@@ -5,6 +5,10 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, contro
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin)
 }
 
+countDrugs <- function(mix, db) {
+    .Call('_heaven_countDrugs', PACKAGE = 'heaven', mix, db)
+}
+
 daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
     .Call('_heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
 }

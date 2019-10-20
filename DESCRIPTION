@@ -1,7 +1,7 @@
 Package: heaven
 Type: Package
 Title: Data Preparation Routines for Medical Registry Data
-Version: 2019.10.01
+Version: 2019.10.08
 Author: Helene Charlotte Rytgaard, Anders Munch, Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter Enemark Lund, Thomas Alexander Gerds
 Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
 Description: Fast and furious implementations of often used data preparation steps.
@@ -62,6 +62,8 @@ Collate:
     'listRawdata.R'
     'matchReport.R'
     'medicinMacro.R'
+    'mm1.R'
+    'mm2.R'
     'nccSampling.R'
     'onLoad.R'
     'patientProfiles.R'

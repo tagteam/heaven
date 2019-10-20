@@ -4,8 +4,9 @@
 \alias{medicinMacro}
 \title{Medicin macro to estimate prescription lengths and averages}
 \usage{
-medicinMacro(drugs, drugdb, admdb, drugdb.datevar = "eksd",
-  admdb.datevars = c("inddto", "uddto"), id = "pnr",
+medicinMacro(drugs, drugdb, admdb, datesdb, type = "dynamic",
+  drugdb.datevar = "eksd", admdb.datevars = c("inddto", "uddto"),
+  datesdb.datevars, method, cap.values, window, pre.window, id = "pnr",
   strength.var = "strnum", packsize.var = "packsize",
   apk.var = "apk", splitting = FALSE, verbose = FALSE)
 }
@@ -40,9 +41,39 @@ if the value is 50 mg and usually a patient would consume 2 pills the default is
 
 \item{admdb}{data.table with (subset of) hospital admission registry}
 
+\item{datesdb}{data.table with individual periods or time points of interest.
+Only used when the \code{type} argument is different from \code{"dynamic"}.
+Should contain one start and end date for each individual when \code{type} equal to \code{"period"} 
+and just one date for each individual when \code{type} equal to \code{"cross-sectional"} 
+(see examples).}
+
+\item{type}{string, specifying which analysis to perform.
+Can be \code{"dynamic"}, \code{"period"}, or \code{"cross-sectional"}. Default is \code{"dynamic"}.
+(see examples).}
+
 \item{drugdb.datevar}{name of the date variable in \code{drugdb}. Default is \code{"eksd"}.}
 
 \item{admdb.datevars}{names of the date variables in \code{admdb}. Default is \code{c("inddto","uddto")}.}
+
+\item{datesdb.datevars}{name(s) of the date variables in \code{datesdb}. 
+Should be a single string when \code{type}=\code{"cross-sectional"} and a vector of two string when
+\code{type}=\code{"period"}. Default is \code{"time"} in the first case and \code{c("start", "end")} in the second.}
+
+\item{method}{Which method to use to estimate the daily dose. Can be \code{"default.doses"} or
+\code{"number.of.days"}. Default is \code{"default.doses"}.
+See documentation for more details.
+Only used when the \code{type} is different from \code{"dynamic"}.}
+
+\item{cap.values}{Boolean, specifying whether or not to restrict the estimated daily dose to lie
+within the specified minimum and maximum dose. Default is \code{TRUE}
+Only used when the \code{type} is different from \code{"dynamic"}.}
+
+\item{window}{Only used when the \code{type} = \code{"cross-sectional"}.
+Specify how many days back from the given time point we should go to find purchases to estimate the daily dose.}
+
+\item{pre.window}{Only used when the \code{type} = \code{"period"}.
+Specify how many days back from the individual end periods we should go to find purchases to estimate the
+daily dose for the first part of the periods.}
 
 \item{id}{Name of variable to identify individuals. Default is
 \code{"pnr"}.}
@@ -58,6 +89,8 @@ packages. Default is \code{"packsize"}.}
 
 \item{splitting}{Split the data into 10 chunks to estimate
 remaining time (and possibly speed up computation).}
+
+\item{verbose}{}
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.
@@ -87,8 +120,53 @@ drug2=list(atc=c("C01CA01","C01AA05"),
                       min = c(100, 200, 250,750),
                       max = c(300, 800, 1000,750),
                       def = c(200, 400, 500,750)))
-x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
+x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr[pattype==0])
 x$drug1
+
+## Examples with other types
+## NB: Calculations with maxdepot>0 is not implemented yet for type different from "dynamic".
+## Not specifying maxdepot is the same at setting maxdepot=0.
+library(data.table)
+drug1 = list(atc=c("R03AK11","R03AL03","R03AC02","R03AC04","R03AC19",
+                    "R03AL02","R03AA01","R03AC18","R03AL01"),
+             doses=list(value=c(750,500,400,200,75),
+                        min = c(250,200,200,100,25),
+                        max = c(1000,600,800,600,100),
+                        def = c(750,500,400,200,75)))
+drug2=list(atc=c("C01CA01","C01AA05"),
+           doses=list(value=c(200, 400, 500,750),
+                      min = c(100, 200, 250,750),
+                      max = c(300, 800, 1000,750),
+                      def = c(200, 400, 500,750)))
+## Note that we define the periods separately, as they are now individual:
+ind.periods <- data.table(pnr=1:N,
+                          start=rep(as.Date("1996-01-01"), N)+floor(rnorm(N,sd=100)),
+                          end=rep(as.Date("1998-05-30"), N)+floor(rnorm(N,sd=100)))
+z=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr,
+               type="period",datesdb=ind.periods)
+z$drug1
+## Using different method:
+z=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr,
+               type="period",datesdb=ind.periods, method="number.of.days")
+z$drug1
+
+## Using type = "cross-sectional" to check if individuals are exposed at a given time
+## Note that we now only give one timepoint but then also need to supply the window argument
+ind.periods2 <- copy(ind.periods)
+ind.periods2[,time:=start][,c("start","end"):=NULL]
+y=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr,
+               type="cross-sectional",datesdb=ind.periods2, window=365.25)
+y$drug1
+## Changing the window size of course affects our estimates:
+y=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr,
+               type="cross-sectional",datesdb=ind.periods2, window=10)
+y$drug1
+## Above, we renamed the date variables before plugging it in, but we could also have used the
+## datesdb.datevars argument:
+y=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr,
+               type="cross-sectional",datesdb=ind.periods, window=365.25,
+               datesdb.datevars="start")
+y$drug1
 }
 \author{
 Helene Charlotte Rytgaard, Anders Munch and Thomas Alexander Gerds based
