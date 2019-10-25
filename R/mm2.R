@@ -10,7 +10,7 @@
 ##' @param cap.values 
 ##' @param pre.window 
 ##' @param print.time 
-##' @return 
+##' @return data.table
 ##' @author Anders Munch
 mm2 <- function(drugs,
                 drugdb,

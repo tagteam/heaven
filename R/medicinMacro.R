@@ -48,13 +48,8 @@
 ##' @param cap.values Boolean, specifying whether or not to restrict the estimated daily dose to lie
 ##' within the specified minimum and maximum dose. Default is \code{TRUE}
 ##' Only used when the \code{type} is different from \code{"dynamic"}.
-##' @param window
-##' Only used when the \code{type} = \code{"cross-sectional"}.
-##' Specify how many days back from the given time point we should go to find purchases to estimate the daily dose.
-##' @param pre.window
-##' Only used when the \code{type} = \code{"period"}.
-##' Specify how many days back from the individual end periods we should go to find purchases to estimate the
-##' daily dose for the first part of the periods. 
+##' @param window 
+##' @param pre.window 
 ##' @param id Name of variable to identify individuals. Default is
 ##'     \code{"pnr"}.
 ##' @param strength.var Name of variable to identify strength. Default
@@ -63,9 +58,19 @@
 ##'     packages. Default is \code{"packsize"}.
 ##' @param apk.var Name of variable to identify number of
 ##'     packages. Default is \code{"packsize"}.
+##' @param atc.var Name of variable to atc. Default is \code{"atc"}.
+##' @param recnum.var Name of variable to recnum in admdb. Default is \code{"recnum"}.
+##' @param indexdate.var Name of variable to indexdate. Default is \code{"indexdate"}.
+##' @param diag.var Name of variable to diag. Default is \code{"diag"}.
+##' @param pattype.var Name of variable to pattyp. Default is \code{"pattype"}.
 ##' @param splitting Split the data into 10 chunks to estimate
 ##'     remaining time (and possibly speed up computation).
 ##' @param verbose 
+##' @param window Only used when the \code{type} = \code{"cross-sectional"}.
+##' Specify how many days back from the given time point we should go to find purchases to estimate the daily dose.
+##' @param pre.window Only used when the \code{type} = \code{"period"}.
+##' Specify how many days back from the individual end periods we should go to find purchases to estimate the
+##' daily dose for the first part of the periods. 
 ##' @author Helene Charlotte Rytgaard, Anders Munch and Thomas Alexander Gerds based
 ##'     on the famous SAS macro by Christian Tobias Torp-Pedersen
 ##' @examples
@@ -157,12 +162,23 @@ medicinMacro <- function(drugs,
                          strength.var = "strnum",
                          packsize.var="packsize",
                          apk.var="apk",
+                         atc.var="atc",
+                         recnum.var="recnum",
+                         indexdate.var="indexdate",
+                         diag.var="diag",
+                         pattype.var="pattype",
                          splitting = FALSE,verbose=FALSE){
     atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
     ## Check type argument:
     if(!(type %in% c("dynamic", "period", "cross-sectional")))
         stop("Choose either type = \"dynamic\", \"period\" or \"cross-sectional\".")
     ## Check datesdb is present and correctly setup for type other than "dynamic":
+    ## Check if names need for all analysis are present drugdb:
+    var.names.drugdb <- c(drugdb.datevar,id,strength.var,packsize.var,apk.var,atc.var)
+    for(v in var.names.drugdb){
+        if(!(v %in% names(drugdb)))
+            stop(paste0("The variable \"", v, "\" was not found in the drugdb dataset."))
+    }
     if(type!="dynamic"){
         if(missing(datesdb))
             stop(paste("datesdb needs to be provided when using type =", type))
@@ -211,13 +227,24 @@ medicinMacro <- function(drugs,
     if (missing(drugs) || is.null(drugs)) stop("Sorry, no drugs have been specified.")
     if (missing(drugdb) || is.null(drugdb)) stop("No drug purchase data provided")
     if (NROW(admdb)>0){
-        if (any(dups <- duplicated(admdb[,c(id,admdb.datevars),with=FALSE]))){
+        admdb.work <-  copy(admdb)
+        var.names.admdb <- list("pnr"=id,"recnum"=recnum.var,"indexdate"=indexdate.var,
+                                "diag"=diag.var,"pattype"=pattype.var,
+                                "inddto"=admdb.datevars[1],
+                                "uddto"=admdb.datevars[2])
+        for(v in 1:length(var.names.admdb)){
+            if(!(var.names.admdb[[v]] %in% names(admdb.work)))
+                stop(paste0("The variable \"", var.names.admdb[[v]], "\" was not found in the admdb dataset."))
+            else
+                setnames(admdb.work, var.names.admdb[[v]] , names(var.names.admdb[v]))
+        }
+        if (any(dups <- duplicated(admdb.work[,c(id,admdb.datevars),with=FALSE]))){
             stop(paste0("Admission data argument 'admdb' has not been prepared correctly:\nThere are duplicated (and/or overlapping) admission periods in at least one person."))
         }
-        if ((length(ptype <- grep("pattype",names(admdb),ignore.case=TRUE,value=TRUE)[[1]])>0) && any(admdb[[ptype]]!=0)){
+        if ((length(ptype <- grep("pattype",names(admdb.work),ignore.case=TRUE,value=TRUE)[[1]])>0) && any(admdb.work[[ptype]]!=0)){
             warning("Admission data argument 'admdb' contains admissions that are not overnight hospital admissions, i.e., pattype!=0.")
         }
-        admdb.work <-  copy(admdb)
+
         if (any(admdb.datevars!=c("inddto","uddto"))) {
             setnames(admdb.work,admdb.datevars[1],"inddto")
             setnames(admdb.work,admdb.datevars[2],"uddto")
@@ -231,6 +258,7 @@ medicinMacro <- function(drugs,
         if (packsize.var!="packsize") setnames(drugdb.work,packsize.var,"packsize")
         if (apk.var!="apk") setnames(drugdb.work,apk.var,"apk")
         if (drugdb.datevar!="eksd") setnames(drugdb.work,drugdb.datevar,"eksd")
+        if (atc.var!="atc") setnames(drugdb.work,atc.var,"atc")
         j            <- (1:length(drugs))[names(drugs) == drugname]
         atcs         <- unlist(drugs[[j]]$atc)
         doses        <- drugs[[j]]$doses
@@ -249,8 +277,11 @@ medicinMacro <- function(drugs,
         ## Check if there is sufficient drug info for the data:
         dosesmissing <- !(unique(drugdb.work[[strength.var]]) %in% doses$value)
         if (any(dosesmissing)) {
-            stop(paste0(paste0("Missing doses (min,max,def) for ",drugname,": ",
-                               paste(unique(drugdb.work[[strength.var]])[dosesmissing],collapse=", ")),"\n"))
+            warning(paste0(paste0("Missing doses (min,max,def) for ",drugname,": ",
+                                  paste(unique(drugdb.work[[strength.var]])[dosesmissing],collapse=", ")),"\n",
+                           "No output returned for this drug.\n"))
+            processed[[drugname]] <- NULL
+            next 
         }
         switch(type,
                "cross-sectional"={

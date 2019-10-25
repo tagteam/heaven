@@ -27,6 +27,9 @@ mm2(drugs, drugdb, admdb, periods, method = "default.doses", stash = 0,
 
 \item{print.time}{}
 }
+\value{
+data.table
+}
 \description{
 Part of the \code{medicinMacro}
 }

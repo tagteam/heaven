@@ -8,7 +8,9 @@ medicinMacro(drugs, drugdb, admdb, datesdb, type = "dynamic",
   drugdb.datevar = "eksd", admdb.datevars = c("inddto", "uddto"),
   datesdb.datevars, method, cap.values, window, pre.window, id = "pnr",
   strength.var = "strnum", packsize.var = "packsize",
-  apk.var = "apk", splitting = FALSE, verbose = FALSE)
+  apk.var = "apk", atc.var = "atc", recnum.var = "recnum",
+  indexdate.var = "indexdate", diag.var = "diag",
+  pattype.var = "pattype", splitting = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{drugs}{A named list of drugs. Each element of this list should be a list
@@ -68,12 +70,9 @@ Only used when the \code{type} is different from \code{"dynamic"}.}
 within the specified minimum and maximum dose. Default is \code{TRUE}
 Only used when the \code{type} is different from \code{"dynamic"}.}
 
-\item{window}{Only used when the \code{type} = \code{"cross-sectional"}.
-Specify how many days back from the given time point we should go to find purchases to estimate the daily dose.}
+\item{window}{}
 
-\item{pre.window}{Only used when the \code{type} = \code{"period"}.
-Specify how many days back from the individual end periods we should go to find purchases to estimate the
-daily dose for the first part of the periods.}
+\item{pre.window}{}
 
 \item{id}{Name of variable to identify individuals. Default is
 \code{"pnr"}.}
@@ -87,10 +86,27 @@ packages. Default is \code{"packsize"}.}
 \item{apk.var}{Name of variable to identify number of
 packages. Default is \code{"packsize"}.}
 
+\item{atc.var}{Name of variable to atc. Default is \code{"atc"}.}
+
+\item{recnum.var}{Name of variable to recnum in admdb. Default is \code{"recnum"}.}
+
+\item{indexdate.var}{Name of variable to indexdate. Default is \code{"indexdate"}.}
+
+\item{diag.var}{Name of variable to diag. Default is \code{"diag"}.}
+
+\item{pattype.var}{Name of variable to pattyp. Default is \code{"pattype"}.}
+
 \item{splitting}{Split the data into 10 chunks to estimate
 remaining time (and possibly speed up computation).}
 
 \item{verbose}{}
+
+\item{window}{Only used when the \code{type} = \code{"cross-sectional"}.
+Specify how many days back from the given time point we should go to find purchases to estimate the daily dose.}
+
+\item{pre.window}{Only used when the \code{type} = \code{"period"}.
+Specify how many days back from the individual end periods we should go to find purchases to estimate the
+daily dose for the first part of the periods.}
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.

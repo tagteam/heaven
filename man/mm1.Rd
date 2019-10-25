@@ -24,6 +24,9 @@ mm1(drugs, drugdb, admdb, time.points, window, method = "default.doses",
 
 \item{cap.values}{}
 }
+\value{
+data.table
+}
 \description{
 Part of the \code{medicinMacro}
 }

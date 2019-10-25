@@ -9,7 +9,7 @@
 ##' @param method 
 ##' @param stash 
 ##' @param cap.values 
-##' @return 
+##' @return data.table
 ##' @author Anders Munch
 mm1 <- function(drugs,
                 drugdb,
