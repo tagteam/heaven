@@ -1,21 +1,22 @@
 #include <Rcpp.h>
 #include <string>
 #include <vector>
-#include <regexp>
 using namespace Rcpp;
 // [[Rcpp::export]]
-List matrixSearch(IntegerVector pnrnum,       // Vector of row numbers for searchCols
-                  CharacterMatrix searchCols, // Matrix with pnrnum and colums to search
-                  CharacterMatrix conditions, // Matrix of inclusion conditions
-                  CharacterMatrix exclusions, // Matrix of exclusion conditions
-                  CharacterVector condnames,  // Names of conditions
-                  CharacterVector exclnames,  // Names of exclusions
-                  int clength,                // Max number of inclusions
-                  int elength,                // Max number of exclusions
-                  int datarows                // Number of rows in searchCols
+List vectorSearch(std::vector<int> pnrnum,             // Vector of row numbers for searchCols
+                  std::vector<std::string> searchCols, // Matrix with pnrnum and colums to search
+                  std::vector<std::string> conditions, // Vector of inclusion conditions
+                  std::vector<std::string> exclusions, // Vector of exclusion conditions
+                  std::vector<std::string> condnames,  // Names of conditions - same length as conditions
+                  std::vector<std::string> exclnames,  // Names of exclusions - same length as exclusions
+                  int ni,                              // Number of inclusion criteria          
+                  int ilength,                         // Number of inclusions in each block
+                  int ne,                              // Number of exclusion criteria
+                  int elength,                         // Number of exclusions in each block
+                  int datarows,                        // Number of rows in searchCols
+                  int match                            // 0=start 1=exact 2=end
 ){ 
-  // This function searches through searchCols for the regular
-  // expressions in conditions and exclusions. 
+  // This function searches through searchCols for the the presence of conditions and exclusions
   // Output is produced when there a positive inclusion and no exclusion.
   // The output is a List with 2 columns:
   // - pnrnum - id of original record as integer
@@ -27,55 +28,63 @@ List matrixSearch(IntegerVector pnrnum,       // Vector of row numbers for searc
   std::vector<std::string> Ocondition;  
   Ocondition.reserve(datarows);
   // Define variables
-  int jj=0; // loops through regex inclusion expressions
-  int kk=0; // Loops through regex exclusion expressions
+  int innum=0; // Notes place in inclusion criteria
+  int exnum=0; // Notes place in exclusion criteria
   int include=0; // Inclusions flag
   int exclude=0; // Exclusion flag
-  int Onum=0; // Tracks rows created in output
   int stopsearch=0; // Flag to finish search of a single value in searchCols
-  int condnames_length=condnames.length(); // Number of inclusion conditions
-  int exclnames_length=exclnames.length(); // Number of esclusion conditions
-  int breakeexclusion=0; // Breaks going through exclusions
+  // int condnames_length=condnames.size(); // Number of inclusion conditions
+  // int exclnames_length=exclnames.size(); // Number of esclusion conditions
   
-  for(int i=0; i<datarows; i++){ // Loop through searchCols
-    for(int ii=0; ii<clength; ii++){ // Loop through columns in which to search
-      include=0; // No inclusion found - yet
-      exclude=0; // No exclusion found - yet
-      if (searchCols(i,ii)=="" || (Onum>0 &&  Opnrnum(Onum)==pnrnum(i) && Ocondition(Onum)==searchCols(i,ii))) continue; // Missing or already found
-      for(int j=0; j<condnames_length; j++){ // Loop through inclusion list
-        jj=0;
-        while (jj<clength && conditions(j,jj) != ""){
-          if (regex_match(searchCols(i,ii),conditions(j,jj))){ // Match found
-            include=1;
-            for(int k=0,k<exclnames_length; k++){ // Loope through exclusion list
-              if(condnames(j)==exclnames(k)){ // Found an exclusion list
-                kk=0;
-                stopsearch=1; // One found no reason to scan rest of list
-                while(kk<elength && exclusions(k,kk) != ""){
-                  if (regex_match(searchCols(i,ii),exclusions(k,kk))){ // Exclusion found
-                    exclude=1;
-                    stopsearch=1;
-                  } // Single exclusion look up
-                  if(exclude==1 ) break;
-                  kk+=1;
-                } // list of exclusions loop
-              } // Found an exclusion inclusion match
-              if (stopsearch==1 || exclude==1) break;
-            } // Loope through exclusions list
-          } // Found an inclusion match
-          if(include==1 || exclude==1) break;
-          jj+=1;
-        } // Loop through one inclusion list
-       } // Loop through list of inclusions
-      if (include==1 && exclude==0){
-        Onum+=1;
-        Opnrnum.pushback(searchCols(i,0));
-        Ocondition.pushback(inclusions(i,ii));
-      }  
-    } // End list of columns to look in
+  for(int i=0; i<datarows; i++){ // Outer loop through searchCols
+    if(searchCols[i].length()==0) continue; // Empty string to compare to
+std::cout << "i= "<<i<<"\n";    
+    for(int j=0; j<ni; j++){ // Loop through inclusion criteria blocks
+std::cout << "j= "<<j<<"\n";    
+      for(int jj=0; jj<ilength;jj++){ // Loop through individual inclusion criteria
+        innum=j*ilength+jj;
+        if (conditions[innum].size()==0) break; // end of real inclusion criteria in list
+std::cout<<"jj= "<<jj<<"  innum= "<<innum<<"\n";        
+        include=0; // No inclusion found - yet for that i
+        exclude=0; // No exclusion found - yet
+        stopsearch=0; 
+std::cout<<"inclusion values to match searchCols[i]=" <<searchCols[i] << " conditions[innum]= " <<conditions[innum]<<"\n";       
+        if ((match==0 && searchCols[i].size()<=conditions[innum].size() && searchCols[i].find(conditions[innum])==0) ||                 //start
+            (match==1 && searchCols[i].size()==conditions[innum].size() && searchCols[i].find(conditions[innum])==0 && searchCols[i].size()==conditions[innum].size()) || // exact
+            (match==2 && searchCols[i].size()<=conditions[innum].size() && searchCols[i].rfind(conditions[innum])==conditions[i].size()-searchCols[i].size())){ // end -  one found!!
+std::cout<<"match"<< "\n";         
+          include=1; // prepare to include
+          for(int k=0; k<elength; k++){ // loop though exclusion blocks
+            exnum=k*elength; // start of exclusion block
+std::cout<<"exclusions k= "<<k<<" exnum= "<<exnum<<"\n";               
+            if(condnames[innum]!=exclnames[exnum]) continue; //Exclusion does not match inclusion
+            stopsearch=1; // Exclusion criteium matchin inclusion criterium found - stop searching
+            for(int kk=0; kk<ne; kk++){ // Loop though individual exclusion criteria
+              exnum=k*elength+kk;
+std::cout<<"exclusions kk= "<< kk <<" exnum= "<<exnum<<"\n";
+              if(exclusions[exnum].size()==0) break; // no more real criteria in list
+                if ((match==0 && searchCols[i].size()<=exclusions[exnum].size() && searchCols[i].find(exclusions[exnum])==0) ||                 //start
+                    (match==1 && searchCols[i].size()==exclusions[exnum].size() && searchCols[i].find(exclusions[exnum])==0 && searchCols[i].size()==exclusions[exnum].size()) || // exact
+                    (match==2 && searchCols[i].size()<=exclusions[exnum].size() && searchCols[i].rfind(exclusions[exnum])==exclusions[i].size()-searchCols[i].size())){ // end -  one found!!
+std::cout<<"exclusion match"<< "\n";                  
+                  exclude=1;
+                } // end match strings
+              if (exclude==1) break; 
+            }  // end loop through individual exclusion criteria
+            if (stopsearch==1 || exclude==1) break;  
+          } // end loop through exclusion block
+          }// End inclusion match identified
+        if (include==1 && exclude==0){
+std::cout<<"PUSH \n";
+          Opnrnum.push_back(pnrnum[i]);
+          Ocondition.push_back(condnames[innum]);
+          break;
+        }  
+      } // End individual inclusion critertia
+    } // End inclusion blocks  
   }
   return (Rcpp::List::create(Rcpp::Named("pnrnum") = Opnrnum,
-                             Rcpp::Named("X")=Ocondition);  
+                             Rcpp::Named("X")=Ocondition));  
 }
 
 
@@ -84,28 +93,32 @@ List matrixSearch(IntegerVector pnrnum,       // Vector of row numbers for searc
 library(data.table)
 # For real use the following vectors will have lengths of up to 500,000,000 records
 pnrnum <- c(1,2,2,3,3,3,4,4,5,6)
+pnrnum <-c(pnrnum,pnrnum)
 #         1   2   2   3   3   3   4   4   5   6
 c1 <- c("1","1","1","2","3","4","1","2","9","9")
 c2 <- c("10","1","1","20","30","40","10","20","90","9")
-searchCols <- as.matrix(data.table(c1,c2))
+searchCols <- c(c1,c2)
 
 co1 <- c("1","")
 co2 <- c("3","30")
 co3 <- c("4","40")
-conditions <-as.matrix(data.table(co1,co2,co3)) 
+conditions <-as.vector(as.matrix(data.table(co1,co2,co3))) 
 
 ex1 <- c("10")
-exclusions <-as.matrix(data.table(ex1))
+exclusions <-as.vector(as.matrix(data.table(ex1)))
 
-condnames <- c("co1","co2","co3")
+condnames <- unlist(lapply(c("co1","co2","co3"),function(x)rep(x,2)))
 exclnames <- c("co1")
 
 clength <- 2
 elength <- 1
 datarows <- 10
 
-out <- matrixsearch(pnrnum,searchCols,conditions,exclusions,condnames,exclnames,clength,elength,datarows)
+exclusion <- conditions
+exclnames <- condnames
+
+out <- vectorSearch(pnrnum,searchCols,conditions,exclusions,condnames,exclnames,ni=3,ilength=2,ne=1,elength=1,datarows=length(searchCols),match=0)
 
 out[]
 */
-  
+
