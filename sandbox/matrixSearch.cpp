@@ -56,12 +56,13 @@ std::cout<<"match"<< "\n";
           include=1; // prepare to include
           for(int k=0; k<elength; k++){ // loop though exclusion blocks
             exnum=k*elength; // start of exclusion block
-std::cout<<"exclusions k= "<<k<<" exnum= "<<exnum<<"\n";               
+std::cout<<"exclusions k= "<<k<<" exnum= "<<exnum<<"\n";  
+std::cout<<"Exclusion inclusion comparison condnames[innum]=  "<<condnames[innum]<<" exclnames[exnum]= "<<exclnames[exnum]<<"\n";
             if(condnames[innum]!=exclnames[exnum]) continue; //Exclusion does not match inclusion
             stopsearch=1; // Exclusion criteium matchin inclusion criterium found - stop searching
             for(int kk=0; kk<ne; kk++){ // Loop though individual exclusion criteria
               exnum=k*elength+kk;
-std::cout<<"exclusions kk= "<< kk <<" exnum= "<<exnum<<"\n";
+std::cout<<"exclusions kk= "<< kk <<" exnum= "<<exnum<<" searchCols[i]="<<searchCols[i]<<" esclusions[exnum]="<<exclusions[exnum]<<"\n";
               if(exclusions[exnum].size()==0) break; // no more real criteria in list
                 if ((match==0 && searchCols[i].size()<=exclusions[exnum].size() && searchCols[i].find(exclusions[exnum])==0) ||                 //start
                     (match==1 && searchCols[i].size()==exclusions[exnum].size() && searchCols[i].find(exclusions[exnum])==0 && searchCols[i].size()==exclusions[exnum].size()) || // exact
@@ -74,7 +75,7 @@ std::cout<<"exclusion match"<< "\n";
             if (stopsearch==1 || exclude==1) break;  
           } // end loop through exclusion block
           }// End inclusion match identified
-        if (include==1 && exclude==0){
+         if (include==1 && exclude==0){
 std::cout<<"PUSH \n";
           Opnrnum.push_back(pnrnum[i]);
           Ocondition.push_back(condnames[innum]);
