@@ -2,8 +2,11 @@ findCondition2 <- function (data,ptid="pnr", vars, keep, conditions,exclusions=N
           condition.name = "X") 
 {
   cond = NULL
-  match <- match.arg(match, c("exact", "contains", 
-                              "start","end"))
+  if (match=="start") match.num <- 0L
+   else if (match=="exact") match.num <- 1L
+   else if (match=="end") match.num <- 2L
+   else if (match=="contain") match.num <- 3L
+   else stop("Choise of match not appropriate")
   if (!is.character(vars) | !is.character(keep)) 
     stop("Error -  vars or keep not character")
   if (!class(conditions) == "list" | is.null(names(conditions))) 
@@ -18,47 +21,31 @@ findCondition2 <- function (data,ptid="pnr", vars, keep, conditions,exclusions=N
     if (!variable %in% names(data)) 
       stop(paste0("Error - ", variable, " not in data to be analysed"))
   }
-  condnames <- names(conditions)
-  if (!is.null(exclusions)) exclnames <- names(exclusions)
-  Ex <- FALSE # No exclusion list defaul
-  # Conditions as regular expression
-  for (i in 1:length(conditions)) {
-    conditions[[i]] <- switch(match, 
-                              exact    = paste0("^", conditions[[i]],"$"), 
-                              contains = conditions[[i]], 
-                              start    = paste0("^",conditions[[i]]),
-                              end      = paste0(conditions[[i]],"$"))
-  }
-  if (!is.null(exclusions))
-  for (i in 1:length(exclusions)){ #Exclusions as regular expressions
-    exclusions[[i]] <- switch(match, 
-                              exact    = paste0("^", exclusions[[i]],"$"), 
-                              contains = exclusions[[i]], 
-                              start    = paste0("^",exclusions[[i]]),
-                              end      = paste0(exclusions[[i]],"$"))    
-    Ex <- TRUE 
-    exclnames <- names(exclusions)
-  } 
-  else{
-    exclnames <- ""
-  }
-  browser() 
- #Matrices of conditions and exclusions  
+ #vector of conditions and exclusions  
+ condnames <- names(conditions)  
  max.cond <- max(sapply(conditions,length))
- conditions <- lapply(conditions,function(x){c(x,rep("",max.cond-length(x)))})
- conditions <- do.call(rbind,conditions)
+ conditions <- lapply(conditions,function(x){c(x,rep("",max.cond-length(x)))}) # All max length, padded with ""
+ condnames <- lapply(condnames,function(x){rep(x,max.cond)}) #condnames aligned with conditions
+ conditions <- unlist(conditions)
+ condnames <- unlist(condnames)
+
  if(!is.null(exclusions)){
+   exclnames <- names(exclusions)
    max.excl <- max(sapply(exclusions,length))
    exclusions <- lapply(exclusions,function(x){c(x,rep("",max.excl-length(x)))})
-   exclusions <- do.call(rbind,exclusions)
+   exclnames <- lapply(exclnames,function(x){rep(x,max.excl)}) #exclnames aligned with exclitions
+   exclusions <- unlist(exclusions)
+   exclnames <- unlist(exclnames)
  }
  else{
-   exclusions <- as.matrix("")
+   exclusions <- ""
+   exclnames <- ""
    max.excl <- 0
  }
  
  # Columnes to search and keep
- searchCols <- as.matrix(data[,.SD,.SDcols=c(vars)])
+  searchCols <- data[,.SD,.SDcols=c(vars)]
+  
  pnrnum <- 1:dim(data)[1]
  searchCols <- as.matrix(searchCols)
  keepCols <- data[,.SD,.SDcols=c(ptid,keep)]
