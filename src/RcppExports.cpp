@@ -30,18 +30,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// countDrugs
-Rcpp::NumericVector countDrugs(Rcpp::DataFrame mix, Rcpp::DataFrame db);
-RcppExport SEXP _heaven_countDrugs(SEXP mixSEXP, SEXP dbSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type mix(mixSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type db(dbSEXP);
-    rcpp_result_gen = Rcpp::wrap(countDrugs(mix, db));
-    return rcpp_result_gen;
-END_RCPP
-}
 // daysnonhosp
 Rcpp::NumericVector daysnonhosp(Rcpp::NumericVector id, Rcpp::NumericVector pdate, Rcpp::NumericVector iddates, Rcpp::NumericVector inddto, Rcpp::NumericVector uddto);
 RcppExport SEXP _heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
@@ -156,10 +144,31 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// vectorSearch
+List vectorSearch(std::vector<int> pnrnum, std::vector<std::string> searchCols, std::vector<std::string> conditions, std::vector<std::string> exclusions, std::vector<std::string> condnames, std::vector<std::string> exclnames, int ni, int ilength, int ne, int elength, int datarows, int match);
+RcppExport SEXP _heaven_vectorSearch(SEXP pnrnumSEXP, SEXP searchColsSEXP, SEXP conditionsSEXP, SEXP exclusionsSEXP, SEXP condnamesSEXP, SEXP exclnamesSEXP, SEXP niSEXP, SEXP ilengthSEXP, SEXP neSEXP, SEXP elengthSEXP, SEXP datarowsSEXP, SEXP matchSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type pnrnum(pnrnumSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type searchCols(searchColsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type conditions(conditionsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type exclusions(exclusionsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type condnames(condnamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type exclnames(exclnamesSEXP);
+    Rcpp::traits::input_parameter< int >::type ni(niSEXP);
+    Rcpp::traits::input_parameter< int >::type ilength(ilengthSEXP);
+    Rcpp::traits::input_parameter< int >::type ne(neSEXP);
+    Rcpp::traits::input_parameter< int >::type elength(elengthSEXP);
+    Rcpp::traits::input_parameter< int >::type datarows(datarowsSEXP);
+    Rcpp::traits::input_parameter< int >::type match(matchSEXP);
+    rcpp_result_gen = Rcpp::wrap(vectorSearch(pnrnum, searchCols, conditions, exclusions, condnames, exclnames, ni, ilength, ne, elength, datarows, match));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 14},
-    {"_heaven_countDrugs", (DL_FUNC) &_heaven_countDrugs, 2},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
@@ -167,6 +176,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 12},
+    {"_heaven_vectorSearch", (DL_FUNC) &_heaven_vectorSearch, 12},
     {NULL, NULL, 0}
 };
 

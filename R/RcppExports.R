@@ -5,10 +5,6 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, contro
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin)
 }
 
-countDrugs <- function(mix, db) {
-    .Call('_heaven_countDrugs', PACKAGE = 'heaven', mix, db)
-}
-
 daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
     .Call('_heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
 }
@@ -45,5 +41,9 @@ splitDate <- function(inn, out, event, mergevar, seq, varname) {
 
 splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov, default_) {
     .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov, default_)
+}
+
+vectorSearch <- function(pnrnum, searchCols, conditions, exclusions, condnames, exclnames, ni, ilength, ne, elength, datarows, match) {
+    .Call('_heaven_vectorSearch', PACKAGE = 'heaven', pnrnum, searchCols, conditions, exclusions, condnames, exclnames, ni, ilength, ne, elength, datarows, match)
 }
 
