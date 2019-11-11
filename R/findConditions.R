@@ -31,8 +31,8 @@
 #' 
 #' See examples for common use of the output
 #' @usage
-#' findCondition(data, vars, keep, conditions, exclusions, 
-#' match="contain",condition.name)
+#' findCondition(data,ptid="pnr", vars, keep, conditions, exclusions=NULL, 
+#' match="contain",condition.name="X")
 #' 
 #' @param data Data in which to search for conditions
 #' @param vars Name(s) of variable(s) in which to search.
@@ -82,9 +82,10 @@
 #' # Whether to convert NAs to zero depends on the situation
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <tag@biostat.ku.dk>
 #' @export
-findCondition2 <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NULL, match = "contain", 
+findCondition <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NULL, match = "contain", 
           condition.name = "X") 
 {
+  .SD=pnrnum=.N=searchcol=NULL
   cond = NULL
   if (match=="start") match.num <- 0L
    else if (match=="exact") match.num <- 1L
