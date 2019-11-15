@@ -307,8 +307,10 @@ medicinMacro <- function(drugs,
                        if (length(period) == 0) stop("Argument period missing\n")
                        ## convert dates to numeric: number of days since 1995-01-01
                        drugdb.work[,eksd:=as.numeric(eksd-as.Date("1995-01-01"))]
-                       admdb.work.j[,inddto:=as.numeric(inddto-as.Date("1995-01-01"))]
-                       admdb.work.j[,uddto:=as.numeric(uddto-as.Date("1995-01-01"))]
+                       if (NROW(admdb.work.j)>0){
+                           admdb.work.j[,inddto:=as.numeric(inddto-as.Date("1995-01-01"))]
+                           admdb.work.j[,uddto:=as.numeric(uddto-as.Date("1995-01-01"))]
+                       }
                        ## Start calculation with the innerMedicinMacro (cpp-function)
                        if(length(idunique)>10000 & splitting==TRUE){
                            ind.split <- cut(as.numeric(factor(idunique)), 10, labels =FALSE)
