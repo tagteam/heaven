@@ -43,6 +43,7 @@ LazyData: true
 Collate: 
     'RcppExports.R'
     'addUsualRegisters.R'
+    'charlsonIndex.R'
     'createProject.R'
     'dpp.R'
     'riskSetMatch.R'
