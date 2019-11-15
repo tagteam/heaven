@@ -67,3 +67,13 @@
 #' @name hypertensionATC
 
 "hypertensionATC"
+
+#' charlson.codes
+#'
+#' List with pre-specified codes for Charlson Index
+#' @format A list
+#' @docType data
+#' @keywords datasets
+#' @name charlson.codes
+
+"charlson.codes"

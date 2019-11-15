@@ -127,7 +127,8 @@ findCondition <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NU
   else{
     exclusions <- ""
     exclnames <- ""
-    max.excl <- 0
+    max.excl <- 0L
+    num.excl <- 0L
   }
  
   # Columnes to keep
@@ -150,6 +151,7 @@ findCondition <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NU
   searchCols <- searchCols[!(searchcol=="")]
   setkeyv(searchCols,c("pnrnum","searchcol"))
   searchCols <- unique(searchCols)
+  setcolorder(searchCols,c("pnrnum","searchcol"))
   #cpp
   out <- vectorSearch(searchCols[[1]],        # Vector of row numbers for searchCols
                      searchCols[[2]],        # Vector with search values

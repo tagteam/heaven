@@ -68,9 +68,9 @@ hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
   if (!is.null(medication.definition)) hypertensionATC <- medication.definition
   if (!is.list(hypertensionATC)) stop ("Hypertension drugs not a list")
   setnames(datt,vars,c("pt","atc","date")) 
-  if (!is.null(index.date)) setnames(datt,index.date,"index")
   if (!is.null(index.date)){
-    out <- findCondition(datt,"atc",c("pt","date","index"),hypertensionATC,match="start")
+    setnames(datt,index.date,"index")
+    out <- findCondition(datt,ptid="pt","atc",c("pt","date","index"),hypertensionATC,match="start")
     out <- out[date>=index-180 & date<=index] # Last 6 months
     setkeyv(out,c("pt","X"))
     out <- out[,.SD[1],by=c("pt","X")]
@@ -78,7 +78,7 @@ hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
     out[,hypertension:=as.integer(numDrugs>=2)]
   }
   else {
-    out <- findCondition(datt,"atc",c("pt","date"),hypertensionATC,match="start")
+    out <- findCondition(datt,ptid="pt","atc",c("pt","date"),hypertensionATC,match="start")
     out[,newdate:=zoo::as.Date(zoo::as.yearqtr(date), frac = 1)] # last date of quater
     out[,olddate:=zoo::as.Date(zoo::as.yearqtr(newdate-100,format="%Y-%m-%d"), frac = 1)] # last date of quater before
     setkeyv(out,c("pt","newdate","X"))
