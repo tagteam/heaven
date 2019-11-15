@@ -60,7 +60,7 @@ Cond3=c('A1','C20','B2'))
 
 excl <- list(Cond2='B100')
 
-out <- findCondition2(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
+out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
         conditions=search, exclusions=excl,
         match="start",condition.name="cond")
 ### And how to use the result:

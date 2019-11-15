@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Oct 17 2018 (13:53) 
 ## Version: 
-## Last-Updated: Jun 27 2019 (14:41) 
+## Last-Updated: Nov 15 2019 (08:41) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 239
+##     Update #: 241
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -974,7 +974,8 @@ process <- function (x, n = Inf, fish = "studypop", verbose = TRUE, show.sas.cod
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 addDrug <- function(x,target,drug,...){
     ## extraction of drug
-    utils::data(diseasecode)
+    diseasecode=NULL
+    utils::data("diseasecode")
     drug.match <- grep(drug,names(diseasecode),ignore.case=TRUE,value=TRUE)
     if (length(drug.match)==0) stop("Cannot find definition of drug ",drug," in list of known drugs.\nSee data diseasecode for known drugs.")
     atc <- paste0(diseasecode[drug.match][[1]],collapse="|")
@@ -1001,8 +1002,9 @@ addDrug <- function(x,target,drug,...){
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 addComo <- function(x,target,como,...){
+    diseasecode=NULL
     ## extraction of diagnoses
-    utils::data(diseasecode)
+    utils::data("diseasecode")
     como.match <- grep(como,names(diseasecode),ignore.case=TRUE,value=TRUE)
     if (length(como.match)==0) stop("Cannot find definition of comorbidity ",como," in list of known comorbidities.\nSee diseasecode for known comorbidities.")
     icd <- paste0(diseasecode[como.match][[1]],collapse="|")

@@ -65,17 +65,17 @@
 ##' @export
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
 standardize.rate <- function(x,
-                              age="agegroups",
-                              exposure,
-                              by,
-                              standardize.to="ref.level",
-                              data,
-                              method="gamma",
-                              level=0.95,
-                              crude=TRUE,
-                              ...){
+                             age="agegroups",
+                             exposure,
+                             by,
+                             standardize.to="ref.level",
+                             data,
+                             method="gamma",
+                             level=0.95,
+                             crude=TRUE,
+                             ...){
     requireNamespace("data.table")
-    .N=N=.SD=weight=NULL
+    .N=N=.SD=weight=group=type=NULL
     setDT(data)
     data <- copy(data)
     nnn <- colnames(data)
@@ -116,7 +116,7 @@ standardize.rate <- function(x,
                 }, mean = {
                     (pops[e1] + pops[e2])/2
                 }, pops[e2])
-                std.x <- dsr2(count0=counts[e1], count1=counts[e2],
+                std.x <- dsr(count0=counts[e1], count1=counts[e2],
                              pop0=pops[e1], pop1=pops[e2], stdpop=stdpop,
                              method=method,crude=crude)
                 std.x[,group:=as.character(factor(group,levels=c(0,1),labels=exposure.levels[c(1,i)]))]

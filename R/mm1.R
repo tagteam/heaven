@@ -20,9 +20,10 @@ mm1 <- function(drugs,
                 stash=0,
                 cap.values=TRUE,
                 verbose=FALSE){
+    time=last.potential.purch=eksd=pnr=exposed.at.time=drug.supply.days=h.days.since.potential.purch=hospitalized.at.time=NULL
     ind.periods <- copy(time.points)
     ind.periods[,":="(start=time-window, end=time)][,time:=NULL]
-    exp.calc <- mm2(drugdb=drugdb,drug=drugs,periods=ind.periods,admdb=admdb,method=method,stash=stash,cap.values=TRUE,pre.window=0,verbose=verbose)
+    exp.calc <- mm2(drugdb=drugdb,drugs=drugs,periods=ind.periods,admdb=admdb,method=method,stash=stash,cap.values=TRUE,pre.window=0,verbose=verbose)
     if(method=="number.of.days" & stash > 0)
         return(exp.calc) ## Should be NULL, warning given from mm2
     ## NB: _potential_ purchases, becuase a ptt's might not purchase anything in the time frame -- this gives a total.drug and drug.supply.days of 0

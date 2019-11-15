@@ -19,6 +19,8 @@ innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow,
 \item{prescriptionwindow}{prescription window}
 
 \item{maxdepot}{see medicine macro}
+
+\item{verbose}{feed back for debugging}
 }
 \description{
 Inner process of medicin macro

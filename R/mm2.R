@@ -22,10 +22,14 @@ mm2 <- function(drugs,
                 pre.window=365.25*2,
                 print.time=FALSE,
                 verbose=FALSE){
+    hospitalized.at.time=start=eksd=end=.N=strnum=packsize=apk=pnr=keep=eksd.end=.SD=first.purch=days.in.period=h.days.after.start=NULL
+    ind=pre.period=inddto=uddto=hospitalized.at.end=hos.days=hos.days.after.start=drug.strength.estimate=average.drug=NULL
+    n.purchases=estimated.daily.dose=def.dose=non.h.days=total.drug=min.dose=max.dose=n.periods=non.h.days.after.start=NULL
+    drug.supply.days=h.days=prop.covered.total=NULL
     if(!(method %in% c("default.doses", "number.of.days")))
         stop("Choose either method = \"default.doses\", or \"number.of.days\".")
     ## Helper functions
-    T <- as.numeric(proc.time()[3])
+    stoppuhr <- as.numeric(proc.time()[3])
     cap <- function(x, min, max){
         ## restricts x to lie within min and max
         ifelse(x < min, min,
@@ -54,12 +58,12 @@ mm2 <- function(drugs,
     restr.drugdb <- drugdb2[start-pre.window <= eksd & eksd <= end]
     if(is.null(restr.drugdb)) stop("No data in the specified periods.")
     ## Make periods unique
-    unique.drugdb <- restr.drugdb[, .(n.purchases = .N,
+    unique.drugdb <- restr.drugdb[, data.table(n.purchases = .N,
                                   total.drug = sum(strnum*packsize*apk),
                                   average.drug = sum(strnum*packsize*apk)/sum(packsize*apk),
                                   start=start[1],
                                   end=end[1]),
-                              by = .(pnr,eksd)]
+                              by = data.table(pnr,eksd)]
     ## Only keep latest purchase before start
     unique.drugdb[,keep:=1]
     setorder(unique.drugdb, pnr, eksd) 
@@ -90,7 +94,7 @@ mm2 <- function(drugs,
     if(!is.null(admdb)){
         t <- as.numeric(proc.time()[3])
         ## TODO: maybe remove the hospitalization dates outside the periods before forming the cartesian product
-        hos.periods <- merge(unique.drugdb[,.(pnr,eksd,eksd.end,days.in.period,start,pre.period,end)], admdb[,.(pnr,inddto,uddto)], by = "pnr", all.x=TRUE, allow.cartesian = TRUE)
+        hos.periods <- merge(unique.drugdb[,data.table(pnr,eksd,eksd.end,days.in.period,start,pre.period,end)], admdb[,data.table(pnr,inddto,uddto)], by = "pnr", all.x=TRUE, allow.cartesian = TRUE)
         hos.periods[,hospitalized.at.end:=(inddto<=end & end <=uddto)] 
         hos.periods[!is.na(inddto),
                     ":="(hos.days=cap(uddto, eksd, eksd.end)-cap(inddto, eksd, eksd.end),
@@ -99,12 +103,12 @@ mm2 <- function(drugs,
                                                      as.numeric(NA)))]
         hos.periods[is.na(hos.days),hos.days:=0]
         hos.periods[pre.period==1 & is.na(hos.days.after.start),hos.days.after.start:=0]
-        hos.periods.unique <- hos.periods[,.(h.days = sum(hos.days),
+        hos.periods.unique <- hos.periods[,data.table(h.days = sum(hos.days),
                                              h.days.after.start = sum(hos.days.after.start),
                                              non.h.days=days.in.period[1]-sum(hos.days),
                                              non.h.days.after.start=(eksd.end-start)[1]-sum(hos.days.after.start),
                                              hospitalized.at.end=any(hospitalized.at.end,na.rm=TRUE)),
-                                          by=.(pnr,eksd)]
+                                          by=data.table(pnr,eksd)]
         all.data <- merge(unique.drugdb, hos.periods.unique, by = c("pnr", "eksd"))
         if(print.time) print(paste("Finding hospitalization periods took:", as.numeric(proc.time()[3])-t))
     }else{
@@ -158,7 +162,7 @@ mm2 <- function(drugs,
                                                    c(estimated.daily.dose[-length(estimated.daily.dose)],
                                                      max(def.dose[length(estimated.daily.dose)], estimated.daily.dose[length(estimated.daily.dose)-1])),
                                                    def.dose[1]),
-                     by=.(pnr)]
+                     by=data.table(pnr)]
             ## NB: non-purchases or total.drug==0 might be given default doses here, but this is restored below.
             all.data[,n.periods:=NULL]
         }
@@ -181,12 +185,12 @@ mm2 <- function(drugs,
         all.data <- all.data[eksd!=eksd.end]
         all.data[,":="(leftover = pmax(0,total.drug - non.h.days*estimated.daily.dose),
                        prop.covered.period = as.numeric(pmin(days.in.period, h.days+drug.supply.days)/as.numeric(days.in.period)))]
-        all.data[,prop.covered.total := as.numeric(sum(pmin(days.in.period, h.days+drug.supply.days))/as.numeric(sum(days.in.period))), by=.(pnr)]
+        all.data[,prop.covered.total := as.numeric(sum(pmin(days.in.period, h.days+drug.supply.days))/as.numeric(sum(days.in.period))), by=data.table(pnr)]
         out <- all.data[,n.purchases:=NULL]
     }
     if(verbose) cat("\n")
     if(print.time) print(paste("Summarizing took:", as.numeric(proc.time()[3])-t))
-    if(print.time) print(paste("Overall time=", as.numeric(proc.time()[3])-T))
+    if(print.time) print(paste("Overall time=", as.numeric(proc.time()[3])-stoppuhr))
     setorder(out, pnr, eksd)
     return(out[])
 }

@@ -30,6 +30,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// countDrugs
+Rcpp::NumericVector countDrugs(Rcpp::DataFrame mix, Rcpp::DataFrame db);
+RcppExport SEXP _heaven_countDrugs(SEXP mixSEXP, SEXP dbSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type mix(mixSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type db(dbSEXP);
+    rcpp_result_gen = Rcpp::wrap(countDrugs(mix, db));
+    return rcpp_result_gen;
+END_RCPP
+}
 // daysnonhosp
 Rcpp::NumericVector daysnonhosp(Rcpp::NumericVector id, Rcpp::NumericVector pdate, Rcpp::NumericVector iddates, Rcpp::NumericVector inddto, Rcpp::NumericVector uddto);
 RcppExport SEXP _heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
@@ -70,22 +82,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(na_locf(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// nccSamplingCpp
-DataFrame nccSamplingCpp(arma::vec pnr, arma::vec time, arma::vec status, arma::vec Tstart, arma::vec exposureWindow, int Ncontrols);
-RcppExport SEXP _heaven_nccSamplingCpp(SEXP pnrSEXP, SEXP timeSEXP, SEXP statusSEXP, SEXP TstartSEXP, SEXP exposureWindowSEXP, SEXP NcontrolsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type pnr(pnrSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type status(statusSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type Tstart(TstartSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type exposureWindow(exposureWindowSEXP);
-    Rcpp::traits::input_parameter< int >::type Ncontrols(NcontrolsSEXP);
-    rcpp_result_gen = Rcpp::wrap(nccSamplingCpp(pnr, time, status, Tstart, exposureWindow, Ncontrols));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -169,10 +165,10 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 14},
+    {"_heaven_countDrugs", (DL_FUNC) &_heaven_countDrugs, 2},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
-    {"_heaven_nccSamplingCpp", (DL_FUNC) &_heaven_nccSamplingCpp, 6},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},
     {"_heaven_splitDate", (DL_FUNC) &_heaven_splitDate, 6},
     {"_heaven_splitFT", (DL_FUNC) &_heaven_splitFT, 12},

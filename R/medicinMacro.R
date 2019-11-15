@@ -300,7 +300,7 @@ medicinMacro <- function(drugs,
                        if (NROW(admdb)>0){
                            admdb.work.j   <- admdb.work[inddto<= period[2] & uddto >= period[1], ]
                        }else{
-                           admdb.work.j <- data.frame(pnr=numeric(0),inddto=numeric(0),uddto=numeric(0))
+                           admdb.work.j <- data.table(pnr=numeric(0),inddto=numeric(0),uddto=numeric(0))
                        }
                        if (length(prescriptionwindow) == 0) prescriptionwindow = 2
                        if (length(maxdepot) == 0) stop("Argument max depot missing\n")

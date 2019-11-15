@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds & Christian Torp-Pedersen
 ## Created: Mar 11 2019 (10:30) 
 ## Version: 
-## Last-Updated: November 9 2019
-##           By: Christian Torp-Pedersn
-##     Update #: 30
+## Last-Updated: Nov 15 2019 (07:43) 
+##           By: Thomas Alexander Gerds
+##     Update #: 31
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -63,7 +63,7 @@
 #' 
 #' excl <- list(Cond2='B100')
 #'
-#' out <- findCondition2(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
+#' out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
 #'         conditions=search, exclusions=excl,
 #'         match="start",condition.name="cond")
 #' ### And how to use the result:

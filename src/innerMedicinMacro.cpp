@@ -12,6 +12,7 @@ using namespace arma;
 //' @param idunique unique subject ids
 //' @param prescriptionwindow prescription window
 //' @param maxdepot see medicine macro
+//' @param verbose feed back for debugging
 //' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 //' @export
 // [[Rcpp::export]]

@@ -13,7 +13,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                         ,seed # Seed for random sort
                         ,progressbar=TRUE
                          ){
-    .SD=cterms=tEmP.iD=.N=miscol=NULL
+    .SD=cterms=tEmP.iD=.N=miscol=case.id=NULL
     #check
     vnames <- colnames(data)
     if (length(ptid)!=1 || !is.character(ptid) || match(ptid,vnames,nomatch=0)==0)
