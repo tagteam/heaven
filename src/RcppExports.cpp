@@ -30,6 +30,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// countDrugs
+Rcpp::NumericVector countDrugs(Rcpp::DataFrame mix, Rcpp::DataFrame db);
+RcppExport SEXP _heaven_countDrugs(SEXP mixSEXP, SEXP dbSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type mix(mixSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type db(dbSEXP);
+    rcpp_result_gen = Rcpp::wrap(countDrugs(mix, db));
+    return rcpp_result_gen;
+END_RCPP
+}
 // daysnonhosp
 Rcpp::NumericVector daysnonhosp(Rcpp::NumericVector id, Rcpp::NumericVector pdate, Rcpp::NumericVector iddates, Rcpp::NumericVector inddto, Rcpp::NumericVector uddto);
 RcppExport SEXP _heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
@@ -169,6 +181,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 14},
+    {"_heaven_countDrugs", (DL_FUNC) &_heaven_countDrugs, 2},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
