@@ -2,24 +2,30 @@
 #' @description
 #' This function uses 19 disease categories and their weights to establish
 #' charlson index at a particular time indicated by a variable
-#' @usage (data,ptid='pnr',vars,data.date,charlson.date,look.back=5,charlson.codes=charlson.codes)
+#' @usage charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
+#' ,ccodes=charlson.codes)
 #' @author Christian Torp-Pedersen 
 #' @param data - A dataframe/table with disease codes and dates
 #' @param ptid - Variable defining individual
 #' @param vars - variables where disease codes should be searched for
 #' @param data.date - variable in data with date of disease
-#' @param charlson.date - variable defining index date for determination of charlson index
-#' @param look.back - numnber of years to look back from charlson.date for diseases
-#' @param charlson.codes - names list of charlson codes. Default uses list supplied by heaven
+#' @param charlson.date - variable defining index date for determination of 
+#' charlson index
+#' @param look.back - numnber of years to look back from charlson.date for 
+#' diseases
+#' @param ccodes - named list of charlson codes. Default uses list 
+#' supplied by heaven
 #' @details
 #' The charlson weights and selection of disease codes are from DCMG.dk
-#' @return A list with 2 data.tables - index holding charlson index and elements holding presence of each category
+#' @return A list with 2 data.tables - index holding charlson index and elements 
+#' holding presence of each category
 #' @examples
 #' require(data.table)
 #' set.seed(211)
 #' adm <- simAdmissionData(10000)
 #' adm[,charlson.date:=as.Date("2017-01-01")]
-#' ci <- charlsonIndex(adm,ptid='pnr',vars='diag',data.date='inddto',charlson.date="charlson.date")
+#' ci <- charlsonIndex(adm,ptid='pnr',vars='diag',data.date='inddto',
+#'   charlson.date="charlson.date")
 #' @export
 charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back=5,ccodes=charlson.codes){
   weight=component=dcast=NULL

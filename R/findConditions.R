@@ -35,6 +35,7 @@
 #' match="contain",condition.name="X")
 #' 
 #' @param data Data in which to search for conditions
+#' @param ptid - Variable defining individual
 #' @param vars Name(s) of variable(s) in which to search.
 #' @param keep a character vector of the columns in Data.table to keep in
 #' output
@@ -63,7 +64,8 @@
 #' 
 #' excl <- list(Cond2='B100')
 #'
-#' out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
+#' out <- findCondition(opr,ptid="pnr",vars=c("opr","oprtil"),
+#'         keep=c("pnr","odto"),
 #'         conditions=search, exclusions=excl,
 #'         match="start",condition.name="cond")
 #' ### And how to use the result:

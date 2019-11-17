@@ -134,6 +134,23 @@ By default the ATC codes used for the calculations are defined in the
 list "hypertensionATC" (see below) however the user can make a
 modified list if necessary.
 
+** Charlson Index
+
+# #+name: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+help(charlsonIndex)
+#+END_SRC
+
+This function takes as input a data.table of diagnosers and outputs a list
+with two elements. The first is the Charlson index of each individual at
+the specified time. The other is presence of components of the Charlson 
+Index.
+
+The variable with the index time needs to be added to the data.table with
+diagnoses.
+
+
 ** DREAM register
 
 The DREAM register is a Danish register which holds receipt of public

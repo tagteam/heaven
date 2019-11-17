@@ -4,7 +4,8 @@
 \alias{charlsonIndex}
 \title{charlsonindex - define charlson index at a selected time}
 \usage{
-(data,ptid='pnr',vars,data.date,charlson.date,look.back=5,charlson.codes=charlson.codes)
+charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
+,ccodes=charlson.codes)
 }
 \arguments{
 \item{data}{- A dataframe/table with disease codes and dates}
@@ -15,14 +16,18 @@
 
 \item{data.date}{- variable in data with date of disease}
 
-\item{charlson.date}{- variable defining index date for determination of charlson index}
+\item{charlson.date}{- variable defining index date for determination of 
+charlson index}
 
-\item{look.back}{- numnber of years to look back from charlson.date for diseases}
+\item{look.back}{- numnber of years to look back from charlson.date for 
+diseases}
 
-\item{charlson.codes}{- names list of charlson codes. Default uses list supplied by heaven}
+\item{ccodes}{- named list of charlson codes. Default uses list 
+supplied by heaven}
 }
 \value{
-A list with 2 data.tables - index holding charlson index and elements holding presence of each category
+A list with 2 data.tables - index holding charlson index and elements 
+holding presence of each category
 }
 \description{
 This function uses 19 disease categories and their weights to establish
@@ -36,7 +41,8 @@ require(data.table)
 set.seed(211)
 adm <- simAdmissionData(10000)
 adm[,charlson.date:=as.Date("2017-01-01")]
-ci <- charlsonIndex(adm,ptid='pnr',vars='diag',data.date='inddto',charlson.date="charlson.date")
+ci <- charlsonIndex(adm,ptid='pnr',vars='diag',data.date='inddto',
+  charlson.date="charlson.date")
 }
 \author{
 Christian Torp-Pedersen

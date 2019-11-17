@@ -10,6 +10,8 @@ match="contain",condition.name="X")
 \arguments{
 \item{data}{Data in which to search for conditions}
 
+\item{ptid}{- Variable defining individual}
+
 \item{vars}{Name(s) of variable(s) in which to search.}
 
 \item{keep}{a character vector of the columns in Data.table to keep in
@@ -60,7 +62,8 @@ Cond3=c('A1','C20','B2'))
 
 excl <- list(Cond2='B100')
 
-out <- findCondition(opr,vars=c("opr","oprtil"),keep=c("pnr","odto"),
+out <- findCondition(opr,ptid="pnr",vars=c("opr","oprtil"),
+        keep=c("pnr","odto"),
         conditions=search, exclusions=excl,
         match="start",condition.name="cond")
 ### And how to use the result:

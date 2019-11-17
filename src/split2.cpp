@@ -67,44 +67,44 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
              //std::cout<<"splitvalue="<<  split(counter+ii,1) <<"\n";            
              // Past current record - remain current value which may have been established previously
              }
-             else // Zero record length - and equality - just change value
-               if (split(counter+ii,1)==Oinn[iii] && Oinn[iii]==Oout[iii])
-                 Osplit[split(counter+ii,2)-1][iii]=1;
-             else
-             if (split(counter+ii,1)<=Oinn[iii]) {
-                Osplit[split(counter+ii,2)-1][iii]=1; // Before interval, change to "1"
-             }
-             else
-               if(split(counter+ii,1)>Oinn[iii] && split(counter+ii,1)<Oout[iii]){
-                 OUText +=1; //Extra record to trawl
-                 //Date in period, create new record and adjust
-                 Opnrnum.push_back(Opnrnum[iii]);
-                 Omergevar.push_back(Omergevar[iii]);
-                 Oinn.push_back(split(counter+ii,1)); // New starts at split
-                 Oout.push_back(Oout[iii]); // and original end
-                 Oevent.push_back(Oevent[iii]);
-                 for(int j=0; j<numcov;j++)
-                   if(j==split(counter+ii,2)-1)Osplit[j].push_back(1);
-                   else Osplit[j].push_back(Osplit[j][iii]);  // previous value
-                   //Adjust old record
-                   Oout[iii]=split(counter+ii,1);
-                   Oevent[iii]=0;
-               }
-             else
-               if (split(counter+ii,1)==Oout[iii] && Oevent[iii]==1){ // Date at end of period, period>=1 day and EVENT, create 2 records
-                 //Date in period, create new record and adjust
-                 OUText +=1;
-                 Opnrnum.push_back(Opnrnum[iii]);
-                 Omergevar.push_back(Omergevar[iii]);
-                 Oinn.push_back(split(counter+ii,1)); // New starts at split
-                 Oout.push_back(Oout[iii]); // and original end
-                 Oevent.push_back(Oevent[iii]);
-                 for(int j=0; j<numcov;j++)
-                   if(j==ii-1)Osplit[j].push_back(1); // all starts with prior value
-                   else Osplit[j].push_back(Osplit[j][iii]);
-                   //Adjust old record
-                   Oevent[iii]=0; // No date change
-              }
+               else // Zero record length - and equality - just change value
+                 if (split(counter+ii,1)==Oinn[iii] && Oinn[iii]==Oout[iii])
+                   Osplit[split(counter+ii,2)-1][iii]=1;
+                 else
+                 if (split(counter+ii,1)<=Oinn[iii]) {
+                    Osplit[split(counter+ii,2)-1][iii]=1; // Before interval, change to "1"
+                 }
+                   else
+                     if(split(counter+ii,1)>Oinn[iii] && split(counter+ii,1)<Oout[iii]){
+                       OUText +=1; //Extra record to trawl
+                       //Date in period, create new record and adjust
+                       Opnrnum.push_back(Opnrnum[iii]);
+                       Omergevar.push_back(Omergevar[iii]);
+                       Oinn.push_back(split(counter+ii,1)); // New starts at split
+                       Oout.push_back(Oout[iii]); // and original end
+                       Oevent.push_back(Oevent[iii]);
+                       for(int j=0; j<numcov;j++)
+                         if(j==split(counter+ii,2)-1)Osplit[j].push_back(1);
+                         else Osplit[j].push_back(Osplit[j][iii]);  // previous value
+                         //Adjust old record
+                         Oout[iii]=split(counter+ii,1);
+                         Oevent[iii]=0;
+                     }
+                     else
+                       if (split(counter+ii,1)==Oout[iii] && Oevent[iii]==1){ // Date at end of period, period>=1 day and EVENT, create 2 records
+                         //Date in period, create new record and adjust
+                         OUText +=1;
+                         Opnrnum.push_back(Opnrnum[iii]);
+                         Omergevar.push_back(Omergevar[iii]);
+                         Oinn.push_back(split(counter+ii,1)); // New starts at split
+                         Oout.push_back(Oout[iii]); // and original end
+                         Oevent.push_back(Oevent[iii]);
+                         for(int j=0; j<numcov;j++)
+                           if(j==ii-1)Osplit[j].push_back(1); // all starts with prior value
+                           else Osplit[j].push_back(Osplit[j][iii]);
+                           //Adjust old record
+                           Oevent[iii]=0; // No date change
+                      }
            }// end iii-loop - base data copy
          } // End ii-loop - splitting guide
        } // end match and split
