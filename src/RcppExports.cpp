@@ -30,18 +30,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// countDrugs
-Rcpp::NumericVector countDrugs(Rcpp::DataFrame mix, Rcpp::DataFrame db);
-RcppExport SEXP _heaven_countDrugs(SEXP mixSEXP, SEXP dbSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type mix(mixSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type db(dbSEXP);
-    rcpp_result_gen = Rcpp::wrap(countDrugs(mix, db));
-    return rcpp_result_gen;
-END_RCPP
-}
 // daysnonhosp
 Rcpp::NumericVector daysnonhosp(Rcpp::NumericVector id, Rcpp::NumericVector pdate, Rcpp::NumericVector iddates, Rcpp::NumericVector inddto, Rcpp::NumericVector uddto);
 RcppExport SEXP _heaven_daysnonhosp(SEXP idSEXP, SEXP pdateSEXP, SEXP iddatesSEXP, SEXP inddtoSEXP, SEXP uddtoSEXP) {
@@ -58,8 +46,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // innerMedicinMacro
-Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, double prescriptionwindow, double maxdepot, double verbose);
-RcppExport SEXP _heaven_innerMedicinMacro(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP prescriptionwindowSEXP, SEXP maxdepotSEXP, SEXP verboseSEXP) {
+Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, Rcpp::DataFrame index, double prescriptionwindow, double maxdepot, double verbose);
+RcppExport SEXP _heaven_innerMedicinMacro(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP indexSEXP, SEXP prescriptionwindowSEXP, SEXP maxdepotSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -67,10 +55,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type admdat(admdatSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type doses(dosesSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type idunique(iduniqueSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type index(indexSEXP);
     Rcpp::traits::input_parameter< double >::type prescriptionwindow(prescriptionwindowSEXP);
     Rcpp::traits::input_parameter< double >::type maxdepot(maxdepotSEXP);
     Rcpp::traits::input_parameter< double >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, verbose));
+    rcpp_result_gen = Rcpp::wrap(innerMedicinMacro(dat, admdat, doses, idunique, index, prescriptionwindow, maxdepot, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -181,9 +170,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 14},
-    {"_heaven_countDrugs", (DL_FUNC) &_heaven_countDrugs, 2},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
-    {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 7},
+    {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 8},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
     {"_heaven_nccSamplingCpp", (DL_FUNC) &_heaven_nccSamplingCpp, 6},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},

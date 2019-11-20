@@ -5,10 +5,6 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, contro
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin)
 }
 
-countDrugs <- function(mix, db) {
-    .Call('_heaven_countDrugs', PACKAGE = 'heaven', mix, db)
-}
-
 daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
     .Call('_heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
 }
@@ -19,13 +15,14 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
 #' @param admdat admission data
 #' @param doses doses
 #' @param idunique unique subject ids
+#' @param index start and end index of subjects in dat and admdat
 #' @param prescriptionwindow prescription window
 #' @param maxdepot see medicine macro
 #' @param verbose feed back for debugging
 #' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 #' @export
-innerMedicinMacro <- function(dat, admdat, doses, idunique, prescriptionwindow, maxdepot, verbose) {
-    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, prescriptionwindow, maxdepot, verbose)
+innerMedicinMacro <- function(dat, admdat, doses, idunique, index, prescriptionwindow, maxdepot, verbose) {
+    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, index, prescriptionwindow, maxdepot, verbose)
 }
 
 na_locf <- function(x) {
