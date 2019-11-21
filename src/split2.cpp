@@ -87,8 +87,8 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
                          if(j==split(counter+ii,2)-1)Osplit[j].push_back(1);
                          else Osplit[j].push_back(Osplit[j][iii]);  // previous value
                          //Adjust old record
-                         Oout[iii]=split(counter+ii,1);
-                         Oevent[iii]=0;
+                       Oout[iii]=split(counter+ii,1);
+                       Oevent[iii]=0;
                      }
                      else
                        if (split(counter+ii,1)==Oout[iii] && Oevent[iii]==1){ // Date at end of period, period>=1 day and EVENT, create 2 records
@@ -103,7 +103,7 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
                            if(j==ii-1)Osplit[j].push_back(1); // all starts with prior value
                            else Osplit[j].push_back(Osplit[j][iii]);
                            //Adjust old record
-                           Oevent[iii]=0; // No date change
+                         Oevent[iii]=0; // No date change
                       }
            }// end iii-loop - base data copy
          } // End ii-loop - splitting guide
