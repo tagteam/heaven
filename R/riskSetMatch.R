@@ -198,6 +198,12 @@ riskSetMatch <- function(ptid     # Unique patient identifier
     ## FINAL[,case.id:=NULL]   
     attr(FINAL,"id") <- ptid
     attr(FINAL,"event") <- event
+    class(FINAL) <- c("riskSetMatch",class(FINAL))
     FINAL[]
 }
+
+
+
+
+
 

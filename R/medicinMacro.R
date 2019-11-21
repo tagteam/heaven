@@ -242,7 +242,7 @@ medicinMacro <- function(drugs,
             db = data.table(pnr.db=unique(drugdb.work$pnr))
             db[,tmp.index:=1:.N]
             drugdb.work = merge(drugdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
-            if(NROW(admdb.work)>0)
+            if(NROW(admdb)>0)
                 admdb.work = merge(admdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
             ## now continuing with numeric id (changing back in the end)
         }
@@ -313,6 +313,7 @@ medicinMacro <- function(drugs,
                        }
                        ## Start calculation with the innerMedicinMacro (cpp-function)
                        if(length(idunique)>10000 & splitting==TRUE){
+                           stop("Split implementation pending right now")
                            ind.split <- cut(as.numeric(factor(idunique)), 10, labels =FALSE)
                            out.list <- vector("list", 10)
                            est.time <- 0
@@ -328,10 +329,22 @@ medicinMacro <- function(drugs,
                            }
                            out <- rbindlist(out.list)
                        }else{
+                           ## Setup index data first
+                           setorder(drugdb.work, "pnr")
+                           drugdb.work[,index:=1:.N]
+                           index.drug <- drugdb.work[, .(id.start=index[1], id.end=index[.N]), by=pnr]
+                           admdb.work.j <- admdb.work.j[pnr %in% idunique] ## NB: Check how long this takes...!
+                           setorder(admdb.work.j, "pnr")
+                           admdb.work.j[,index:=1:.N]
+                           index.adm <- admdb.work.j[, .(id.start.adm=index[1], id.end.adm=index[.N]), by=pnr]
+                           index <- merge(index.drug, index.adm, by="pnr", all.x=1)
+                           index[is.na(id.start.adm), ":="(id.start.adm=0, id.end.adm=-1)] ## Hack to make cpp generate empty vector instead of 0 scalar
+                           for (j in c("id.start", "id.end", "id.start.adm", "id.end.adm")) set(index, j=j, value=index[[j]] -1) ## Convert to C++ indexing
                            out <- rbindlist(innerMedicinMacro(dat=drugdb.work,
                                                               admdat=admdb.work.j,
                                                               doses=doses,
                                                               idunique=as.numeric(idunique),
+                                                              index=index,
                                                               prescriptionwindow=prescriptionwindow,
                                                               maxdepot=maxdepot,verbose=verbose))
                            setnames(out,"X","dose")

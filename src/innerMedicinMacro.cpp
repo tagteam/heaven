@@ -10,6 +10,7 @@ using namespace arma;
 //' @param admdat admission data
 //' @param doses doses
 //' @param idunique unique subject ids
+//' @param index start and end index of subjects in dat and admdat
 //' @param prescriptionwindow prescription window
 //' @param maxdepot see medicine macro
 //' @param verbose feed back for debugging
@@ -20,10 +21,11 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 			      Rcpp::DataFrame admdat,
 			      Rcpp::List doses, 
 			      NumericVector idunique,
+			      Rcpp::DataFrame index,
 			      double prescriptionwindow, 
 			      double maxdepot,
 			      double verbose
-			) {
+			      ) {
   // NOTATION
   // T(k) sequence of purchase dates
   // S(k) strength
@@ -50,6 +52,14 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
   arma::vec INaid = Rcpp::as<arma::vec>(admdat["pnr"]); 
   arma::vec INadmin = Rcpp::as<arma::vec>(admdat["inddto"]);
   arma::vec INadmax = Rcpp::as<arma::vec>(admdat["uddto"]);
+
+  // NumericVector idstartadm,
+  // NumericVector idendadm,
+  arma::vec idstartdrug = Rcpp::as<arma::vec>(index["id.start"]);
+  arma::vec idenddrug = Rcpp::as<arma::vec>(index["id.end"]);
+  arma::vec idstartadm = Rcpp::as<arma::vec>(index["id.start.adm"]);
+  arma::vec idendadm = Rcpp::as<arma::vec>(index["id.end.adm"]);
+  
   //  Function formatDate("format.Date");
   for (uword i = 0; i < NOBS; i++) {
     // if (i == 1000 || i == 2000 || i==3000){
@@ -57,9 +67,21 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
     // }
     if (verbose>0) Rcout << "==============subject: = " << i << "===============\n"<< std::endl;
     double thisid = idunique(i); 
-    arma::uvec did = find(INid==thisid); //OK, index (?)
-    arma::uvec aid = find(INaid==thisid); //OK, index (?)
-    
+    // arma::uvec did = find(INid==thisid); //OK, index (?)
+    // arma::uvec aid = find(INaid==thisid); //OK, index (?)
+    double didstart = idstartdrug(i);
+    double didend = idenddrug(i);
+    double aidstart = idstartadm(i);
+    double aidend = idendadm(i);
+    arma::uvec did = regspace<uvec>(didstart, 1, didend);
+    arma::uvec aid = regspace<uvec>(aidstart, 1, aidend);
+
+    // Rcout << "aid = " << std::endl;
+    // aid.print();
+
+    // Rcout << "aid2 = " << std::endl;
+    // aid2.print();
+
     // subset data //
     // aid.print();
     arma::vec admin = INadmin.elem(aid);

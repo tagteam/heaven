@@ -4,7 +4,7 @@
 \alias{innerMedicinMacro}
 \title{The heart of the medicin macro}
 \usage{
-innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow,
+innerMedicinMacro(dat, admdat, doses, idunique, index, prescriptionwindow,
   maxdepot, verbose)
 }
 \arguments{
@@ -15,6 +15,8 @@ innerMedicinMacro(dat, admdat, doses, idunique, prescriptionwindow,
 \item{doses}{doses}
 
 \item{idunique}{unique subject ids}
+
+\item{index}{start and end index of subjects in dat and admdat}
 
 \item{prescriptionwindow}{prescription window}
 
