@@ -66,7 +66,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
     // Rcout << "==============i = " << i << "===============\n\n"<< std::endl;
     // }
     if (verbose>0) Rcout << "==============subject: = " << i << "===============\n"<< std::endl;
-    double thisid = idunique(i); 
+    // double thisid = idunique(i); 
     // arma::uvec did = find(INid==thisid); //OK, index (?)
     // arma::uvec aid = find(INaid==thisid); //OK, index (?)
     double didstart = idstartdrug(i);

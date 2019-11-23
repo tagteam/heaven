@@ -5,6 +5,10 @@ Matcher <- function(Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, contro
     .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin)
 }
 
+countDrugs <- function(mix, db) {
+    .Call('_heaven_countDrugs', PACKAGE = 'heaven', mix, db)
+}
+
 daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
     .Call('_heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
 }
@@ -27,10 +31,6 @@ innerMedicinMacro <- function(dat, admdat, doses, idunique, index, prescriptionw
 
 na_locf <- function(x) {
     .Call('_heaven_na_locf', PACKAGE = 'heaven', x)
-}
-
-nccSamplingCpp <- function(pnr, time, status, Tstart, exposureWindow, Ncontrols = 10L) {
-    .Call('_heaven_nccSamplingCpp', PACKAGE = 'heaven', pnr, time, status, Tstart, exposureWindow, Ncontrols)
 }
 
 split2 <- function(pnrnum, inn, out, event, mergevar, split, numcov) {
