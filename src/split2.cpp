@@ -58,8 +58,8 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
       Oevent.push_back(event(i));
       for(int j=0; j<numcov;j++) Osplit[j].push_back(0);
        // Any splitting?
-       if (split(counter,0) == pnrnum(i)) { // Match and potentially split
-        for (int ii=0; ii<split(counter+ii,3); ii++){ // Outer loop through elements of splitting guide for current pnr
+      if (split(counter,0) == pnrnum(i)) { // Match and potentially split
+        for (int ii=0; ii<split(counter,3); ii++){ // Outer loop through elements of splitting guide for current pnr
           OUT=OUT+OUText; // No relevant action on initialisation - but relevant after splitting which lengthens number of records
           OUText=0; // reset - on first pass, just one record
           for (int iii=INN; iii<=OUT; iii++){ // inner loop - Output data - just one record prior to split - iii refers to O-copy of base records
