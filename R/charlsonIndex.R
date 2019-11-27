@@ -2,6 +2,13 @@
 #' @description
 #' This function uses 19 disease categories and their weights to establish
 #' charlson index at a particular time indicated by a variable
+#' 
+#' The suggested list of Charlson definitions comes partly from 
+#' Quann (Am J Epidemiol.2011 173:676-82), partly from DMCG.dk benchmarking 
+#' consortium and with further minor adjustments provided by Peter Ascanius 
+#' Jacobsen.  It is unlikely that any international list of definitions will 
+#' apply for a Danish Population and the listing used should be either cited or
+#' provided in a supplement for publication.
 #' @usage charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
 #' ,ccodes=charlson.codes)
 #' @author Christian Torp-Pedersen 
