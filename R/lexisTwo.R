@@ -173,6 +173,7 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
   indat[,pnrnum:=.GRP,by="pnr"] #Numeric replacement for pnr
   setnames(splitdat,invars[1],"pnr")
   splitdat<-merge(splitdat,unique(indat[,c("pnr","pnrnum"),with=FALSE]),by="pnr",all.x=TRUE) # Same pnrnum as in indat
+  splitdat <- splitdat[!is.na(pnrnum)]
   splitdat[,pnr:=NULL] #remove pnr
   # Create long-form of splitdat and number covariate dates
   if (format=="wide"){
@@ -203,14 +204,15 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
     splitdat[,value_:=as.numeric(value_)]
     splitdat <- as.matrix(splitdat)
   }
-  OUT <- .Call("_heaven_split2",PACKAGE = "heaven",indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
-  #OUT <- split2(indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
+  #OUT <- .Call("_heaven_split2",PACKAGE = "heaven",indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
+  OUT <- split2(indat[,pnrnum],indat[,inn],indat[,out],indat[,dead],indat[,mergevar],splitdat,length(splitvars))  # Call to c++ split-function
   OUT <- cbind(setDT(OUT[1:5]),setDT(do.call(cbind,OUT[6])))
   if(isdate){
     OUT[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
   }
   setnames(OUT, c("pnrnum","mergevar",invars[2:4],splitvars))
-  OUT <- merge(OUT,RESTDAT,by="mergevar")
+  OUT <- merge(OUT,
+               RESTDAT,by="mergevar")
   setnames(OUT,"pnr",invars[1])
   OUT[,c("pnrnum","mergevar"):=NULL] # remove number version of pnr
   OUT[]
