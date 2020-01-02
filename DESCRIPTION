@@ -37,7 +37,7 @@ Suggests:
     rmarkdown,
     R.rsp
 License: GPL (>= 3)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr, R.rsp
 LazyData: true
 Collate: 

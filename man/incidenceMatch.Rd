@@ -4,9 +4,21 @@
 \alias{incidenceMatch}
 \title{incidenceMatch - Risk set matching for nested case-control designs}
 \usage{
-incidenceMatch(ptid, event, terms, data, n.controls, case.index = NULL,
-  end.followup = NULL, date.terms = NULL, duration.terms = NULL,
-  output.count.controls = TRUE, cores = 1, seed, progressbar = TRUE)
+incidenceMatch(
+  ptid,
+  event,
+  terms,
+  data,
+  n.controls,
+  case.index = NULL,
+  end.followup = NULL,
+  date.terms = NULL,
+  duration.terms = NULL,
+  output.count.controls = TRUE,
+  cores = 1,
+  seed,
+  progressbar = TRUE
+)
 }
 \arguments{
 \item{ptid}{Personal ID variable defining participant}

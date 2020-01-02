@@ -4,8 +4,16 @@
 \alias{innerMedicinMacro}
 \title{The heart of the medicin macro}
 \usage{
-innerMedicinMacro(dat, admdat, doses, idunique, index, prescriptionwindow,
-  maxdepot, verbose)
+innerMedicinMacro(
+  dat,
+  admdat,
+  doses,
+  idunique,
+  index,
+  prescriptionwindow,
+  maxdepot,
+  verbose
+)
 }
 \arguments{
 \item{dat}{data set}

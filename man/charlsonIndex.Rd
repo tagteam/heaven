@@ -38,7 +38,9 @@ Quann (Am J Epidemiol.2011 173:676-82), partly from DMCG.dk benchmarking
 consortium and with further minor adjustments provided by Peter Ascanius 
 Jacobsen.  It is unlikely that any international list of definitions will 
 apply for a Danish Population and the listing used should be either cited or
-provided in a supplement for publication.
+provided in a supplement for publication.  The data included in this package
+"charlson.codes" includes a selection of ICD8 and ICD10 codes.  ICD9 has
+never been used in Denmark.
 }
 \details{
 The charlson weights and selection of disease codes are from DCMG.dk
