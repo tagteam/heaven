@@ -19,9 +19,9 @@ charlson.codes <- list(
  peptic.ulcer.disease=c('53091', '53098', paste0('53',1:4),'DK25','DK26','DK27','DK28'),
  mild.liver.disease=c('571','57301','57304','DB18','DK700','DK701','DK702','DK709','DK703','DK713','DK714','DK715','DK717','DK73','DK74','DK760','DK762','DK763','DK764','DK769','DZ944'),
  severe.liver.disease=c('07000', '07002', '07004', '07006', '07008','57300', '45601','45602','45603','45604',
-                        '45605','45606','45607','45608','45609','57300','DB150','DB160','DB162','DB19','DI850','DI859',
+                        '45605','45606','45607','45608','45609','DB150','DB160','DB162','DB19','DI850','DI859',
                         'DI864','DI982','DK704','DK711','DK721','DK729','DK765','DK766','DK767'), 
- diabetes.without.complications=c('24900', '24906', '24907', '24909','25000', '25006', '25007', '25009','DE100','DE101','DE106','DE108','DE109','DE110','DE111','DE119',
+ diabetes.without.complications=c('24900', '24906', '24907', '24909','25000', '25006', '25007', '25009','DE100','DE101','DE108','DE109','DE110','DE111','DE119',
                           'DE120','DE121','DE129','DE130','DE131','DE139','DE140','DE141','DE149'),
  diabetes.with.complications=c(paste0('2490',1:5),'24908',paste0('2500',1:5),'25008',paste0('DE10',2:7),paste0('DE11',2:8),paste0('DE12',2:8),
       paste0('DE13',2:8),paste0('DE14',2:8)),
@@ -30,7 +30,7 @@ charlson.codes <- list(
  any.malignancy=c(paste0('1',40:72),paste0(174:194),paste0(200:207),'27559',paste0('DC',0:3),paste0('DC4',0:9),'DC5','DC6',paste0('DC7',0:6),
       paste0('DC8',1:8),paste0('DC9',0:7)),
  metastatic.solidtumor=c(paste0('19',5:9),paste0('DC',77:80)),
- AIDSHIV=c('07983','DB20','DB21','DB22',',DB23','DB24'),
+ AIDSHIV=c('07983','DB20','DB21','DB22','DB23','DB24'),
  leukemia=c(paste0('20',4:7),paste0('DC9',1:5)),
  lymphoma=c(paste0('20',0:3),'27559',paste0('DC8',1:5),'DC88','DC90','DC96')
  )

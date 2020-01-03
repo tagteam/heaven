@@ -41,42 +41,47 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
   int counter=0; // counts through split guide
   int INN=-1; // start of pnr-range in output data
   int OUT=-1; // end of pnr-range in output data
-  int OUText=0; // Lengthening of out from splitting
   // Loop through all data in base data and split a new pnr has
   // been identified.  The base data are added to output vectors sequentially and split
   // prior to interrogating next pnr
    for(int i=0; i<l1; i++){ // Loop through base data
+      //Rcout <<"Next base record i="<<i<<"\n";     
       INN=OUT+1;  // Start of next pnr-sequence - INN/OUT necessary because record can be split and reanalyzed
       while (counter<l2 && split(counter,0)<pnrnum(i)) counter+=split(counter,3); // Increase row by number of covariates in splitting guide until match - or end passed
        //Searching in splitting guide until match found or passed - counter maintains place in splitting guide
       OUT+=1;
+      //Rcout <<"End while - counter="<<counter<<" INN="<<INN<<"OUT="<<OUT<<"\n";  
       // Start by pushing the record with all comorbidities=0
       Opnrnum.push_back(pnrnum(i));
       Omergevar.push_back(mergevar(i));
       Oinn.push_back(inn(i));
       Oout.push_back(out(i));
       Oevent.push_back(event(i));
-      for(int j=0; j<numcov;j++) Osplit[j].push_back(0);
+      //Rcout <<"Push base pnrnum="<<pnrnum(i)<<"\n";
+      for(int j=0; j<numcov;j++) Osplit[j].push_back(0); // Each covariate given zero
        // Any splitting?
-      if (split(counter,0) == pnrnum(i)) { // Match and potentially split
+       if (split(counter,0) == pnrnum(i)) { // Match and potential split
         for (int ii=0; ii<split(counter,3); ii++){ // Outer loop through elements of splitting guide for current pnr
-          OUT=OUT+OUText; // No relevant action on initialisation - but relevant after splitting which lengthens number of records
-          OUText=0; // reset - on first pass, just one record
-          for (int iii=INN; iii<=OUT; iii++){ // inner loop - Output data - just one record prior to split - iii refers to O-copy of base records
+          //Rcout <<"loop split guide ii="<<ii<<" split(counter,3)="<<split(counter,3)<<"\n";
+          for (int iii=INN; iii<=OUT; iii++){ // inner loop - Output data - iii is numbering of output records - OUT is increased when relevant
+             //Rcout <<"inner loop iii="<<iii<<" INN="<<INN<<" OUT="<<OUT<<"\n";
              if (split(counter+ii,1)<-2000000000 || split(counter+ii,1)>Oout[iii]) {
-             //std::cout<<"splitvalue="<<  split(counter+ii,1) <<"\n";            
-             // Past current record - remain current value which may have been established previously
+             //Rcout<<"splitvalue="<<  split(counter+ii,1) <<" splitnumber="<<split(counter+ii,2)<<"\n";            
+             // splitting later thant current interval - no action
              }
                else // Zero record length - and equality - just change value
-                 if (split(counter+ii,1)==Oinn[iii] && Oinn[iii]==Oout[iii])
+                 if (split(counter+ii,1)==Oinn[iii] && Oinn[iii]==Oout[iii]){
                    Osplit[split(counter+ii,2)-1][iii]=1;
+                   //Rcout <<"zero record length change Osplit "<<Osplit[split(counter+ii,2)-1][iii]<<" counter="<<counter<<" ii="<<ii<<" iii="<<iii<<"\n";
+                 }
                  else
                  if (split(counter+ii,1)<=Oinn[iii]) {
                     Osplit[split(counter+ii,2)-1][iii]=1; // Before interval, change to "1"
+                    //Rcout <<"Before interval Osplit "<<Osplit[split(counter+ii,2)-1][iii]<<" counter="<<counter<<" ii="<<ii<<" iii="<<iii<<"\n";
                  }
                    else
                      if(split(counter+ii,1)>Oinn[iii] && split(counter+ii,1)<Oout[iii]){
-                       OUText +=1; //Extra record to trawl
+                       OUT +=1; //Extra record to trawl for coming element of splitting guide for that pnrnum
                        //Date in period, create new record and adjust
                        Opnrnum.push_back(Opnrnum[iii]);
                        Omergevar.push_back(Omergevar[iii]);
@@ -84,7 +89,9 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
                        Oout.push_back(Oout[iii]); // and original end
                        Oevent.push_back(Oevent[iii]);
                        for(int j=0; j<numcov;j++)
-                         if(j==split(counter+ii,2)-1)Osplit[j].push_back(1);
+                         if(j==split(counter+ii,2)-1){Osplit[j].push_back(1);
+                           //Rcout <<"split new= Osplit="<<Osplit[j][iii]<<" counter="<<counter<<" ii="<<ii<<" iii="<<iii<<"\n";
+                         }   
                          else Osplit[j].push_back(Osplit[j][iii]);  // previous value
                          //Adjust old record
                        Oout[iii]=split(counter+ii,1);
@@ -93,7 +100,7 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
                      else
                        if (split(counter+ii,1)==Oout[iii] && Oevent[iii]==1){ // Date at end of period, period>=1 day and EVENT, create 2 records
                          //Date in period, create new record and adjust
-                         OUText +=1;
+                         OUT +=1;
                          Opnrnum.push_back(Opnrnum[iii]);
                          Omergevar.push_back(Omergevar[iii]);
                          Oinn.push_back(split(counter+ii,1)); // New starts at split
@@ -104,6 +111,7 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
                            else Osplit[j].push_back(Osplit[j][iii]);
                            //Adjust old record
                          Oevent[iii]=0; // No date change
+                         //Rcout <<"Split - Complicated end version"<<"\n";
                       }
            }// end iii-loop - base data copy
          } // End ii-loop - splitting guide

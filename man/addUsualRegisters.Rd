@@ -4,8 +4,15 @@
 \alias{addUsualRegisters}
 \title{Add usual registers to dpp object}
 \usage{
-addUsualRegisters(x, pop = TRUE, dod = TRUE, lmdb = TRUE,
-  lpr = TRUE, opr = TRUE, ...)
+addUsualRegisters(
+  x,
+  pop = TRUE,
+  dod = TRUE,
+  lmdb = TRUE,
+  lpr = TRUE,
+  opr = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{dpp object}
