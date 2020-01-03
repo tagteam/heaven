@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds & Christian Torp-Pedersen
 ## Created: Mar 11 2019 (10:30) 
 ## Version: 
-## Last-Updated: Nov 15 2019 (07:43) 
+## Last-Updated: Jan  3 2020 (12:04) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 31
+##     Update #: 37
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -35,7 +35,6 @@
 #' match="contain",condition.name="X")
 #' 
 #' @param data Data in which to search for conditions
-#' @param ptid - Variable defining individual
 #' @param vars Name(s) of variable(s) in which to search.
 #' @param keep a character vector of the columns in Data.table to keep in
 #' output
@@ -54,6 +53,19 @@
 #' @examples
 #' library(heaven)
 #' library(data.table)
+#'
+#' # find all diagnoses that start with "DT" 
+#' set.seed(800); adm <- simAdmissionData(800)
+#' x <- findCondition(adm,vars=c("diag"),
+#'         keep=c("pnr","inddto","uddto"),
+#'         conditions=list(THIS=c("DT")),
+#'         match="start",condition.name="THAT")
+#' x
+#' # restrict to first by pnr
+#' x[x[,.I[1],by=list(pnr)]$V1]
+#' # restrict to last by pnr
+#' x[x[,.I[.N],by=list(pnr)]$V1]
+#'  
 #' opr <- data.table(
 #'   pnr=1:100,opr=paste0(rep(c('A','B'),50),seq(0,100,10)),
 #'   oprtil=paste0(rep(c('A','C'),50),seq(0,100,10)),
@@ -64,7 +76,7 @@
 #' 
 #' excl <- list(Cond2='B100')
 #'
-#' out <- findCondition(opr,ptid="pnr",vars=c("opr","oprtil"),
+#' out <- findCondition(opr,vars=c("opr","oprtil"),
 #'         keep=c("pnr","odto"),
 #'         conditions=search, exclusions=excl,
 #'         match="start",condition.name="cond")
@@ -84,7 +96,7 @@
 #' # Whether to convert NAs to zero depends on the situation
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <tag@biostat.ku.dk>
 #' @export
-findCondition <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NULL, match = "contain", 
+findCondition <- function (data, vars, keep, conditions,exclusions=NULL, match = "contain", 
           condition.name = "X") 
 {
   .SD=pnrnum=.N=searchcol=NULL
@@ -155,14 +167,14 @@ findCondition <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NU
   searchCols <- unique(searchCols)
   setcolorder(searchCols,c("pnrnum","searchcol"))
   #cpp
-  out <- vectorSearch(searchCols[[1]],        # Vector of row numbers for searchCols
+  out <- vectorSearch(searchCols[[1]],       # Vector of row numbers for searchCols
                      searchCols[[2]],        # Vector with search values
                      conditions,             # Vector of inclusion conditions
                      exclusions,             # Vector of exclusion conditions
                      condnames,              # Names of conditions - same length as conditions
                      exclnames,              # Names of exclusions - same length as exclusions
                      num.cond,               # Number of inclusion criteria 
-                     max.cond,                # Number of inclusions in each block
+                     max.cond,               # Number of inclusions in each block
                      num.excl,               # Number of of exclusion criteria 
                      max.excl,               # Number of exclusion criteria
                      length(searchCols[[1]]),# Length of searchCols vector
@@ -172,7 +184,7 @@ findCondition <- function (data,ptid="pnr", vars, keep, conditions,exclusions=NU
   setnames(out,"X",condition.name)
   out <- merge(out,keepCols,by="pnrnum")
   out[,pnrnum:=NULL]
-  out
+  out[]
 }
 
 

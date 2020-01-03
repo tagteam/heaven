@@ -10,8 +10,6 @@ match="contain",condition.name="X")
 \arguments{
 \item{data}{Data in which to search for conditions}
 
-\item{ptid}{- Variable defining individual}
-
 \item{vars}{Name(s) of variable(s) in which to search.}
 
 \item{keep}{a character vector of the columns in Data.table to keep in
@@ -52,6 +50,19 @@ See examples for common use of the output
 \examples{
 library(heaven)
 library(data.table)
+
+# find all diagnoses that start with "DT" 
+set.seed(800); adm <- simAdmissionData(800)
+x <- findCondition(adm,vars=c("diag"),
+        keep=c("pnr","inddto","uddto"),
+        conditions=list(THIS=c("DT")),
+        match="start",condition.name="THAT")
+x
+# restrict to first by pnr
+x[x[,.I[1],by=list(pnr)]$V1]
+# restrict to last by pnr
+x[x[,.I[.N],by=list(pnr)]$V1]
+ 
 opr <- data.table(
   pnr=1:100,opr=paste0(rep(c('A','B'),50),seq(0,100,10)),
   oprtil=paste0(rep(c('A','C'),50),seq(0,100,10)),
@@ -62,7 +73,7 @@ Cond3=c('A1','C20','B2'))
 
 excl <- list(Cond2='B100')
 
-out <- findCondition(opr,ptid="pnr",vars=c("opr","oprtil"),
+out <- findCondition(opr,vars=c("opr","oprtil"),
         keep=c("pnr","odto"),
         conditions=search, exclusions=excl,
         match="start",condition.name="cond")
