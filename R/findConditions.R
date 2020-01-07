@@ -31,7 +31,7 @@
 #' 
 #' See examples for common use of the output
 #' @usage
-#' findCondition(data,ptid="pnr", vars, keep, conditions, exclusions=NULL, 
+#' findCondition(data, vars, keep, conditions, exclusions=NULL, 
 #' match="contain",condition.name="X")
 #' 
 #' @param data Data in which to search for conditions
@@ -91,9 +91,12 @@
 #' # Define a condition as present when before a certain index date
 #' dates <- data.table (pnr=1:100,basedate=sample(0:200,size=100,replace=TRUE))       
 #' test3 <- merge(out,dates,by="pnr")
-#' test3[,before:=as.numeric(odto<=basedate)] # 1 when condition fulfilled
+#' test3[,before:=as.numeric(odto<=basedate)] # 1 when condition fulfille
+#' test3 <- test3[,list(before=max(before)),by=c("pnr","cond")]
 #' test4 <- dcast(pnr~cond,value.var="before",data=test3)
-#' # Whether to convert NAs to zero depends on the situation
+#' test4[is.na(test4)] <- 0 # Converts NAs to zero
+#' test4[]
+#' 
 #' @author Christian Torp-Pedersen  <ctp@heart.dk>, Thomas A. Gerds <tag@biostat.ku.dk>
 #' @export
 findCondition <- function (data, vars, keep, conditions,exclusions=NULL, match = "contain", 

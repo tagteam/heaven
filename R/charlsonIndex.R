@@ -62,7 +62,7 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
   datt <- datt[data.date>=charlson.date-time*365.25 & data.date<=charlson.date]
   search.vars <- vars
   codes <- ccodes
-  datt <- findCondition(datt,"ptid",search.vars,keep="ptid",codes,match='start')
+  datt <- findCondition(datt,search.vars,keep="ptid",codes,match='start')
   setkeyv(datt,c("ptid","X"))
   datt <- unique(datt) # Only one of each
   index <- merge(datt,charlson.weights,by="X")
