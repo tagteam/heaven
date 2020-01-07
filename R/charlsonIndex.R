@@ -26,6 +26,10 @@
 #' supplied by heaven
 #' @details
 #' The charlson weights and selection of disease codes are from DCMG.dk
+#' 
+#' Note: The function only calculates a charlson index for those observations
+#' where the index is at least "1".  Cases with zero appears as NA and need to
+#' be converted to zero after the function.
 #' @return A list with 2 data.tables - index holding charlson index and elements 
 #' holding presence of each category
 #' @examples
