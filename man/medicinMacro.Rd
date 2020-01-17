@@ -11,7 +11,7 @@ medicinMacro(
   datesdb,
   type = "dynamic",
   drugdb.datevar = "eksd",
-  admdb.datevars = c("inddto", "uddto"),
+  admdb.datevars = c("first.indate", "last.outdate"),
   datesdb.datevars,
   method,
   cap.values,
@@ -54,7 +54,9 @@ if the value is 50 mg and usually a patient would consume 2 pills the default is
 
 \item{drugdb}{data.table with (subset of) medical drugs registry}
 
-\item{admdb}{data.table with (subset of) hospital admission registry}
+\item{admdb}{data.table with (subset of) hospital admission registry. The data.table should be
+prepared such that it contains only overnight hospital stay (i.e., pattype=2) and non-overlapping
+hospital stay periods, i.e., as obtained with \code{getAdmLimits} (SAS-AKA: code-from-hell).}
 
 \item{datesdb}{data.table with individual periods or time points of interest.
 Only used when the \code{type} argument is different from \code{"dynamic"}.
@@ -112,12 +114,14 @@ Processing function, to perform calculations according to the data and variables
 }
 \examples{
 set.seed(05021992)
+library(data.table)
 N=20
 packs = list("R03AK11"=list(c(750,75),c(500,200),c(400,200)),
              "R03AL03"=list(c(750,75),c(500,200),c(400,200)),
              "C01CA01"=list(c(200,100),c(750,30)))
 lmdb=simPrescriptionData(N,packages=packs)
 lpr=simAdmissionData(N)
+lpr <- getAdmLimits(lpr,collapse=TRUE)
 drug1 = list(atc=c("R03AK11","R03AL03","R03AC02","R03AC04","R03AC19",
                     "R03AL02","R03AA01","R03AC18","R03AL01"),
              maxdepot=4000,
@@ -135,7 +139,7 @@ drug2=list(atc=c("C01CA01","C01AA05"),
                       min = c(100, 200, 250,750),
                       max = c(300, 800, 1000,750),
                       def = c(200, 400, 500,750)))
-x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr[pattype==0])
+x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
 x$drug1
 
 ## Examples with other types

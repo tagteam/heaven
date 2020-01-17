@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Aug  6 2019 (11:03) 
+## last-updated: Jan 17 2020 (07:37) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 75
+##     Update #: 83
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -22,6 +22,7 @@
 ##' @param pnr Variable with ID for each subject/group (default is \code{pnr}).
 ##' @param inddto Variable with entry times. Must be date or numeric (default is \code{inddto}). 
 ##' @param uddto Variable with exit times. Must be date or numeric (default is \code{uddto}).
+##' @param keep Vector of names of variables of \code{dt} to keep in the output 
 ##' @param collapse if \code{TRUE} return only the lines with non-overlapping admissions
 ##' @param error Character. One of \code{"warn"}, \code{"remove"} remove lines with errors,
 ##' \code{"flag"} add a new variable called error. An error is defined as either a missing value in
@@ -56,12 +57,13 @@ getAdmLimits <- function(dt,
                          pnr="pnr",
                          inddto="inddto",
                          uddto="uddto",
+                         keep=NULL,
                          collapse=FALSE,
                          error="warn"){
     .SD=.I=NULL
     first.indate <- .N <- last.outdate <- NULL
-    ## take a hard copy
-    wdt=data.table::copy(dt)
+    ## select relevant variables
+    wdt=dt[,c(pnr,inddto,uddto,keep),with=FALSE]
     if (!is.data.table(wdt)){
         setDT(wdt)
     }
@@ -106,7 +108,7 @@ getAdmLimits <- function(dt,
     setkeyv(wdt,c(pnr,inddto))
     ## Latest admission date by pnr
     wdt[,`:=`(last.outdate=cummax(.SD[[1]])),.SDcols=uddto,by=pnr] 
-    ## Start of each admission 
+    ## Start of each admission
     wdt[,first.indate:= cumsum(c(1L,(1L*(.SD[[1]]>shift(.SD[[2]],n=1)))[-1])),.SDcols=c(inddto,"last.outdate"),by=pnr]
     ## Start and end date for the hospitalization
     wdt[,':='(first.indate=.SD[[1]][1] , last.outdate=.SD[[2]][.N]),.SDcols=c(inddto,"last.outdate"),by=c(pnr,"first.indate")]
@@ -125,11 +127,16 @@ getAdmLimits <- function(dt,
     wdt[,first.indate:=as.Date(first.indate,origin="1970-01-01")]
     wdt[,last.outdate:=as.Date(last.outdate,origin="1970-01-01")]
     if (collapse){
-        ## wdt <- wdt[,.SD[1],by=c(pnr,"first.indate","last.outdate")]
+        # remove now meaningless input columns
+        set(wdt,j=inddto,value=NULL)
+        set(wdt,j=uddto,value=NULL)
         n.before <- NROW(wdt)
         collapse.cols <- c(pnr,"first.indate","last.outdate")
         wdt <- wdt[wdt[, .I[1],by=collapse.cols]$V1]
-        message("Collapsed ",n.before," rows with multiple and overlapping periods into ",NROW(wdt)," rows.")
+        if (n.before==NROW(wdt))
+            message("Nothing to collapse.")
+        else
+            message("Collapsed ",n.before," rows with potentially multiple and overlapping periods into ",NROW(wdt)," rows.")
     }
     ## Create list and return
     class(wdt) <- c("admlimits",class(wdt))

@@ -27,7 +27,9 @@
 ##' }
 ##' (see examples).
 ##' @param drugdb data.table with (subset of) medical drugs registry
-##' @param admdb data.table with (subset of) hospital admission registry
+##' @param admdb data.table with (subset of) hospital admission registry. The data.table should be
+##' prepared such that it contains only overnight hospital stay (i.e., pattype=2) and non-overlapping
+##' hospital stay periods, i.e., as obtained with \code{getAdmLimits} (SAS-AKA: code-from-hell).
 ##' @param datesdb data.table with individual periods or time points of interest.
 ##' Only used when the \code{type} argument is different from \code{"dynamic"}.
 ##' Should contain one start and end date for each individual when \code{type} equal to \code{"period"} 
@@ -70,12 +72,14 @@
 ##'     on the famous SAS macro by Christian Tobias Torp-Pedersen
 ##' @examples
 ##' set.seed(05021992)
+##' library(data.table)
 ##' N=20
 ##' packs = list("R03AK11"=list(c(750,75),c(500,200),c(400,200)),
 ##'              "R03AL03"=list(c(750,75),c(500,200),c(400,200)),
 ##'              "C01CA01"=list(c(200,100),c(750,30)))
 ##' lmdb=simPrescriptionData(N,packages=packs)
 ##' lpr=simAdmissionData(N)
+##' lpr <- getAdmLimits(lpr,collapse=TRUE)
 ##' drug1 = list(atc=c("R03AK11","R03AL03","R03AC02","R03AC04","R03AC19",
 ##'                     "R03AL02","R03AA01","R03AC18","R03AL01"),
 ##'              maxdepot=4000,
@@ -93,7 +97,7 @@
 ##'                       min = c(100, 200, 250,750),
 ##'                       max = c(300, 800, 1000,750),
 ##'                       def = c(200, 400, 500,750)))
-##' x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr[pattype==0])
+##' x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
 ##' x$drug1
 ##'
 ##' ## Examples with other types
@@ -147,7 +151,7 @@ medicinMacro <- function(drugs,
                          datesdb,
                          type="dynamic",
                          drugdb.datevar="eksd",
-                         admdb.datevars=c("inddto","uddto"),
+                         admdb.datevars=c("first.indate","last.outdate"),
                          datesdb.datevars,
                          method,
                          cap.values,
@@ -159,6 +163,17 @@ medicinMacro <- function(drugs,
                          apk.var="apk",
                          splitting = FALSE,verbose=FALSE){
     atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
+    ## Check id variables
+    id.character.drug <- typeof(drugdb[[id]])=="character"
+    if (NROW(admdb)>0){
+        id.character.adm <- typeof(admdb[[id]])=="character"
+        if (id.character.adm != id.character.drug)
+            stop("The id variable ",id," should either both be character or both be numeric in input data sets: drugdb and admdb.")
+    }
+    ## Check date variables
+
+    ## Check pattype
+    
     ## Check type argument:
     if(!(type %in% c("dynamic", "period", "cross-sectional")))
         stop("Choose either type = \"dynamic\", \"period\" or \"cross-sectional\".")
@@ -214,7 +229,8 @@ medicinMacro <- function(drugs,
         if (any(dups <- duplicated(admdb[,c(id,admdb.datevars),with=FALSE]))){
             stop(paste0("Admission data argument 'admdb' has not been prepared correctly:\nThere are duplicated (and/or overlapping) admission periods in at least one person."))
         }
-        if ((length(ptype <- grep("pattype",names(admdb),ignore.case=TRUE,value=TRUE)[[1]])>0) && any(admdb[[ptype]]!=0)){
+        ptype <- grep("pattype",names(admdb),ignore.case=TRUE,value=TRUE)
+        if ((length(ptype)>0) && any(admdb[[ptype[[1]]]]!=0)){
             warning("Admission data argument 'admdb' contains admissions that are not overnight hospital admissions, i.e., pattype!=0.")
         }
         admdb.work <-  copy(admdb)
@@ -237,8 +253,7 @@ medicinMacro <- function(drugs,
         maxdepot     <- drugs[[j]]$maxdepot  
         drugdb.work   <- drugdb.work[atc %in% atcs, ]
         # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
-        id.character <- typeof(drugdb.work$pnr)=="character"
-        if(id.character){
+        if(id.character.drug){
             db = data.table(pnr.db=unique(drugdb.work$pnr))
             db[,tmp.index:=1:.N]
             drugdb.work = merge(drugdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
@@ -356,7 +371,7 @@ medicinMacro <- function(drugs,
                            setkey(out,pnr,firstday)
                        }
                        ## Revert pnr type change
-                       if(id.character)
+                       if(id.character.drug)
                            out = merge(out,db,by.x="pnr",by.y="tmp.index",all.x=TRUE)[,pnr:=pnr.db][,pnr.db:=NULL][]
                        processed[[drugname]] <- out[]
                    }

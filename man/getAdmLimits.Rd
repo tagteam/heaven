@@ -9,6 +9,7 @@ getAdmLimits(
   pnr = "pnr",
   inddto = "inddto",
   uddto = "uddto",
+  keep = NULL,
   collapse = FALSE,
   error = "warn"
 )
@@ -21,6 +22,8 @@ getAdmLimits(
 \item{inddto}{Variable with entry times. Must be date or numeric (default is \code{inddto}).}
 
 \item{uddto}{Variable with exit times. Must be date or numeric (default is \code{uddto}).}
+
+\item{keep}{Vector of names of variables of \code{dt} to keep in the output}
 
 \item{collapse}{if \code{TRUE} return only the lines with non-overlapping admissions}
 
