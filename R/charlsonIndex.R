@@ -26,6 +26,10 @@
 #' supplied by heaven
 #' @details
 #' The charlson weights and selection of disease codes are from DCMG.dk
+#' 
+#' Note: The function only calculates a charlson index for those observations
+#' where the index is at least "1".  Cases with zero appears as NA and need to
+#' be converted to zero after the function.
 #' @return A list with 2 data.tables - index holding charlson index and elements 
 #' holding presence of each category
 #' @examples
@@ -62,7 +66,7 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
   datt <- datt[data.date>=charlson.date-time*365.25 & data.date<=charlson.date]
   search.vars <- vars
   codes <- ccodes
-  datt <- findCondition(datt,"ptid",search.vars,keep="ptid",codes,match='start')
+  datt <- findCondition(datt,search.vars,keep="ptid",codes,match='start')
   setkeyv(datt,c("ptid","X"))
   datt <- unique(datt) # Only one of each
   index <- merge(datt,charlson.weights,by="X")
