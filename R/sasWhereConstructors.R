@@ -8,8 +8,9 @@
 #' @return Function returns a string that can be passed to the "where" statement
 #'   of importSAS. Alternatinvely it can be passed to makeSasWhereStatment
 #'   function to be combined with further SAS where statements
-#'
+#' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
 #' @examples
+#' sasDateRange("inddto", as.Date("2015-01-01"), as.Date("2016-01-01"))
 #' @export
 sasDateRange <-
   function(var.date,
@@ -42,7 +43,6 @@ rDateToSas <- function(rdate) {
 
 
 
-
 #' @title sasSubstr
 #'
 #' @description Helper function to construct a SAS 'where' statement to search through substrings in a SAS dataset via importSAS
@@ -60,6 +60,7 @@ rDateToSas <- function(rdate) {
 #'
 #' @return Returns a string that can be passed to the "where" arguments
 #'   of importSAS, or combined with other conditions in sasWhereConstructor
+#' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
 #' @export
 #' @seealso importSAS
 #' @examples
@@ -91,6 +92,7 @@ sasSubstr <- function(str.vec, target.var) {
 #' @param vec.where A vector of valid SAS where statements
 #'
 #' @return Returns a string that can be passed to the "where" argument of importSAS
+#' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
 #' @examples
 #' @export
 sasWhereConstructor <- function(..., collapse = " AND ") {

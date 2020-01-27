@@ -35,3 +35,6 @@ sasSubstr(x, target.var)
 \seealso{
 importSAS
 }
+\author{
+Matthew Phelps <mphelps@hjerteforeningen.dk>
+}

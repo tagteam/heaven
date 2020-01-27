@@ -50,6 +50,7 @@ Collate:
     'exposureMatch.R'
     'findConditions.R'
     'getAdmLimits.R'
+    'groupAges.R'
     'guessRawdataDirectory.R'
     'heaven-data.R'
     'heaven-package.R'

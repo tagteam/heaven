@@ -21,3 +21,9 @@ Function returns a string that can be passed to the "where" statement
 \description{
 Helper function for making sas "Where" statements for use in importSAS(). Creates date range (inclusive) in SAS formate
 }
+\examples{
+sasDateRange("inddto", as.Date("2015-01-01"), as.Date("2016-01-01"))
+}
+\author{
+Matthew Phelps <mphelps@hjerteforeningen.dk>
+}
