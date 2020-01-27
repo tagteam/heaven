@@ -72,6 +72,7 @@ Collate:
     'poissonregression.R'
     'print.riskSetMatch.R'
     'print.whattodo.R'
+    'sasWhereConstructors.R'
     'scanRawdata.R'
     'simAdmissionData.R'
     'simPop.R'
