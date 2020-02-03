@@ -44,6 +44,10 @@ never been used in Denmark.
 }
 \details{
 The charlson weights and selection of disease codes are from DCMG.dk
+
+Note: The function only calculates a charlson index for those observations
+where the index is at least "1".  Cases with zero appears as NA and need to
+be converted to zero after the function.
 }
 \examples{
 require(data.table)
