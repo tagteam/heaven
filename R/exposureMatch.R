@@ -56,9 +56,10 @@
 #' from a well defined baseline date. Missing values are interpreted as
 #' no event at the end of followup.
 #' @param end.followup Name of the variable which defines the date (as date or time)
-#' from which a control can no longer be selected due to
-#'\itemize{
+#' from which a control can no longer be selected as a control due in general to.
+#' \itemize{
 #' \item{death: }{Nothing happens thereafter}
+#' \item{exposure of interest}{a control can be selected among those that later develop condition of interest, but not after the date of exposure}
 #' \item{other competing risks: }{Event after which we are not interested in the subject anymore. E.g., the date of an outcome event.}
 #' \item{censoring: }{Event after which we do not observe anymore. E.g., emmigration, end of study period, end of registry, drop-out}
 #' }
