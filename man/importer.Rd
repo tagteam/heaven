@@ -4,7 +4,8 @@
 \alias{importer}
 \title{import data from a register}
 \usage{
-importer(data, residents = TRUE, where, keep = "pnr", select = "unique", ...)
+importer(data, residents = TRUE, where, keep = "pnr",
+  select = "unique", ...)
 }
 \arguments{
 \item{data}{names of data}

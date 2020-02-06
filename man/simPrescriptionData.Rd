@@ -4,14 +4,10 @@
 \alias{simPrescriptionData}
 \title{Prescription data simulation function}
 \usage{
-simPrescriptionData(
-  n,
-  max.prescriptions = 37,
-  packages = list(list(c(200, 30), c(400, 100), c(400, 300), c(500, 60)), list(c(750,
-    100), c(750, 250), c(75, 500))),
-  max.packages = 3,
-  startDate = "1995-01-01"
-)
+simPrescriptionData(n, max.prescriptions = 37,
+  packages = list(list(c(200, 30), c(400, 100), c(400, 300), c(500, 60)),
+  list(c(750, 100), c(750, 250), c(75, 500))), max.packages = 3,
+  startDate = "1995-01-01")
 }
 \arguments{
 \item{n}{Number of patients}

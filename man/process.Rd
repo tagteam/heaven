@@ -4,15 +4,8 @@
 \alias{process}
 \title{Data pre-processing}
 \usage{
-process(
-  x,
-  n = Inf,
-  fish = "studypop",
-  verbose = TRUE,
-  show.sas.code = FALSE,
-  restart = FALSE,
-  ...
-)
+process(x, n = Inf, fish = "studypop", verbose = TRUE,
+  show.sas.code = FALSE, restart = FALSE, ...)
 }
 \arguments{
 \item{x}{dpp object}

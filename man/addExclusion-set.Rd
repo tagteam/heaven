@@ -4,7 +4,8 @@
 \alias{addExclusion<-}
 \title{Inclusion instructions}
 \usage{
-addExclusion(x, name, target = "all", priority = c("late", "early"), ...) <- value
+addExclusion(x, name, target = "all", priority = c("late", "early"),
+  ...) <- value
 }
 \arguments{
 \item{x}{dpp object}

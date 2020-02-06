@@ -4,22 +4,8 @@
 \alias{simpoisson}
 \title{Simulate data for poisson regression}
 \usage{
-simpoisson(
-  N,
-  changepoints,
-  baseline,
-  beta,
-  gamma,
-  delta = 0,
-  comprisk,
-  alpha,
-  zeta,
-  px,
-  pz,
-  pv = NULL,
-  pxz = 0,
-  const = "none"
-)
+simpoisson(N, changepoints, baseline, beta, gamma, delta = 0, comprisk,
+  alpha, zeta, px, pz, pv = NULL, pxz = 0, const = "none")
 }
 \arguments{
 \item{N}{sample size.}

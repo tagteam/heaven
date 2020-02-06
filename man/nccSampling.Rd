@@ -4,18 +4,9 @@
 \alias{nccSampling}
 \title{Create dataset for nested case-control design}
 \usage{
-nccSampling(
-  pnr,
-  time,
-  status,
-  Ncontrols = 10L,
-  data = NULL,
-  match = NULL,
-  include = NULL,
-  Tstart = rep(0, length(pnr)),
-  exposureWindow = 0,
-  cores = 1
-)
+nccSampling(pnr, time, status, Ncontrols = 10L, data = NULL,
+  match = NULL, include = NULL, Tstart = rep(0, length(pnr)),
+  exposureWindow = 0, cores = 1)
 }
 \arguments{
 \item{pnr}{PNR for the individual patients}

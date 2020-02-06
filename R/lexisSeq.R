@@ -98,7 +98,10 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
   data.table::setDT(datt)
   if (is.null(varname)) 
     datt[, `:=`(varname, 0)]
-  else setnames(datt, varname, "varname")
+  else {
+    setnames(datt, varname, "varname")
+    datt[is.na(varname),varname:=as.Date("3000-01-01")] # Make missing varname very large
+  }
   datt[, `:=`(pnrnum, 1:.N)]
   splitdat <- datt[, .SD, .SDcols = c("pnrnum", invars[2:4], 
                                       "varname")]
@@ -130,7 +133,7 @@ lexisSeq <- function (indat, invars, varname = NULL, splitvector, format,
                                 inn, out, event, pnrnum, splitguide, varname)]  
   setDT(out)
   setkeyv(out, c("pnrnum", "inn"))
-  if(lubridate::is.Date(splitdat[,inn])){
+  if(isdate){
     out[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
   }
   if (is.null(varname)) 
