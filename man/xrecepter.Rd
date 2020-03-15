@@ -9,7 +9,7 @@ xrecepter(drugdb, adm, atc, window = 5, value, min, max, def, maxdepot,
   sas.program = "/usr/local/bin/sas ", sas.switches, sas.runner,
   macro = "~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
   save.tmp = FALSE, verbose = TRUE, server = "doob",
-  remote = FALSE, remote.home)
+  remote = FALSE, remote.home, left_only = 1)
 }
 \arguments{
 \item{drugdb}{drugdb data}
@@ -68,6 +68,9 @@ system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
 \item{remote}{if TRUE run on a remote (unix like) machine}
 
 \item{remote.home}{home folder on remote (unix like) machine}
+
+\item{left_only}{- when 1 only use prior prescription, when 0 use prior and
+future prescriptions.}
 }
 \description{
 wrapper for medicin macro

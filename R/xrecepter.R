@@ -37,6 +37,8 @@
 ##' @param user user name on remote (unix like) machine 
 ##' @param remote if TRUE run on a remote (unix like) machine
 ##' @param remote.home home folder on remote (unix like) machine
+##' @param left_only - when 1 only use prior prescription, when 0 use prior and
+##' future prescriptions.
 ##' @examples
 ##' library(heaven)
 ##' \dontrun{
@@ -87,7 +89,8 @@ xrecepter <- function(drugdb,
                       verbose=TRUE,
                       server="doob",
                       remote=FALSE,
-                      remote.home){
+                      remote.home,
+                      left_only=1){
     if (remote & missing(remote.home)) stop("Need directory remote.home to run SAS on remote server")
     if (missing(value) || length(value)!=4) stop("argument value should be a vector of length 4")
     if (missing(min) || length(min)!=4) stop("argument min should be a vector of length 4 (minimal dosages)")
@@ -224,7 +227,7 @@ xrecepter <- function(drugdb,
         1,
         0,
         test,
-        1)
+        left_only)
     \n",file=Prog,append=TRUE,sep="")
     ## cat("\nproc datasets; run;\n",file=Prog,append=TRUE,sep="")
     cat("\ndata mm.",name,"_alt; set ",name,"_alt;run;\n",sep="",file=Prog,append=TRUE)
