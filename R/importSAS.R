@@ -31,7 +31,7 @@
 ##'               possible to filter the rows of \code{filename} based on a data.table.
 ##'               E.g., filter can be a data.table with one column consisting of *unique*
 ##'               PNRs to specify that only matching rows should be imported from filename.
-##' @param filter.by Vector of arguments to filter by. Default is all variables present in the filter file. 
+##' @param filter.by Vector of arguments to filter by. By default all variables present in the filter data are used. 
 ##' @param filter.cond Vector of two arguments equal to one of the values: -1,0,1.
 ##'                    The first argument conditions on values from the filter file,
 ##'                    the second on the SAS dataset. 1 means that an observation is only
@@ -48,7 +48,7 @@
 ##' @param content Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.
 ##' @param na.strings A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information. 
 ##' @param date.vars Vector of variables to read as date variables.
-##' @param character.vars names of variables that should be converted to character. case does not matter. default is "pnr"
+##' @param character.vars names of variables that should be converted to character. case does not matter. default is "pnr".
 ##' @param numeric.vars character.vars names of variables that should be converted to numeric. case does not matter. 
 ##' @param sas.program sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
 ##' @param sas.switches On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}
@@ -330,8 +330,11 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
     ## ----------------------------- end proc contents -------------------------
 
     if (length(keep) > 0) {
-        ## make life easier for the user
-        keep <- c(keep, date.vars, numeric.vars, character.vars)
+        ## make life easier for the user: if pnr is not in var.names remove it
+        if (!("pnr" %in% var.names)) {        
+            character.vars <- character.vars[character.vars!="pnr"]
+        }
+        keep <- unique(c(keep, date.vars, numeric.vars, character.vars))
         if ("pnr" %in% var.names) {
             if (!("pnr" %in% keep)) keep <- c("pnr",keep)
         }
@@ -525,11 +528,11 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                                                            ia$colClasses[["numeric"]]))
                 }
             }
-                                        # reset filternames
+            # reset filternames
             if (length(filter) > 0){
                 setnames(filter,orig.filter.names)
             }
-            if (info$size == 1) {
+            if (info$size == 0) {
                 warning("The dataset produced by SAS appears to be empty.")
                 df <- NULL
             }
@@ -540,7 +543,7 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                     df <- NULL
                 }
             }
-            if (skip.date.conversion == FALSE) {
+            if ((length(df)>0) && (skip.date.conversion[[1]] == FALSE)) {
                 names(df) <- tolower(names(df))
                 if (!is.null(df) & sum(is.date) > 0) {
                     date.vars <- tolower(date.vars)
