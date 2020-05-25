@@ -97,46 +97,58 @@ lexisSeq <- function(indat,
                      splitvector,
                      value = "value") 
 {
-    event = out = inn = .SD = pnrnum = .N = isdate= NULL
-    if (class(invars) != "character") 
-        stop("Varnames in c(..) not character")
-    if (class(varname) != "character" & !is.null(varname)) 
-        stop("varname not character or NULL")
-    datt <- data.table::copy(indat)
-    data.table::setDT(datt)
-    if (is.null(varname)) 
-        datt[, `:=`(varname, 0)]
-    else setnames(datt, varname, "varname")
-    datt[, `:=`(pnrnum, 1:.N)]
-    print(names(datt))
-    print(c("pnrnum", invars[2:4], "varname"))
-    splitdat <- datt[, .SD, .SDcols = c("pnrnum", invars[2:4], 
-                                        "varname")]
-    setnames(splitdat,c("pnrnum", invars[2:4],"varname"), 
-             c("pnrnum", "inn", "out", "event", "varname"))
-    if (lubridate::is.Date(splitdat[,inn])){
-        splitdat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
-        isdate <- TRUE
-    }
-    else isdate <- FALSE
-    if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
-    datt[, `:=`((invars[2:4]), NULL)]
+  event = out = inn = .SD = pnrnum = .N = isdate= NULL
+  if (class(invars) != "character") 
+    stop("Varnames in c(..) not character")
+  if (class(varname) != "character" & !is.null(varname)) 
+    stop("varname not character or NULL")
+  datt <- data.table::copy(indat)
+  data.table::setDT(datt)
+  if (is.null(varname)) 
+    datt[, `:=`(varname, 0)]
+  else {
+    setnames(datt, varname, "varname")
+    datt[is.na(varname),varname:=as.Date("3000-01-01")] # Make missing varname very large
+  }
+  datt[, `:=`(pnrnum, 1:.N)]
+  splitdat <- datt[, .SD, .SDcols = c("pnrnum", invars[2:4], 
+                                      "varname")]
+  setnames(splitdat,c("pnrnum", invars[2:4],"varname"), 
+           c("pnrnum", "inn", "out", "event", "varname"))
+  if (lubridate::is.Date(splitdat[,inn])){
+    splitdat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
+    isdate <- TRUE
+  }
+  else isdate <- FALSE
+  if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
+  datt[, `:=`((invars[2:4]), NULL)]
+  if (!(format %in% c("vector", "seq"))) 
+    stop("format must be 'seq' or 'vector'")
+  if (format == "seq") {
+    if ((length(splitvector) != 3) || (splitvector[1] >= 
+                                       splitvector[2]) || (splitvector[3] >= (splitvector[2] - 
+                                                                              splitvector[1]))) 
+      stop("Argument 'seq' must be a vector of the form (start, stop, by) where start < stop and by < stop-start.")
+    splitguide <- seq(splitvector[1],splitvector[2],splitvector[3]) 
+  }  
+  else {
     if (length(splitvector)>1) 
-        for (i in 2:length(splitvector))
-            if (splitvector[i]<=splitvector[i-1]) stop("Splitvector not with increasing numbers")
-    splitguide <- splitvector
-    out <- splitdat[, splitDate(inn,out,event,pnrnum,splitguide,varname)]
-    setDT(out)
-    setkeyv(out, c("pnrnum", "inn"))
-    if(lubridate::is.Date(splitdat[,inn])){
-        out[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
-    }
-    if (is.null(varname)) 
-        datt[, `:=`(varname, NULL)]
-    else setnames(datt,"varname",varname)
-    out <- merge(out, datt, by = "pnrnum", all = TRUE)
-    out[, `:=`(pnrnum, NULL)]
-    setnames(out, c("inn", "out", "event", "value"), c(invars[2:4], 
-                                                       value))
-    out[]
+      for (i in 2:length(splitvector))
+        if (splitvector[i]<=splitvector[i-1]) stop("Splitvector not with increasing numbers")
+    splitguide <- splitvector     
+  }
+  out <- splitdat[, splitDate(inn, out, event, pnrnum, splitguide, varname)]  
+  setDT(out)
+  setkeyv(out, c("pnrnum", "inn"))
+  if(isdate){
+    out[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
+  }
+  if (is.null(varname)) 
+    datt[, `:=`(varname, NULL)]
+  else setnames(datt,"varname",varname)
+  out <- merge(out, datt, by = "pnrnum", all = TRUE)
+  out[, `:=`(pnrnum, NULL)]
+  setnames(out, c("inn", "out", "event", "value"), c(invars[2:4], 
+                                                     value))
+  out[]
 }

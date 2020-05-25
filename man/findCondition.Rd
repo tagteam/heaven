@@ -22,7 +22,7 @@ from the output.}
 
 \item{match}{A variable to tell how to use the character vectors:
 "exact"=exactly matches the search string, "contains"=contains the search
-string, "starts"=Starts with the search string, "end"=Ends with the search
+string, "start"=Starts with the search string, "end"=Ends with the search
 string}
 
 \item{condition.name}{Name of variable(s) where values define conditions. 
