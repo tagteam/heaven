@@ -50,8 +50,9 @@
 ##' @examples
 ##' 
 ##' data(Framingham)
-#'
+NULL
 
+#' 
 #' 
 #' @docType package
 #' @name heaven

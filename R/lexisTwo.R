@@ -1,5 +1,4 @@
 #' @title lexisTwo
-#' 
 #' @description
 #' Splitting is about collecting person specific exposure-outcome-confounder
 #' pattern over time in start-stop-event format.

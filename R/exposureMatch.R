@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Jun 26 2019 (08:57) 
 ## Version: 
-## Last-Updated: Jul  3 2019 (15:14) 
+## Last-Updated: Mar 12 2020 (10:39) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 45
+##     Update #: 46
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -150,8 +150,9 @@
 #' dat <- data.table(case,ptid,sex,byear,diabetes,heartdis,case.Index,
 #' control.Index,startDisease)
 #' # Exposure density matching
-#' matchdat <- exposureMatch("ptid","case",c("byear","sex"),data=dat,n.controls=2,
-#' case.index="case.Index",end.followup="control.Index")
+#' matchdat <- exposureMatch(ptid="ptid",event="case",
+#'             terms=c("byear","sex"),data=dat,n.controls=2,
+#'             case.index="case.Index",end.followup="control.Index")
 #' matchdat
 #' # Same with 2 cores
 #' \dontrun{

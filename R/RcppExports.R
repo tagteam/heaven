@@ -37,6 +37,7 @@ split2 <- function(pnrnum, inn, out, event, mergevar, split, numcov) {
     .Call('_heaven_split2', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, split, numcov)
 }
 
+#' @export
 splitDate <- function(inn, out, event, mergevar, seq, varname) {
     .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, seq, varname)
 }

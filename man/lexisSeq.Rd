@@ -19,11 +19,11 @@ order, example: c("id","start","end","event")}
 a sequence of fixed times with format="vector" or generate a sequence of 
 from-to-by if given 3 values and format="seq"}
 
-\item{format}{- either "vector" for fixed times or "seq" to generate a 
-sequence of from-to-by}
-
 \item{value}{- 0 to the left of the vector, increase of 1 as each element of 
 vector is passed}
+
+\item{format}{- either "vector" for fixed times or "seq" to generate a 
+sequence of from-to-by}
 }
 \value{
 The function returns a new data table where records have been split according 
@@ -83,6 +83,14 @@ kept in calculations depend on context.
 }
 \examples{
 library(data.table)
+# generate some example data with start and stop date per person id
+set.seed(8)
+d <- data.table(id=1:3,start=as.Date("2001-08-04")+runif(3,0,10000))
+d[,stop:=start+runif(3,0,10000)]
+d[,dummy:=1]
+lexisSeq(indat=d,invars=c("id","start","stop","dummy"),
+         splitvector=c("2000-01-01","2005-01-01","2010-01-01"))
+
 dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
                 start=as.Date(c(0,100,0,100,0,100,0,100),origin="1970-01-01"),
                 end=as.Date(c(100,200,100,200,100,200,100,200),origin="1970-01-01"),
@@ -90,7 +98,8 @@ dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
                 Bdate=as.Date(c(-5000,-5000,-2000,-2000,0,0,100,100),origin="1970-01-01"))
 #Example 1 - Splitting on a vector with 3 values to be added to "Bdate"                 
 out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-               varname="Bdate",as.Date(c(0,150,5000),origin="1970-01-01"),format="vector")
+               varname="Bdate",
+               splitvector=as.Date(c(0,150,5000),origin="1970-01-01"),format="vector")
 out[]
 #Example 2 - splitting on a from-to-by vector with no adding (calender time?)
 out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),

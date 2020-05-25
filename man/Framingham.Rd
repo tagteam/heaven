@@ -52,7 +52,5 @@ The Framingham dataset is a public version of several examinations of people in 
 \examples{
 
 data(Framingham)
-
-
 }
 \keyword{datasets}
