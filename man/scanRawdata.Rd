@@ -4,8 +4,11 @@
 \alias{scanRawdata}
 \title{Scan sas data files}
 \usage{
-scanRawdata(dir, which = c("pop", "doede", "diag", "lmdb", "opr"),
-  verbose = FALSE)
+scanRawdata(
+  dir,
+  which = c("pop", "doede", "diag", "lmdb", "opr"),
+  verbose = FALSE
+)
 }
 \arguments{
 \item{dir}{directory which contains the sas files}

@@ -4,9 +4,21 @@
 \alias{exposureMatch}
 \title{Exact matching on time-dependent exposure}
 \usage{
-exposureMatch(ptid, event, terms, data, n.controls, case.index = NULL,
-  end.followup = NULL, date.terms = NULL, duration.terms = NULL,
-  output.count.controls = TRUE, cores = 1, seed, progressbar = TRUE)
+exposureMatch(
+  ptid,
+  event,
+  terms,
+  data,
+  n.controls,
+  case.index = NULL,
+  end.followup = NULL,
+  date.terms = NULL,
+  duration.terms = NULL,
+  output.count.controls = TRUE,
+  cores = 1,
+  seed,
+  progressbar = TRUE
+)
 }
 \arguments{
 \item{ptid}{Personal ID variable defining participant}
@@ -141,8 +153,9 @@ library(data.table)
 dat <- data.table(case,ptid,sex,byear,diabetes,heartdis,case.Index,
 control.Index,startDisease)
 # Exposure density matching
-matchdat <- exposureMatch("ptid","case",c("byear","sex"),data=dat,n.controls=2,
-case.index="case.Index",end.followup="control.Index")
+matchdat <- exposureMatch(ptid="ptid",event="case",
+            terms=c("byear","sex"),data=dat,n.controls=2,
+            case.index="case.Index",end.followup="control.Index")
 matchdat
 # Same with 2 cores
 \dontrun{

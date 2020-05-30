@@ -4,12 +4,31 @@
 \alias{xrecepter}
 \title{wrapper for medicin macro}
 \usage{
-xrecepter(drugdb, adm, atc, window = 5, value, min, max, def, maxdepot,
-  period = c("'01jan1995'd", "'31dec2015'd"), name = "adrug", user, wd,
-  sas.program = "/usr/local/bin/sas ", sas.switches, sas.runner,
+xrecepter(
+  drugdb,
+  adm,
+  atc,
+  window = 5,
+  value,
+  min,
+  max,
+  def,
+  maxdepot,
+  period = c("'01jan1995'd", "'31dec2015'd"),
+  name = "adrug",
+  user,
+  wd,
+  sas.program = "/usr/local/bin/sas ",
+  sas.switches,
+  sas.runner,
   macro = "~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
-  save.tmp = FALSE, verbose = TRUE, server = "doob",
-  remote = FALSE, remote.home, left_only = 1)
+  save.tmp = FALSE,
+  verbose = TRUE,
+  server = "doob",
+  remote = FALSE,
+  remote.home,
+  left_only = 1
+)
 }
 \arguments{
 \item{drugdb}{drugdb data}

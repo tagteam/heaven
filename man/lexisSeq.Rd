@@ -7,27 +7,23 @@
 lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
 }
 \arguments{
-\item{indat}{- base data with id, start, end, event and other data - possibly 
+\item{indat}{base data with id, start, end, event and other data - possibly 
 already split}
 
-\item{invars}{- vector of colum names for id/entry/exit/event - in that 
+\item{invars}{colum names for id,entry,exit,event - in that 
 order, example: c("id","start","end","event")}
 
-\item{varname}{- name of variable to be added to vector}
+\item{varname}{name of variable to be added to vector}
 
-\item{splitvector}{- A vector of calender times (integer). Splitvector can be 
-a sequence of fixed times with format="vector" or generate a sequence of 
-from-to-by if given 3 values and format="seq"}
+\item{splitvector}{A vector of calender times (integer). Splitvector is
+a sequence of fixed dates (or other time scala).}
 
-\item{value}{- 0 to the left of the vector, increase of 1 as each element of 
+\item{value}{0 to the left of the vector, increase of 1 as each element of 
 vector is passed}
-
-\item{format}{- either "vector" for fixed times or "seq" to generate a 
-sequence of from-to-by}
 }
 \value{
 The function returns a new data table where records have been split according 
-to the provided vector. Variables unrelated to the splitting are left 
+to the values in splitvector. Variables unrelated to the splitting are left 
 unchanged.
 }
 \description{
@@ -99,11 +95,11 @@ dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
 #Example 1 - Splitting on a vector with 3 values to be added to "Bdate"                 
 out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
                varname="Bdate",
-               splitvector=as.Date(c(0,150,5000),origin="1970-01-01"),format="vector")
+               splitvector=as.Date(c(0,150,5000),origin="1970-01-01"))
 out[]
-#Example 2 - splitting on a from-to-by vector with no adding (calender time?)
+#Example 2 - splitting on a from-to-by sequence with no adding (calender time?)
 out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-                 varname=NULL,c(0,200,50),format="seq",value="myvalue")
+                 varname=NULL,splitvector=seq(0,200,50),value="myvalue")
 out2[]
 }
 \seealso{

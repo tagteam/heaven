@@ -63,8 +63,9 @@
 ##'     is \code{"strnum"}.
 ##' @param packsize.var Name of variable to identify size of
 ##'     packages. Default is \code{"packsize"}.
+##' @param atc.var Name of variable to identify drugs. Default is \code{"atc"}.
 ##' @param apk.var Name of variable to identify number of
-##'     packages. Default is \code{"packsize"}.
+##'     packages. Default is \code{"apk"}.
 ##' @param splitting Split the data into 10 chunks to estimate
 ##'     remaining time (and possibly speed up computation).
 ##' @param verbose 
@@ -160,6 +161,7 @@ medicinMacro <- function(drugs,
                          id = "pnr",
                          strength.var = "strnum",
                          packsize.var="packsize",
+                         atc.var="atc",
                          apk.var="apk",
                          splitting = FALSE,verbose=FALSE){
     atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
@@ -234,6 +236,7 @@ medicinMacro <- function(drugs,
             warning("Admission data argument 'admdb' contains admissions that are not overnight hospital admissions, i.e., pattype!=0.")
         }
         admdb.work <-  copy(admdb)
+        if (id!="pnr") setnames(admdb.work,id,"pnr")
         if (any(admdb.datevars!=c("inddto","uddto"))) {
             setnames(admdb.work,admdb.datevars[1],"inddto")
             setnames(admdb.work,admdb.datevars[2],"uddto")
@@ -246,11 +249,12 @@ medicinMacro <- function(drugs,
         if (strength.var!="strnum") setnames(drugdb.work,strength.var,"strnum")
         if (packsize.var!="packsize") setnames(drugdb.work,packsize.var,"packsize")
         if (apk.var!="apk") setnames(drugdb.work,apk.var,"apk")
+        if (atc.var!="atc") setnames(drugdb.work,atc.var,"atc")
         if (drugdb.datevar!="eksd") setnames(drugdb.work,drugdb.datevar,"eksd")
         j            <- (1:length(drugs))[names(drugs) == drugname]
         atcs         <- unlist(drugs[[j]]$atc)
         doses        <- drugs[[j]]$doses
-        maxdepot     <- drugs[[j]]$maxdepot  
+        maxdepot     <- drugs[[j]]$maxdepot
         drugdb.work   <- drugdb.work[atc %in% atcs, ]
         # Quick fix to change pnr to integer if needed (assuming the id-val names are "pnr" for both dt)
         if(id.character.drug){

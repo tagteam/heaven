@@ -41,7 +41,7 @@ possible to filter the rows of \code{filename} based on a data.table.
 E.g., filter can be a data.table with one column consisting of *unique*
 PNRs to specify that only matching rows should be imported from filename.}
 
-\item{filter.by}{Vector of arguments to filter by. Default is all variables present in the filter file.}
+\item{filter.by}{Vector of arguments to filter by. By default all variables present in the filter data are used.}
 
 \item{filter.cond}{Vector of two arguments equal to one of the values: -1,0,1.
 The first argument conditions on values from the filter file,
@@ -71,7 +71,7 @@ excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{date.vars}{Vector of variables to read as date variables.}
 
-\item{character.vars}{names of variables that should be converted to character. case does not matter. default is "pnr"}
+\item{character.vars}{names of variables that should be converted to character. case does not matter. default is "pnr".}
 
 \item{numeric.vars}{character.vars names of variables that should be converted to numeric. case does not matter.}
 
