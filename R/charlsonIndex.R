@@ -75,6 +75,8 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
   elements[,component:=1]
   elements <- dcast(elements,ptid~X,value.var="component")
   elements[is.na(elements)] <- 0
+  setnames(index,"ptid",ptid)
+  setnames(elements,"ptid",ptid)
   charlson.index <- list(index,elements)
   charlson.index
 }

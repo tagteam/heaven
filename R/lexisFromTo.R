@@ -91,12 +91,10 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     # Check csplit content
     temp <- csplit[start>slut,sum(start>slut)]
     if (temp>0) stop("Error - Attempt to split with negative date intervals in splitting guide") 
-    precols = paste("prior", c("start","slut"), sep="_")
-    cols <-c("start","slut")
-    csplit[, (precols) := shift(.SD, 1, 0, "lag"), .SDcols=cols,by=c("name","pnrnum")]
-    error <-dim(csplit[start-prior_slut<0,])[1]
+    csplit[,prior_slut:=shift(slut),by=c("name","pnrnum")]
+    error <-dim(csplit[!is.na(prior_slut) & start-prior_slut<0,])[1]
     if (error>0) stop("Error in splitting guide data - Intervals overlapping - unpredictable results")    
-    suppressWarnings(csplit[,(precols):=NULL])#remove extra variables
+    csplit[,prior_slut:=NULL]
     # Get list of names
     nams <- unique(csplit[["name"]]) # provides order of names for later renaming
     name <- data.table(nams,1:length(nams))
