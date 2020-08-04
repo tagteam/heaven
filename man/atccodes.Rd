@@ -4,9 +4,7 @@
 \name{atccodes}
 \alias{atccodes}
 \title{atccodes}
-\format{
-A data.table
-}
+\format{A data.table}
 \usage{
 atccodes
 }

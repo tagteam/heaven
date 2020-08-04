@@ -119,7 +119,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                                         # Select controls - rbind of each split-member that selects controls
     `%dopar%` <- foreach::`%dopar%`
     ## selected.controls <- do.call(rbind,foreach::foreach(controls=split.work.data,.packages=c("heaven")) %dopar% {
-    selected.controls <- do.call(rbind,foreach::foreach(sub=1:length(split.work.data),.packages=c("heaven")) %dopar% {
+    selected.controls <- do.call(rbind,foreach::foreach(sub=1:length(split.work.data),.packages=c("heaven","data.table")) %dopar% {
         controls=split.work.data[[sub]]
         ## find lengths of controls and cases
         Tcontrols<-NROW(controls)
@@ -149,7 +149,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             duration.start.controls <- as.matrix(0)
             duration.min <- double(1)
         }
-        if (!missing(seed)) set.seed(seed)
+        # if (!missing(seed)) set.seed(seed)
         Output <- Matcher(n.controls,
                           Tcontrols,
                           Ncases,

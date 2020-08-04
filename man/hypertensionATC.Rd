@@ -4,9 +4,7 @@
 \name{hypertensionATC}
 \alias{hypertensionATC}
 \title{hypertensionATC}
-\format{
-A list
-}
+\format{A list}
 \usage{
 hypertensionATC
 }

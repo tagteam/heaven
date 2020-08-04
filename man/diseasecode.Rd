@@ -4,9 +4,7 @@
 \name{diseasecode}
 \alias{diseasecode}
 \title{diseasecode}
-\format{
-A list
-}
+\format{A list}
 \usage{
 diseasecode
 }

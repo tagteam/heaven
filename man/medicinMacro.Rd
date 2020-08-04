@@ -20,6 +20,7 @@ medicinMacro(
   id = "pnr",
   strength.var = "strnum",
   packsize.var = "packsize",
+  atc.var = "atc",
   apk.var = "apk",
   splitting = FALSE,
   verbose = FALSE
@@ -101,8 +102,10 @@ is \code{"strnum"}.}
 \item{packsize.var}{Name of variable to identify size of
 packages. Default is \code{"packsize"}.}
 
+\item{atc.var}{Name of variable to identify drugs. Default is \code{"atc"}.}
+
 \item{apk.var}{Name of variable to identify number of
-packages. Default is \code{"packsize"}.}
+packages. Default is \code{"apk"}.}
 
 \item{splitting}{Split the data into 10 chunks to estimate
 remaining time (and possibly speed up computation).}
