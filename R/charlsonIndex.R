@@ -86,8 +86,10 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
     elements[!exists(cond),(cond):=0]
   }
   elements[is.na(elements)] <- 0
+  # Remove double points for severe/mild
   elements[severe.liver.disease==1,mild.liver.disease:=0]
   elements[diabetes.with.complications==1,diabetes.without.complications:=0]
+  elements[metastatic.solid.tumor==1,any.malignancy:=0]
   # Index
   index <- melt(elements,id.vars="ptid",measure.vars=charlson.weights[,X],variable.name="X",value.name="value",variable.factor=FALSE)
   index <- merge(index,charlson.weights,by="X",all=TRUE)
