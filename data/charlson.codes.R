@@ -8,7 +8,7 @@
 ### Code:
 #' @export 
 charlson.codes <- list(
- myocardial.infarction=c('410','DI21','DI22','DI25'),
+ myocardial.infarction=c('410','DI21','DI22'),
  heart.failure=c('42709', '42710', '42711', '42719', '42899', '78249','DI099','DI110','DI130','DI132','DI255','DI425','DI426','DI427','DI429','DI428A','DP290','DI43','DI50',
                  'DE105', 'DE115', 'DE125', 'DE135', 'DE145'),
  peripheral.vascular.disease=c('440','441', '442', '443', '444', '445','DI70','DI71','DI72','DI731','DI738','DI739','DI77','DI790','DI792','DK551','DK558','DK559','DZ958','DZ959'),
