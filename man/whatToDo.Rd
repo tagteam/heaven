@@ -4,17 +4,8 @@
 \alias{whatToDo}
 \title{What to do: split and combine or bootstrap?}
 \usage{
-whatToDo(
-  FUN,
-  B = 10,
-  K = 10,
-  mydata,
-  myargs,
-  myargsBoot,
-  myargsPart,
-  timeunit = "mins",
-  myseed = 29021986
-)
+whatToDo(FUN, B = 10, K = 10, mydata, myargs, myargsBoot, myargsPart,
+  timeunit = "mins", myseed = 29021986)
 }
 \arguments{
 \item{FUN}{Name of function to call.}

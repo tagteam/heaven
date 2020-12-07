@@ -4,22 +4,10 @@
 \alias{selector}
 \title{Selecting and collecting information from raw data}
 \usage{
-selector(
-  data,
-  var,
-  name,
-  varnames,
-  by = "pnr",
-  search.term = NULL,
-  search.expression = NULL,
-  sortkey = NULL,
-  period = NULL,
-  backward = NULL,
-  forward = NULL,
-  select = "first",
-  collect = NULL,
-  ...
-)
+selector(data, var, name, varnames, by = "pnr", search.term = NULL,
+  search.expression = NULL, sortkey = NULL, period = NULL,
+  backward = NULL, forward = NULL, select = "first",
+  collect = NULL, ...)
 }
 \arguments{
 \item{data}{Name of raw data source}
