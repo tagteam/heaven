@@ -4,7 +4,8 @@
 \name{Framingham}
 \alias{Framingham}
 \title{Public version of Framingham data}
-\format{The Framingham dataset is a public version of several examinations of people in the Framingham study. Various variables have been adjusted to ensure anonymity of people. Thus, the data cannot be used for science, only demonstration of R-code. 
+\format{
+The Framingham dataset is a public version of several examinations of people in the Framingham study. Various variables have been adjusted to ensure anonymity of people. Thus, the data cannot be used for science, only demonstration of R-code. 
 \describe{
 \item{randid}{person code} 
 \item{sex}{1=male 2=female} 
@@ -45,7 +46,8 @@
 \item{timecvd}{days til cardiovascular disease} 
 \item{timedth}{days til death} 
 \item{timehyp}{days til hypertension} 
-}}
+}
+}
 \description{
 The Framingham dataset is a public version of several examinations of people in the Framingham study. Various variables have been adjusted to ensure anonymity of people. Thus, the data cannot be used for science, only demonstration of R-code.
 }

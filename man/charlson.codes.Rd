@@ -4,7 +4,9 @@
 \name{charlson.codes}
 \alias{charlson.codes}
 \title{charlson.codes}
-\format{A list}
+\format{
+A list
+}
 \usage{
 charlson.codes
 }

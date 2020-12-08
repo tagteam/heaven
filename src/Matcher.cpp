@@ -84,8 +84,8 @@ List Matcher(int Ncontrols, // Desired number of controls
       innerCounter+=1;
     } // end while
   }// End loop for each case  
-  return List::create(Named("selectedCases") = selectedCases,
-		      Named("selectedControls") = selectedControls);
+			  return List::create(Named("selectedCases") = selectedCases,
+					      Named("selectedControls") = selectedControls);
 }
 
 
