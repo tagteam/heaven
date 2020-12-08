@@ -11,6 +11,15 @@
 #' provided in a supplement for publication.  The data included in this package
 #' "charlson.codes" includes a selection of ICD8 and ICD10 codes.  ICD9 has
 #' never been used in Denmark.
+#' 
+#' Note: Only cases that have at least one of the relevant diseases will be 
+#' given values with this function.  The remaining should manually be provided
+#' zeroes.
+#' 
+#' Note: as of October 2020 there is an update: Previous AMI was removed from
+#' MIs, Severe diabetes/liver disease causes ignoring mils versions of those.
+#' Lymphoma and leukemia are removed from "all cancer". All cancer weight is 
+#' changed to 2.
 #' @usage charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
 #' ,ccodes=charlson.codes)
 #' @author Christian Torp-Pedersen 
@@ -61,7 +70,7 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
     "hemiplegia.paraplegia","renal.disease","any.malignancy",
     "metastatic.solid.tumor","AIDS.HIV","leukemia",
     "lymphoma"),
-    weight=c(1,1,1,1,1,1,1,1,1,3,1,2,2,2,6,6,6,2,2)
+    weight=c(1,1,1,1,1,1,1,1,1,3,1,2,2,2,2,6,6,2,2)
   )
   datt <- datt[data.date>=charlson.date-time*365.25 & data.date<=charlson.date]
   search.vars <- vars
@@ -69,14 +78,26 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
   datt <- findCondition(datt,search.vars,keep="ptid",codes,match='start')
   setkeyv(datt,c("ptid","X"))
   datt <- unique(datt) # Only one of each
-  index <- merge(datt,charlson.weights,by="X")
-  index <- index[,list(charlson.index=sum(weight)),by=ptid]
-  elements <- merge(datt,charlson.weights,by='X')
+  # Elements:
+  elements <- copy(datt)
   elements[,component:=1]
-  elements <- dcast(elements,ptid~X,value.var="component")
+  elements <- dcast(elements,ptid~X,value.var="component")  
+  for (cond in charlson.weights[,X]){ 
+    elements[!exists(cond),(cond):=0]
+  }
   elements[is.na(elements)] <- 0
-  setnames(index,"ptid",ptid)
+  # Remove double points for severe/mild
+  elements[severe.liver.disease==1,mild.liver.disease:=0]
+  elements[diabetes.with.complications==1,diabetes.without.complications:=0]
+  elements[metastatic.solid.tumor==1,any.malignancy:=0]
+  # Index
+  index <- melt(elements,id.vars="ptid",measure.vars=charlson.weights[,X],variable.name="X",value.name="value",variable.factor=FALSE)
+  index <- merge(index,charlson.weights,by="X",all=TRUE)
+  index[,weight:=weight*value]
+  index <- index[,list(charlson.index=sum(weight)),by=ptid]
+  #Output
   setnames(elements,"ptid",ptid)
+  setnames(index,"ptid",ptid)
   charlson.index <- list(index,elements)
   charlson.index
 }

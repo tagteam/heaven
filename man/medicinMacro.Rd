@@ -4,27 +4,12 @@
 \alias{medicinMacro}
 \title{Medicin macro to estimate prescription lengths and averages}
 \usage{
-medicinMacro(
-  drugs,
-  drugdb,
-  admdb,
-  datesdb,
-  type = "dynamic",
-  drugdb.datevar = "eksd",
-  admdb.datevars = c("first.indate", "last.outdate"),
-  datesdb.datevars,
-  method,
-  cap.values,
-  window,
-  pre.window,
-  id = "pnr",
-  strength.var = "strnum",
-  packsize.var = "packsize",
-  atc.var = "atc",
-  apk.var = "apk",
-  splitting = FALSE,
-  verbose = FALSE
-)
+medicinMacro(drugs, drugdb, admdb, datesdb, type = "dynamic",
+  drugdb.datevar = "eksd", admdb.datevars = c("first.indate",
+  "last.outdate"), datesdb.datevars, method, cap.values, window,
+  pre.window, id = "pnr", strength.var = "strnum",
+  packsize.var = "packsize", atc.var = "atc", apk.var = "apk",
+  splitting = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{drugs}{A named list of drugs. Each element of this list should be a list

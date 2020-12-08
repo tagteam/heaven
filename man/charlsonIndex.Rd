@@ -41,6 +41,15 @@ apply for a Danish Population and the listing used should be either cited or
 provided in a supplement for publication.  The data included in this package
 "charlson.codes" includes a selection of ICD8 and ICD10 codes.  ICD9 has
 never been used in Denmark.
+
+Note: Only cases that have at least one of the relevant diseases will be 
+given values with this function.  The remaining should manually be provided
+zeroes.
+
+Note: as of October 2020 there is an update: Previous AMI was removed from
+MIs, Severe diabetes/liver disease causes ignoring mils versions of those.
+Lymphoma and leukemia are removed from "all cancer". All cancer weight is 
+changed to 2.
 }
 \details{
 The charlson weights and selection of disease codes are from DCMG.dk

@@ -5,18 +5,9 @@
 \title{Standardize proportions and absolute risks to a given age
     distribution}
 \usage{
-standardize.rate(
-  x,
-  age = "agegroups",
-  exposure,
-  by,
-  standardize.to = "ref.level",
-  data,
-  method = "gamma",
-  level = 0.95,
-  crude = TRUE,
-  ...
-)
+standardize.rate(x, age = "agegroups", exposure, by,
+  standardize.to = "ref.level", data, method = "gamma", level = 0.95,
+  crude = TRUE, ...)
 }
 \arguments{
 \item{x}{List of names of variable names used to calculate the rates.
