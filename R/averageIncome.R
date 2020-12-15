@@ -32,12 +32,16 @@
 #' averageIncome(dat,indkomst,c("pnr","dato"),c("pnr","year","income"))
 #' @export
 averageIncome <- function(data,income,datvars,incomevars,numyears=5){
-  year=yearinc=.SD=.=NULL 
-  dat <- data[,..datvars]
+  if(!"data.frame" %in% class(data)) stop("First variable must be a data.frame or data.table")
+  if(!"data.frame" %in% class(income)) stop("First variable must be a data.frame or data.table")
+  if(!class(datvars)=="character" | !length(datvars)==2) stop("datvars must be a character vector of two")
+  if(!class(incomevars)=="character" | !length(incomevars)==3) stop("incomevars must be a character vector of three")
+  year=yearinc=.SD= .=NULL 
+  dat <- data[,.SD,.SDcols=datvars]
   data.table::setDT(dat)
   data.table::setnames(dat,c("ID","year"))
   dat[,year:=year(year)]
-  inc <- income[,..incomevars]
+  inc <- income[,.SD,.SDcols=incomevars]
   data.table::setnames(inc,c("ID","yearinc","income"))
   # Merge
   out <- merge(inc,dat,by="ID")
