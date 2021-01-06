@@ -4,8 +4,7 @@
 \alias{addInclusion<-}
 \title{Inclusion instructions}
 \usage{
-addInclusion(x, name, target = "all", priority = c("late", "early"),
-  ...) <- value
+addInclusion(x, name, target = "all", priority = c("late", "early"), ...) <- value
 }
 \arguments{
 \item{x}{dpp object}

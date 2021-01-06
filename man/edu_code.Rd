@@ -4,7 +4,9 @@
 \name{edu_code}
 \alias{edu_code}
 \title{"edu_code"}
-\format{A data.table}
+\format{
+A data.table
+}
 \usage{
 edu_code
 }

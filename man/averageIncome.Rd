@@ -13,6 +13,10 @@ date from which the previous years' income should be averaged.}
 \item{income}{- A dataframe with at least three variables which are the 
 identification of individual, the year and the income}
 
+\item{datvars}{- A character vector of two: identification and the date 
+representing the year that is just after the years used to calculate
+average income.}
+
 \item{incomevars}{- A character with three variables: identification variable,
 year and income - in that order}
 

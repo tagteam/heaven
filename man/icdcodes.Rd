@@ -4,7 +4,9 @@
 \name{icdcodes}
 \alias{icdcodes}
 \title{icdcodes}
-\format{A data.table}
+\format{
+A data.table
+}
 \usage{
 icdcodes
 }

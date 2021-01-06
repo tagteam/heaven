@@ -4,9 +4,21 @@
 \alias{exposureMatch}
 \title{Exact matching on time-dependent exposure}
 \usage{
-exposureMatch(ptid, event, terms, data, n.controls, case.index = NULL,
-  end.followup = NULL, date.terms = NULL, duration.terms = NULL,
-  output.count.controls = TRUE, cores = 1, seed, progressbar = TRUE)
+exposureMatch(
+  ptid,
+  event,
+  terms,
+  data,
+  n.controls,
+  case.index = NULL,
+  end.followup = NULL,
+  date.terms = NULL,
+  duration.terms = NULL,
+  output.count.controls = TRUE,
+  cores = 1,
+  seed,
+  progressbar = TRUE
+)
 }
 \arguments{
 \item{ptid}{Personal ID variable defining participant}

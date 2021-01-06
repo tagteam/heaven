@@ -4,8 +4,18 @@
 \alias{standardize.proportion}
 \title{Standardize proportions and absolute risks to a given age distribution}
 \usage{
-standardize.proportion(vars, agevar, byvar, data, ref = 2, formula,
-  cause, times, level = 0.95, ...)
+standardize.proportion(
+  vars,
+  agevar,
+  byvar,
+  data,
+  ref = 2,
+  formula,
+  cause,
+  times,
+  level = 0.95,
+  ...
+)
 }
 \arguments{
 \item{vars}{Name vector of categorical variables}
