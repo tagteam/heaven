@@ -95,11 +95,13 @@ dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
 #Example 1 - Splitting on a vector with 3 values to be added to "Bdate"                 
 out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
                varname="Bdate",
-               splitvector=as.Date(c(0,150,5000),origin="1970-01-01"))
+               splitvector=as.Date(c(0,150,5000),origin="1970-01-01"),
+               format="vector")
 out[]
 #Example 2 - splitting on a from-to-by sequence with no adding (calender time?)
 out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-                 varname=NULL,splitvector=seq(0,200,50),value="myvalue")
+                 varname=NULL,splitvector=c(0,200,50),
+                 format="seq",value="myvalue")
 out2[]
 }
 \seealso{

@@ -4,8 +4,17 @@
 \alias{groupAges}
 \title{groupAges}
 \usage{
-groupAges(x, lower, upper, by, sep = " - ", include.below = TRUE,
-  include.above = TRUE, below.char = "<", above.char = "+")
+groupAges(
+  x,
+  lower,
+  upper,
+  by,
+  sep = " - ",
+  include.below = TRUE,
+  include.above = TRUE,
+  below.char = "<",
+  above.char = "+"
+)
 }
 \arguments{
 \item{x}{Vector to be grouped (usually ages in years)}

@@ -4,9 +4,16 @@
 \alias{addVariable<-}
 \title{Add a variable to a dpp object}
 \usage{
-addVariable(x, target, data, type = c("merge", "join", "rbind"),
-  depends = NULL, priority = c("late", "early"), by = NULL,
-  ...) <- value
+addVariable(
+  x,
+  target,
+  data,
+  type = c("merge", "join", "rbind"),
+  depends = NULL,
+  priority = c("late", "early"),
+  by = NULL,
+  ...
+) <- value
 }
 \arguments{
 \item{x}{dpp object}

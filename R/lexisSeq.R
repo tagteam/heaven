@@ -68,13 +68,6 @@
 #' @seealso lexis2 lexisFromTo 
 #' @examples
 #' library(data.table)
-#' # generate some example data with start and stop date per person id
-#' set.seed(8)
-#' d <- data.table(id=1:3,start=as.Date("2001-08-04")+runif(3,0,10000))
-#' d[,stop:=start+runif(3,0,10000)]
-#' d[,dummy:=1]
-#' lexisSeq(indat=d,invars=c("id","start","stop","dummy"),
-#'          splitvector=c("2000-01-01","2005-01-01","2010-01-01"))
 #' 
 #' dat <- data.table(ptid=c("A","A","B","B","C","C","D","D"),
 #'                 start=as.Date(c(0,100,0,100,0,100,0,100),origin="1970-01-01"),
@@ -84,20 +77,23 @@
 #' #Example 1 - Splitting on a vector with 3 values to be added to "Bdate"                 
 #' out <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
 #'                varname="Bdate",
-#'                splitvector=as.Date(c(0,150,5000),origin="1970-01-01"))
+#'                splitvector=as.Date(c(0,150,5000),origin="1970-01-01"),
+#'                format="vector")
 #' out[]
 #' #Example 2 - splitting on a from-to-by sequence with no adding (calender time?)
 #' out2 <- lexisSeq(indat=dat,invars=c("ptid","start","end","dead"),
-#'                  varname=NULL,splitvector=seq(0,200,50),value="myvalue")
+#'                  varname=NULL,splitvector=c(0,200,50),
+#'                  format="seq",value="myvalue")
 #' out2[]
 #' @export
 lexisSeq <- function(indat,
                      invars,
                      varname = NULL,
                      splitvector,
+                     format,
                      value = "value") 
 {
-  event = out = inn = .SD = pnrnum = .N = isdate= NULL
+  vent = out = inn = .SD = pnrnum = .N = isdate= NULL
   if (class(invars) != "character") 
     stop("Varnames in c(..) not character")
   if (class(varname) != "character" & !is.null(varname)) 
@@ -137,7 +133,7 @@ lexisSeq <- function(indat,
         if (splitvector[i]<=splitvector[i-1]) stop("Splitvector not with increasing numbers")
     splitguide <- splitvector     
   }
-  out <- splitdat[, splitDate(inn, out, event, pnrnum, splitguide, varname)]  
+  out <- splitdat[, heaven::splitDate(inn, out, event, pnrnum, splitguide, varname)]  
   setDT(out)
   setkeyv(out, c("pnrnum", "inn"))
   if(isdate){

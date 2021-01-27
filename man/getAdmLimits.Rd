@@ -4,8 +4,15 @@
 \alias{getAdmLimits}
 \title{Get Admission time}
 \usage{
-getAdmLimits(dt, pnr = "pnr", inddto = "inddto", uddto = "uddto",
-  keep = NULL, collapse = FALSE, error = "warn")
+getAdmLimits(
+  dt,
+  pnr = "pnr",
+  inddto = "inddto",
+  uddto = "uddto",
+  keep = NULL,
+  collapse = FALSE,
+  error = "warn"
+)
 }
 \arguments{
 \item{dt}{data.table containing the variables}
