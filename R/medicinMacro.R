@@ -245,6 +245,7 @@ medicinMacro <- function(drugs,
     for (drugname in names(drugs)){
         ## treatfun <- function(drugname) {
         drugdb.work <-  copy(drugdb)
+        admdb.work.drug <- copy(admdb.work)
         if (id!="pnr") setnames(drugdb.work,id,"pnr")
         if (strength.var!="strnum") setnames(drugdb.work,strength.var,"strnum")
         if (packsize.var!="packsize") setnames(drugdb.work,packsize.var,"packsize")
@@ -262,7 +263,7 @@ medicinMacro <- function(drugs,
             db[,tmp.index:=1:.N]
             drugdb.work = merge(drugdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
             if(NROW(admdb)>0)
-                admdb.work = merge(admdb.work,db,by.x="pnr",by.y="pnr.db", all.x=TRUE)[,pnr:=tmp.index][,tmp.index:=NULL][]
+                admdb.work.drug = merge(admdb.work.drug,db,by.x="pnr",by.y="pnr.db")[,pnr:=tmp.index][,tmp.index:=NULL][]
             ## now continuing with numeric id (changing back in the end)
         }
         ## Check if there is sufficient drug info for the data:
@@ -280,7 +281,7 @@ medicinMacro <- function(drugs,
                    else
                        processed[[drugname]] <- mm1(drugs=drugs[[drugname]],
                                                     drugdb=drugdb.work,
-                                                    admdb=admdb.work,
+                                                    admdb=admdb.work.drug,
                                                     time.points=datesdb.work,
                                                     method=method,
                                                     stash=maxdepot,
@@ -296,7 +297,7 @@ medicinMacro <- function(drugs,
                    else
                        processed[[drugname]] <- mm2(drugs=drugs[[drugname]],
                                                     drugdb=drugdb.work,
-                                                    admdb=admdb.work,
+                                                    admdb=admdb.work.drug,
                                                     periods=datesdb.work,
                                                     method=method,
                                                     stash=maxdepot,
@@ -317,7 +318,7 @@ medicinMacro <- function(drugs,
                        processed[[drugname]] <- NULL
                    }else{
                        if (NROW(admdb)>0){
-                           admdb.work.j   <- admdb.work[inddto<= period[2] & uddto >= period[1], ]
+                           admdb.work.j   <- admdb.work.drug[inddto<= period[2] & uddto >= period[1], ]
                        }else{
                            admdb.work.j <- data.table(pnr=numeric(0),inddto=numeric(0),uddto=numeric(0))
                        }
