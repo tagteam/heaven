@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-06 Sat 19:25 -->
+<!-- 2021-02-06 Sat 19:21 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>R-package heaven</title>
@@ -226,40 +226,40 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org3218e8e">1. About</a></li>
-<li><a href="#orgea626ac">2. Prelimnaries</a></li>
-<li><a href="#orgd06af11">3. Philosophy</a>
+<li><a href="#org7a90feb">1. About</a></li>
+<li><a href="#orga3c175b">2. Prelimnaries</a></li>
+<li><a href="#org3aeeb11">3. Philosophy</a>
 <ul>
-<li><a href="#orgcd67018">3.1. What is real</a></li>
-<li><a href="#orgbaff360">3.2. Ordnung muss sein</a></li>
-<li><a href="#org07b96cf">3.3. TMP and TEMP folders are temporary</a></li>
+<li><a href="#org3b7130f">3.1. What is real</a></li>
+<li><a href="#org63ed06e">3.2. Ordnung muss sein</a></li>
+<li><a href="#org6488ca9">3.3. TMP and TEMP folders are temporary</a></li>
 </ul>
 </li>
-<li><a href="#org1b9d0ab">4. R-studio users</a></li>
-<li><a href="#org01cd854">5. Introduction to heaven</a>
+<li><a href="#orgc9834f9">4. R-studio users</a></li>
+<li><a href="#org280e26b">5. Introduction to heaven</a>
 <ul>
-<li><a href="#orgdbf0996">5.1. Raw data import</a></li>
-<li><a href="#orgc157d19">5.2. Hypertension medication</a></li>
-<li><a href="#org7b84a1c">5.3. Charlson Index</a></li>
-<li><a href="#orga74038e">5.4. DREAM register</a></li>
-<li><a href="#org9e61df3">5.5. getAdmLimits</a></li>
-<li><a href="#org7421915">5.6. findCondition</a></li>
-<li><a href="#org1649b24">5.7. medicinMacro</a></li>
-<li><a href="#org3c280d5">5.8. Lexis functions</a></li>
-<li><a href="#org7603cf0">5.9. Matching</a></li>
-<li><a href="#org26a49bb">5.10. averageIncome</a></li>
+<li><a href="#orgdfef5fd">5.1. Raw data import</a></li>
+<li><a href="#orgbc5655f">5.2. Hypertension medication</a></li>
+<li><a href="#org73ed385">5.3. Charlson Index</a></li>
+<li><a href="#org855a936">5.4. DREAM register</a></li>
+<li><a href="#orgab56739">5.5. getAdmLimits</a></li>
+<li><a href="#orge7f91b2">5.6. findCondition</a></li>
+<li><a href="#org99c548d">5.7. medicinMacro</a></li>
+<li><a href="#orgc67b70a">5.8. Lexis functions</a></li>
+<li><a href="#orgc69d963">5.9. Matching</a></li>
+<li><a href="#orgcdaad02">5.10. averageIncome</a></li>
 </ul>
 </li>
-<li><a href="#org172718b">6. Build-in datasets</a>
+<li><a href="#org4d748cc">6. Build-in datasets</a>
 <ul>
-<li><a href="#orgd8b74a6">6.1. ATC codes</a></li>
+<li><a href="#orga6bb149">6.1. ATC codes</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org3218e8e" class="outline-2">
-<h2 id="org3218e8e"><span class="section-number-2">1</span> About</h2>
+<div id="outline-container-org7a90feb" class="outline-2">
+<h2 id="org7a90feb"><span class="section-number-2">1</span> About</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 The R package <code>heaven</code> includes a series of functions that are
@@ -278,8 +278,8 @@ simple overview and details of each program are found on the help pages for each
 </div>
 </div>
 
-<div id="outline-container-orgea626ac" class="outline-2">
-<h2 id="orgea626ac"><span class="section-number-2">2</span> Prelimnaries</h2>
+<div id="outline-container-orga3c175b" class="outline-2">
+<h2 id="orga3c175b"><span class="section-number-2">2</span> Prelimnaries</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li>You should know or learn <code>data.table</code> because data on Denmark
@@ -288,12 +288,12 @@ Statistics are large.</li>
 </div>
 </div>
 
-<div id="outline-container-orgd06af11" class="outline-2">
-<h2 id="orgd06af11"><span class="section-number-2">3</span> Philosophy</h2>
+<div id="outline-container-org3aeeb11" class="outline-2">
+<h2 id="org3aeeb11"><span class="section-number-2">3</span> Philosophy</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgcd67018" class="outline-3">
-<h3 id="orgcd67018"><span class="section-number-3">3.1</span> What is real</h3>
+<div id="outline-container-org3b7130f" class="outline-3">
+<h3 id="org3b7130f"><span class="section-number-3">3.1</span> What is real</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 Many R-beginners think the objects in the workspace, Enviroment, Data view, and
@@ -311,8 +311,8 @@ results, if also the project is set up in a good way.
 </div>
 </div>
 
-<div id="outline-container-orgbaff360" class="outline-3">
-<h3 id="orgbaff360"><span class="section-number-3">3.2</span> Ordnung muss sein</h3>
+<div id="outline-container-org63ed06e" class="outline-3">
+<h3 id="org63ed06e"><span class="section-number-3">3.2</span> Ordnung muss sein</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 Working directories corresponding to a phd or other purpose project
@@ -333,8 +333,8 @@ createProject(<span style="color: #8b2252;">"v:/data/workdata/701234/YourName/st
 </div>
 </div>
 
-<div id="outline-container-org07b96cf" class="outline-3">
-<h3 id="org07b96cf"><span class="section-number-3">3.3</span> TMP and TEMP folders are temporary</h3>
+<div id="outline-container-org6488ca9" class="outline-3">
+<h3 id="org6488ca9"><span class="section-number-3">3.3</span> TMP and TEMP folders are temporary</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 To save time when picking up project work at intermediate stages (from
@@ -362,8 +362,8 @@ very many intermediate results.
 </div>
 </div>
 
-<div id="outline-container-org1b9d0ab" class="outline-2">
-<h2 id="org1b9d0ab"><span class="section-number-2">4</span> R-studio users</h2>
+<div id="outline-container-orgc9834f9" class="outline-2">
+<h2 id="orgc9834f9"><span class="section-number-2">4</span> R-studio users</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>Go to Global options under Tools and tell R to never restore <code>.RData</code>
@@ -380,12 +380,12 @@ where one of them is the current version.</li>
 </div>
 </div>
 
-<div id="outline-container-org01cd854" class="outline-2">
-<h2 id="org01cd854"><span class="section-number-2">5</span> Introduction to heaven</h2>
+<div id="outline-container-org280e26b" class="outline-2">
+<h2 id="org280e26b"><span class="section-number-2">5</span> Introduction to heaven</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgdbf0996" class="outline-3">
-<h3 id="orgdbf0996"><span class="section-number-3">5.1</span> Raw data import</h3>
+<div id="outline-container-orgdfef5fd" class="outline-3">
+<h3 id="orgdfef5fd"><span class="section-number-3">5.1</span> Raw data import</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 Check the raw in this project:
@@ -424,8 +424,8 @@ following are important:
 </div>
 </div>
 
-<div id="outline-container-orgc157d19" class="outline-3">
-<h3 id="orgc157d19"><span class="section-number-3">5.2</span> Hypertension medication</h3>
+<div id="outline-container-orgbc5655f" class="outline-3">
+<h3 id="orgbc5655f"><span class="section-number-3">5.2</span> Hypertension medication</h3>
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 <pre class="src src-R">help(hypertensionMedication)
@@ -455,8 +455,8 @@ modified list if necessary.
 </div>
 </div>
 
-<div id="outline-container-org7b84a1c" class="outline-3">
-<h3 id="org7b84a1c"><span class="section-number-3">5.3</span> Charlson Index</h3>
+<div id="outline-container-org73ed385" class="outline-3">
+<h3 id="org73ed385"><span class="section-number-3">5.3</span> Charlson Index</h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
 <pre class="src src-R">help(charlsonIndex)
@@ -478,8 +478,8 @@ diagnoses.
 </div>
 
 
-<div id="outline-container-orga74038e" class="outline-3">
-<h3 id="orga74038e"><span class="section-number-3">5.4</span> DREAM register</h3>
+<div id="outline-container-org855a936" class="outline-3">
+<h3 id="org855a936"><span class="section-number-3">5.4</span> DREAM register</h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 The DREAM register is a Danish register which holds receipt of public
@@ -505,8 +505,8 @@ profession.
 </div>
 
 
-<div id="outline-container-org9e61df3" class="outline-3">
-<h3 id="org9e61df3"><span class="section-number-3">5.5</span> getAdmLimits</h3>
+<div id="outline-container-orgab56739" class="outline-3">
+<h3 id="orgab56739"><span class="section-number-3">5.5</span> getAdmLimits</h3>
 <div class="outline-text-3" id="text-5-5">
 <div class="org-src-container">
 <pre class="src src-R">help(getAdmLimits)
@@ -522,8 +522,8 @@ the true initial date and true discharge date are added.
 </div>
 </div>
 
-<div id="outline-container-org7421915" class="outline-3">
-<h3 id="org7421915"><span class="section-number-3">5.6</span> findCondition</h3>
+<div id="outline-container-orge7f91b2" class="outline-3">
+<h3 id="orge7f91b2"><span class="section-number-3">5.6</span> findCondition</h3>
 <div class="outline-text-3" id="text-5-6">
 <div class="org-src-container">
 <pre class="src src-R">help(findCondition)
@@ -544,8 +544,8 @@ this can be transposed to wide form for various purposes.
 </div>
 </div>
 
-<div id="outline-container-org1649b24" class="outline-3">
-<h3 id="org1649b24"><span class="section-number-3">5.7</span> medicinMacro</h3>
+<div id="outline-container-org99c548d" class="outline-3">
+<h3 id="org99c548d"><span class="section-number-3">5.7</span> medicinMacro</h3>
 <div class="outline-text-3" id="text-5-7">
 <div class="org-src-container">
 <pre class="src src-R">help(medicinMacro)
@@ -579,8 +579,8 @@ old SAS function for calculations.
 </div>
 </div>
 
-<div id="outline-container-org3c280d5" class="outline-3">
-<h3 id="org3c280d5"><span class="section-number-3">5.8</span> Lexis functions</h3>
+<div id="outline-container-orgc67b70a" class="outline-3">
+<h3 id="orgc67b70a"><span class="section-number-3">5.8</span> Lexis functions</h3>
 <div class="outline-text-3" id="text-5-8">
 <p>
 Lexis functions are made to "split" observations to have new values of
@@ -624,8 +624,8 @@ calender periods or age
 </div>
 
 
-<div id="outline-container-org7603cf0" class="outline-3">
-<h3 id="org7603cf0"><span class="section-number-3">5.9</span> Matching</h3>
+<div id="outline-container-orgc69d963" class="outline-3">
+<h3 id="orgc69d963"><span class="section-number-3">5.9</span> Matching</h3>
 <div class="outline-text-3" id="text-5-9">
 <p>
 There are two function available for matching
@@ -669,8 +669,8 @@ matching successes and reuse of cases/controls
 </div>
 </div>
 
-<div id="outline-container-org26a49bb" class="outline-3">
-<h3 id="org26a49bb"><span class="section-number-3">5.10</span> averageIncome</h3>
+<div id="outline-container-orgcdaad02" class="outline-3">
+<h3 id="orgcdaad02"><span class="section-number-3">5.10</span> averageIncome</h3>
 <div class="outline-text-3" id="text-5-10">
 <div class="org-src-container">
 <pre class="src src-R">help(averageIncome)
@@ -685,12 +685,12 @@ two data.tables/frames with ID/dage and with ID/year/income. The default period 
 </div>
 </div>
 
-<div id="outline-container-org172718b" class="outline-2">
-<h2 id="org172718b"><span class="section-number-2">6</span> Build-in datasets</h2>
+<div id="outline-container-org4d748cc" class="outline-2">
+<h2 id="org4d748cc"><span class="section-number-2">6</span> Build-in datasets</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-orgd8b74a6" class="outline-3">
-<h3 id="orgd8b74a6"><span class="section-number-3">6.1</span> ATC codes</h3>
+<div id="outline-container-orga6bb149" class="outline-3">
+<h3 id="orga6bb149"><span class="section-number-3">6.1</span> ATC codes</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 A named list of character vectors defining selected diseases
@@ -722,22 +722,13 @@ division accordint to ISCED (9 levels)
 <pre class="src src-R">edu_code  
 </pre>
 </div>
-
-<p>
-A named list with character codes for Charlson Index
-</p>
-
-<div class="org-src-container">
-<pre class="src src-R">charlson.codes
-</pre>
-</div>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Christian Tobias Torp-Pedersen &amp; Thomas Alexander Gerds</p>
-<p class="date">Created: 2021-02-06 Sat 19:25</p>
+<p class="date">Created: 2021-02-06 Sat 19:21</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

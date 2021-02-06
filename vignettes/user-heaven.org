@@ -3,11 +3,9 @@
 #+superman-export-target: html
 * About 
 
-The R package =heaven= is the natural response to the legendary
-=code-from-hell.sas=. Heaven includes a series of functions that are
-useful when working with Danish registry data (on the Gentofte
-servers) on Denmark Statistics. See intro below, details of the
-functionality can be found in the other help pages and vignettes.
+The R package =heaven= includes a series of functions that are
+useful when working with Danish registry data on Denmark Statistics.This document provides a
+simple overview and details of each program are found on the help pages for each program.
 
 - Thanks to Jesper Lindhardsen and Anders Munch for their work on =importSAS= 
 - In case of R-trouble complain to 
@@ -142,7 +140,7 @@ modified list if necessary.
 help(charlsonIndex)
 #+END_SRC
 
-This function takes as input a data.table of diagnosers and outputs a list
+This function takes as input a data.table of diagnoses and outputs a list
 with two elements. The first is the Charlson index of each individual at
 the specified time. The other is presence of components of the Charlson 
 Index.
@@ -172,7 +170,7 @@ provides as dates. The function can output either funding or
 profession.
 
 
-** Hospital admissions 
+** getAdmLimits
 
 # #+name: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -185,7 +183,7 @@ corresponding to start and end are present. The function will for each
 individual examine consecutive admissions and when there is overlap
 the true initial date and true discharge date are added.
 
-** Extracting conditions from opr and lpr registers 
+** findCondition 
 
 # #+name: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
@@ -195,7 +193,7 @@ help(findCondition)
 
 This function can from a data.table select records where a character
 variables partially match selected values. Typical use is to define
-diseases, operations of treatments based on international codes. The
+diseases, operations of treatments based on available codes. The
 function finds multiple conditions in one step.
 
 =findCondition= produces a long form output and the examples show how
@@ -293,6 +291,25 @@ This function performs exposure density matching. For each case with a
 date of exposure a number of controls are selected that are alive and
 event-free and not yet exposed.
 
+# #+name: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+help(matchReport)
+#+END_SRC
+
+This function takes the result of matching as input and provides a simple table of
+matching successes and reuse of cases/controls
+
+** averageIncome
+# #+name: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+help(averageIncome)
+#+END_SRC
+
+This function calculates average income over a selected period of years prior to a chosen date. The input are
+two data.tables/frames with ID/dage and with ID/year/income. The default period is 5 years.
+
 * Build-in datasets 
 
 ** ATC codes
@@ -323,4 +340,12 @@ division accordint to ISCED (9 levels)
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
 #+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
 edu_code  
+#+END_SRC
+
+A named list with character codes for Charlson Index
+
+# #+name: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+charlson.codes
 #+END_SRC
