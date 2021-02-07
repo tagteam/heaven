@@ -31,13 +31,13 @@ og erstatte den med den vedhæftete fil - som skal udpakkes
 2. for at installere den nye version skal følgende kommandoer køres
 
 library(devtools)
-library(tools)
-library(pkgbuild)
 setwd("v:/data/alle/heaven")
-document()
-pkgbuild::build()
-#tools::buildVignettes(package='heaven')
-install(build_vignettes=TRUE,force=TRUE)
+Rcpp::compileAttributes()
+pkgbuild::compile_dll()
+devtools::document()
+tools::buildVignettes(dir=rprojroot::find_root("DESCRIPTION", "."))
+newpkg =pkgbuild::build(needs_compilation=TRUE)
+devtools::install(build_vignettes=TRUE,force=TRUE)
 library(heaven)
 
 på forhånd mange tak for hjælpen !
