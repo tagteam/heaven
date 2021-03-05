@@ -77,3 +77,13 @@
 #' @name charlson.codes
 
 "charlson.codes"
+
+#' kommune_codes
+#'
+#' data.table with the names and codes of every kommune, and the region they belong to
+#' @format A data.table
+#' @docType data
+#' @keywords datasets
+#' @name kommune_codes
+
+"kommune_codes"
