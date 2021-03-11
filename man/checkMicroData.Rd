@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkMicroData.R
 \name{checkMicroData}
 \alias{checkMicroData}
-\title{Checks univariate tables for microdata}
+\title{Check utable outputs for microdata}
 \usage{
 checkMicroData(dat, min.val = 5)
 }
@@ -15,7 +15,10 @@ checkMicroData(dat, min.val = 5)
 A message showing the location of any microdata found, or a statement that no microdata was found
 }
 \description{
-Checks univariate tables for microdata
+This function checks a summarized utable object for microdata. Currently it
+checks all data colums and all rows. This means it may flag means, medians,
+etc as microdata, even though they might be fine to export (i.e if the mean
+value of some variable is 2, this function will flag it as microdata).
 }
 \examples{
 checkMicroData(summary(Publish::utable(cyl ~ vs, data=mtcars)))
