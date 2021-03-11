@@ -45,6 +45,7 @@ Collate:
     'addUsualRegisters.R'
     'averageIncome.R'
     'charlsonIndex.R'
+    'checkMicroData.R'
     'createProject.R'
     'dpp.R'
     'riskSetMatch.R'
