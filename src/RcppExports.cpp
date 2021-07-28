@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // Matcher
 List Matcher(int Ncontrols, int Tcontrols, int Ncases, NumericVector endFollowUp, NumericVector caseIndex, NumericVector controls, NumericVector cases, int Ndateterms, NumericMatrix datescases, NumericMatrix datescontrols, int Ndurationterms, NumericMatrix durationcases, NumericMatrix durationcontrols, NumericVector durationMin);
 RcppExport SEXP _heaven_Matcher(SEXP NcontrolsSEXP, SEXP TcontrolsSEXP, SEXP NcasesSEXP, SEXP endFollowUpSEXP, SEXP caseIndexSEXP, SEXP controlsSEXP, SEXP casesSEXP, SEXP NdatetermsSEXP, SEXP datescasesSEXP, SEXP datescontrolsSEXP, SEXP NdurationtermsSEXP, SEXP durationcasesSEXP, SEXP durationcontrolsSEXP, SEXP durationMinSEXP) {

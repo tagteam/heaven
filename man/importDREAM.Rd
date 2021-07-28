@@ -4,7 +4,7 @@
 \alias{importDREAM}
 \title{importDREAM}
 \usage{
-importDREAM(dreamData,explData=NULL,type="support",pnr="PNR")
+importDREAM(dreamData,explData=NULL,type="support",pnr="pnr")
 }
 \arguments{
 \item{dreamData}{Name of dataset holding DREAM data. Typically product of
@@ -35,20 +35,22 @@ the function returns a data.table with the following variables:
 }
 \description{
 The DREAM dataset is a SAS dataset where all in the Danish population that
-have received public funding are recorded. A number of variables are presen-
-ted. For a detailed description of DREAM refer to www.dreammodel.dk/
+have received public funding are recorded. A number of variables are 
+presented. For a detailed description of DREAM refer to www.dreammodel.dk
+
 The current function can output 2 datasets from the DREAM database 
 \itemize{
-\item{support}{A long version data.table providing a record per week for all 
+\item{support}{  A long version data.table providing a record per week for all 
 registered individual with start/end/supportcode and support description}
-\item{branche}{A long version data.table providing a record per month for
+\item{branche}{  A long version data.table providing a record per month for
 type of profession with start/end/work-code and description}
 }
 The description provided must be merged from a text file with matching code
 and description.  These text-files can be found in statistics Denmark in the
 area holding standard Statistics Denmark formats: "//srvfsenas1/formater/
-SAS formater i Danmarks Statistik/txt_filer". Multiple formats are available
-for more or less crude grouping.
+SAS formater i Danmarks Statistik/txt_file-r". Multiple formats are available
+for more or less crude grouping.  These files are SAS format files, but can
+easily be converted by removing start and end and other slight modifications.
 }
 \details{
 DREAM data are organized in a special way.  From the start of recording there

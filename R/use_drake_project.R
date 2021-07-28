@@ -1,4 +1,4 @@
-#'@Title Sets up your directory for a drake project
+#'@title Sets up your directory for a drake project
 #'
 #'@description Helper function that will create some scafolding to help you
 #'  easily start a drake project
