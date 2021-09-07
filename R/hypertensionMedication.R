@@ -9,6 +9,9 @@
 #' directly validated, this function can also calculate the date of start of 
 #' hypertension as a date where an individual has picked up at least two classes
 #' of antihypertensive medication for two consecutive periods of 3 months.
+#' 
+#' Note:  If there are repeats of ptid with separate index.date, then the
+#' presence of hypertension is evaluated for each date.
 #' @usage hypertensionMedication(data, vars=c("ptid","ATCcode",
 #'  "prescription.date"), index.date=NULL,medication.definition=hypertensionATC)
 #' @author Christian Torp-Pedersen 
@@ -48,7 +51,7 @@
 #'             replace=TRUE),
 #'  EKSD=as.Date("2012-01-01")+(sample(1:600,100,replace=TRUE)),
 #'  ptid=1:10,
-#'  index=as.Date("2013-06-01")+seq(80,98,2))
+#'  index=c(rep(as.Date("2013-06-01"),50),rep(as.Date("2013-06-02"),50)))
 #' setkey(dat,"ptid")  
 #' # Hypertension with indexdate:
 #' index <- hypertensionMedication(dat,vars=c("ptid","ATC","EKSD"),
@@ -72,9 +75,9 @@ hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
     setnames(datt,index.date,"index")
     out <- findCondition(datt,"atc",c("pt","date","index"),hypertensionATC,match="start")
     out <- out[date>=index-180 & date<=index] # Last 6 months
-    setkeyv(out,c("pt","X"))
-    out <- out[,.SD[1],by=c("pt","X")]
-    out <- out[,list(numDrugs=.N),by="pt"]
+    setkeyv(out,c("pt","index","X"))
+    out <- out[,.SD[1],by=c("pt","index","X")]
+    out <- out[,list(numDrugs=.N),by=c("pt","index")]
     out[,hypertension:=as.integer(numDrugs>=2)]
   }
   else {

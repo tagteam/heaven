@@ -12,14 +12,12 @@
 #' "charlson.codes" includes a selection of ICD8 and ICD10 codes.  ICD9 has
 #' never been used in Denmark.
 #' 
+#' If there are repeats of patient id with different index date (data.date), 
+#' then Charlson index is calcultated independently for each of these dates.
+#' 
 #' Note: Only cases that have at least one of the relevant diseases will be 
 #' given values with this function.  The remaining should manually be provided
 #' zeroes.
-#' 
-#' Note: as of October 2020 there is an update: Previous AMI was removed from
-#' MIs, Severe diabetes/liver disease causes ignoring mils versions of those.
-#' Lymphoma and leukemia are removed from "all cancer". All cancer weight is 
-#' changed to 2.
 #' @usage charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
 #' ,ccodes=charlson.codes)
 #' @author Christian Torp-Pedersen 
@@ -44,8 +42,11 @@
 #' @examples
 #' require(data.table)
 #' set.seed(211)
-#' adm <- simAdmissionData(10000)
+#' adm <- simAdmissionData(10)
 #' adm[,charlson.date:=as.Date("2017-01-01")]
+#' adm2 <- adm[1:5]
+#' adm2[,charlson.date:=as.Date("2015-01-01")]
+#' adm <- rbind(adm,adm2)
 #' ci <- charlsonIndex(adm,ptid='pnr',vars='diag',data.date='inddto',
 #'   charlson.date="charlson.date")
 #' @export
@@ -76,13 +77,13 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
   datt <- datt[data.date>=charlson.date-time*365.25 & data.date<=charlson.date]
   search.vars <- vars
   codes <- ccodes
-  datt <- findCondition(datt,search.vars,keep="ptid",codes,match='start')
+  datt <- findCondition(datt,search.vars,keep=c("ptid","charlson.date"),codes,match='start')
   setkeyv(datt,c("ptid","X"))
   datt <- unique(datt) # Only one of each
   # Elements:
   elements <- copy(datt)
   elements[,component:=1]
-  elements <- dcast(elements,ptid~X,value.var="component")  
+  elements <- dcast(elements,ptid+charlson.date~X,value.var="component")  
   for (cond in charlson.weights[,X]){ 
     elements[!exists(cond),(cond):=0]
   }
@@ -92,13 +93,13 @@ charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back
   elements[diabetes.with.complications==1,diabetes.without.complications:=0]
   elements[metastatic.solid.tumor==1,any.malignancy:=0]
   # Index
-  index <- melt(elements,id.vars="ptid",measure.vars=charlson.weights[,X],variable.name="X",value.name="value",variable.factor=FALSE)
+  index <- melt(elements,id.vars=c("ptid","charlson.date"),measure.vars=charlson.weights[,X],variable.name="X",value.name="value",variable.factor=FALSE)
   index <- merge(index,charlson.weights,by="X",all=TRUE)
   index[,weight:=weight*value]
-  index <- index[,list(charlson.index=sum(weight)),by=ptid]
+  index <- index[,list(charlson.index=sum(weight)),by=c("ptid","charlson.date")]
   #Output
-  setnames(elements,"ptid",ptid)
-  setnames(index,"ptid",ptid)
+  setnames(elements,c("ptid","charlson.date"),c(ptid,charlson.date))
+  setnames(index,c("ptid","charlson.date"),c(ptid,charlson.date))
   charlson.index <- list(index,elements)
   charlson.index
 }
