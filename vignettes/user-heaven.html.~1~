@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-02-06 Sat 19:25 -->
+<!-- 2019-10-01 Tue 20:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>R-package heaven</title>
@@ -40,7 +40,7 @@
   }
   pre.src {
     position: relative;
-    overflow: auto;
+    overflow: visible;
     padding-top: 1.2em;
   }
   pre.src:before {
@@ -193,78 +193,100 @@
   .org-svg { width: 90%; }
   /*]]>*/-->
 </style>
+<link rel="stylesheet" type="text/css" href="https://publicifsv.sund.ku.dk/~tag/styles/practicals.css" />
 <script type="text/javascript">
-// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
 <!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
 </script>
 </head>
 <body>
-<div id="preamble" class="status">
-<br>Christian Tobias Torp-Pedersen &amp; Thomas Alexander Gerds
-</div>
 <div id="content">
 <h1 class="title">R-package heaven</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org3218e8e">1. About</a></li>
-<li><a href="#orgea626ac">2. Prelimnaries</a></li>
-<li><a href="#orgd06af11">3. Philosophy</a>
+<li><a href="#org83e56c4">1. About</a></li>
+<li><a href="#orgc0b6ce4">2. Prelimnaries</a></li>
+<li><a href="#org64eda09">3. Philosophy</a>
 <ul>
-<li><a href="#orgcd67018">3.1. What is real</a></li>
-<li><a href="#orgbaff360">3.2. Ordnung muss sein</a></li>
-<li><a href="#org07b96cf">3.3. TMP and TEMP folders are temporary</a></li>
+<li><a href="#org4d13f15">3.1. What is real</a></li>
+<li><a href="#org3e40d7b">3.2. Ordnung muss sein</a></li>
+<li><a href="#org48ed060">3.3. TMP and TEMP folders are temporary</a></li>
 </ul>
 </li>
-<li><a href="#org1b9d0ab">4. R-studio users</a></li>
-<li><a href="#org01cd854">5. Introduction to heaven</a>
+<li><a href="#org63f087b">4. R-studio users</a></li>
+<li><a href="#org2347877">5. Introduction to heaven</a>
 <ul>
-<li><a href="#orgdbf0996">5.1. Raw data import</a></li>
-<li><a href="#orgc157d19">5.2. Hypertension medication</a></li>
-<li><a href="#org7b84a1c">5.3. Charlson Index</a></li>
-<li><a href="#orga74038e">5.4. DREAM register</a></li>
-<li><a href="#org9e61df3">5.5. getAdmLimits</a></li>
-<li><a href="#org7421915">5.6. findCondition</a></li>
-<li><a href="#org1649b24">5.7. medicinMacro</a></li>
-<li><a href="#org3c280d5">5.8. Lexis functions</a></li>
-<li><a href="#org7603cf0">5.9. Matching</a></li>
-<li><a href="#org26a49bb">5.10. averageIncome</a></li>
+<li><a href="#org33ac6a5">5.1. Raw data import</a></li>
+<li><a href="#org36faafa">5.2. Hypertension medication</a></li>
+<li><a href="#org22e03b2">5.3. DREAM register</a></li>
+<li><a href="#org834a910">5.4. Hospital admissions</a></li>
+<li><a href="#org01d69b4">5.5. Extracting conditions from opr and lpr registers</a></li>
+<li><a href="#org33f23df">5.6. medicinMacro</a></li>
+<li><a href="#org5d4fe34">5.7. Lexis functions</a></li>
+<li><a href="#orgc61c5df">5.8. Matching</a></li>
 </ul>
 </li>
-<li><a href="#org172718b">6. Build-in datasets</a>
+<li><a href="#org34be458">6. Build-in datasets</a>
 <ul>
-<li><a href="#orgd8b74a6">6.1. ATC codes</a></li>
+<li><a href="#orgf60e91a">6.1. ATC codes</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org3218e8e" class="outline-2">
-<h2 id="org3218e8e"><span class="section-number-2">1</span> About</h2>
+<div id="outline-container-org83e56c4" class="outline-2">
+<h2 id="org83e56c4"><span class="section-number-2">1</span> About</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-The R package <code>heaven</code> includes a series of functions that are
-useful when working with Danish registry data on Denmark Statistics.This document provides a
-simple overview and details of each program are found on the help pages for each program.
+The R package <code>heaven</code> is the natural response to the legendary
+<code>code-from-hell.sas</code>. Heaven includes a series of functions that are
+useful when working with Danish registry data (on the Gentofte
+servers) on Denmark Statistics. See intro below, details of the
+functionality can be found in the other help pages and vignettes.
 </p>
 
 <ul class="org-ul">
@@ -278,8 +300,8 @@ simple overview and details of each program are found on the help pages for each
 </div>
 </div>
 
-<div id="outline-container-orgea626ac" class="outline-2">
-<h2 id="orgea626ac"><span class="section-number-2">2</span> Prelimnaries</h2>
+<div id="outline-container-orgc0b6ce4" class="outline-2">
+<h2 id="orgc0b6ce4"><span class="section-number-2">2</span> Prelimnaries</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li>You should know or learn <code>data.table</code> because data on Denmark
@@ -288,12 +310,12 @@ Statistics are large.</li>
 </div>
 </div>
 
-<div id="outline-container-orgd06af11" class="outline-2">
-<h2 id="orgd06af11"><span class="section-number-2">3</span> Philosophy</h2>
+<div id="outline-container-org64eda09" class="outline-2">
+<h2 id="org64eda09"><span class="section-number-2">3</span> Philosophy</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgcd67018" class="outline-3">
-<h3 id="orgcd67018"><span class="section-number-3">3.1</span> What is real</h3>
+<div id="outline-container-org4d13f15" class="outline-3">
+<h3 id="org4d13f15"><span class="section-number-3">3.1</span> What is real</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 Many R-beginners think the objects in the workspace, Enviroment, Data view, and
@@ -311,8 +333,8 @@ results, if also the project is set up in a good way.
 </div>
 </div>
 
-<div id="outline-container-orgbaff360" class="outline-3">
-<h3 id="orgbaff360"><span class="section-number-3">3.2</span> Ordnung muss sein</h3>
+<div id="outline-container-org3e40d7b" class="outline-3">
+<h3 id="org3e40d7b"><span class="section-number-3">3.2</span> Ordnung muss sein</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 Working directories corresponding to a phd or other purpose project
@@ -333,8 +355,8 @@ createProject(<span style="color: #8b2252;">"v:/data/workdata/701234/YourName/st
 </div>
 </div>
 
-<div id="outline-container-org07b96cf" class="outline-3">
-<h3 id="org07b96cf"><span class="section-number-3">3.3</span> TMP and TEMP folders are temporary</h3>
+<div id="outline-container-org48ed060" class="outline-3">
+<h3 id="org48ed060"><span class="section-number-3">3.3</span> TMP and TEMP folders are temporary</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 To save time when picking up project work at intermediate stages (from
@@ -362,8 +384,8 @@ very many intermediate results.
 </div>
 </div>
 
-<div id="outline-container-org1b9d0ab" class="outline-2">
-<h2 id="org1b9d0ab"><span class="section-number-2">4</span> R-studio users</h2>
+<div id="outline-container-org63f087b" class="outline-2">
+<h2 id="org63f087b"><span class="section-number-2">4</span> R-studio users</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>Go to Global options under Tools and tell R to never restore <code>.RData</code>
@@ -380,12 +402,12 @@ where one of them is the current version.</li>
 </div>
 </div>
 
-<div id="outline-container-org01cd854" class="outline-2">
-<h2 id="org01cd854"><span class="section-number-2">5</span> Introduction to heaven</h2>
+<div id="outline-container-org2347877" class="outline-2">
+<h2 id="org2347877"><span class="section-number-2">5</span> Introduction to heaven</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgdbf0996" class="outline-3">
-<h3 id="orgdbf0996"><span class="section-number-3">5.1</span> Raw data import</h3>
+<div id="outline-container-org33ac6a5" class="outline-3">
+<h3 id="org33ac6a5"><span class="section-number-3">5.1</span> Raw data import</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 Check the raw in this project:
@@ -424,8 +446,8 @@ following are important:
 </div>
 </div>
 
-<div id="outline-container-orgc157d19" class="outline-3">
-<h3 id="orgc157d19"><span class="section-number-3">5.2</span> Hypertension medication</h3>
+<div id="outline-container-org36faafa" class="outline-3">
+<h3 id="org36faafa"><span class="section-number-3">5.2</span> Hypertension medication</h3>
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 <pre class="src src-R">help(hypertensionMedication)
@@ -455,32 +477,9 @@ modified list if necessary.
 </div>
 </div>
 
-<div id="outline-container-org7b84a1c" class="outline-3">
-<h3 id="org7b84a1c"><span class="section-number-3">5.3</span> Charlson Index</h3>
+<div id="outline-container-org22e03b2" class="outline-3">
+<h3 id="org22e03b2"><span class="section-number-3">5.3</span> DREAM register</h3>
 <div class="outline-text-3" id="text-5-3">
-<div class="org-src-container">
-<pre class="src src-R">help(charlsonIndex)
-</pre>
-</div>
-
-<p>
-This function takes as input a data.table of diagnoses and outputs a list
-with two elements. The first is the Charlson index of each individual at
-the specified time. The other is presence of components of the Charlson 
-Index.
-</p>
-
-<p>
-The variable with the index time needs to be added to the data.table with
-diagnoses.
-</p>
-</div>
-</div>
-
-
-<div id="outline-container-orga74038e" class="outline-3">
-<h3 id="orga74038e"><span class="section-number-3">5.4</span> DREAM register</h3>
-<div class="outline-text-3" id="text-5-4">
 <p>
 The DREAM register is a Danish register which holds receipt of public
 funding on week levels and profession at month levels for any Dane
@@ -505,9 +504,9 @@ profession.
 </div>
 
 
-<div id="outline-container-org9e61df3" class="outline-3">
-<h3 id="org9e61df3"><span class="section-number-3">5.5</span> getAdmLimits</h3>
-<div class="outline-text-3" id="text-5-5">
+<div id="outline-container-org834a910" class="outline-3">
+<h3 id="org834a910"><span class="section-number-3">5.4</span> Hospital admissions</h3>
+<div class="outline-text-3" id="text-5-4">
 <div class="org-src-container">
 <pre class="src src-R">help(getAdmLimits)
 </pre>
@@ -522,9 +521,9 @@ the true initial date and true discharge date are added.
 </div>
 </div>
 
-<div id="outline-container-org7421915" class="outline-3">
-<h3 id="org7421915"><span class="section-number-3">5.6</span> findCondition</h3>
-<div class="outline-text-3" id="text-5-6">
+<div id="outline-container-org01d69b4" class="outline-3">
+<h3 id="org01d69b4"><span class="section-number-3">5.5</span> Extracting conditions from opr and lpr registers</h3>
+<div class="outline-text-3" id="text-5-5">
 <div class="org-src-container">
 <pre class="src src-R">help(findCondition)
 </pre>
@@ -533,7 +532,7 @@ the true initial date and true discharge date are added.
 <p>
 This function can from a data.table select records where a character
 variables partially match selected values. Typical use is to define
-diseases, operations of treatments based on available codes. The
+diseases, operations of treatments based on international codes. The
 function finds multiple conditions in one step.
 </p>
 
@@ -544,9 +543,9 @@ this can be transposed to wide form for various purposes.
 </div>
 </div>
 
-<div id="outline-container-org1649b24" class="outline-3">
-<h3 id="org1649b24"><span class="section-number-3">5.7</span> medicinMacro</h3>
-<div class="outline-text-3" id="text-5-7">
+<div id="outline-container-org33f23df" class="outline-3">
+<h3 id="org33f23df"><span class="section-number-3">5.6</span> medicinMacro</h3>
+<div class="outline-text-3" id="text-5-6">
 <div class="org-src-container">
 <pre class="src src-R">help(medicinMacro)
 </pre>
@@ -579,9 +578,9 @@ old SAS function for calculations.
 </div>
 </div>
 
-<div id="outline-container-org3c280d5" class="outline-3">
-<h3 id="org3c280d5"><span class="section-number-3">5.8</span> Lexis functions</h3>
-<div class="outline-text-3" id="text-5-8">
+<div id="outline-container-org5d4fe34" class="outline-3">
+<h3 id="org5d4fe34"><span class="section-number-3">5.7</span> Lexis functions</h3>
+<div class="outline-text-3" id="text-5-7">
 <p>
 Lexis functions are made to "split" observations to have new values of
 variables in time periods. The functions are necessary processing for
@@ -624,9 +623,9 @@ calender periods or age
 </div>
 
 
-<div id="outline-container-org7603cf0" class="outline-3">
-<h3 id="org7603cf0"><span class="section-number-3">5.9</span> Matching</h3>
-<div class="outline-text-3" id="text-5-9">
+<div id="outline-container-orgc61c5df" class="outline-3">
+<h3 id="orgc61c5df"><span class="section-number-3">5.8</span> Matching</h3>
+<div class="outline-text-3" id="text-5-8">
 <p>
 There are two function available for matching
 </p>
@@ -656,41 +655,16 @@ This function performs exposure density matching. For each case with a
 date of exposure a number of controls are selected that are alive and
 event-free and not yet exposed.
 </p>
-
-<div class="org-src-container">
-<pre class="src src-R">help(matchReport)
-</pre>
-</div>
-
-<p>
-This function takes the result of matching as input and provides a simple table of
-matching successes and reuse of cases/controls
-</p>
-</div>
-</div>
-
-<div id="outline-container-org26a49bb" class="outline-3">
-<h3 id="org26a49bb"><span class="section-number-3">5.10</span> averageIncome</h3>
-<div class="outline-text-3" id="text-5-10">
-<div class="org-src-container">
-<pre class="src src-R">help(averageIncome)
-</pre>
-</div>
-
-<p>
-This function calculates average income over a selected period of years prior to a chosen date. The input are
-two data.tables/frames with ID/dage and with ID/year/income. The default period is 5 years.
-</p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org172718b" class="outline-2">
-<h2 id="org172718b"><span class="section-number-2">6</span> Build-in datasets</h2>
+<div id="outline-container-org34be458" class="outline-2">
+<h2 id="org34be458"><span class="section-number-2">6</span> Build-in datasets</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-orgd8b74a6" class="outline-3">
-<h3 id="orgd8b74a6"><span class="section-number-3">6.1</span> ATC codes</h3>
+<div id="outline-container-orgf60e91a" class="outline-3">
+<h3 id="orgf60e91a"><span class="section-number-3">6.1</span> ATC codes</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 A named list of character vectors defining selected diseases
@@ -722,23 +696,12 @@ division accordint to ISCED (9 levels)
 <pre class="src src-R">edu_code  
 </pre>
 </div>
-
-<p>
-A named list with character codes for Charlson Index
-</p>
-
-<div class="org-src-container">
-<pre class="src src-R">charlson.codes
-</pre>
-</div>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="author">Author: Christian Tobias Torp-Pedersen &amp; Thomas Alexander Gerds</p>
-<p class="date">Created: 2021-02-06 Sat 19:25</p>
-<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+Last update: 01 Oct 2019 by Thomas Alexander Gerds.
 </div>
 </body>
 </html>

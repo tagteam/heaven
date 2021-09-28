@@ -31,8 +31,8 @@ charlson.codes <- list(
                  'DI132','DN250','DZ940','DZ992','DN26'),
  any.malignancy=c(paste0('1',40:72),paste0(174:194),'27559',paste0('DC',0:3),paste0('DC4',0:9),'DC5','DC6',paste0('DC7',0:6),
       'DC86','DC97'),
- metastatic.solidtumor=c(paste0('19',5:9),paste0('DC',77:80)),
- AIDSHIV=c('07983','DB20','DB21','DB22','DB23','DB24'),
+ metastatic.solid.tumor=c(paste0('19',5:9),paste0('DC',77:80)),
+ AIDS.HIV=c('07983','DB20','DB21','DB22','DB23','DB24'),
  leukemia=c(paste0('20',4:7),paste0('DC9',1:5)),
  lymphoma=c(paste0('20',0:3),'27559',paste0('DC8',1:5),'DC88','DC90','DC96')
  )
