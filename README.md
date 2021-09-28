@@ -8,7 +8,8 @@ build()
 install()
 
 
-To build/include the vignettes we need a workaround because of our non-standard orgmode vignettes:
+To build/include the vignettes we need a workaround because of our
+non-standard orgmode vignettes:
 
 tools::buildVignettes()
 pkgbuild::build()

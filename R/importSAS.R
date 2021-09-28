@@ -454,7 +454,7 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                        "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;\n")
     cat(tmp.lines, file = tmp.SASfile, append = TRUE)
     if (!(prod(keep.check) * prod(drop.check) * prod(filter.check))) {
-        error.mes <- "Some of the variables specified in the keep or drop statement or in the filter file is not found in the import file.\n"
+        error.mes <- "Some of the variables specified in the keep or drop statement or in the filter file are not found in the import file.\n"
         if (length(keep) > 0)
             error.mes <- paste(error.mes, "The KEEP argument(s): \n  ",
                                paste(tolower(keep[!keep.check]), collapse = "\n"),
