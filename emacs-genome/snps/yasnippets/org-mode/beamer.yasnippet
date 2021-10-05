@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: beamer
+# key: beamer
+# --
+`(concat
+"#+TITLE:\n"
+"#+Author: " user-full-name 
+"\n#+Latex_header:\\institute{}"
+"\n#+DATE: 
+#+EMAIL:" user-mail-address)`
+#+OPTIONS: H:3 num:t toc:nil \\n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS: TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_HEADER: \\subtitle{}
+#+LaTeX_HEADER: \\setbeamertemplate{footline}[frame number]
+#+LaTeX_HEADER: \\setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \\RequirePackage{fancyvrb}
+#+LATEX_HEADER: \\RequirePackage{array}
+#+LATEX_HEADER: \\RequirePackage{multirow}
+#+LATEX_HEADER: \RequirePackage{tcolorbox}
+#+setupfile:~/emacs-genome/snps/org-templates/setup-all-purpose.org
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+* Introduction
+** Part I
+*** First slide

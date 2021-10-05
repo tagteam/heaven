@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: exercise with R code
+# key: erc1
+# --
+#+BEGIN_SRC R  :results output :exports (exercise-with-code) :cache yes :eval (never-plain-export)
+
+#+END_SRC

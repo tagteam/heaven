@@ -1,0 +1,38 @@
+#+TITLE: Opgaver dag 2
+#+setupfile:~/emacs-genome/snps/org-templates/setup-demografi.org
+#+superman-export-target: opgave
+
+#+begin_src html
+---
+title: 'Demografi: opgaver dag 2'
+output: word_document
+---
+#+end_src
+
+Template for export to two R-markdown sheets, one with suffix "with-code"
+the other "with-solutions". See ~/emacs-genome/snps/org-opgave-snps.el
+
+* Opgave 1
+
+Opgave tekst
+
+#+BEGIN_SRC R  :results output raw drawer :exports both  :session *R* :cache yes :eval (never-plain-export)  
+# code exported to both with-code and with-solutions 
+
+#+END_SRC
+
+** Instruks                                                 :instruks:ignore:
+*** Instruks
+
+#+BEGIN_SRC R  :results output raw drawer :exports (exercise-with-code)  :session *R* :cache yes :eval (never-plain-export)  
+# code exported only to with-code
+
+#+END_SRC
+
+** Løsning                                                  :solution:ignore:
+*** Besvarelse
+
+#+BEGIN_SRC R  :results output raw drawer :exports (exercise-with-solutions)  :session *R* :cache yes :eval (never-plain-export)  
+# code exported only to with-solutions
+
+#+END_SRC

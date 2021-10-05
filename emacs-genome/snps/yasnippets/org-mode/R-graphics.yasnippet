@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: R graphics
+# key: graph
+# --
+#+BEGIN_SRC R :results file graphics :file ${1:$$(read-file-name "File: ")} :exports none :session *R* :cache yes
+$2
+#+END_SRC
+#+name: fig:1
+#+ATTR_LATEX: :width 0.7\\textwidth
+#+CAPTION:

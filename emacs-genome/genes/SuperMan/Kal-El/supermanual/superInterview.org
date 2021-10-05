@@ -1,0 +1,51 @@
+* Interview with SuperMan(ager)
+
+- S: :: SuperMan is a project which manages all your other projects.
+- Y: :: This sound useful. But what exactly is considered a project?
+- S: :: A project is an entry in a file, where the file-name is
+  defined by the emacs variable `superman-home'. 
+  An entry looks like this:
+
+#+BEGIN_EXAMPLE
+ **** Extensions of the Hodges-Lehmann estimator for structural equation models
+     :PROPERTIES:
+     :NICKNAME: HodgesLehmann
+     :LOCATION: ~/research/Methods/
+     :CATEGORY: Work
+     :OTHERS: Terre Antivirus, Audrey Blanche
+     :LastVisit: <2013-05-31 Fri 19:59>
+     :END:
+#+END_EXAMPLE
+
+The properties have the following meaning:
+
+#+BEGIN_EXAMPLE
+ **** Description text
+     :PROPERTIES:
+     :NICKNAME: Short project name which is also used
+                as directory name below LOCATION 
+     :LOCATION: A directory on your computer in which
+                the main project files are saved
+     :CATEGORY: The project category
+     :OTHERS: Names of your collaborators
+              of the project
+     :LastVisit: Automatically updated time-string
+                 indicating when you last looked into
+                 this project
+     :END:
+#+END_EXAMPLE	
+
+- Y: :: Ok. How do I register my projects.
+- S: :: That is easy: first open the SuperMan via M-x S RET,
+        then type N for superman-new-project. You will be
+        prompted for NICKNAME and CATEGORY. 
+- Y: :: hmm, I will give it a try ... last question: Does the SuperMan project contain itself?
+- S: :: Nice question. Probably the answer is: /Yes! But,.../. To find a better answer please read logicomix (www.logicomix.com).
+
+#+Title: emacs SuperMan: prolog 
+#+Author: TagTeam, KKHolst
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://192.38.117.59/~tag/styles/BiomacsStyle.css" />
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="~/public_html/styles/BiomacsStyle.css" />
+#+OPTIONS: H:3 num:nil toc:nil :nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+PROPERTY: cache yes
+#+PROPERTY: session *R*

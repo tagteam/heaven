@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: exercise org block
+# key: eos
+# --
+#+BEGIN_SRC org  :results output :exports (exercise-with-solutions) :cache yes :eval (never-plain-export)
+#+END_SRC

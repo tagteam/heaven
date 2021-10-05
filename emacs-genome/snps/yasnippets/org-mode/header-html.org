@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Header html
+# key: HH
+# --
+#+TITLE: 
+#+setupfile:~/emacs-genome/snps/org-templates/setup-basic-stats-homepage.org
+#+superman-export-target: exercise

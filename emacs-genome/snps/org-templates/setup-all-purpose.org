@@ -1,0 +1,13 @@
+# IMPORTANT: do not set toc at all 
+#+LANGUAGE:  en
+#+OPTIONS:   H:3  num:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc author:t
+#+LATEX_HEADER: \RequirePackage{tcolorbox}
+# #+LaTeX_HEADER:\usepackage[table,usenames,dvipsnames]{xcolor}
+#+LaTeX_HEADER:\definecolor{lightGray}{gray}{0.98}
+#+LaTeX_HEADER:\definecolor{medioGray}{gray}{0.83}
+#+LATEX_HEADER:\definecolor{mygray}{rgb}{.95, 0.95, 0.95}
+#+LATEX_HEADER:\newcommand{\mybox}[1]{\vspace{.5em}\begin{tcolorbox}[boxrule=0pt,colback=mygray] #1 \end{tcolorbox}}
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://publicifsv.sund.ku.dk/~tag/styles/all-purpose.css" />
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="/home/tag/public_html/styles/all-purpose.css" />
+#+PROPERTY: header-args :cache no :tangle yes :session *R* :cache yes

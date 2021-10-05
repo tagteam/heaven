@@ -1,0 +1,18 @@
+#+OPTIONS: H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS: TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_HEADER: \subtitle{}
+#+LaTeX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LaTeX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \RequirePackage{array}
+#+LATEX_HEADER: \RequirePackage{multirow}
+#+LATEX_HEADER: \RequirePackage{tcolorbox}
+#+LATEX_HEADER:\definecolor{mygray}{rgb}{.95, 0.95, 0.95}
+#+LATEX_HEADER:\newcommand{\mybox}[1]{\vspace{.5em}\begin{tcolorbox}[boxrule=0pt,colback=mygray] #1 \end{tcolorbox}}
+#+LATEX_HEADER:\newcommand{\sfootnote}[1]{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\footnote{#1}\setcounter{footnote}{0}\renewcommand{\thefootnote}{\arabic{foot note}}}
+# #+LATEX_HEADER:\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+#+LATEX_HEADER: \usepackage{alphalph}
+#+LATEX_HEADER: \renewcommand*{\thefootnote}{\alph{footnote}}
+#+LATEX_HEADER: \alphalph{\value{footnote}}

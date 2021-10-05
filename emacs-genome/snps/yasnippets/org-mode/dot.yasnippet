@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: dot figure
+# key: dot
+# --
+# https://graphs.grevian.org/example
+# https://www.graphviz.org/pdf/dotguide.pdf
+#+ATTR_LATEX: :width 0.5\textwidth
+#+BEGIN_SRC dot :results file graphics :file ./flow_chart.pdf
+digraph f0 {
+ ratio=1.3;
+ graph [ bgcolor=lightgray, resolution=128, fontname=Arial, fontcolor=blue, 
+                         fontsize=16 ];
+ node [margin=.1, style=filled, fontsize=22, fontcolor=black];
+ a [fillcolor = white label= "A" xlabel= "U" shape=square]
+ b [fillcolor = white label= "B" xlabel= "V" shape=circle]
+ c [fillcolor = white label= "bla\nbla" xlabel= "" shape=diamond]
+{
+   a -> b;
+   a -> c;
+   b -> c;
+}
+}
+#+END_SRC
+
