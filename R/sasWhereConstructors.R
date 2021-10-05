@@ -4,7 +4,7 @@
 #' @param var.date Name of the date variable in the SAS dataset
 #' @param date.start The start date of the desired date range in r date format
 #' @param date.end The end date of the desired date range in r date format
-#'
+#' @param inclusive Logical. If \code{TRUE} do greater or equal instead of greater.  
 #' @return Function returns a string that can be passed to the "where" statement
 #'   of importSAS. Alternatinvely it can be passed to makeSasWhereStatment
 #'   function to be combined with further SAS where statements
@@ -84,8 +84,8 @@ sasSubstr <- function(str.vec, target.var) {
 #' sasWhereConstructor
 #'
 #' @description Simple helper function that combines multiple SAS where statements with "AND"
-#' @param vec.where A vector of valid SAS where statements
-#'
+#' @param ... A vector of valid SAS where statements.
+#' @param collapse Argment passed to paste0. default is \code{" AND "}.
 #' @return Returns a string that can be passed to the "where" argument of importSAS
 #' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
 #' 

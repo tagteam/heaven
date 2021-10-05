@@ -38,7 +38,12 @@
 #' order, example: c("id","start","end","event")
 #' @param varname name of variable to be added to vector
 #' @param splitvector A vector of calender times (integer). Splitvector is
-#' a sequence of fixed dates (or other time scala). 
+#' a sequence of fixed dates (or other time scala).
+#' @param format String with two possible values:
+#' \itemize{
+#' \item \code{"vector"} a series of fixed calender dates
+#' \item \code{"seq"} see description
+#' }
 #' @param value 0 to the left of the vector, increase of 1 as each element of 
 #' vector is passed
 #' @return

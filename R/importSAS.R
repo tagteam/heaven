@@ -15,10 +15,11 @@
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
 ##'                  show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
-##'                  na.strings="^\\\\.$",date.vars=NULL,datetime.vars=NULL, character.vars="pnr",
-##'                  numeric.vars = NULL,sas.program,sas.switches,
-##'                  sas.runner, use.colClasses=TRUE, skip.date.conversion=FALSE,
-##'                  force.numeric=TRUE, sas.data.extension="sas7bdat", verbose=FALSE,...)
+##'                  na.strings="^\\\\.$",date.vars=NULL,datetime.vars=NULL,
+##'                  character.vars="pnr", numeric.vars = NULL,sas.program,
+##'                  sas.switches, sas.runner, use.colClasses=TRUE,
+##'                  skip.date.conversion=FALSE, force.numeric=TRUE,
+##'                  sas.data.extension="sas7bdat", verbose=FALSE,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' So, \code{"x:/data/rawdata/701111/lmdb.sas7bdat"} and also
