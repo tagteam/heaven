@@ -4,7 +4,7 @@
 \alias{sasSubstr}
 \title{sasSubstr}
 \usage{
-sasSubstr(str.vec, tartget.var)
+sasSubstr(str.vec, target.var)
 }
 \arguments{
 \item{str.vec}{Character vector where each element is the start of the

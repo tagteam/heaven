@@ -11,7 +11,7 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
                  show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
-                 na.strings="^\\.$",date.vars,datetime.vars, character.vars="pnr",
+                 na.strings="^\\\\.$",date.vars=NULL,datetime.vars=NULL, character.vars="pnr",
                  numeric.vars = NULL,sas.program,sas.switches,
                  sas.runner, use.colClasses=TRUE, skip.date.conversion=FALSE,
                  force.numeric=TRUE, sas.data.extension="sas7bdat", verbose=FALSE,...)
@@ -75,6 +75,10 @@ that can be understood by \code{grepl}. For example, the default value \code{"^\
 used to force the correct order of year months and days and the conversion is done with \code{lubridate::ymd}.
 Conversion can be skipped with argument \code{skip.date.conversion}.}
 
+\item{datetime.vars}{Vector of variables to be converted to datetime variables. For these variables a SAS format statement \code{datetime.} is
+used and the conversion is done with \code{lubridate::dmy_hms}.
+Conversions in both SAS and R programs can be skipped with argument \code{skip.date.conversion}.}
+
 \item{character.vars}{names of variables that should be converted to character. Case does not matter. Default is \code{"pnr"}.}
 
 \item{numeric.vars}{character.vars names of variables that should be converted to numeric. case does not matter.}
@@ -99,10 +103,6 @@ via lubridate (see \code{date.vars} and \code{datetime.vars}). If \code{"R"} ski
 This can be useful to turn on when there are problems with the result.}
 
 \item{...}{Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars}, \code{datetime.vars} and \code{numeric.vars}.}
-
-\item{date.timevars}{Vector of variables to be converted to datetime variables. For these variables a SAS format statement \code{datetime.} is
-used and the conversion is done with \code{lubridate::dmy_hms}.
-Conversions in both SAS and R programs can be skipped with argument \code{skip.date.conversion}.}
 }
 \value{
 The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.

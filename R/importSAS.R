@@ -15,7 +15,7 @@
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
 ##'                  show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
-##'                  na.strings="^\\.$",date.vars,datetime.vars, character.vars="pnr",
+##'                  na.strings="^\\\\.$",date.vars=NULL,datetime.vars=NULL, character.vars="pnr",
 ##'                  numeric.vars = NULL,sas.program,sas.switches,
 ##'                  sas.runner, use.colClasses=TRUE, skip.date.conversion=FALSE,
 ##'                  force.numeric=TRUE, sas.data.extension="sas7bdat", verbose=FALSE,...)
@@ -57,7 +57,7 @@
 ##' @param date.vars Vector of variables to be converted to date variables. For these variables a SAS format statement \code{yymmdd10.} is
 ##'                  used to force the correct order of year months and days and the conversion is done with \code{lubridate::ymd}.
 ##'                  Conversion can be skipped with argument \code{skip.date.conversion}.
-##' @param date.timevars Vector of variables to be converted to datetime variables. For these variables a SAS format statement \code{datetime.} is
+##' @param datetime.vars Vector of variables to be converted to datetime variables. For these variables a SAS format statement \code{datetime.} is
 ##'                  used and the conversion is done with \code{lubridate::dmy_hms}.
 ##'                  Conversions in both SAS and R programs can be skipped with argument \code{skip.date.conversion}.
 ##' @param character.vars names of variables that should be converted to character. Case does not matter. Default is \code{"pnr"}.

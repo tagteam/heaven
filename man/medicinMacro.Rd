@@ -110,7 +110,7 @@ packages. Default is \code{"apk"}.}
 \item{splitting}{Split the data into 10 chunks to estimate
 remaining time (and possibly speed up computation).}
 
-\item{verbose}{}
+\item{verbose}{bla bla?}
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.

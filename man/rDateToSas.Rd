@@ -9,9 +9,6 @@ rDateToSas(rdate)
 \arguments{
 \item{rdate}{Date object to be converted into a format SAS can read}
 }
-\value{
-
-}
 \description{
 rDateToSas
 }

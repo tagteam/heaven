@@ -68,7 +68,7 @@
 ##'     packages. Default is \code{"apk"}.
 ##' @param splitting Split the data into 10 chunks to estimate
 ##'     remaining time (and possibly speed up computation).
-##' @param verbose 
+##' @param verbose bla bla?
 ##' @author Helene Charlotte Rytgaard, Anders Munch and Thomas Alexander Gerds based
 ##'     on the famous SAS macro by Christian Tobias Torp-Pedersen
 ##' @examples
