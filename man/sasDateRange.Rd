@@ -12,6 +12,8 @@ sasDateRange(var.date, date.start, date.end, inclusive = TRUE)
 \item{date.start}{The start date of the desired date range in r date format}
 
 \item{date.end}{The end date of the desired date range in r date format}
+
+\item{inclusive}{Logical. If \code{TRUE} do greater or equal instead of greater.}
 }
 \value{
 Function returns a string that can be passed to the "where" statement

@@ -7,7 +7,9 @@
 sasWhereConstructor(..., collapse = " AND ")
 }
 \arguments{
-\item{vec.where}{A vector of valid SAS where statements}
+\item{...}{A vector of valid SAS where statements.}
+
+\item{collapse}{Argment passed to paste0. default is \code{" AND "}.}
 }
 \value{
 Returns a string that can be passed to the "where" argument of importSAS

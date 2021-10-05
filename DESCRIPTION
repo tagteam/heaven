@@ -69,7 +69,6 @@ Collate:
     'medicinMacro.R'
     'mm1.R'
     'mm2.R'
-    'nccSampling.R'
     'onLoad.R'
     'patientProfiles.R'
     'poissonRisk.R'

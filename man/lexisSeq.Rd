@@ -18,6 +18,12 @@ order, example: c("id","start","end","event")}
 \item{splitvector}{A vector of calender times (integer). Splitvector is
 a sequence of fixed dates (or other time scala).}
 
+\item{format}{String with two possible values:
+\itemize{
+\item \code{"vector"} a series of fixed calender dates
+\item \code{"seq"} see description
+}}
+
 \item{value}{0 to the left of the vector, increase of 1 as each element of 
 vector is passed}
 }
