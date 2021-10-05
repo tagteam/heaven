@@ -5,6 +5,7 @@
 ^\.travis\.yml$
 sas/
 worg/
+emacs-genome/
 sandbox/
 auto/
 ^vignettes/.*[.](r|R)$
