@@ -1,19 +1,24 @@
 ##' Selective import of sas7bdat files into R data.table format
 ##'
-##' This function first writes SAS code, then runs the SAS code, and finally data.table::freads the results into R.
-##' The user selects which columns and rows to import. See examples.
+##' This function first runs SAS proc contents in the background and uses the result
+##' to write temporary SAS code that writes the data in csv format to a temporary file.
+##' The data are then read with data.table::freads into R. The function tries to help
+##' with the formatting of numeric and date variables and with the understanding of missing values.
+##' However, in some cases this help is counterproductive and can therefore be turned off,
+##' to some extent at least, with arguments na.strings, force.numeric, skip.date.conversion.
+##' Also, the user selects which columns and rows to import. See examples.
 ##' @title importSAS
 ##' @aliases importSAS contentSAS
 ##' @usage importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
 ##'                  where = NULL,obs = NULL,filter = NULL,
-##'                  filter.by = NULL, filter.cond = c(1,1),
+##'                  filter.by = NULL, filter.negative = FALSE,
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
-##'                  show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-##'                  na.strings=".",date.vars, character.vars="pnr",
+##'                  show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
+##'                  na.strings="^\\.$",date.vars,datetime.vars, character.vars="pnr",
 ##'                  numeric.vars = NULL,sas.program,sas.switches,
-##'                  sas.runner, skip.date.conversion=FALSE,
-##'                  sas.data.extension="sas7bdat", verbose=TRUE,...)
+##'                  sas.runner, use.colClasses=TRUE, skip.date.conversion=FALSE,
+##'                  force.numeric=TRUE, sas.data.extension="sas7bdat", verbose=FALSE,...)
 ##'        contentSAS(filename,wd=NULL)
 ##' @param filename The filename (with full path) of the SAS dataset to import.
 ##' So, \code{"x:/data/rawdata/701111/lmdb.sas7bdat"} and also
@@ -22,21 +27,22 @@
 ##' @param wd The directory used to store temporarily created files (SAS script, log file, csv file). You need to
 ##'           have permission to write to this directory. The default value is the current working directory, see \code{getwd()},
 ##'           (which you may not have access to write to!). On Gentofte's Danmark Statistics servers it may help to set
-##'           the working directory to the fast X drive. 
-##' @param keep A vector of variable names, i.e., the variables (columns) to read and keep from the dataset. Default is to read and keep all variables. 
+##'           the working directory to the fast X drive.
+##' @param keep A vector of variable names, i.e., the variables (columns) to read and keep from the dataset. Default is to read and keep all variables.
 ##' @param drop Specifies the variables (columns) to leave out from the dataset. Default is to leave out no variables.
 ##' @param where Specifies which conditions the observations (rows) from the dataset should fulfil. Default is no conditions. Use SAS syntax (see examples).
-##' @param obs Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.  
+##' @param obs Number of observations to read from the dataset. Setting this to \code{Inf} has the same effect as not setting it, i.e, read all observations.
 ##' @param filter Alternative or in addition to the where statement it is
 ##'               possible to filter the rows of \code{filename} based on a data.table.
 ##'               E.g., filter can be a data.table with one column consisting of *unique*
-##'               PNRs to specify that only matching rows should be imported from filename.
-##' @param filter.by Vector of arguments to filter by. By default all variables present in the filter data are used. 
-##' @param filter.cond Vector of two arguments equal to one of the values: -1,0,1.
-##'                    The first argument conditions on values from the filter file,
-##'                    the second on the SAS dataset. 1 means that an observation is only
-##'                    included if it is present in the corresponding dataset, -1 means it is
-##'                    excluded in this case, and 0 has no effect. Default is c(1,1).
+##'               PNRs to specify that only the matching rows should be imported from filename.
+##' @param filter.by Vector of variable names to filter by. By default all variables present in the filter data are used.
+##' @param filter.negative Vector of length two that defines how to merge the \code{filter} data
+##'                    with the SAS dataset \code{filename}:
+##' \itemize{
+##' \item \code{c(1,1)} means observation are only included if they are present both the filter data and the SAS data.
+##' \item \code{c(-1,1)} means observation are only included if they are not present filter data but present in the SAS data.
+##' }
 ##' @param set.hook Quoted SAS statments (within use single quotes) to be placed in addition to set options (where, keep, drop, obs) when setting the data set \code{filename}. See examples.
 ##' @param step.hook Quoted SAS statments (within use single quotes) to be placed after setting the data set \code{filename}. See examples.
 ##' @param pre.hook Quoted SAS code (within use single quotes) to be set in the beginning of the SAS program. For example, it maybe useful to specify options such as \code{'options obs=100;'} in combination with a where statement.
@@ -46,21 +52,32 @@
 ##' @param show.sas.code Logical. If \code{TRUE} show sas code in R console before running it.
 ##' @param save.tmp Logical. Option to save all temporary files. Even though this is set to FALSE, the csv file will be saved if there is given a filename in "savefile". Default value is FALSE.
 ##' @param content Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.
-##' @param na.strings A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information. 
-##' @param date.vars Vector of variables to read as date variables.
-##' @param character.vars names of variables that should be converted to character. case does not matter. default is "pnr".
-##' @param numeric.vars character.vars names of variables that should be converted to numeric. case does not matter. 
+##' @param na.strings A vector of strings to interpret values of character variables as NA. Each element should be a regular expression
+##'                   that can be understood by \code{grepl}. For example, the default value \code{"^\\.$"} matches fields that contain a single dot and nothing else than a dot.
+##' @param date.vars Vector of variables to be converted to date variables. For these variables a SAS format statement \code{yymmdd10.} is
+##'                  used to force the correct order of year months and days and the conversion is done with \code{lubridate::ymd}.
+##'                  Conversion can be skipped with argument \code{skip.date.conversion}.
+##' @param date.timevars Vector of variables to be converted to datetime variables. For these variables a SAS format statement \code{datetime.} is
+##'                  used and the conversion is done with \code{lubridate::dmy_hms}.
+##'                  Conversions in both SAS and R programs can be skipped with argument \code{skip.date.conversion}.
+##' @param character.vars names of variables that should be converted to character. Case does not matter. Default is \code{"pnr"}.
+##' @param numeric.vars character.vars names of variables that should be converted to numeric. case does not matter.
 ##' @param sas.program sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"
 ##' @param sas.switches On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}
 ##' @param sas.runner How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.
-##' @param skip.date.conversion if TRUE do not try to convert any dates.
+##' @param use.colClasses Logical. If TRUE learn about the variable types from SAS's proc contents and
+##'        pass to \code{fread} as argument \code{colClasses}.
+##' @param skip.date.conversion if TRUE do not try to convert any dates or datetime variables. If \code{"SAS"} only skip the format statements but format
+##'        via lubridate (see \code{date.vars} and \code{datetime.vars}). If \code{"R"} skip lubridate conversion but keep the format statements.
+##' @param force.numeric if TRUE force numeric format on numeric variables specified by argument \code{numeric.vars}.
 ##' @param sas.data.extension String to be checked against the file extenstion of filename. Default is \code{"sas7bdat"}.
-##' @param verbose Logical. Bla bla on the screen?
-##' @param ... Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars} and \code{numeric.vars}.
+##' @param verbose Logical. When \code{TRUE} warnings and errors are shown, otherwise not shown.
+##'        This can be useful to turn on when there are problems with the result.
+##' @param ... Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars}, \code{datetime.vars} and \code{numeric.vars}.
 ##' @return The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
 ##' @author Anders Munch \email{a.munch@sund.ku.dk} and Thomas A Gerds \email{tag@biostat.ku.dk}
 ##' @references This function is based on pioneering work by Jesper Lindhardsen.
-##' @details As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all variable names are converted to lower case. 
+##' @details As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all variable names are converted to lower case.
 ##' @examples
 ##' # We first set a working directory in which we have read and write permission
 ##' # These functions will produce temporary files which, if save.tmp is not set to TRUE, will
@@ -84,7 +101,7 @@
 ##' df101 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",obs=101,
 ##'                    save.tmp=TRUE,date.vars="inddto",
 ##'                    numeric.vars="pnr",character.vars="packsize")
-##' 
+##'
 ##' # we can also use the pre.hook to limit the number of observations via sas options:
 ##' importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 ##'           pre.hook="options obs=17;",where="diag='DN899'",keep=c("PNR","diag"),show.sas.code=1L)
@@ -147,7 +164,7 @@
 ##' df2a <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
 ##'                  obs=101,
 ##'                  pre.hook="options nofmterr;")
-##'                  
+##'
 ##'
 ##' # The hooks set.hook and step.hook can be used as follows:
 ##' df3 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
@@ -174,13 +191,13 @@
 ##' }
 ##' @export
 importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
-                       obs = NULL, filter = NULL, filter.by = NULL, filter.cond = c(1, 1),
+                       obs = NULL, filter = NULL, filter.by = NULL, filter.negative = FALSE,
                        set.hook = NULL, step.hook = NULL, pre.hook = NULL,
-                       post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = TRUE,
-                       save.tmp = FALSE, content = FALSE, na.strings = ".", date.vars = NULL,
+                       post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = FALSE,
+                       save.tmp = FALSE, content = FALSE, na.strings = c("^\\.$"), date.vars = NULL,datetime.vars=NULL,
                        character.vars = "pnr", numeric.vars = NULL, sas.program,
-                       sas.switches, sas.runner, skip.date.conversion = FALSE, 
-                       sas.data.extension="sas7bdat",verbose = TRUE,
+                       sas.switches, sas.runner, use.colClasses=TRUE,skip.date.conversion = FALSE,force.numeric=TRUE,
+                       sas.data.extension="sas7bdat",verbose = FALSE,
                        ...)
 {
     if (!file.exists(filename)){
@@ -196,6 +213,7 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
     keep <- tolower(keep)
     drop <- tolower(drop)
     date.vars <- tolower(date.vars)
+    datetime.vars <- tolower(datetime.vars)
     olddir <- getwd()
     if (length(wd) == 0){
         wd <- getwd()
@@ -318,28 +336,30 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
         warning(paste("Running sas on", fprog, "yielded the error shown above."))
     }
     if (file.exists(tmp.proccontout)) {
-        dt.content <- data.table::fread(file = tmp.proccontout,
-                                        header = TRUE)[, -1]
+        suppressWarnings(dt.content <- data.table::fread(file = tmp.proccontout,
+                                                         header = TRUE))
+        dt.content.vars <- names(dt.content)
+        dt.content <- dt.content[,match(tolower(c("Variable","Type","Format","Informat")),tolower(dt.content.vars),nomatch=0),with=FALSE]
     }
     else {
         stop(paste("Running sas on", fprog, "did not produce the expected output file."))
     }
-    var.names <- tolower(dt.content$Variable)
-    var.format <- dt.content$Informat
-    var.type <- dt.content$Type
     ## ----------------------------- end proc contents -------------------------
-
+    ## if pnr is not in var.names remove it
+    if (!("pnr" %in% tolower(dt.content$Variable))) {
+        character.vars <- character.vars[character.vars!="pnr"]
+    }
     if (length(keep) > 0) {
-        ## make life easier for the user: if pnr is not in var.names remove it
-        if (!("pnr" %in% var.names)) {        
-            character.vars <- character.vars[character.vars!="pnr"]
-        }
-        keep <- unique(c(keep, date.vars, numeric.vars, character.vars))
-        if ("pnr" %in% var.names) {
+
+        keep <- unique(c(keep,date.vars,datetime.vars,numeric.vars,character.vars))
+        if ("pnr" %in% tolower(dt.content$Variable)) {
             if (!("pnr" %in% keep)) keep <- c("pnr",keep)
         }
         cond <- paste(cond, "keep=", paste(keep, collapse = " "),
                       " ", sep = "")
+    }else{
+        # keep all variables
+        keep <- tolower(dt.content$Variable)
     }
     if (length(drop) > 0) {
         cond <- paste(cond, "drop=", paste(drop, collapse = " "),
@@ -357,45 +377,106 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
             cond <- paste("(", cond, set.hook, ")", sep = " ")
         else cond <- paste("(", cond, ")", sep = " ")
     }
-    is.date <- grepl("date", var.format, ignore.case = TRUE) |
-        grepl("dato", var.format, ignore.case = TRUE)
-    is.num <- grepl("num", var.type, ignore.case = TRUE)
-    is.num <- is.num & !is.date
+    keep.check <- drop.check <- TRUE
+    if (length(keep) > 0) {
+        keep.check <- tolower(keep) %in% tolower(dt.content$Variable)
+    }
+    if (length(drop) > 0) {
+        drop.check <- tolower(drop) %in% tolower(dt.content$Variable)
+    }
     if (length(filter)>0){
-        ## convert filter variables to lower
-        orig.filter.names <- copy(names(filter))
-        setnames(filter,tolower(names(filter)))
         if (length(filter.by) == 0) {
             filter.names <- names(filter)
         }
         else {
-            filter.names <- tolower(filter.by)
+            filter.names <- filter.by
+        }
+        if (any((filter.vars.pos <- (match(tolower(filter.names),tolower(dt.content$Variable),nomatch=0)))==0)){
+            stop(paste0("\nThe following variables in the filter data set are not found in the data that should be imported:\n",
+                        paste0(filter.names[filter.vars.pos==0],collapse=", "),
+                        "\nThe following names are in the data:\n",
+                        paste0(dt.content$Variable,collapse=", ")))
+        }else{
+            ## convert filter variables to same case as in imported data
+            orig.filter.names <- data.table::copy(names(filter))
+            setnames(filter,filter.names,dt.content$Variable[filter.vars.pos])
         }
     }
-    keep.check <- drop.check <- filter.check <- TRUE
-    if (length(keep) > 0) {
-        keep.check <- tolower(keep) %in% var.names
+    # autodetect variable types and formats
+    # ----------------------------------------------------------------
+    # restrict var.format and var.type to interesting variables
+
+    dt.content <- dt.content[tolower(Variable)%in%keep]
+    # assess formats according to SAS proc contents
+    dt.content[,target.type:="character"]
+    dt.content[grepl("num", Type, ignore.case = TRUE),target.type:="numeric"]
+    if ("Format"%in%dt.content.vars){
+        dt.content[grepl("date|dato|DDMM|MMDD", Format, ignore.case = TRUE),target.type:="date"]
+        dt.content[grepl("datetime", Format, ignore.case = TRUE) ,target.type:="datetime"]
     }
-    if (length(drop) > 0) {
-        drop.check <- tolower(drop) %in% var.names
+    if ("Informat"%in%dt.content.vars){
+        dt.content[grepl("date|dato|DDMM|MMDD", Informat, ignore.case = TRUE),target.type:="date"]
+        dt.content[grepl("datetime", Informat, ignore.case = TRUE) ,target.type:="datetime"]
     }
-    if (length(filter) > 0) {
-        filter.check <- filter.names %in% var.names
-    }
-    if (length(keep) > 0)
-        is.date[!(var.names %in% keep)] <- FALSE
-    if (length(drop) > 0)
-        is.date[(var.names %in% drop)] <- FALSE
-    if (!is.null(date.vars))
-        for (name in date.vars) {
-            if (!(name %in% var.names))
+    # user may force different types
+    if (!is.null(date.vars)){
+        for (name in tolower(date.vars)) {
+            if (0==(hit <- match(name,tolower(dt.content$Variable),nomatch=0))){
                 warning(paste(name, "not found in dataset."))
-            else is.date[which(name == var.names)] <- TRUE
+            } else {
+                name <- dt.content$Variable[hit]
+                dt.content[name == Variable,target.type:="date"]
+            }
         }
-    date.vars <- var.names[is.date]
-    format.statement <- if (!any(is.date))
+    }
+    if (!is.null(datetime.vars)){
+        for (name in tolower(datetime.vars)) {
+            if (0==(hit <- match(name,tolower(dt.content$Variable),nomatch=0))){
+                warning(paste(name, "not found in dataset."))
+            } else {
+                name <- dt.content$Variable[hit]
+                dt.content[name == Variable,target.type:="datetime"]
+            }
+        }
+    }
+    if (!is.null(numeric.vars)){
+        for (name in tolower(numeric.vars)) {
+            if (0==(hit <- match(name,tolower(dt.content$Variable),nomatch=0))){
+                warning(paste(name, "not found in dataset."))
+            } else {
+                name <- dt.content$Variable[hit]
+                dt.content[name == Variable,target.type:="numeric"]
+            }
+        }
+    }
+    if (!is.null(character.vars)){
+        for (name in tolower(character.vars)) {
+            if (0==(hit <- match(name,tolower(dt.content$Variable),nomatch=0))){
+                warning(paste(name, "not found in dataset."))
+            } else {
+                name <- dt.content$Variable[hit]
+                dt.content[name == Variable,target.type:="character"]
+            }
+        }
+    }
+    dt.content[tolower(Variable)%in%numeric.vars,target.type:="numeric"]
+    dt.content[tolower(Variable)%in%character.vars,target.type:="character"]
+    #
+    datetime.vars <- dt.content[target.type=="datetime"]$Variable
+    date.vars <- dt.content[target.type=="date"]$Variable
+    numeric.vars <- dt.content[target.type=="numeric"]$Variable
+    character.vars <- dt.content[target.type=="character"]$Variable
+    #
+    # could consider a format statement for variables where user specifies
+    # numeric.vars or character.vars. for now only formatting date
+    # and datetime variables
+    #
+    skip.date.conversion <- tolower(as.character(skip.date.conversion[[1]]))
+    format.statement <- if (length(date.vars)==0||skip.date.conversion %in% c("sas","TRUE"))
                             ""
                         else paste("format ", paste(date.vars, collapse = " "), " yymmdd10.;")
+    if (length(datetime.vars)>0 && !(skip.date.conversion %in% c("TRUE","sas")))
+        format.statement <- paste(format.statement,paste("\nformat ", paste(datetime.vars, collapse = " "), " datetime.;"))
     if (length(pre.hook) > 0 & is.character(pre.hook)) {
         cat(pre.hook, file = tmp.SASfile, append = TRUE)
     }
@@ -415,23 +496,10 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                                                       collapse = " "), "; \nrun; \nproc sort data=df; \nby ",
             paste(filter.names, collapse = " "), "; \nrun;\n ",
             sep = "", file = tmp.SASfile, append = TRUE)
-        tmp.merge.statement <- matrix(paste(c("( NOT", "( "),
-                                            rep(letters[1:2], each = 2), ")"), ncol = 2)
-        tmp.merge.statement <- rbind(tmp.merge.statement[1, ],
-                                     rep("", 2), tmp.merge.statement[2, ])
-        if (any(filter.cond == 0)) {
-            if (all(filter.cond == 0)) {
-                merge.cond.statement <- ""
-            }
-            else {
-                merge.cond.statement <- paste("if", tmp.merge.statement[(filter.cond[filter.cond !=
-                                                                                     0] + 2), which(filter.cond != 0)], ";\n")
-            }
-        }
-        else {
-            merge.cond.statement <- paste("if", tmp.merge.statement[(filter.cond[1] +
-                                                                     2), 1], "AND", tmp.merge.statement[(filter.cond[2] +
-                                                                                                         2), 2], ";\n")
+        if (filter.negative){
+            merge.cond.statement <- paste("if ( NOT a ) AND ( b ) ;\n")
+        }else{
+            merge.cond.statement <- paste("if ( a ) AND ( b ) ;\n")
         }
         cat("data df; \nmerge csv_import(IN=a) df(IN=b); \nby ",
             paste(filter.names, collapse = " "), ";\n", merge.cond.statement,
@@ -453,8 +521,8 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
     tmp.lines <- paste("data _NULL_; \nset df; \n file '", outfile,
                        "' dsd; \nif _n_ eq 1 then link names; \nput (_all_)(~); return; \nnames:\nlength _name_ $32; \ndo while(1); \ncall vnext(_name_); \nif upcase(_name_) eq '_NAME_' then leave; \nput _name_ ~ @; \nend; \nput; \nreturn; \nrun;\n")
     cat(tmp.lines, file = tmp.SASfile, append = TRUE)
-    if (!(prod(keep.check) * prod(drop.check) * prod(filter.check))) {
-        error.mes <- "Some of the variables specified in the keep or drop statement or in the filter file are not found in the import file.\n"
+    if (!(prod(keep.check) * prod(drop.check))) {
+        error.mes <- "Some of the variables specified in the keep or drop statement are not found in the import file.\n"
         if (length(keep) > 0)
             error.mes <- paste(error.mes, "The KEEP argument(s): \n  ",
                                paste(tolower(keep[!keep.check]), collapse = "\n"),
@@ -463,23 +531,19 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
             error.mes <- paste(error.mes, "The DROP argument(s): \n  ",
                                paste(tolower(drop[!drop.check]), collapse = "\n"),
                                "\nare not found in the import file.\n", sep = "")
-        if (length(filter) > 0)
-            error.mes <- paste(error.mes, "The FILTER argument(s): \n  ",
-                               paste(filter.names[!filter.check], collapse = "\n"),
-                               "\nare not found in the import file.\n", sep = "")
         error.mes <- paste(error.mes, "\nThe content of the import file is:\n",
                            sep = "")
     }
     if (content == TRUE) {
         df <- dt.content
-        if (!(prod(keep.check) * prod(drop.check) * prod(filter.check))) {
+        if (!(prod(keep.check) * prod(drop.check))) {
             cat(paste("Warning:\n", error.mes, sep = ""))
             print(df)
             cat("\nThis will give an error when content=FALSE.\n")
         }
     }
     else {
-        if (!(prod(keep.check) * prod(drop.check) * prod(filter.check))) {
+        if (!(prod(keep.check) * prod(drop.check))) {
             cat(paste("Error:\n", error.mes, sep = ""))
             print(dt.content)
             stop("Aborted.")
@@ -503,30 +567,17 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                                    "\nPlease"), " check the log file:\n", tmp.log))
             }
             info <- file.info(outfile)
-            ia <- c(list(file = outfile, header = TRUE, na.strings = na.strings),
+            ia <- c(list(file = outfile, header = TRUE),
                     list(...))
+            # types of variables (case of variable names according to dt.contents)
             if (length(ia$colClasses) == 0){
                 ia$colClasses <- list(character = NULL, numeric = NULL)
+            }
+            if (use.colClasses){
+                ia$colClasses[["character"]] <- c(character.vars,date.vars,datetime.vars)
+                ia$colClasses[["numeric"]] <- numeric.vars
             }else{
-                ia$colClasses <- lapply(ia$colClasses,tolower)
-            }
-            for (v in character.vars) {
-                if (length(vname <- grep(v, dt.content$Variable,
-                                         value = TRUE, ignore.case = TRUE)) > 0)
-                    if (length(filter) > 0){
-                        if (tolower(vname) %in% filter.names) vname <- tolower(vname)
-                    }
-                ia$colClasses[["character"]] <- unique(c(vname,ia$colClasses[["character"]]))
-            }
-            for (v in numeric.vars) {
-                if (length(vname <- grep(v, dt.content$Variable,
-                                         value = TRUE, ignore.case = TRUE)) > 0) {
-                    if (length(filter) > 0){
-                        if (tolower(vname) %in% filter.names) vname <- tolower(vname)
-                    }
-                    ia$colClasses[["numeric"]] <- unique(c(vname,
-                                                           ia$colClasses[["numeric"]]))
-                }
+                ia$colClasses <- NULL
             }
             # reset filternames
             if (length(filter) > 0){
@@ -534,21 +585,68 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
             }
             if (info$size == 0) {
                 warning("The dataset produced by SAS appears to be empty.")
-                df <- NULL
+                # empty data set
+                return(df)
             }
             else {
-                tryread <- try(df <- do.call(data.table::fread,ia))
+                if (verbose)
+                    tryread <- try(df <- do.call(data.table::fread,ia))
+                else
+                    suppressWarnings(tryread <- try(df <- do.call(data.table::fread,ia)))
                 if ("try-error" %in% class(tryread)) {
                     warning("Could not read the constructed dataset into R. \nSomething probably went wrong during SAS program execution. ")
                     df <- NULL
                 }
             }
-            if ((length(df)>0) && (skip.date.conversion[[1]] == FALSE)) {
-                names(df) <- tolower(names(df))
-                if (!is.null(df) & sum(is.date) > 0) {
-                    date.vars <- tolower(date.vars)
+            # change case of variable names
+            names(df) <- tolower(names(df))
+            # force numeric format
+            if (force.numeric[[1]] == TRUE && length(numeric.vars) > 0) {
+                numeric.vars <- tolower(numeric.vars)
+                if (verbose)
+                    try(df[, `:=`((numeric.vars), lapply(.SD, as.numeric)),
+                           .SDcols = numeric.vars], silent = FALSE)
+                else
+                    suppressWarnings(try(df[, `:=`((numeric.vars), lapply(.SD, as.numeric)),
+                                            .SDcols = numeric.vars], silent = FALSE))
+            }
+            # deal with na.strings in character variables
+            if (length(na.strings)>0 && length(character.vars) > 0) {
+                character.vars <- tolower(character.vars)
+                if (verbose)
+                    try(df[, `:=`((character.vars), lapply(.SD, function(x){x[grepl(paste0(na.strings,collapse="|"),x)] <- NA;x})),
+                           .SDcols = character.vars], silent = FALSE)
+                else
+                    suppressWarnings(
+                        try(df[, `:=`((character.vars), lapply(.SD, function(x){x[grepl(paste0(na.strings,collapse="|"),x)] <- NA;x})),
+                               .SDcols = character.vars], silent = FALSE)
+                    )
+            }
+            # date format
+            if (!(skip.date.conversion %in% c("r","true")) && length(date.vars)>0) {
+                date.vars <- tolower(date.vars)
+                # respect if user wants character or numeric format instead of date format
+                if (any(c(character.vars,numeric.vars)%in%date.vars))
+                    date.vars <- setdiff(date.vars,c(character.vars,numeric.vars))
+                if (verbose)
                     try(df[, `:=`((date.vars), lapply(.SD, lubridate::ymd)),
                            .SDcols = date.vars], silent = FALSE)
+                else
+                    suppressWarnings(try(df[, `:=`((date.vars), lapply(.SD, lubridate::ymd)),
+                                            .SDcols = date.vars], silent = FALSE))
+            }
+            # datetime format
+            if (!(skip.date.conversion %in% c("r","TRUE")) && length(datetime.vars)>0) {
+                datetime.vars <- tolower(datetime.vars)
+                # respect if user wants character or numeric format instead of date format
+                if (any(c(character.vars,numeric.vars)%in%date.vars))
+                    datetime.vars <- setdiff(datetime.vars,c(character.vars,numeric.vars))
+                if (verbose)
+                    try(df[, `:=`((datetime.vars), lapply(.SD, lubridate::dmy_hms)),
+                           .SDcols = datetime.vars], silent = FALSE)
+                else{
+                    suppressWarnings(try(df[, `:=`((datetime.vars), lapply(.SD, lubridate::dmy_hms)),
+                                            .SDcols = datetime.vars], silent = FALSE))
                 }
             }
         }
