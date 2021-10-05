@@ -28,7 +28,7 @@ The function allows a user to search for strings matching those in
 \examples{
 library(heaven)
 x <- c("DI05", "DI06")
-sasSubstr(x, target.var)
+sasSubstr(x, target.var="A")
 
 
 }

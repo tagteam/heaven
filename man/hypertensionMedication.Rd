@@ -41,6 +41,9 @@ defined index date and using medication 180 days before that date.  Not
 directly validated, this function can also calculate the date of start of 
 hypertension as a date where an individual has picked up at least two classes
 of antihypertensive medication for two consecutive periods of 3 months.
+
+Note:  If there are repeats of ptid with separate index.date, then the
+presence of hypertension is evaluated for each date.
 }
 \details{
 This function uses a list of named character vectors to define classes of 
@@ -61,7 +64,7 @@ dat <-data.table(
             replace=TRUE),
  EKSD=as.Date("2012-01-01")+(sample(1:600,100,replace=TRUE)),
  ptid=1:10,
- index=as.Date("2013-06-01")+seq(80,98,2))
+ index=c(rep(as.Date("2013-06-01"),50),rep(as.Date("2013-06-02"),50)))
 setkey(dat,"ptid")  
 # Hypertension with indexdate:
 index <- hypertensionMedication(dat,vars=c("ptid","ATC","EKSD"),

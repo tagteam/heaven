@@ -16,7 +16,7 @@ exposureMatch(
   duration.terms = NULL,
   output.count.controls = TRUE,
   cores = 1,
-  seed,
+  seed = 0,
   progressbar = TRUE
 )
 }

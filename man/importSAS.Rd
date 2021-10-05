@@ -7,14 +7,14 @@
 \usage{
 importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  where = NULL,obs = NULL,filter = NULL,
-                 filter.by = NULL, filter.cond = c(1,1),
+                 filter.by = NULL, filter.negative = FALSE,
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
-                 show.sas.code=TRUE,save.tmp = FALSE,content=FALSE,
-                 na.strings=".",date.vars, character.vars="pnr",
+                 show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
+                 na.strings="^\\.$",date.vars,datetime.vars, character.vars="pnr",
                  numeric.vars = NULL,sas.program,sas.switches,
-                 sas.runner, skip.date.conversion=FALSE,
-                 sas.data.extension="sas7bdat", verbose=TRUE,...)
+                 sas.runner, use.colClasses=TRUE, skip.date.conversion=FALSE,
+                 force.numeric=TRUE, sas.data.extension="sas7bdat", verbose=FALSE,...)
        contentSAS(filename,wd=NULL)
 }
 \arguments{
@@ -39,15 +39,16 @@ the working directory to the fast X drive.}
 \item{filter}{Alternative or in addition to the where statement it is
 possible to filter the rows of \code{filename} based on a data.table.
 E.g., filter can be a data.table with one column consisting of *unique*
-PNRs to specify that only matching rows should be imported from filename.}
+PNRs to specify that only the matching rows should be imported from filename.}
 
-\item{filter.by}{Vector of arguments to filter by. By default all variables present in the filter data are used.}
+\item{filter.by}{Vector of variable names to filter by. By default all variables present in the filter data are used.}
 
-\item{filter.cond}{Vector of two arguments equal to one of the values: -1,0,1.
-The first argument conditions on values from the filter file,
-the second on the SAS dataset. 1 means that an observation is only
-included if it is present in the corresponding dataset, -1 means it is
-excluded in this case, and 0 has no effect. Default is c(1,1).}
+\item{filter.negative}{Vector of length two that defines how to merge the \code{filter} data
+                   with the SAS dataset \code{filename}:
+\itemize{
+\item \code{c(1,1)} means observation are only included if they are present both the filter data and the SAS data.
+\item \code{c(-1,1)} means observation are only included if they are not present filter data but present in the SAS data.
+}}
 
 \item{set.hook}{Quoted SAS statments (within use single quotes) to be placed in addition to set options (where, keep, drop, obs) when setting the data set \code{filename}. See examples.}
 
@@ -67,11 +68,14 @@ excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{content}{Logical. If true, the function will only read and return the content of the import file. Together with save.tmp=TRUE, this can be used to generate the SAS file without running it.}
 
-\item{na.strings}{A vector of strings to interpret as NA. Argument parsed to \code{fread} so see this help page for more information.}
+\item{na.strings}{A vector of strings to interpret values of character variables as NA. Each element should be a regular expression
+that can be understood by \code{grepl}. For example, the default value \code{"^\\.$"} matches fields that contain a single dot and nothing else than a dot.}
 
-\item{date.vars}{Vector of variables to read as date variables.}
+\item{date.vars}{Vector of variables to be converted to date variables. For these variables a SAS format statement \code{yymmdd10.} is
+used to force the correct order of year months and days and the conversion is done with \code{lubridate::ymd}.
+Conversion can be skipped with argument \code{skip.date.conversion}.}
 
-\item{character.vars}{names of variables that should be converted to character. case does not matter. default is "pnr".}
+\item{character.vars}{names of variables that should be converted to character. Case does not matter. Default is \code{"pnr"}.}
 
 \item{numeric.vars}{character.vars names of variables that should be converted to numeric. case does not matter.}
 
@@ -81,13 +85,24 @@ excluded in this case, and 0 has no effect. Default is c(1,1).}
 
 \item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
 
-\item{skip.date.conversion}{if TRUE do not try to convert any dates.}
+\item{use.colClasses}{Logical. If TRUE learn about the variable types from SAS's proc contents and
+pass to \code{fread} as argument \code{colClasses}.}
+
+\item{skip.date.conversion}{if TRUE do not try to convert any dates or datetime variables. If \code{"SAS"} only skip the format statements but format
+via lubridate (see \code{date.vars} and \code{datetime.vars}). If \code{"R"} skip lubridate conversion but keep the format statements.}
+
+\item{force.numeric}{if TRUE force numeric format on numeric variables specified by argument \code{numeric.vars}.}
 
 \item{sas.data.extension}{String to be checked against the file extenstion of filename. Default is \code{"sas7bdat"}.}
 
-\item{verbose}{Logical. Bla bla on the screen?}
+\item{verbose}{Logical. When \code{TRUE} warnings and errors are shown, otherwise not shown.
+This can be useful to turn on when there are problems with the result.}
 
-\item{...}{Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars} and \code{numeric.vars}.}
+\item{...}{Arguments passed to \code{fread} for reading the created .csv file. OBS: try to avoid specifying \code{colClasses} and instead use the arguments of importSAS: \code{character.vars}, \code{date.vars}, \code{datetime.vars} and \code{numeric.vars}.}
+
+\item{date.timevars}{Vector of variables to be converted to datetime variables. For these variables a SAS format statement \code{datetime.} is
+used and the conversion is done with \code{lubridate::dmy_hms}.
+Conversions in both SAS and R programs can be skipped with argument \code{skip.date.conversion}.}
 }
 \value{
 The output is a data.table with the columns requested in keep (or all columns) and the rows requested in where (or all rows) up to obs many rows.
@@ -96,8 +111,13 @@ The output is a data.table with the columns requested in keep (or all columns) a
 Selective import of sas7bdat files into R data.table format
 }
 \details{
-This function first writes SAS code, then runs the SAS code, and finally data.table::freads the results into R.
-The user selects which columns and rows to import. See examples.
+This function first runs SAS proc contents in the background and uses the result
+to write temporary SAS code that writes the data in csv format to a temporary file.
+The data are then read with data.table::freads into R. The function tries to help
+with the formatting of numeric and date variables and with the understanding of missing values.
+However, in some cases this help is counterproductive and can therefore be turned off,
+to some extent at least, with arguments na.strings, force.numeric, skip.date.conversion.
+Also, the user selects which columns and rows to import. See examples.
 
 As \code{R} is case-sensitive while \code{SAS} is not, to avoid confusion all variable names are converted to lower case.
 }
@@ -187,7 +207,7 @@ df2
 df2a <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",
                  obs=101,
                  pre.hook="options nofmterr;")
-                 
+
 
 # The hooks set.hook and step.hook can be used as follows:
 df3 <- importSAS(filename="X:/Data/Rawdata_Hurtig/704791/diag_indl",

@@ -1,18 +1,17 @@
 ## workhorse for incidenceMatch and exposureMatch
-riskSetMatch <- function(ptid     # Unique patient identifier
-                        ,event   # 0=Control, 1=case
-                        ,terms   # terms c("n1","n2",...) - list of variables to match by
-                        ,data     # dataset with all variables
-                        ,n.controls  # number of controls to provide
-                        ,case.index=NULL      # Integer or date, date where controls must be prior
-                        ,end.followup=NULL   # end.followup - Index date for controls
-                        ,date.terms=NULL # character list of date variables
-                        ,duration.terms=NULL # Duration of a minimal exposure window for the condition defined by start.date
-                        ,output.count.controls=TRUE # add number of controls
-                        ,cores=1 # Number of cores to use, default 1
-                        ,seed # Seed for random sort
-                        ,progressbar=TRUE
-                         ){
+riskSetMatch <- function(ptid,
+                         event,
+                         terms,
+                         data,
+                         n.controls,
+                         case.index=NULL,
+                         end.followup=NULL,
+                         date.terms=NULL,
+                         duration.terms=NULL,
+                         output.count.controls=TRUE,
+                         cores=1,
+                         seed=0,
+                         progressbar=TRUE){
     .SD=cterms=tEmP.iD=.N=miscol=case.id=NULL
     #check
     vnames <- colnames(data)
@@ -116,7 +115,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
                             file = "")
         progress <- 0
     }
-                                        # Select controls - rbind of each split-member that selects controls
+    # Select controls - rbind of each split-member that selects controls
     `%dopar%` <- foreach::`%dopar%`
     ## selected.controls <- do.call(rbind,foreach::foreach(controls=split.work.data,.packages=c("heaven")) %dopar% {
     selected.controls <- do.call(rbind,foreach::foreach(sub=1:length(split.work.data),.packages=c("heaven","data.table")) %dopar% {
@@ -150,7 +149,7 @@ riskSetMatch <- function(ptid     # Unique patient identifier
             duration.min <- double(1)
         }
         #if (!missing(seed)) set.seed(seed)
-        if (!missing(seed)) set.seed(seed)
+        if (length(seed)>0) set.seed(seed)
         Output <- Matcher(n.controls,
                           Tcontrols,
                           Ncases,

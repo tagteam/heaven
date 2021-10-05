@@ -30,10 +30,6 @@ sasDateRange <-
 #' rDateToSas
 #'
 #' @param rdate Date object to be converted into a format SAS can read
-#'
-#' @return
-#'
-#' @examples
 #' @export
 rDateToSas <- function(rdate) {
   format(rdate, '%d%b%Y')
@@ -66,7 +62,7 @@ rDateToSas <- function(rdate) {
 #' @examples
 #'library(heaven)
 #'x <- c("DI05", "DI06")
-#'sasSubstr(x, target.var)
+#'sasSubstr(x, target.var="A")
 #'
 #'
 sasSubstr <- function(str.vec, target.var) {
@@ -93,7 +89,7 @@ sasSubstr <- function(str.vec, target.var) {
 #'
 #' @return Returns a string that can be passed to the "where" argument of importSAS
 #' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
-#' @examples
+#' 
 #' @export
 sasWhereConstructor <- function(..., collapse = " AND ") {
   dots <- list(...)
