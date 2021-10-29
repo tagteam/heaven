@@ -30,7 +30,7 @@
 #' columns should contain id, name of condition and the data to split on
 #' 
 #' @usage
-#' lexisTwo(indat,splitdat,invars,splitvars,format="wide")
+#' lexisTwo(indat,splitdat,invars,splitvars,format="wide",datacheck=TRUE)
 #' @author Christian Torp-Pedersen
 #' @param indat A data.table or data.frame whose first 4 columns are in that 
 #' order:
@@ -80,6 +80,11 @@
 #' example: c("id","name","date")
 #' The name of the id column must be the same in both datasets
 #' @param format - format of splitting guide - "wide"  or "long"
+#' @param datacheck - This program may crash if intervals are overlapping or
+#' negative. Datachecking produces an error in such cases. This can be omitted 
+#' if the data have been checked by other means.  For the splitting guide 
+#' this options checks that there is only one entry for each variable to 
+#' split by for each person identifier.
 #' @return
 #' The function returns a new data table where records have been split according 
 #' to the splittingguide dataset. Variables unrelated to the splitting are 
@@ -91,7 +96,7 @@
 #' an error. Overlap may occur in real data, but the user needs to make 
 #' decisions regarding this prior to using this function.
 #' 
-#' It is required that the splittingguide contains at least one record.  
+#' It is required that the splitting guide contains at least one record.  
 #' Missing data in the person id variables are not allowed and will cause errors.
 #' 
 #' A note of caution: This function works with dates as numeric. R has a default
@@ -144,7 +149,8 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
                     splitdat, # Data with id and dates
                     invars, #names of id/in/out/event - in that order
                     splitvars, #Names var date-vars to split by
-                    format="wide" # Wide or long format of splitting guide
+                    format="wide", # Wide or long format of splitting guide
+                    datacheck=TRUE #Check consistensy of data
 ){
   .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=numcov=name=isdate=NULL
   #Tests of data
@@ -161,11 +167,17 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
   }
   else isdate <- FALSE
   ## TEST
+  if(datacheck){
   temp <- indat[,list(num=sum(out<inn))]
   if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
   if (!class(indat[,inn]) %in% c("numeric","integer","Date") | !class(indat[,out]) %in% c("numeric","integer","Date")) 
          stop("input date not Date or integer or numeric")
   if(class(!indat[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
+  setkeyv(indat,"inn")
+  temp <- indat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnr"]
+  temp <- temp[,list(num=sum(num))]
+  if(temp[,num]>0) stop("Error - Data includes overlapping intervals")
+  }
   ## if (!class(tolower(indat[,inn])) %in% c("numeric","date","integer") | !class(tolower(indat[,out])) %in% c("numeric","date","integer")) stop("dates from input not numeric") 
   # Create consecutive increasing replacement from pnr in indat and splitdat
   setkey(indat,"pnr")
@@ -176,6 +188,10 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
   splitdat[,pnr:=NULL] #remove pnr
   # Create long-form of splitdat and number covariate dates
   if (format=="wide"){
+    if(datacheck){
+      temp <- splitdat[,pnrnum]
+      if (length(temp)!=length(unique(temp))) stop("Error - Repeated entries in splitting guide")
+    }
     setcolorder(splitdat,c("pnrnum",splitvars)) # Columns ordered as in call
     splitdat <- data.table::melt(data=splitdat,id.vars="pnrnum",measure.vars=splitvars,variable.name="_variable_",value.name="value_")
     setkeyv(splitdat,"pnrnum")
@@ -187,6 +203,13 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
     splitdat[,value_:=as.numeric(value_)]
     splitdat <- as.matrix(splitdat) 
   } else { # format=long
+    if(datacheck){
+       setkeyv(splitdat,"pnrnum")
+       splitdat[,numvars:=.N,by="pnrnum"]
+       temp <-splitdat[,list(numvars=max(numvars))]
+       if (temp[,numvars]>length(unique(splitdat[,name])))stop("Error - Apparent repeated entries in splitting guide")
+       splitdat[,numvars:=NULL]
+    }
     setnames(splitdat,splitvars[2:3],c("name","value_"))
     splitvars <- as.character(unique(splitdat[,"name"])$name)
     toNumber <- data.table(name=splitvars,number_=1:length(splitvars))

@@ -4,7 +4,7 @@
 \alias{lexisFromTo}
 \title{lexisFromTo}
 \usage{
-lexisFromTo(indat,splitdat,invars,splitvars,default="0")
+lexisFromTo(indat,splitdat,invars,splitvars,default="0",datacheck=TRUE)
 }
 \arguments{
 \item{indat}{- base data with id, start, end, event and other data - possibly 
@@ -20,6 +20,11 @@ example: c("id","start","end","event")}
 example: c("id","start","end","value","name") - must be in that order!}
 
 \item{default}{- Value given to intervels not given a value by the function.}
+
+\item{datacheck}{- This function can crash or produce incorrect results if
+input data have overlapping intervals or negative intervals in any of the two
+input datasets.  Thic is checked and error produced by datacheck. Can be 
+omitted if data are checked otherwise}
 }
 \value{
 The function returns a new data table where records have been split according 

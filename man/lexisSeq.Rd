@@ -4,7 +4,8 @@
 \alias{lexisSeq}
 \title{lexisSeq}
 \usage{
-lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
+lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value",
+datacheck=TRUE)
 }
 \arguments{
 \item{indat}{base data with id, start, end, event and other data - possibly 
@@ -26,6 +27,10 @@ a sequence of fixed dates (or other time scala).}
 
 \item{value}{0 to the left of the vector, increase of 1 as each element of 
 vector is passed}
+
+\item{datacheck}{- Checks that data are in appropriate format and that 
+intervals are neighter negative or overlapping. Can be omitted if checked
+elsewhere.}
 }
 \value{
 The function returns a new data table where records have been split according 
@@ -81,7 +86,8 @@ perly. The program will also allow periods of zero lengths which is a conse-
 quence when multiple splits are made on the same day. When there is an event
 on a period with zero length it is important to keep that period not to 
 loose events for calculations. Whether other zero length records should be
-kept in calculations depend on context.
+kept in calcul
+ations depend on context.
 }
 \examples{
 library(data.table)

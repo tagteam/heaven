@@ -38,19 +38,21 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
   int l1=pnrnum.size(); // length of base data
   int l2=split.nrow();
    l2=l2-split(l2-1,3); // start of last element of splitting guide
+   //Rcout <<"l1="<<l1<<" l2="<<l2 <<"\n";
   int counter=0; // counts through split guide
   int INN=-1; // start of pnr-range in output data
   int OUT=-1; // end of pnr-range in output data
-  // Loop through all data in base data and split a new pnr has
+  // Loop through all data in base data and split a when new pnr has
   // been identified.  The base data are added to output vectors sequentially and split
   // prior to interrogating next pnr
    for(int i=0; i<l1; i++){ // Loop through base data
-      //Rcout <<"Next base record i="<<i<<"\n";     
+      //Rcout <<"Next base record i="<<i<<" counter="<<counter<<" split(counter,0)="<<split(counter,0)<<"\n";
+      //Rcout <<"pnrnum(i)="<<pnrnum(i)<<"\n";
       INN=OUT+1;  // Start of next pnr-sequence - INN/OUT necessary because record can be split and reanalyzed
       while (counter<l2 && split(counter,0)<pnrnum(i)) counter+=split(counter,3); // Increase row by number of covariates in splitting guide until match - or end passed
        //Searching in splitting guide until match found or passed - counter maintains place in splitting guide
       OUT+=1;
-      //Rcout <<"End while - counter="<<counter<<" INN="<<INN<<"OUT="<<OUT<<"\n";  
+      //Rcout <<"End while - counter="<<counter<<" INN="<<INN<<"OUT="<<OUT<<"\n";
       // Start by pushing the record with all comorbidities=0
       Opnrnum.push_back(pnrnum(i));
       Omergevar.push_back(mergevar(i));
@@ -64,9 +66,9 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
         for (int ii=0; ii<split(counter,3); ii++){ // Outer loop through elements of splitting guide for current pnr
           //Rcout <<"loop split guide ii="<<ii<<" split(counter,3)="<<split(counter,3)<<"\n";
           for (int iii=INN; iii<=OUT; iii++){ // inner loop - Output data - iii is numbering of output records - OUT is increased when relevant
-             //Rcout <<"inner loop iii="<<iii<<" INN="<<INN<<" OUT="<<OUT<<"\n";
+             //Rcout <<"inner loop iii="<<iii<<" INN="<<INN<<" OUT="<<OUT<<"counter="<<counter<<"\n";
              if (split(counter+ii,1)<-2000000000 || split(counter+ii,1)>Oout[iii]) {
-             //Rcout<<"splitvalue="<<  split(counter+ii,1) <<" splitnumber="<<split(counter+ii,2)<<"\n";            
+             //Rcout<<"splitvalue="<<  split(counter+ii,1) <<" splitnumber="<<split(counter+ii,2)<<"\n";
              // splitting later thant current interval - no action
              }
                else // Zero record length - and equality - just change value
@@ -129,29 +131,32 @@ List split2(IntegerVector pnrnum, // PNR as sequence number - base data
 
 // /*** R
 // library(data.table)
-// pnrnum <- 1:10
-// inn <- c(100,100,150,100,133,167,100,150,100,100)
-// out <- c(200,150,200,133,167,200,150,200,200,200)
-// event <- c(1,0,0,0,0,1,0,1,1,1)
-// mergevar <- 11:20
+// pnrnum <- c(1,1,1,2,3)
+// inn <- c(100,150,175,100,133)
+// out <- c(150,175,200,133,167)
+// event <- c(0,0,1,0,1)
+// mergevar <- 11:15
 // 
-// split2 <- c(100,150,175,101,132,100,175,175,175,175)
-// split3 <- c(101,150,174,101,150, 50, 50,175,175,175)
-// split4 <- c(150,101,173,101,167, 200,200,174,175,176)
-// split <- data.table(pnrnum,split2,split3,split4)
-// split2 <- melt(data=split,id.vars="pnrnum",measure.vars=c("split2","split3","split4"))
-// setkeyv(split2,"pnrnum")
-// split2[,number:=1:.N,by="pnrnum"]
-// split2[,variable:=NULL]
-// setkeyv(split2,c("pnrnum","value"))
-// split2 <- as.matrix (split2)
+// pnrnum2 <- c(1,2,3)
+// splitt2 <- c(152,90,140)
+// splitt3 <- c(155,120,140)
+// splitt4 <- c(160,200,140)
+// splitt <- data.table(pnrnum2,splitt2,splitt3,splitt4)
+// splitt2 <- melt(data=splitt,id.vars="pnrnum2",measure.vars=c("splitt2","splitt3","splitt4"))
+// setkeyv(splitt2,"pnrnum2")
+// splitt2[,number:=1:.N,by="pnrnum2"]
+// splitt2[,variable:=NULL]
+// setkeyv(splitt2,c("pnrnum2","value"))
+// splitt2[,numcov:=3,by="pnrnum2"]
+// splitt2 <- as.matrix (splitt2)
 // 
-// out <- split2_beta(pnrnum, # PNR as sequence number - base data
+// 
+// out <- split2(pnrnum, # PNR as sequence number - base data
 //         inn, # Starttimes - base data
 //         out, # Endtimes - base data
 //         event, # Event at end of interval 0/1 - base data
 //         mergevar, # Merge variable, multiple records can have same pnr - base data
-//         split2, # split guide matrix - pnrnum and date columns
+//         splitt2, # split guide matrix - pnrnum and date columns
 //         3)
 // out <- cbind(setDT(out[1:5]),setDT(do.call(cbind,out[6])))
 // setkeyv(out,c("pnrnum","inn"))

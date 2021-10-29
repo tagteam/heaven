@@ -7,7 +7,7 @@
 #' id/from/to/value/name - that may represent multiple conditions with from/to and with "name" to
 #' distinguish.
 #' @usage
-#' lexisFromTo(indat,splitdat,invars,splitvars,default="0")
+#' lexisFromTo(indat,splitdat,invars,splitvars,default="0",datacheck=TRUE)
 #' @author Christian Torp-Pedersen
 #' @param indat - base data with id, start, end, event and other data - possibly 
 #' already split
@@ -18,6 +18,10 @@
 #' @param splitvars - vector of column names containing dates to split by.
 #' example: c("id","start","end","value","name") - must be in that order!
 #' @param default - Value given to intervels not given a value by the function.
+#' @param datacheck - This function can crash or produce incorrect results if
+#' input data have overlapping intervals or negative intervals in any of the two
+#' input datasets.  Thic is checked and error produced by datacheck. Can be 
+#' omitted if data are checked otherwise
 #' @return
 #' The function returns a new data table where records have been split according 
 #' to the splittingguide dataset. Variables
@@ -60,6 +64,7 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,invars #names of id/in/out/event - in that order
                        ,splitvars #Names in splitdat with pnr/from/to/value/name
                        ,default="0"
+                       ,datacheck=TRUE
                         ){
     .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=event=out=num=isdate=NULL
     setDT(indat)
@@ -73,7 +78,17 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
       INDAT[,':='(inn=as.numeric(inn),out=as.numeric(out))] 
     }
     else isdate <- FALSE
-    if (!class(INDAT[,event]) %in% c("numeric","integer")) stop("event variable must be integer - zero or one") 
+    if(datacheck){
+      temp <- INDAT[,list(num=sum(out<inn))]
+      if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
+      if (!class(INDAT[,inn]) %in% c("numeric","integer","Date") | !class(INDAT[,out]) %in% c("numeric","integer","Date")) 
+        stop("input date not Date or integer or numeric")
+      if(class(!INDAT[,event]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
+      setkeyv(INDAT,"inn")
+      temp <- INDAT[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnr"]
+      temp <- temp[,list(num=sum(num))]
+      if(temp[,num]>0) stop('Error - Data "indat"" includes overlapping intervals')
+    }    
     setkey(INDAT,pnr)
     INDAT[,pnrnum:=.GRP,by="pnr"] # Number pnr - As a consecutive sequence
     pnrgrp <-unique(INDAT[,c("pnr","pnrnum"),with=FALSE]) 
@@ -89,12 +104,14 @@ lexisFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
     csplit[,pnr:=NULL] # identify only by pnrnum
     setkeyv(csplit,c("pnrnum","start"))
     # Check csplit content
-    temp <- csplit[start>slut,sum(start>slut)]
-    if (temp>0) stop("Error - Attempt to split with negative date intervals in splitting guide") 
-    csplit[,prior_slut:=shift(slut),by=c("name","pnrnum")]
-    error <-dim(csplit[!is.na(prior_slut) & start-prior_slut<0,])[1]
-    if (error>0) stop("Error in splitting guide data - Intervals overlapping - unpredictable results")    
-    csplit[,prior_slut:=NULL]
+    if (datacheck){
+      temp <- csplit[start>slut,sum(start>slut)]
+      if (temp>0) stop("Error - Attempt to split with negative date intervals in splitting guide") 
+      csplit[,prior_slut:=shift(slut),by=c("name","pnrnum")]
+      error <-dim(csplit[!is.na(prior_slut) & start-prior_slut<0,])[1]
+      if (error>0) stop("Error in splitting guide data - Intervals overlapping - unpredictable results")    
+      csplit[,prior_slut:=NULL]
+    }
     # Get list of names
     nams <- unique(csplit[["name"]]) # provides order of names for later renaming
     name <- data.table(nams,1:length(nams))

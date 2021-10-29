@@ -30,7 +30,8 @@
 #' 
 #' Overall the function provides identical usefulness as the SAS lexis macro
 #' @usage
-#' lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value")
+#' lexisSeq(indat,invars,varname=NULL,splitvector,format,value="value",
+#' datacheck=TRUE)
 #' @author Christian Torp-Pedersen
 #' @param indat base data with id, start, end, event and other data - possibly 
 #' already split
@@ -46,6 +47,9 @@
 #' }
 #' @param value 0 to the left of the vector, increase of 1 as each element of 
 #' vector is passed
+#' @param datacheck - Checks that data are in appropriate format and that 
+#' intervals are neighter negative or overlapping. Can be omitted if checked
+#' elsewhere.
 #' @return
 #' The function returns a new data table where records have been split according 
 #' to the values in splitvector. Variables unrelated to the splitting are left 
@@ -69,7 +73,8 @@
 #' quence when multiple splits are made on the same day. When there is an event
 #' on a period with zero length it is important to keep that period not to 
 #' loose events for calculations. Whether other zero length records should be
-#' kept in calculations depend on context.
+#' kept in calcul
+#' ations depend on context.
 #' @seealso lexis2 lexisFromTo 
 #' @examples
 #' library(data.table)
@@ -96,13 +101,16 @@ lexisSeq <- function(indat,
                      varname = NULL,
                      splitvector,
                      format,
-                     value = "value") 
+                     value = "value",
+                     datacheck=TRUE) 
 {
   vent = out = inn = .SD = pnrnum = .N = isdate= NULL
-  if (class(invars) != "character") 
-    stop("Varnames in c(..) not character")
-  if (class(varname) != "character" & !is.null(varname)) 
-    stop("varname not character or NULL")
+  if (datacheck){
+    if (class(invars) != "character") 
+      stop("Varnames in c(..) not character")
+    if (class(varname) != "character" & !is.null(varname)) 
+      stop("varname not character or NULL")
+  }
   datt <- data.table::copy(indat)
   data.table::setDT(datt)
   if (is.null(varname)) 
@@ -121,22 +129,33 @@ lexisSeq <- function(indat,
     isdate <- TRUE
   }
   else isdate <- FALSE
-  if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
-  datt[, `:=`((invars[2:4]), NULL)]
-  if (!(format %in% c("vector", "seq"))) 
-    stop("format must be 'seq' or 'vector'")
-  if (format == "seq") {
-    if ((length(splitvector) != 3) || (splitvector[1] >= 
-                                       splitvector[2]) || (splitvector[3] >= (splitvector[2] - 
-                                                                              splitvector[1]))) 
-      stop("Argument 'seq' must be a vector of the form (start, stop, by) where start < stop and by < stop-start.")
-    splitguide <- seq(splitvector[1],splitvector[2],splitvector[3]) 
-  }  
-  else {
-    if (length(splitvector)>1) 
-      for (i in 2:length(splitvector))
-        if (splitvector[i]<=splitvector[i-1]) stop("Splitvector not with increasing numbers")
-    splitguide <- splitvector     
+  if (datacheck) {
+    temp <- splitdat[,list(num=sum(out<inn))]
+    if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
+    if (!class(splitdat[,inn]) %in% c("numeric","integer","Date") | !class(splitdat[,out]) %in% c("numeric","integer","Date")) 
+      stop("input date not Date or integer or numeric")
+    if(class(!splitdat[,event]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
+    setkeyv(splitdat,"inn")
+    temp <- splitdat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnrnum"]
+    temp <- temp[,list(num=sum(num))]
+    if(temp[,num]>0) stop("Error - Data includes overlapping intervals")
+    if(!class(splitdat[,event]) %in% c("integer","numeric")) stop('Event variable must be integer - zero or one')
+    datt[, `:=`((invars[2:4]), NULL)]
+    if (!(format %in% c("vector", "seq"))) 
+      stop("format must be 'seq' or 'vector'")
+    if (format == "seq") {
+      if ((length(splitvector) != 3) || (splitvector[1] >= 
+                                         splitvector[2]) || (splitvector[3] >= (splitvector[2] - 
+                                                                                splitvector[1]))) 
+        stop("Argument 'seq' must be a vector of the form (start, stop, by) where start < stop and by < stop-start.")
+      splitguide <- seq(splitvector[1],splitvector[2],splitvector[3]) 
+    }  
+    else {
+      if (length(splitvector)>1) 
+        for (i in 2:length(splitvector))
+          if (splitvector[i]<=splitvector[i-1]) stop("Splitvector not with increasing numbers")
+      splitguide <- splitvector     
+    }
   }
   out <- splitdat[, heaven::splitDate(inn, out, event, pnrnum, splitguide, varname)]  
   setDT(out)

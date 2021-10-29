@@ -4,7 +4,7 @@
 \alias{lexisTwo}
 \title{lexisTwo}
 \usage{
-lexisTwo(indat,splitdat,invars,splitvars,format="wide")
+lexisTwo(indat,splitdat,invars,splitvars,format="wide",datacheck=TRUE)
 }
 \arguments{
 \item{indat}{A data.table or data.frame whose first 4 columns are in that 
@@ -57,6 +57,12 @@ example: c("id","name","date")
 The name of the id column must be the same in both datasets}
 
 \item{format}{- format of splitting guide - "wide"  or "long"}
+
+\item{datacheck}{- This program may crash if intervals are overlapping or
+negative. Datachecking produces an error in such cases. This can be omitted 
+if the data have been checked by other means.  For the splitting guide 
+this options checks that there is only one entry for each variable to 
+split by for each person identifier.}
 }
 \value{
 The function returns a new data table where records have been split according 
@@ -99,7 +105,7 @@ The program checks that intervals are not negative. Violation results in
 an error. Overlap may occur in real data, but the user needs to make 
 decisions regarding this prior to using this function.
 
-It is required that the splittingguide contains at least one record.  
+It is required that the splitting guide contains at least one record.  
 Missing data in the person id variables are not allowed and will cause errors.
 
 A note of caution: This function works with dates as numeric. R has a default
