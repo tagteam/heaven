@@ -182,7 +182,7 @@
 ##' # using the keep argument:
 ##'
 ##' df4 <-importSAS(filename="X:/Data/Rawdata_Hurtig/999999/Dream201801",
-##'                 set.hook="keep=pnr branch:",
+##'                 set.hook="keep=pnr branch;",
 ##'                 obs=1000)
 ##'
 ##' # Because the "overwrite" argument is FALSE, running the above code again will abort the import
@@ -373,11 +373,11 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
         cond <- paste(cond, "obs=", format(obs, scientific = FALSE),
                       " ", sep = "")
     }
-    if (length(cond) > 0) {
-        if (length(set.hook) > 0 & is.character(set.hook))
-            cond <- paste("(", cond, set.hook, ")", sep = " ")
-        else cond <- paste("(", cond, ")", sep = " ")
-    }
+    
+    if (length(set.hook) > 0 & is.character(set.hook))
+        cond <- paste("(", cond, set.hook, ")", sep = " ")
+    else cond <- paste("(", cond, ")", sep = " ")
+    
     keep.check <- drop.check <- TRUE
     if (length(keep) > 0) {
         keep.check <- tolower(keep) %in% tolower(dt.content$Variable)
@@ -594,6 +594,15 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                 return(df)
             }
             else {
+                # read 1 line of data and adapt colClasses etc in case that user has used keep or drop in set.hook
+                tryH1 <- try(h1 <- do.call(data.table::fread,list(file=ia$file,nrow=1,header=TRUE)))
+                h1names <- names(h1)
+                ia$colClasses <- lapply(ia$colClasses,function(x){intersect(x,h1names)})
+                numeric.vars <- intersect(numeric.vars,h1names)
+                character.vars <- intersect(character.vars,h1names)
+                date.vars <- intersect(date.vars,h1names)
+                datetime.vars <- intersect(datetime.vars,h1names)
+                # now read the data
                 if (verbose)
                     tryread <- try(df <- do.call(data.table::fread,ia))
                 else
