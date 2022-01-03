@@ -35,7 +35,7 @@ riskSetMatch <- function(ptid,
     DATA <- copy(data)
     setDT(DATA)
     ##Check that patient IDs are unique:
-    if ((repetitians <- sum(duplicated(DATA[["ptid"]])))>0)
+    if ((repetitians <- sum(duplicated(DATA[[ptid]])))>0)
         stop(paste(" Error, participant ID not unique. Number of repeats:",repetitians))
     DATA[,tEmP.iD:=1:.N]
     ## combine matching variables to single term - cterms

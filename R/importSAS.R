@@ -414,10 +414,14 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
     if ("Format"%in%dt.content.vars){
         dt.content[grepl("date|dato|DDMM|MMDD", Format, ignore.case = TRUE),target.type:="date"]
         dt.content[grepl("datetime", Format, ignore.case = TRUE) ,target.type:="datetime"]
+        # take care of time variables
+        dt.content[grepl("^time", Format, ignore.case = TRUE) ,target.type:="character"]
     }
     if ("Informat"%in%dt.content.vars){
         dt.content[grepl("date|dato|DDMM|MMDD", Informat, ignore.case = TRUE),target.type:="date"]
         dt.content[grepl("datetime", Informat, ignore.case = TRUE) ,target.type:="datetime"]
+        # take care of time variables 
+        dt.content[grepl("^time", Informat, ignore.case = TRUE) ,target.type:="character"]
     }
     # user may force different types
     if (!is.null(date.vars)){
