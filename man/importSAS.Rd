@@ -225,7 +225,7 @@ df3
 # using the keep argument:
 
 df4 <-importSAS(filename="X:/Data/Rawdata_Hurtig/999999/Dream201801",
-                set.hook="keep=pnr branch:",
+                set.hook="keep=pnr branch;",
                 obs=1000)
 
 # Because the "overwrite" argument is FALSE, running the above code again will abort the import
