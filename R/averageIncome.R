@@ -39,18 +39,18 @@
 #' averageIncome(dat,indkomst,c("pnr","dato"),c("pnr","year","income"))
 #' @export
 averageIncome <- function(data,income,datvars,incomevars,numyears=5){
-browser()  
+  #browser()  
   if(!"data.frame" %in% class(data)) stop("First variable must be a data.frame or data.table")
   if(!"data.frame" %in% class(income)) stop("First variable must be a data.frame or data.table")
   if(!class(datvars)=="character" | !length(datvars)==2) stop("datvars must be a character vector of two")
   if(!class(incomevars)=="character" | !length(incomevars)==3) stop("incomevars must be a character vector of three")
   year=yearinc=.SD= .=NULL 
-  dat <- data[,.SD,.SDcols=datvars]
+  dat <- copy(data)[,.SD,.SDcols=datvars]
   data.table::setDT(dat)
   data.table::setnames(dat,c("ID","year"))
   dat[,year:=year(year)]
   dat <- unique(dat)
-  inc <- income[,.SD,.SDcols=incomevars]
+  inc <- copy(income)[,.SD,.SDcols=incomevars]
   data.table::setnames(inc,c("ID","yearinc","income"))
   inc <- inc[!is.na(income)]
   # Merge
@@ -60,13 +60,13 @@ browser()
   out <- merge(inc,dat,by="ID")
   out <- melt(out,measure.vars=names(out)[grepl("^VVV",names(out))],value.name="year")
   out[,variable:=NULL]
-  out <- out[!is.na(year)]
+  out <- out[!is.na(year) & !is.na(income)]
   out <- out[yearinc<year & yearinc>=year-numyears] # relevant interval
   setkeyv(out,c("ID","yearinc","year")) 
   out <- out[,.SD[1],by=c("ID","yearinc","year")] # Max one record per year to compensate for quartiles
   out[,income:=as.numeric(income)]
+  setkeyv(out,c("ID","year"))
   out <- out[,.(income=mean(income,na.rm=TRUE)),by=c("ID","year")]
   setnames(out,"ID",datvars[1])
   out
 }
-
