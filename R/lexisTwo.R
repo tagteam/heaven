@@ -43,7 +43,7 @@
 #' \item{event}{ Binary 0-1 variable indicating if an event occurred at end of 
 #' interval}
 #' }
-#' @param splitdat The splittingguide. A data.table which contains person 
+#' @param splitdat The splitting guide. A data.table which contains person 
 #' specific information about the onset dates of comorbidities and other events.
 #' Wide format:
 #' \itemize{
@@ -174,9 +174,9 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
          stop("input date not Date or integer or numeric")
   if(class(!indat[,dead]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
   setkeyv(indat,"inn")
-  temp <- indat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnr"]
-  temp <- temp[,list(num=sum(num))]
-  if(temp[,num]>0) stop("Error - Data includes overlapping intervals")
+    temp <- indat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnr"]
+    temp <- temp[,list(num=sum(num))]
+    if(temp[,num]>0) stop("Error - Data includes overlapping intervals")
   }
   ## if (!class(tolower(indat[,inn])) %in% c("numeric","date","integer") | !class(tolower(indat[,out])) %in% c("numeric","date","integer")) stop("dates from input not numeric") 
   # Create consecutive increasing replacement from pnr in indat and splitdat
@@ -218,9 +218,11 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
     #Number of covariates for each case
     splitdat[,numcov:=.N,by="pnrnum"]
     setkeyv(splitdat,c("pnrnum","number_"))
-    # Check for repeated "name"/number in one pnr
-    temp <- splitdat[shift(number_)==number_,.SD,.SDcols="pnrnum",by="pnrnum"]
-    if (dim(temp)[1]>=1) stop("Error - repeated split variables in at least one id-group")
+    if(datacheck){
+      # Check for repeated "name"/number in one pnr
+      temp <- splitdat[shift(pnrnum)==pnrnum & shift(number_)==number_,.SD,.SDcols="pnrnum",by="pnrnum"]
+      if (dim(temp)[1]>=1) stop("Error - repeated split variables in at least one id-group")
+    }
     setkeyv(splitdat,c("pnrnum","value_"))
     setcolorder(splitdat,c("pnrnum","value_","number_","numcov"))
     splitdat[,value_:=as.numeric(value_)]
