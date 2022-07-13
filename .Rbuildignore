@@ -6,6 +6,7 @@
 sas/
 worg/
 emacs-genome/
+examples/
 sandbox/
 auto/
 ^vignettes/.*[.](r|R)$

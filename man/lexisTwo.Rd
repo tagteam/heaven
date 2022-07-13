@@ -19,7 +19,7 @@ numeric/integer.}
 interval}
 }}
 
-\item{splitdat}{The splittingguide. A data.table which contains person 
+\item{splitdat}{The splitting guide. A data.table which contains person 
 specific information about the onset dates of comorbidities and other events.
 Wide format:
 \itemize{
