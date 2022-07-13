@@ -74,7 +74,7 @@ importDREAM <- function (dreamData, explData = NULL, type = "support",
   if (!is.null(explData)) {
     setDT(explData)
     if (!type %in% names(explData)) 
-      stop("One column in explData must be type in order to correctly merge")
+      stop("One column in explData must be 'type' in order to correctly merge")
   }
   if (!type %in% c("support", "branche")) 
     stop("type must be \"support\" or \"branche\"")
@@ -96,7 +96,7 @@ importDREAM <- function (dreamData, explData = NULL, type = "support",
                                length = 2)[2]), by = pnr]
     DREAM[, `:=`(diff, c(999, diff(num_b, lag = 1)))]
     DREAM <- DREAM[diff != 0]
-    DREAM[, `:=`(end, shift(start, type = "lead"))]
+    DREAM[, `:=`(end, shift(start, type = "lead")),by=pnr]
     DREAM[is.na(end), `:=`(end, lastdate)]
     DREAM[, `:=`(c("date", "num_b", "diff", 
                    "lastdate"), NULL)]
