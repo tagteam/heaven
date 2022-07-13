@@ -245,7 +245,10 @@ medicinMacro <- function(drugs,
     for (drugname in names(drugs)){
         ## treatfun <- function(drugname) {
         drugdb.work <-  copy(drugdb)
-        admdb.work.drug <- copy(admdb.work)
+        if(NROW(admdb)>0)        
+            admdb.work.drug <- copy(admdb.work)
+        else
+            admdb.work.drug = NULL
         if (id!="pnr") setnames(drugdb.work,id,"pnr")
         if (strength.var!="strnum") setnames(drugdb.work,strength.var,"strnum")
         if (packsize.var!="packsize") setnames(drugdb.work,packsize.var,"packsize")

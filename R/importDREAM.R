@@ -123,7 +123,7 @@ importDREAM <- function (dreamData, explData = NULL, type = "support",
     DREAM[, `:=`(lastdate, start[.N] + 7), by = pnr]
     DREAM[, `:=`(diff, c(999, diff(num_b, lag = 1)))]
     DREAM <- DREAM[diff != 0]
-    DREAM[, `:=`(end, shift(start, type = "lead"))]
+    DREAM[, `:=`(end, shift(start, type = "lead")),by = pnr]
     DREAM[is.na(end), `:=`(end, lastdate)]
     DREAM[, `:=`(c("date", "num_b", "diff", 
                    "lastdate", "year", "week", "char_week"), 
