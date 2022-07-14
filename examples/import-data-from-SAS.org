@@ -1,0 +1,177 @@
+#+TITLE: Import data from SAS
+#+Author: Thomas Alexander Gerds and Christian Torp-Pedersen
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:t todo:t pri:nil tags:not-in-toc author:t
+#+LaTeX_CLASS: org-article
+* Data heaven 
+
+** Introduction
+
+Here we illustrate the functionality of the =importSAS= function. We
+do this in the realm of the corona data:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes 
+library(heaven)
+setwd("z:/Workdata/706582/ThomasAlexanderGerds/heaven-devel/")
+getwd()
+#+END_SRC
+
+** Background knowlegde
+
+Registry data sets have very many rows and when prepared by users they
+can also have very many columns (sigh). This may work well in SAS, but
+in R it is often better to have multiple data sets with few columns in
+each.
+
+We use the fast reading routine =fread= provided by the =data.table=
+package. As a side effect the result of =importSAS= is not only a
+=data.frame= but also a =data.table=. If you are unfamiliar with
+=data.table=, it is a good idea to change this soon.
+
+** Instructions
+
+Always, start by reading a small portion of the data that you want to
+import. E.g., to read only 10 observations set argument =obs=10=.
+
+It is in most cases a good idea to first look at the contents of the
+data file by running =contentSAS= before specifying the arguments of
+importSAS.
+
+* Reading rawdata
+
+In Danmark Statistics registries are linked by the =pnr= number. We
+can look at the (long) list of raw data files:
+
+#+BEGIN_SRC R  :results output   :exports results  :session *R* :cache yes 
+sasfiles <- listRawdata(dir = "X:/Data/Rawdata_Hurtig/706582", 
+                        full.names = FALSE)
+head(sasfiles)
+tail(sasfiles)
+#+END_SRC
+
+** Argument: =obs=
+
+A project will often have a population-defining data set. This data
+set contains the =pnr= numbers of the study population. To extract the
+first =73= records of the population which defines =706582= we use:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes 
+pop <- importSAS("x:/Data/Rawdata_Hurtig/706582/population.sas7bdat",
+                 obs=73)
+pop
+#+END_SRC
+
+There is only one variable (PNR) in =population.sas7bdat=. There are
+more variables in the raw data =pop.sas7bdat=.
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes 
+contentSAS("x:/Data/Rawdata_Hurtig/706582/pop.sas7bdat")
+#+END_SRC
+
+** Arguments =keep= and =where=
+
+We can select based on =birthday= and =first_ind= and also keep the
+variable =sex= (the variable =pnr= is by default kept when it exists):
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output   :session *R* :cache yes 
+pop <- importSAS("x:/Data/Rawdata_Hurtig/706582/pop.sas7bdat",
+                 keep=c("sex","fdato","first_ind"),
+                 where="fdato >= '01Jan1980'd and first_ind >= '01Jan2010'd",
+                 obs=73)
+#+END_SRC
+
+* Filter and format
+
+** Simple =pnr= filter 
+We can read the subset of data from another raw data set that
+matches the =pnr= numbers of the dataset =pop=:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer  :session *R* :cache yes 
+pop <- importSAS("x:/Data/Rawdata_Hurtig/706582/pop.sas7bdat",
+                 keep=c("sex","fdato","first_ind"),
+                 where="fdato >= '01Jan1980'd and first_ind >= '01Jan2010'd",
+                 obs=73)
+lmdb <- importSAS("x:/data/rawdata_hurtig/706582/lmdb.sas7bdat",
+                  filter=pop[,.(pnr=pnr)],obs=500000)
+lmdb
+#+END_SRC
+
+** Negative filter 
+
+It is possible to filter those observations that are NOT in the filter
+data set:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer  :session *R* :cache yes 
+pop <- importSAS("x:/Data/Rawdata_Hurtig/706582/pop.sas7bdat",
+                 keep=c("sex","fdato","first_ind"),
+                 where="fdato >= '01Jan1980'd and first_ind >= '01Jan2010'd",
+                 obs=73)
+lmdb <- importSAS("x:/data/rawdata_hurtig/706582/lmdb.sas7bdat",
+                  filter=pop[,.(pnr=pnr)],obs=500000,filter.negative=TRUE)
+lmdb
+#+END_SRC
+
+** Formatting of variables
+
+An initial run of proc contents is used to guess the target format
+of the imported variables. Here we consider numeric, character, date 
+and datetime formats. 
+   
+The function tries to format dates as dates and datetime variables as
+datetime variables. Here is an example of a datetime variable:
+
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer  :session *R* :cache yes 
+contentSAS("x:/Data/Rawdata_Hurtig/706582/blodprove_nord0607.sas7bdat")
+bp <- importSAS("x:/Data/Rawdata_Hurtig/706582/blodprove_nord0607.sas7bdat",obs=10)
+bp
+#+END_SRC
+
+The date formatting is done in two steps, where the first is a format
+statement run in SAS and the second is a call to =lubridate::ymd= in
+R. Both steps can be deactivated individually, see argument
+=skip.date.conversion= in =help(importSAS)=. 
+
+** Missing values
+
+The function =importSAS= treats user defined code for missing values
+after reading the data by calling =grepl= with the search string
+defined by =na.strings= (suitably collapsed when =na.strings= is a
+vector) on the character variables.
+   
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R :exports both :results output raw drawer  :session *R* :cache yes 
+contentSAS("x:/Data/Rawdata_Hurtig/706582/uddan.sas7bdat")
+ud <- importSAS("x:/Data/Rawdata_Hurtig/706582/uddan.sas7bdat",
+                obs=300,na.strings="30")
+table(ud$udd_niveau_k,useNA='always')
+ud <- importSAS("x:/Data/Rawdata_Hurtig/706582/uddan.sas7bdat",
+                obs=300,na.strings=c("30","60"))
+table(ud$udd_niveau_k,useNA='always')
+#+END_SRC
+
+* Errors
+
+Errors can occur in the SAS program and/or in the R program after the
+data are read. 
+
+A simple syntax error in SAS will break down the process.  In the
+following example, the 'd' is missing after '01Jan1980' (see correct
+syntax above). To investigate the problem, we use the argument 
+=save.tmp= to save the SAS files (program, log, lst) that 
+are run in the background and first of all read the log file:
+
+#+BEGIN_SRC R  :results output raw drawer  :exports results  :session *R* :cache yes 
+pop <- importSAS("x:/Data/Rawdata_Hurtig/706582/pop.sas7bdat",
+                 keep=c("sex","fdato","first_ind"),
+                 where="fdato >= '01Jan1980' and first_ind >= '01Jan2010'd",
+                 save.tmp=TRUE,
+                 obs=73)
+#+END_SRC
+

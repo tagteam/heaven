@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Visualization using Lexis diagram</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<p>Epidemiologic cohort studies are often used for assessing the variation in rates of morbidity and mortality due to factors present in the population. Because the outcome of interest can be very rare, cohort studies may require a lot of subjects to reliably be able to answer the question at hand. It can, however, be very expensive to collect covariate information for all subjects. One solution to this problem is nested case control where only a subset of the non-failures are used for the analysis. This works because the extra statistical power of the study gained by each additional non-failure is very small compared to that of the failures (cases) when there are many non-failures. </p>
+
+<p>The case-cohort design works in the following way: For each observed failure-time (case), sample \(m-1\) non-failures (controls) without replacement. Nested case-control is similar, but with the difference that the sampling is done, only among those at risk at the cases failure-time. </p>
+
+<h2>Visualization using Lexis diagram</h2>
+
+<p>The Lexis diagram plots the year of birth on the x-axis and the age on the y-axis. Someone who is born in 2000 will be represented by a diagonal line starting at (2000,0) and going through (2001,1), (2002,2) and so on. Let&#39;s say we have a group of patients as in Figure \ref{luxus}.</p>
+
+<p><img src="data:application/pdf;base64,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b2dvbmVrIC9jYXJvbiAvc3BhY2VdCj4+CmVuZG9iagoxMCAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL05hbWUgL0YxIC9CYXNlRm9udCAvWmFwZkRpbmdiYXRzID4+CmVuZG9iagoxMSAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL05hbWUgL0YyIC9CYXNlRm9udCAvSGVsdmV0aWNhCi9FbmNvZGluZyA5IDAgUiA+PgplbmRvYmoKMTIgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMyAvQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkCi9FbmNvZGluZyA5IDAgUiA+PgplbmRvYmoKeHJlZgowIDEzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAyMSAwMDAwMCBuIAowMDAwMDAwMTYzIDAwMDAwIG4gCjAwMDAwMDMxMjkgMDAwMDAgbiAKMDAwMDAwMzIxMiAwMDAwMCBuIAowMDAwMDAzMzQ3IDAwMDAwIG4gCjAwMDAwMDMzODAgMDAwMDAgbiAKMDAwMDAwMDIxMiAwMDAwMCBuIAowMDAwMDAwMjkyIDAwMDAwIG4gCjAwMDAwMDYwNzUgMDAwMDAgbiAKMDAwMDAwNjMzMiAwMDAwMCBuIAowMDAwMDA2NDE2IDAwMDAwIG4gCjAwMDAwMDY1MTMgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAxMyAvSW5mbyAxIDAgUiAvUm9vdCAyIDAgUiA+PgpzdGFydHhyZWYKNjYxNQolJUVPRgo=" alt="\label{luxus} Lexis plot of hypothetical study."/>{width=60%}</p>
+
+<p>The stars represent times where the different patients could be sampled as controls (even though they all eventually become cases in the plot) and the squares are the actual failure times. This also means that the same person can get sampled more than once.</p>
+
+<h2>Nested case control for the Cox proportional hazards model</h2>
+
+<p>It turns out, somewhat surprisingly, that the estimator \((\hat{\beta})\) of the regression parameters \((\beta)\) in the Cox model isn&#39;t influenced by the sampling and is thus the same as usually. The fact that we have fewer non-failures per failure in the data than in the real world does, however, mean that we can&#39;t use the usual Breslow estimator of the integrated baseline hazard. Let \(\mathcal{R}_j\) be the set of all those at risk at failure-time \(t_j-\), and \(\tilde{\mathcal{R}}_j\) be the set of the case at \(t_j\) and the \(m-1\) controls. Let \(n(t_j)\) be the total number at risk at time \(t_j\), and \(Z_l(t)\) a vector of time-dependent covariates for observation \(l\). Then the estimator for the integrated baseline hazard turns out to be
+\[
+\hat{A}(t;\hat{\beta}) = \sum_{t_j<t}\frac{1}{\sum_{l\in \tilde{\mathcal{R}}_j}\exp\left(\hat{\beta}^TZ_l(t_j)\right)n(t_j)/m}.
+\]
+So each observation is given a higher weight according to how many controls have been sampled and how big the original data set is. Note also that we just need the covariate value at time \(t_j\) even though it&#39;s time-dependent. </p>
+
+<h2>Connection to conditional logistic regression</h2>
+
+<p>Conditional logistic regression deals with the probability of events for observations in different strata given that we know how many events we observe in each stratum. This corresponds exactly to the situation we are in when we have a nested case control design, since each stratum corresponds to a failure time (so we know that we have exactly one failure time in each stratum). The \(\beta\)-parameters in this type of model correspond exactly to the \(\beta\)-parameters we get when we estimate the Cox model for the nested case control design. This also means that we should be very careful when interpreting the \(\beta\)-parameters - in &ldquo;normal&rdquo; logistic regression, it is easy to interpret the \(\beta\)-parameters as the log-odds ratio between individuals with covariates \((Z_1,&hellip;,Z_k+1,&hellip;,Z_K)\) and \((Z_1,&hellip;,Z_k,&hellip;,Z_K)\). We know, however, that this isn&#39;t the case in the Cox model - here they equal the logarithm of the <em>hazard rate</em> between individuals with covariates \((Z_1,&hellip;,Z_k+1,&hellip;,Z_K)\) and \((Z_1,&hellip;,Z_k,&hellip;,Z_K)\). Hence, parameters should be interpreted as hazard rates rather than odds ratios when using conditional logistic regression.</p>
+
+<h2>Counter-matching / stratified sampling</h2>
+
+<p>A way to improve effeciency of nested case control is to use counter-matching. Let&#39;s say we have a study where we want to use nested case control, but we have a covariate which is very easy and cheap to collect (e.g. sex). Then split data into S strata (so two strata in the case of sex - or maybe more these days, but you get the idea). If we have a case in stratum \(s(i)\) at time \(t\), sample without replacement \(m_s\) among those at risk at time \(t\) in stratum \(s\neq s(i)\), and \(m_{s(i)}-1\) from stratum \(s(i)\). It could be smart, for instance, to only sample controls among women when we have a female case and likewise for men. Intuitively that makes it easier to determine the effect of a covariate on outcome because sex doesn&#39;t blur the picture.      </p>
+
+<h2>How well does it work?</h2>
+
+<p>In case of only one covariate with the true parameter equal to 0, the variance of the estimator for the full cohort design to the variance of the nested case control design is \(m/(m-1)\) independently of censoring and covariate distributions. &lt;!&ndash;Things get more complicated in other situations, and different simulations have given different results..</p>
+
+<p>What if we have other covariates and/or the true parameter is different from 0?</p>
+
+<p>Let&#39;s say we have a simple setup: two binary variables - one for treatment and another for sex. Let&#39;s say 10 \% of patients are treated in the study. We let the censoring times equal the 1 \% quantile of the failure times so that we have exactly 99 \% censoring (so we have type 2 censoring). We use 5 controls per case (so \(m=6\)) for the nested case control design. We simulate 5000 observations and repeat the simulation 1000 times. </p>
+
+<p>The true model used for the simulations is a Cox-Weibull model of the form:
+\[
+\lambda(t) = Y(t)\alpha_0(t)\exp(\beta_1 X_{\text{treat}} + \beta_2 X_{\text{sex}})
+\]
+with \(\beta_{\text{treat}} = \beta_{\text{sex}} = 0.2\), scale parameter equal to 1/100, and shape parameter equal to 2. 
+Precision is here defined as standard error of parameter estimate, so relative precision is the standard error of the parameter estimate using nested case control devided by the standard error of the parameter estimate using the Cox model. </p>
+
+<p>How does the relative precision depend on the sample size? The simulation has been run with sample sizes of 5000, 25000, and 100000 observations leading to median relative precisions of 1.11, 1.11, and 1.11 respectively (should have been \(1.1\) if true parameter was 0 and only one covariate so not much of a difference). But the relative precision of nested case control compared to the Cox model does still not seem to depend on sample size even in the case of multiple covariates.</p>
+
+<p>How does the relative precision depend on \(m\), the number of sampled controls per case? The results of the simulation are summarized in Figure \ref{control}. </p>
+
+<p><img src="ctr20190301.pdf" alt="\label{control} Median relative standard error of NCC parameter estimate to full cohort parameter estimate."/>{width=60%}</p>
+
+<p>It looks a lot like \(\sqrt{\frac{m}{m-1}}\) so maybe the extra covariate and the parameter different from 0 doesn&#39;t matter that much when it comes to the effect of adding additional controls. </p>
+
+<p>How does the relative precision depend on the true parameter value? The simulation has been run for parameter values of -0.4, -0.2, 0, 0.2, 0.7 and 1.4 corresponding to hazard rates of 0.67, 0.82, 1, 1.22, 2.01, and 4.06. The median relative precisions were 1.06, 1.08, 1.10, 1.11, 1.16, and 1.25 respectively so it seems like the relative precision is increasing in the value of the true parameter, which is interesting. </p>
+
+<p>This little simulation study is only one very simple scenario so we should be careful not to conclude too confidently based on it, but to make a long story short: it seems like the effectiveness of the nested case control design is not too imprecise - it lets us go from a sample size of 5000 to 300 with a standard error, which is only 11 \% higher.&ndash;&gt; </p>
+
+<h2>Advantages and disadvantages</h2>
+
+<p>There are both advantages and disadvantages to using a nested case control design. Some of the advantages are:</p>
+
+<ul>
+<li><p>We only need covariate information for a subset of observations.</p></li>
+<li><p>We only need covariate information for the observations at the times they are sampled for, even if covariates are time-dependent. </p></li>
+<li><p>If covariates are time-fixed, then we can ignore the matching between a given case and its controls, which leads to more efficient estimators. </p></li>
+</ul>
+
+<p>Some disadvantages are:</p>
+
+<ul>
+<li><p>We loose statistical power when only using a subset of observations.</p></li>
+<li><p>If we have more than one kind of outcome, we need to sample controls for every type of outcome for nested case control, but not if we use the case-cohort design.</p></li>
+<li><p>We have to wait until cases occur to get covariate information when using nested case control, but controls can be chosen right away when using a case-cohort design.  </p></li>
+</ul>
+
+<h2>References</h2>
+
+<p>Schmid, Matthias. (2015). Handbook of Survival Analysis. J. P.Klein, H. C.vanHouwelingen, J. G.Ibrahim, and T. H.Scheike (eds.) (2014). Boca Raton: CRC Press. 656 pages</p>
+
+<p>Borgan, O &amp; Goldstein, L &amp; Langholz, B. (1995). Methods for the Analysis of Sampled Cohort Data in the Cox Proportional Hazards Model. The Annals of Statistics. 23. </p>
+
+</body>
+
+</html>
