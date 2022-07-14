@@ -15,7 +15,7 @@
 ##'                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
 ##'                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
 ##'                  show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
-##'                  na.strings="^\\\\.$",date.vars=NULL,datetime.vars=NULL,
+##'                  na.strings="dot",date.vars=NULL,datetime.vars=NULL,
 ##'                  character.vars="pnr", numeric.vars = NULL,sas.program,
 ##'                  sas.switches, sas.runner, use.colClasses=TRUE,
 ##'                  skip.date.conversion=FALSE, force.numeric=TRUE,
@@ -195,7 +195,7 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                        obs = NULL, filter = NULL, filter.by = NULL, filter.negative = FALSE,
                        set.hook = NULL, step.hook = NULL, pre.hook = NULL,
                        post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = FALSE,
-                       save.tmp = FALSE, content = FALSE, na.strings = c("^\\.$"), date.vars = NULL,datetime.vars=NULL,
+                       save.tmp = FALSE, content = FALSE, na.strings = c("dot"), date.vars = NULL,datetime.vars=NULL,
                        character.vars = "pnr", numeric.vars = NULL, sas.program,
                        sas.switches, sas.runner, use.colClasses=TRUE,skip.date.conversion = FALSE,force.numeric=TRUE,
                        sas.data.extension="sas7bdat",verbose = FALSE,
@@ -625,6 +625,7 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
                                             .SDcols = numeric.vars], silent = FALSE))
             }
             # deal with na.strings in character variables
+            na.strings[na.strings == "dot"] <- "^\\.$"
             if (length(na.strings)>0 && length(character.vars) > 0) {
                 character.vars <- tolower(character.vars)
                 if (verbose)
