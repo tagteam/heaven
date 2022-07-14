@@ -39,7 +39,7 @@
 #' averageIncome(dat,indkomst,c("pnr","dato"),c("pnr","year","income"))
 #' @export
 averageIncome <- function(data,income,datvars,incomevars,numyears=5){
-  #browser()  
+    #browser()
   if(!"data.frame" %in% class(data)) stop("First variable must be a data.frame or data.table")
   if(!"data.frame" %in% class(income)) stop("First variable must be a data.frame or data.table")
   if(!class(datvars)=="character" | !length(datvars)==2) stop("datvars must be a character vector of two")

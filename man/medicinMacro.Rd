@@ -145,6 +145,10 @@ drug2=list(atc=c("C01CA01","C01AA05"),
 x=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=lpr)
 x$drug1
 
+## without admdata
+x1=medicinMacro(drugs=list("drug1"=drug1,"drug2"=drug2),drugdb=lmdb,admdb=NULL)
+x1$drug1
+
 ## Examples with other types
 ## NB: Calculations with maxdepot>0 is not implemented yet for type different from "dynamic".
 ## Not specifying maxdepot is the same at setting maxdepot=0.

@@ -7,3 +7,5 @@ heaven.Rproj
 .RData
 .Ruserdata
 #inst/doc
+/doc/
+/Meta/

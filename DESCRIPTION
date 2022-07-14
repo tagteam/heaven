@@ -8,6 +8,7 @@ Description: Fast and furious implementations of often used data preparation ste
              These functions are adapted to Danish registry data.  Designed to be used with Statistics Denmark
 Depends:
     R (>= 3.5.0)
+Encoding: UTF-8
 Imports:
     ggplot2,
     data.table(>= 1.9.6),
@@ -39,16 +40,14 @@ Suggests:
     R.rsp
 License: GPL (>= 3)
 RoxygenNote: 7.2.0
-VignetteBuilder: knitr, R.rsp
+VignetteBuilder: R.rsp
 LazyData: true
 Collate: 
     'RcppExports.R'
-    'addUsualRegisters.R'
     'averageIncome.R'
     'charlsonIndex.R'
     'checkMicroData.R'
     'createProject.R'
-    'dpp.R'
     'riskSetMatch.R'
     'exposureMatch.R'
     'findConditions.R'
