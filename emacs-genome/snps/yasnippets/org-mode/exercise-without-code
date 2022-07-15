@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: exercise without R code
-# key: erc0
-# --
-#+BEGIN_SRC R  :results output :exports (exercise-without-code) :cache yes :eval (never-plain-export)
-# put your R-code here 
-#+END_SRC
