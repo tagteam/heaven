@@ -4,6 +4,7 @@
 #' The function provides very simple tables of the success of finding controls and
 #' the reuse of cases and controls. Designed to deal with the results of function
 #' riskSetMatch
+#' @usage matchReport(x)
 #' @param x result of exposureMatch or incidenceMatch
 #' @author Christian Torp-Pedersen & Thomas Alexander Gerds
 #' @details 
@@ -30,24 +31,25 @@
 #' case.index="caseIndex",end.followup="controlIndex")
 #' matchReport(matched.data)
 matchReport <- function(x){
-    .SD=.N=N=caseid=NULL
-    id=attr(x,"id")
-    event=attr(x,"event")
-    cat("\n","------------------------------------------------------------------","\n","Matching success")
-    ## Matching success:
-    if (!("n.controls" %in% names(x)))
-        n.controls <- as.vector(x[,(.N-1),by="case.id"])
-    else
-        n.controls <- x[["n.controls"]]
-    cat("\n", "Line 1, number of controls found - Line 2, number of occurrences:\n")
-    print(table(n.controls))
-    cat("\n","------------------------------------------------------------------")
-    ##Reuse of controls
-    n.reuse<-as.vector(x[x[[event]]==0,.N,by=id])[["N"]]
-    cat("\n","Reuse/use of controls","\n","Line 1, number of times - Line 2, number of occurrences","\n")
-    print(table(n.reuse))
-    cat("\n","------------------------------------------------------------------\n")
+  .SD=.N=N=caseid=NULL
+  id=attr(x,"id")
+  event=attr(x,"event")
+  cat("\n","------------------------------------------------------------------","\n","Matching success")
+  ## Matching success:
+  
+  if (!("n.controls" %in% names(x)))
+    n.controls <- as.vector(x[,(.N-1),by="case.id"])
+  else
+    n.controls <- x[["n.controls"]]
+  cat("\n", "Line 1, number of controls found - Line 2, number of occurrences:\n")
+  print(table(n.controls))
+  cat("\n","------------------------------------------------------------------")
+  ##Reuse of controls - Following changed slightly by CTP to avoid errors 4.8.2022
+  n.reuse<-as.vector(x[event==0,.N,by=id])[["N"]]
+  cat("\n","Reuse/use of controls","\n","Line 1, number of times - Line 2, number of occurrences","\n")
+  print(table(n.reuse))
+  cat("\n","------------------------------------------------------------------\n")
 }
 
- 
- 
+
+
