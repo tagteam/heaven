@@ -300,6 +300,16 @@ help(matchReport)
 This function takes the result of matching as input and provides a simple table of
 matching successes and reuse of cases/controls
 
+** kommuneRegion
+# #+name: 
+#+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}
+#+BEGIN_SRC R  :results output raw  :exports code  :session *R* :cache yes  
+help(kommuneRegion)
+#+END_SRC
+
+This function converts 3-digit kommune codes to region. It is developed from a SAS-format
+and is valid from 2007
+
 ** averageIncome
 # #+name: 
 #+ATTR_LATEX: :options otherkeywords={}, deletekeywords={}

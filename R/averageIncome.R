@@ -40,6 +40,7 @@
 #' @export
 averageIncome <- function(data,income,datvars,incomevars,numyears=5){
     #browser()
+  num = .N = variable = NULL
   if(!"data.frame" %in% class(data)) stop("First variable must be a data.frame or data.table")
   if(!"data.frame" %in% class(income)) stop("First variable must be a data.frame or data.table")
   if(!class(datvars)=="character" | !length(datvars)==2) stop("datvars must be a character vector of two")
@@ -56,9 +57,9 @@ averageIncome <- function(data,income,datvars,incomevars,numyears=5){
   # Merge
   setkeyv(dat,c("ID","year"))
   dat[,num:=paste0("VVV",1:.N),by="ID"]
-  dat <- dcast(dat,ID~num, value.var = "year")
+  dat <- data.table::dcast(dat,ID~num, value.var = "year")
   out <- merge(inc,dat,by="ID")
-  out <- melt(out,measure.vars=names(out)[grepl("^VVV",names(out))],value.name="year")
+  out <- data.table::melt(out,measure.vars=names(out)[grepl("^VVV",names(out))],value.name="year")
   out[,variable:=NULL]
   out <- out[!is.na(year) & !is.na(income)]
   out <- out[yearinc<year & yearinc>=year-numyears] # relevant interval

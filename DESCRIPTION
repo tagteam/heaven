@@ -39,7 +39,7 @@ Suggests:
     rmarkdown,
     R.rsp
 License: GPL (>= 3)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr,R.rsp
 LazyData: true
 Collate: 
@@ -60,6 +60,7 @@ Collate:
     'importDREAM.R'
     'importSAS.R'
     'incidenceMatch.R'
+    'kommuneRegion.R'
     'lexisFromTo.R'
     'lexisSeq.R'
     'lexisTwo.R'
