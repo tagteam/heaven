@@ -194,7 +194,6 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
       temp <- splitdatt[,pnrnum]
       if (length(temp)!=length(unique(temp))) stop("Error - Repeated entries in splitting guide")
     }
-browser()    
     splitvars2 <- splitvars[-1]
     setcolorder(splitdatt,c("pnrnum",splitvars2)) # Columns ordered as in call
     splitdatt <- data.table::melt(data=splitdatt,id.vars="pnrnum",measure.vars=splitvars2,variable.name="_variable_",value.name="value_")
