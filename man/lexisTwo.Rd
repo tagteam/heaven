@@ -139,7 +139,7 @@ split[]
 lexisTwo(dat # inddato with id/in/out/event
    ,split # Data with id and dates
    ,c("pnr","start","end","event") #names of id/in/out/event - in that order
-   ,c("como1.onset","como2.onset","como3.onset","como4.onset")) 
+   ,c("pnr","como1.onset","como2.onset","como3.onset","como4.onset")) 
    #Names of date-vars to split by
 # And with splittingguide in long format
 splitvars <- c("como1.onset","como2.onset","como3.onset","como4.onset")
