@@ -215,6 +215,7 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
     }
     setnames(splitdatt,splitvars[2:3],c("name","value_"))
     splitvars <- as.character(unique(splitdatt[,"name"])$name)
+    splitvars2 <- splitvars
     toNumber <- data.table(name=splitvars,number_=1:length(splitvars))
     splitdatt <- merge(splitdatt,toNumber,by="name",all.x=TRUE) # attach names of splitvars
     splitdatt[,name:=NULL]
@@ -232,12 +233,12 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
     splitdatt <- as.matrix(splitdatt)
   }
   #OUT <- .Call("_heaven_split2",PACKAGE = "heaven",datt[,pnrnum],datt[,inn],datt[,out],datt[,dead],datt[,mergevar],splitdatt,length(splitvars))  # Call to c++ split-function
-  OUT <- split2(datt[,pnrnum],datt[,inn],datt[,out],datt[,dead],datt[,mergevar],splitdatt,length(splitvars))  # Call to c++ split-function
+  OUT <- split2(datt[,pnrnum],datt[,inn],datt[,out],datt[,dead],datt[,mergevar],splitdatt,length(splitvars2))  # Call to c++ split-function
   OUT <- cbind(setDT(OUT[1:5]),setDT(do.call(cbind,OUT[6])))
   if(isdate){
     OUT[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
   }
-  setnames(OUT, c("pnrnum","mergevar",invars[2:4],splitvars))
+  setnames(OUT, c("pnrnum","mergevar",invars[2:4],splitvars2))
   OUT <- merge(OUT,
                RESTDAT,by="mergevar")
   setnames(OUT,"pnr",invars[1])
