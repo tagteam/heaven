@@ -39,7 +39,7 @@ Suggests:
     rmarkdown,
     R.rsp
 License: GPL (>= 3)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr,R.rsp
 LazyData: true
 Collate: 
@@ -81,6 +81,9 @@ Collate:
     'simPop.R'
     'simPrescriptionData.R'
     'simpoisson.R'
+    'splitFromTo.R'
+    'splitSeq.R'
+    'splitTwo.R'
     'standardize.prodlim.R'
     'standardize.proportion.R'
     'standardize.rate.R'
