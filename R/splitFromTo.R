@@ -79,7 +79,6 @@ splitFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,default="0"
                        ,datacheck=TRUE
                         ){
-browser()  
   setDT(indat)
   indat[,dummyvariable_:=1]
   dat <- lexisFromTo(indat,splitdat,c(invars,"dummyvariable_"),splitvars,
