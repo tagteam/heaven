@@ -4,7 +4,7 @@
 \alias{importDREAM}
 \title{importDREAM}
 \usage{
-importDREAM(dreamData,explData=NULL,type="support",pnr="pnr")
+importDREAM(dreamData,type="support",pnr="pnr",explData=NULL,)
 }
 \arguments{
 \item{dreamData}{Name of dataset holding DREAM data. Typically product of
@@ -12,16 +12,16 @@ the importSAS function.  In most cases it will be useful to add a set.hook
 to the importSAS function - set.hook="keep PNR branch:" for type of work
 and set.hook="keep=PNR y_:" for support}
 
+\item{type}{- "support" extracts weekly public support and "branche" supplies
+montly type of work. Other names cause error.}
+
+\item{pnr}{- name of person identifier in DREAM dataset, typically "PNR"}
+
 \item{explData}{Name of data holding relation between codes and explanatory
 text. Typically read from "//srvfsenas1/formater/SAS formater i Danmarks 
 Statistik/txt_filer" using "read.csv2".  The data is expected to hold two
 variables: the code and the explanation - in that order.  The variable
 holding the code MUST be named "branche" or "support" as appropriate.}
-
-\item{type}{- "support" extracts weekly public support and "branche" supplies
-montly type of work. Other names cause error.}
-
-\item{pnr}{- name of person identifier in DREAM dataset, typically "PNR"}
 }
 \value{
 the function returns a data.table with the following variables:
@@ -35,22 +35,19 @@ the function returns a data.table with the following variables:
 }
 \description{
 The DREAM dataset is a SAS dataset where all in the Danish population that
-have received public funding are recorded. A number of variables are 
+have received public support are recorded. A number of variables are 
 presented. For a detailed description of DREAM refer to www.dreammodel.dk
 
 The current function can output 2 datasets from the DREAM database 
 \itemize{
-\item{support}{  A long version data.table providing a record per week for all 
-registered individual with start/end/supportcode and support description}
+\item{support}{  A long version data.table providing a sequential list of
+time periods and the codes for public support.  Description of codes can be
+identified a number of places and for those working on Statistics Denmark
+there are SAS format codes available}
 \item{branche}{  A long version data.table providing a record per month for
-type of profession with start/end/work-code and description}
+type of profession with start/end/work-code. SAS formats are also available
+for these codes}
 }
-The description provided must be merged from a text file with matching code
-and description.  These text-files can be found in statistics Denmark in the
-area holding standard Statistics Denmark formats: "//srvfsenas1/formater/
-SAS formater i Danmarks Statistik/txt_file-r". Multiple formats are available
-for more or less crude grouping.  These files are SAS format files, but can
-easily be converted by removing start and end and other slight modifications.
 }
 \details{
 DREAM data are organized in a special way.  From the start of recording there
@@ -71,9 +68,9 @@ microDREAM <-data.table(PNR=c(1,2),branche_2008_01=c("","3"),
 branche <- data.table(branche=c("1","2","3"),
             text=c("school","gardening","suage"))   
 support <- data.table(support=c("1","2"),text=c("education","sick")) 
-temp <- importDREAM(microDREAM,branche,type="branche",pnr="PNR")   
+temp <- importDREAM(microDREAM,type="branche",pnr="PNR",explData=branche)   
 temp[]
-temp2 <- importDREAM(microDREAM,support,type="support",pnr="PNR")
+temp2 <- importDREAM(microDREAM,type="support",pnr="PNR",explData=support)
 temp2[]         
 }
 \seealso{
