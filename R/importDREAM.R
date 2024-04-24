@@ -65,7 +65,7 @@
 #' @export
 importDREAM <- function (dreamData, type = "support", pnr = "pnr",explData = NULL) 
 {
-  .SD <- rl <- melt <- patterns <- start <- num_b <- branche <- lastdate <- .N <- end <- char_week <- week <- year <- support <- na.omit <- NULL
+  .SD <- melt <- patterns <- start <- num_b <- branche <- lastdate <- .N <- end <- char_week <- week <- year <- support <- na.omit <- NULL
   setDT(dreamData)
   if (!is.null(explData)) {
     setDT(explData)
@@ -79,27 +79,33 @@ importDREAM <- function (dreamData, type = "support", pnr = "pnr",explData = NUL
     DREAM <- dreamData[, .SD, .SDcols = cols]
     changeCols <- cols[-1]
     DREAM <- DREAM[, `:=`((changeCols), lapply(.SD, as.character)), .SDcols = changeCols]
-    DREAM <- data.table::melt(DREAM, measure = patterns("branch"), variable.name = "date", value.name = "branche")
+    DREAM <- melt(DREAM, measure = patterns("branch"), variable.name = "date", value.name = "branche")
     DREAM[, `:=`(start, as.Date(paste0(gsub("branche_", "", as.character(date)), "_01"), format = "%Y_%m_%d"))]
     setkeyv(DREAM, c(pnr, "start"))
-    DREAM[,rl:=data.table::rleid(branche)]
-    DREAM[,end:=start+30]
-    DREAM <- DREAM[,.(start=start[1],end=end[.N]),by=c(pnr,"rl","branche")]
+    DREAM[,rl:=rleid(branche)]
+    DREAM <- DREAM[,.(start=start[1],end=start[.N]+30),by=c(pnr,"rl","branche")]
   }
   else {
     cols <- c(pnr, grep("y_", names(dreamData), value = TRUE))
     DREAM <- dreamData[, .SD, .SDcols = cols]
     changeCols <- cols[-1]
     DREAM <- DREAM[, `:=`((changeCols), lapply(.SD, as.character)), .SDcols = changeCols]
-    DREAM <- data.table::melt(DREAM, measure = patterns("y_"), variable.name = "date", value.name = "support")
+    DREAM <- melt(DREAM, measure = patterns("y_"), variable.name = "date", value.name = "support")
     DREAM[, `:=`(year = as.integer(substr(date, 3, 4)), week = as.integer(substr(date, 5, 6)))]
-    DREAM[, `:=`(char_week, ifelse(week < 10, as.character(paste0("0", week)), as.character(week)))]
-    DREAM[, `:=`(year, ifelse(year < 90, year + 2000L, year + 1900L))]
-    DREAM[, `:=`(start, ISOweek::ISOweek2date(paste0(year, "-W", char_week, "-1")))]
-    setkeyv(DREAM, c(pnr, "start"))
-    DREAM[,rl:=data.table::rleid(support),by=pnr]
-    DREAM[,end:=start+7]
-    DREAM <- DREAM[,.(start=start[1],end=end[.N]),by=c(pnr,"rl","support")]
+    #DREAM[, `:=`(char_week, fifelse(week < 10, as.character(paste0("0", week)), as.character(week)))]
+    DREAM[, `:=`(year, fifelse(year < 90, year + 2000L, year + 1900L))]
+    #DREAM[, `:=`(start, ISOweek::ISOweek2date(paste0(year, "-W", char_week, "-1")))]
+    setkeyv(DREAM, c("pnr","year","week"))
+    #setkeyv(DREAM, c(pnr, "start"))
+    DREAM[,rl:=rleid(support),by="pnr"]
+    #DREAM <- DREAM[,.(start=start[1],end=start[.N]+7),by=c(pnr,"rl","support")]
+    DREAM <- DREAM[,.(startweek=week[1],endweek=week[.N],
+                      startyear=year[1],endyear=year[.N]),by=c(pnr,"rl","support")]
+    DREAM[, `:=`(char_week_start, fifelse(startweek < 10, as.character(paste0("0", startweek)), as.character(startweek)))]
+    DREAM[, `:=`(char_week_end, fifelse(endweek < 10, as.character(paste0("0", endweek)), as.character(endweek)))]
+    DREAM[,':='(start=ISOweek::ISOweek2date(paste0(startyear, "-W", char_week_start, "-1")),
+                end=ISOweek::ISOweek2date(paste0(endyear, "-W", char_week_end, "-1"))+7)]
+    DREAM <- DREAM[,.(pnr,support,start,end,rl)]
   }
   if (!is.null(explData)) {
     DREAM <- merge(DREAM, explData, by = type, all.x = TRUE)
