@@ -149,9 +149,10 @@ splitTwo <- function(indat, # inddato with id/in/out - and possibly other variab
 ){
 #browser()  
  setDT(indat)
+ dummyvariable_ <- NULL  
  indat[,dummyvariable_:=1]
  dat <- lexisTwo(indat,splitdat,c(invars,"dummyvariable_"),splitvars,format,datacheck)
  dat[,dummyvariable_:=NULL]
  indat[,dummyvariable_:=NULL]
- dat
+ dat[]
 }

@@ -113,10 +113,11 @@ splitSeq <- function(indat,
                      datacheck=TRUE) 
 {
   setDT(indat)
+  dummyvariable_ <- NULL
   indat[,dummyvariable_:=1]
   dat <- lexisSeq(indat,c(invars,"dummyvariable_"),varname,
                   splitvector,format,value,datacheck)
   indat[,dummyvariable_:=NULL]
   dat[,dummyvariable_:=NULL]
-  dat
+  dat[]
 }
