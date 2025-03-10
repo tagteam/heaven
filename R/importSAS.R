@@ -191,15 +191,15 @@
 ##'
 ##' }
 ##' @export
-importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
-                       obs = NULL, filter = NULL, filter.by = NULL, filter.negative = FALSE,
-                       set.hook = NULL, step.hook = NULL, pre.hook = NULL,
-                       post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = FALSE,
-                       save.tmp = FALSE, content = FALSE, na.strings = c("dot"), date.vars = NULL,datetime.vars=NULL,
-                       character.vars = "pnr", numeric.vars = NULL, sas.program,
-                       sas.switches, sas.runner, use.colClasses=TRUE,skip.date.conversion = FALSE,force.numeric=TRUE,
-                       sas.data.extension="sas7bdat",verbose = FALSE,
-                       ...)
+my_importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
+                         obs = NULL, filter = NULL, filter.by = NULL, filter.negative = FALSE,
+                         set.hook = NULL, step.hook = NULL, pre.hook = NULL,
+                         post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = FALSE,
+                         save.tmp = FALSE, content = FALSE, na.strings = c("dot"), date.vars = NULL,datetime.vars=NULL,
+                         character.vars = "pnr", numeric.vars = NULL, sas.program,
+                         sas.switches, sas.runner, use.colClasses=TRUE,skip.date.conversion = FALSE,force.numeric=TRUE,
+                         sas.data.extension="sas7bdat",verbose = FALSE,
+                         ...)
 {
     if (!file.exists(filename)){
         stop(paste0("A file with name ",filename," does not exist."))
@@ -221,11 +221,14 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
     }else{
         setwd(wd)
     }
-                                        # cleaning up old temporary directories
+    # cleaning up old temporary directories
     olddirectories <- list.files(wd,pattern="heaven_tempSASfiles[a-z0-9]+")
     for (old in olddirectories){
-        message("Cleaning up temporary directories from previous calls.")
-        unlink(old,recursive=TRUE,force=TRUE)
+        if (!file.exists(paste0(old,"/LOCK"))){
+            ## message(paste0("Cannot remove ",old," because it is locked."))
+            message("Cleaning up temporary directories from previous calls.")
+            unlink(old,recursive=TRUE,force=TRUE)
+        }
     }
     tmpname <- basename(tempfile(pattern="heaven_tempSASfiles"))
     tmpdir = paste0(wd,"/",tmpname)
@@ -238,6 +241,11 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
             stop("Cannot create temporary directory.\nYou probably do not have permission to write to the directory: \n ",
                  tmpdir, "\nTry to specify another directory with the argument \"wd\" or change the working directory.",
                  sep = "")
+        else{
+            lockfile=paste0(tmpdir,"/LOCK")
+            file.create(lockfile)
+            on.exit(file.remove(lockfile))
+        }
     }
     if (length(savefile) > 0) {
         outfile <- paste(wd, "/", savefile, sep = "")
