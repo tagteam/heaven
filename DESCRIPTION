@@ -65,6 +65,7 @@ Collate:
     'lexisSeq.R'
     'lexisTwo.R'
     'listRawdata.R'
+    'longToWideList.R'
     'matchReport.R'
     'medicinMacro.R'
     'mm1.R'

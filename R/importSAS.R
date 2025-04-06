@@ -191,7 +191,7 @@
 ##'
 ##' }
 ##' @export
-my_importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
+importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NULL,
                          obs = NULL, filter = NULL, filter.by = NULL, filter.negative = FALSE,
                          set.hook = NULL, step.hook = NULL, pre.hook = NULL,
                          post.hook = NULL, savefile = NULL, overwrite = TRUE, show.sas.code = FALSE,
