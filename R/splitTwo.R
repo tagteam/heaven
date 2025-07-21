@@ -105,9 +105,6 @@
 #' perly. The program will also allow periods of zero lengths which is a conse-
 #' quence when multiple splits are made on the same day. 
 #' 
-#' This function is identical to the lexisTwo function with the change that 
-#' "events" are not considered.
-#' @seealso lexisTwo
 #' @examples
 #' library(data.table)
 #' 
@@ -140,19 +137,105 @@
 #'    ,c("pnr","name","value")
 #'    ,format="long") 
 #' @export
-splitTwo <- function(indat, # inddato with id/in/out - and possibly other variables
-                    splitdat, # Data with id and dates
-                    invars, #names of id/in/out/event - in that order
-                    splitvars, #Names var date-vars to split by
-                    format="wide", # Wide or long format of splitting guide
-                    datacheck=TRUE #Check consistensy of data
+
+splitTwo <- function(indat, # in-data with id/in/out - and possibly other variables
+                     splitdat, # Data with id and dates
+                     invars, #names of id/in/out - in that order
+                     splitvars, #Names var date-vars to split by
+                     format="wide", # Wide or long format of splitting guide
+                     datacheck=TRUE #Check consistensy of data
 ){
-#browser()  
- setDT(indat)
- dummyvariable_ <- NULL  
- indat[,dummyvariable_:=1]
- dat <- lexisTwo(indat,splitdat,c(invars,"dummyvariable_"),splitvars,format,datacheck)
- dat[,dummyvariable_:=NULL]
- indat[,dummyvariable_:=NULL]
- dat[]
+  .N=inn=out=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=numcov=name=isdate=NULL
+  datt <- copy(indat)
+  splitdatt <- copy(splitdat)
+  #Tests of data
+  setDT(datt)
+  setDT(splitdatt)
+  datt[,mergevar:=1:.N] # var to merge RESTDAT on later - assuming data may have been presplit with multiple lines with pnr
+  RESTDAT <- copy(datt)[,(invars[2:3]):=NULL]# non-split variables to be added at end
+  setnames(RESTDAT,invars[1],"pnr")
+  datt <- datt[,c("mergevar",invars),with=FALSE] # Ncessary variables for split
+  setnames(datt,invars,c("pnr","inn","out"))
+  if (lubridate::is.Date(datt[,inn])) {
+    datt[,':='(inn=as.numeric(inn),out=as.numeric(out))]
+    isdate <- TRUE
+  }
+  else isdate <- FALSE
+  ## TEST
+  if(datacheck){
+    temp <- datt[,list(num=sum(out<inn))]
+    if (temp[,num]>0) stop("Error - end of interval cannot come before start of intervals")
+    if (!class(datt[,inn]) %in% c("numeric","integer","Date") | !class(datt[,out]) %in% c("numeric","integer","Date")) 
+      stop("input date not Date or integer or numeric")
+    setkeyv(datt,"inn")
+    temp <- datt[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnr"]
+    temp <- temp[,list(num=sum(num))]
+    if(temp[,num]>0) stop("Error - Data includes overlapping intervals")
+  }
+  # Create consecutive increasing replacement from pnr in datt and splitdatt
+  setkey(datt,"pnr")
+  datt[,pnrnum:=.GRP,by="pnr"] #Numeric replacement for pnr
+  setnames(splitdatt,invars[1],"pnr")
+  splitdatt<-merge(splitdatt,unique(datt[,c("pnr","pnrnum"),with=FALSE]),by="pnr",all.x=TRUE) # Same pnrnum as in datt
+  splitdatt <- splitdatt[!is.na(pnrnum)]
+  splitdatt[,pnr:=NULL] #remove pnr
+  # Create long-form of splitdatt and number covariate dates
+  if (format=="wide"){
+    if(datacheck){
+      temp <- splitdatt[,pnrnum]
+      if (length(temp)!=length(unique(temp))) stop("Error - Repeated entries in splitting guide")
+    }
+    splitvars2 <- splitvars[-1]
+    setcolorder(splitdatt,c("pnrnum",splitvars2)) # Columns ordered as in call
+    splitdatt <- data.table::melt(data=splitdatt,id.vars="pnrnum",measure.vars=splitvars2,variable.name="_variable_",value.name="value_")
+    setkeyv(splitdatt,"pnrnum")
+    splitdatt[,"_variable_":=NULL]
+    splitdatt[,number_:=1:.N,by="pnrnum"] 
+    splitdatt <- splitdatt[!is.na(value_)]
+    splitdatt[,numcov:=.N,by="pnrnum"]
+    setkeyv(splitdatt,c("pnrnum","value_"))
+    splitdatt[,value_:=as.numeric(value_)]
+    splitdatt <- as.matrix(splitdatt) 
+  } else { # format=long
+    if(datacheck){
+      setkeyv(splitdatt,"pnrnum")
+      splitdatt[,numvars:=.N,by="pnrnum"]
+      temp <-splitdatt[,list(numvars=max(numvars))]
+      if (temp[,numvars]>length(unique(splitdatt[,name])))stop("Error - Apparent repeated entries in splitting guide")
+      splitdatt[,numvars:=NULL]
+    }
+    setnames(splitdatt,splitvars[2:3],c("name","value_"))
+    splitvars <- as.character(unique(splitdatt[,"name"])$name)
+    splitvars2 <- splitvars
+    toNumber <- data.table(name=splitvars,number_=1:length(splitvars))
+    splitdatt <- merge(splitdatt,toNumber,by="name",all.x=TRUE) # attach names of splitvars
+    splitdatt[,name:=NULL]
+    #Number of covariates for each case
+    splitdatt[,numcov:=.N,by="pnrnum"]
+    setkeyv(splitdatt,c("pnrnum","number_"))
+    if(datacheck){
+      # Check for repeated "name"/number in one pnr
+      temp <- splitdatt[shift(pnrnum)==pnrnum & shift(number_)==number_,.SD,.SDcols="pnrnum",by="pnrnum"]
+      if (dim(temp)[1]>=1) stop("Error - repeated split variables in at least one id-group")
+    }
+    setkeyv(splitdatt,c("pnrnum","value_"))
+    setcolorder(splitdatt,c("pnrnum","value_","number_","numcov"))
+    splitdatt[,value_:=as.numeric(value_)]
+    splitdatt <- as.matrix(splitdatt)
+  }
+  datt[,event:=0] # Dummy to match c++ function
+  #OUT <- .Call("_heaven_split2",PACKAGE = "heaven",datt[,pnrnum],datt[,inn],datt[,out],datt[,mergevar],splitdatt,length(splitvars))  # Call to c++ split-function
+  OUT <- split2(datt[,pnrnum],datt[,inn],datt[,out],datt[,event],datt[,mergevar],splitdatt,length(splitvars2))  # Call to c++ split-function
+  OUT <- cbind(setDT(OUT[1:5]),setDT(do.call(cbind,OUT[6])))
+  if(isdate){
+    OUT[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
+  }
+  OUT[,event:=NULL]  
+  setnames(OUT, c("pnrnum","mergevar",invars[2:3],splitvars2))
+  OUT <- merge(OUT,
+               RESTDAT,by="mergevar")
+  setnames(OUT,"pnr",invars[1])
+  OUT[,c("pnrnum","mergevar"):=NULL] # remove number version of pnr
+  OUT[]
 }
+

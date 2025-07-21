@@ -1,4 +1,4 @@
-#' @title lexisSeq
+#' @title splitSeq
 #' @description 
 #' splitSeq is a function which can split records according to a vector of
 #' selected times.  At the outset each record has two variables representing
@@ -112,12 +112,71 @@ splitSeq <- function(indat,
                      value = "value",
                      datacheck=TRUE) 
 {
-  setDT(indat)
-  dummyvariable_ <- NULL
-  indat[,dummyvariable_:=1]
-  dat <- lexisSeq(indat,c(invars,"dummyvariable_"),varname,
-                  splitvector,format,value,datacheck)
-  indat[,dummyvariable_:=NULL]
-  dat[,dummyvariable_:=NULL]
-  dat[]
+  vent = out = inn = .SD = pnrnum = .N = isdate= NULL
+  if (datacheck){
+    if (class(invars) != "character") 
+      stop("Varnames in c(..) not character")
+    if (class(varname) != "character" & !is.null(varname)) 
+      stop("varname not character or NULL")
+  }
+  datt <- data.table::copy(indat)
+  data.table::setDT(datt)
+  if (is.null(varname)) 
+    datt[, `:=`(varname, 0)]
+  else {
+    setnames(datt, varname, "varname")
+    datt[is.na(varname),varname:=as.Date("3000-01-01")] # Make missing varname very large
+  }
+  datt[, `:=`(pnrnum, 1:.N)]
+  splitdat <- datt[, .SD, .SDcols = c("pnrnum", invars[2:3], 
+                                      "varname")]
+  setnames(splitdat,c("pnrnum", invars[2:3],"varname"), 
+           c("pnrnum", "inn", "out", "varname"))
+  if (lubridate::is.Date(splitdat[,inn])){
+    splitdat[,':='(inn=as.numeric(inn),out=as.numeric(out))]
+    isdate <- TRUE
+  }
+  else isdate <- FALSE
+  if (datacheck) {
+    temp <- splitdat[,list(num=sum(out<inn))]
+    if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
+    if (!class(splitdat[,inn]) %in% c("numeric","integer","Date") | !class(splitdat[,out]) %in% c("numeric","integer","Date")) 
+      stop("input date not Date or integer or numeric")
+    setkeyv(splitdat,"inn")
+    temp <- splitdat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnrnum"]
+    temp <- temp[,list(num=sum(num))]
+    if(temp[,num]>0) stop("Error - Data includes overlapping intervals")
+    datt[, `:=`((invars[2:3]), NULL)]
+    if (!(format %in% c("vector", "seq"))) 
+      stop("format must be 'seq' or 'vector'")
+    if (format == "seq") {
+      if ((length(splitvector) != 3) || (splitvector[1] >= 
+                                         splitvector[2]) || (splitvector[3] >= (splitvector[2] - 
+                                                                                splitvector[1]))) 
+        stop("Argument 'seq' must be a vector of the form (start, stop, by) where start < stop and by < stop-start.")
+      splitguide <- seq(splitvector[1],splitvector[2],splitvector[3]) 
+    }  
+    else {
+      if (length(splitvector)>1) 
+        for (i in 2:length(splitvector))
+          if (splitvector[i]<=splitvector[i-1]) stop("Splitvector not with increasing numbers")
+      splitguide <- splitvector     
+    }
+  }
+  splitdat[,event:=0] # Dummy to fit c++ function
+  out <- splitdat[,splitdate(inn, out, event, pnrnum, splitguide, varname)]  
+  setDT(out)
+  out[,event:=NULL] # Dummy removed
+  setkeyv(out, c("pnrnum", "inn"))
+  if(isdate){
+    out[,':='(inn=as.Date(inn,origin="1970-01-01"),out=as.Date(out,origin="1970-01-01"))]
+  }
+  if (is.null(varname)) 
+    datt[, `:=`(varname, NULL)]
+  else setnames(datt,"varname",varname)
+  out <- merge(out, datt, by = "pnrnum", all = TRUE)
+  out[, `:=`(pnrnum, NULL)]
+  setnames(out, c("inn", "out", "value"), c(invars[2:3], 
+                                                     value))
+  out[]
 }
