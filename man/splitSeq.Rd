@@ -2,7 +2,7 @@
 % Please edit documentation in R/splitSeq.R
 \name{splitSeq}
 \alias{splitSeq}
-\title{lexisSeq}
+\title{splitSeq}
 \usage{
 splitSeq(indat,invars,varname=NULL,splitvector,format,value="value",
 datacheck=TRUE)

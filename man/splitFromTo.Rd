@@ -21,9 +21,9 @@ example: c("id","start","end","value","name") - must be in that order!}
 
 \item{default}{- Value given to intervals not given a value by the function.}
 
-\item{datacheck}{- This function can crash or produce incorrect results if
+\item{datacheck}{- This function would crash or produce incorrect results if
 input data have overlapping intervals or negative intervals in any of the two
-input datasets.  Thic is checked and error produced by datacheck. Can be 
+input datasets.  Ts is checked and error produced by datacheck. Can be 
 set to FALSE if data are checked otherwise}
 }
 \value{
@@ -37,7 +37,7 @@ on entry/exit dates provided from another splitting guide dataset. The function
 can handle multiple different events with each type of event characterized by
 the variable "value".
 
-The function is useful for analysis of data where temporary events occur.
+The function is useful for analysis of data where temporary changes occur.
 These may be drugs treatment, pregnancy etc.  For a situation of pregnancy
 for example it may be useful for analysis to split a person into three 
 records representing time before, during and after pregnancy.
@@ -47,8 +47,8 @@ may already have been split by other functions.  The other data is a sequence
 of id/from/to/value/name - that may represent multiple conditions with 
 from/to and with "name" to distinguish.
 
-The function further implements a simplification where only a single "name"
-and no "value" is provided.
+When no value is provided by the splitting guide the "default" is used. If
+this is not provided the value is set to "0"
 }
 \details{
 The input to this function are two data.tables and two lists of the critical 
@@ -65,9 +65,6 @@ decisions regarding this prior to using this function.
 
 It is required that the splitting guide contains at least one record.  
 Missing data for key variables are not allowed and will cause errors.
-
-This function is a wrapper to the lexisFromTo function with the change that 
-"events" are not considered.
 }
 \examples{
 library(data.table)
@@ -87,19 +84,6 @@ temp <- splitFromTo(dat # inddato with id/in/out/event
                    ,c("id","start","end") #names of id/in/out/event - in that order
                   ,c("id","start","end","value","name")) #Names var date-vars to split by
 temp[]                   
-# Short splittingguide with only id/start/end
-split2 <- data.table (id=c("A","A","B","D"),
-                    start=as.Date(c(0,50,110,150),origin='1970-01-01'),
-                    end= as.Date(c(25,75,120,250),origin='1970-01-01'))
-                    
-temp2 <- splitFromTo(dat # inddato with id/in/out/event
-                   ,split2 # Data with id and dates
-                   ,c("id","start","end") #names of id/in/out - in that order
-                  ,c("id","start","end")) #Names var date-vars to split by   
-temp2[]                                   
-}
-\seealso{
-splitFromTo
 }
 \author{
 Christian Torp-Pedersen

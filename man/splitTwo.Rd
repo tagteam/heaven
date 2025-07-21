@@ -112,10 +112,7 @@ for decent results that care is taken that all dates are defined similarly.
 The output will always have the "next" period starting on the day where the
 last period ended. This is to ensure that period lengths are calculated pro-
 perly. The program will also allow periods of zero lengths which is a conse-
-quence when multiple splits are made on the same day. 
-
-This function is identical to the lexisTwo function with the change that 
-"events" are not considered.
+quence when multiple splits are made on the same day.
 }
 \examples{
 library(data.table)
@@ -148,9 +145,6 @@ splitTwo(dat # in-data with id/in/out
    ,c("pnr","start","end") #names of id/in/out - in that order
    ,c("pnr","name","value")
    ,format="long") 
-}
-\seealso{
-lexisTwo
 }
 \author{
 Christian Torp-Pedersen

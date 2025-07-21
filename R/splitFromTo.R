@@ -135,7 +135,7 @@ splitFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   setcolorder(csplit,c("pnrnum","start","slut","num"))
   csplit[,':='(start=as.integer(start),slut=as.integer(slut))] # integers need for change to matrix
   setkeyv(csplit,c("pnrnum","start","slut","num")) # sorted with increasing dates
-  # OUT <- .Call('_heaven_splitft',PACKAGE = 'rtmle',
+  # OUT <- .Call('_heaven_splitFT',PACKAGE = 'rtmle',
   #              INDAT[,pnrnum], # PNR as sequence number - base data
   #              INDAT[,inn], # Starttimes - base data
   #              INDAT[,out], # Endtimes - base data
@@ -149,7 +149,7 @@ splitFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
   #              length(nams),
   #              default) # Number of covariate to split by) # Call c++
   INDAT[,event:=0] # Dummy to fit c++ function
-  OUT<- splitft(INDAT[,pnrnum], # PNR as sequence number - base data
+  OUT<- splitFT(INDAT[,pnrnum], # PNR as sequence number - base data
                 INDAT[,inn], # Starttimes - base data
                 INDAT[,out], # Endtimes - base data
                 INDAT[,event], # Dummy

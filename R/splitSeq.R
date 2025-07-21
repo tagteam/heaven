@@ -164,7 +164,7 @@ splitSeq <- function(indat,
     }
   }
   splitdat[,event:=0] # Dummy to fit c++ function
-  out <- splitdat[,splitdate(inn, out, event, pnrnum, splitguide, varname)]  
+  out <- splitdat[,splitDate(inn, out, event, pnrnum, splitguide, varname)]  
   setDT(out)
   out[,event:=NULL] # Dummy removed
   setkeyv(out, c("pnrnum", "inn"))
