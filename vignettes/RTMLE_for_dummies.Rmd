@@ -48,6 +48,7 @@ Event_Type (0=censor, 1=event, 2=competing risk).
 ```{r, echo=FALSE}
 library(data.table)
 library(rtmle)
+library(heaven)
 # set working directory 
 data(baseline_data)
 data(treatment_data)
@@ -169,41 +170,126 @@ outcome_dt <- dcast(aggrSplit_out,ID~period,value.var = c("compete","censor","ou
 # For the time dependent covariates we need a list with one member for each time dependent covariate
 treatment_dt <- longToWideList(aggrSplit_cov,"ID",c("A","B"))
 ```
+## Understand the final data
+By use of the suggested functions above or by any other data management, the final data have the following form. Note that variables for each time period all end with "uncerscore" followed by the interval number.
+
+* Baseline data, a very simple standard data.frame/data.table with baseline variables
+* Outcome data, a dataset with an ID variable and the variables for outcome, censoring and competing risk for each time interval of the study. An example is: ID compete_1 compete_2 ... censor_1 censor_2 .... outcome_1 outcome_2 ...
+* Treatment data, a list with one member for each time varying variable. Each member of the list have variables for each time period. An str() for the current example is: 
+```{results='asis'}
+ $ A:Classes ‘data.table’ and 'data.frame':	1000 obs. of  6 variables:
+  ..$ ID : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...
+  ..$ A_0: num [1:1000] 1 1 1 1 1 1 1 1 1 1 ...
+  ..$ A_1: num [1:1000] 0 0 0 0 0 0 1 1 1 0 ...
+  ....
+ $ B:Classes ‘data.table’ and 'data.frame':	1000 obs. of  6 variables:
+  ..$ ID : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...
+  ..$ B_0: num [1:1000] 0 0 0 0 0 0 0 0 0 0 ...
+  ..$ B_1: num [1:1000] 0 0 0 0 0 0 0 0 0 0 ...
+ ....
+```
+
+# LTMLE with RTMLE
+The basis of the RTMLE package is an RTMLE object, a list of relevant parameters. This list is built with a sequence of steps:
+
+**rtmle_init** - This function initializes the rtmle object, in this case "x". Thes function needes as shown to be provided with number of intervals, the individual identification varaible and names of variables for outcome, censoring and competing risk. Finally the censoring labels needs to be provided as well as the variable defining censoring.
+```{results='asis'}
+    x <- rtmle_init(intervals=3,name_id='ID',name_time='period',name_outcome='outcome',
+                    name_competing='compete',name_censoring='censor',
+                    censored_levels=c('1','0'),censored_label="1")
+```
+Next, the **add_wide_data** function is used to provide the baseline data, outcome and time varying data. The rtmle object can also receive data in long form via the **add_long_data**, which is not further explained in this guide.
+```{results='asis'}
+    x <- add_wide_data(x,
+                   baseline_data = baseline_data[,.(ID,age)],
+                   outcome_data = outcome_dt,
+                   timevar_data=treatment_dt
+    )
+```
+The following step with **prepare_data** prepares the data for analysis. This will introduce NA variables and removed som values from the final time period.
+```{results='asis'}
+    x <- prepare_data(x)
+```
+The actual analysis are comparisons of two protocols using **protocol** and **target**. The first example is
+a very simple comparison of continuous treatment with "A" versus never treating with "A":
+```{results='asis'}
+    x <- protocol(x,name = "A",treatment_variables = "A",intervention = 1)
+    x <- protocol(x,name = "not A",treatment_variables = "A",intervention = 0)
+    x <- target(x,name = "A",strategy = "additive",estimator = "tmle",protocols = c("A","not A"))
+```
+Once a target is defined it can be used repeatedly to define new comparions. The following example compares treatment A with no treatment as above, but this time the intervention with A is only defined for two time periods. The comparitor is still "not A" and is therefore unchanged.    
+```{results='asis'}
+    x <- protocol(x,name="A1",
+                         intervention = data.frame("A" = factor(c("1","1","0","0"),levels = c("0","1"))))
+    x <- target(x,name="A1", strategy="additive",estimator="tmle",protocols = c("A1","not A"))
+```
+The protocols can be complex and involve several time dependent treatment variables.  The following example defined protocols for a typical emulated trial with an active comparitor, where you either want to emulate continuous A and never B or amulate continuous B and never A.
+```{results='asis'}
+protocol(x) <- list(name = "Always_A_never_B",
+                    intervention = data.frame("A" = factor(c("1","0"),levels = c("0","1")),
+                                              "B" = factor(c("0","0"),levels = c("0","1"))))
+protocol(x) <- list(name = "Always_B_never_A",
+                    intervention = data.frame("A" = factor(c("0","0"),levels = c("0","1")),
+                                              "B" = factor(c("1","0"),levels = c("0","1"))))
+```
+The next step is **model_formula** - needs explanation
+```{results='asis'}
+x <- model_formula(x)
+```
+The calculations are inititated with **run_rtmle**. A very simplisticv version is here:
+```{results='asis'}
+x <- run_rtmle(x,learner = "learn_glm",time_horizon = 1:3)
+```
+There are a number of further possible paramters. it may be relevant only to examine selected **targets** define above. It may also be relevant to define a more complex superlearner such as the following which combines penalized regression with a random forest:
+```{results='asis'}
+learner = list("learn_ranger_50" = list(num.trees = 20,learner_fun = "learn_ranger"),
+                              "learn_glmnet"),folds = 10)
+```
 
 
-## LTMLE - one variable for treatment, here "A". The comparison is for the target parameter "Always treat with A versus never treat with A".
+## NEW
+x <- rtmle_init(intervals=3,name_id='ID',name_time='period',name_outcome='Y',
+                name_competing='CO',name_censoring='CE',
+                censored_levels=c('1','0'),censored_label="1")
+x <- add_wide_data(x,
+               outcome_data = outcome_dt,
+               timevar_data=treatment_dt
+)
+x <- prepare_data(x)
+x <- protocol(x,name = "A",treatment_variables = "A",intervention = 1)
+x <- protocol(x,name = "not A",treatment_variables = "A",intervention = 0)
+x <- target(x,name = "Risk",strategy = "additive",estimator = "tmle",protocols = c("A","not A"))
+x <- model_formula(x)
+x <- run_rtmle(x,learner = "learn_glm",time_horizon = 1:3)
+summary(x)
+
+
+#Example - one variable for treatment, here "A". The comparison is for the target parameter "Always treat with A versus never treat with A".
 
 ```{r echo=TRUE}
 
 x <- rtmle_init(intervals=4,name_id='ID',name_time='period',name_outcome='outcome',
                 name_competing='compete',name_censoring='censor',
                 censored_levels=c('1','0'),censored_label="1")
-x$data <- list(baseline_data = baseline_data[,.(ID,age)],
+x<- add_wide_data(x,baseline_data = baseline_data[,.(ID,age)],
                outcome_data = outcome_dt,
-               timevar_data=treatment_dt[1] # just "A"
+               timevar_data=treatment_dt
                )
-prepare_data(x) <- list()
-protocol(x) <- list(name = "A",treatment_variables = "A",intervention = 1)
-protocol(x) <- list(name = "not A",treatment_variables = "A",intervention = 0)
-target(x) <- list(name = "Risk",strategy = "additive",estimator = "tmle",protocols = c("A","not A"))
+x <- prepare_data(x)
+x <- protocol(x,name = "A",treatment_variables = "A",intervention = 1)
+x <- protocol(x,name = "not A",treatment_variables = "A",intervention = 0)
+x <- target(x,name = "Risk",strategy = "additive",estimator = "tmle",protocols = c("A","not A"))
+x <- model_formula(x)
 x <- run_rtmle(x,time_horizon = 2)
 summary(x)
 
 ```
 ## LTMLE - Same analysis, but this time a complex superlearner with glmnet and to versions of random forest.
+Only necessary new objects are included
 ```{r echo=TRUE}
-x <- rtmle_init(intervals=4,name_id='ID',name_time='period',name_outcome='outcome',
-                name_competing='compete',name_censoring='censor',
-                censored_levels=c('1','0'),censored_label="1")
-x$data <- list(baseline_data = baseline_data[,.(ID,age)],
-               outcome_data = outcome_dt,
-               timevar_data=treatment_dt[1] # just "A"
-)
-prepare_data(x) <- list()
-protocol(x) <- list(name = "A",treatment_variables = "A",intervention = 1)
-protocol(x) <- list(name = "not A",treatment_variables = "A",intervention = 0)
-target(x) <- list(name = "Risk",strategy = "additive",estimator = "tmle",protocols = c("A","not A"))
+target(x) <- list(name = "Complex learner",strategy = "additive",estimator = "tmle",protocols = c("A","not A"))
 x <- run_rtmle(x,
+               targets="Complex learner",
                time_horizon = 2,
                refit = TRUE,
                learner = list("learn_ranger_50" = list(num.trees = 20,learner_fun = "learn_ranger"),
@@ -215,53 +301,15 @@ summary(x)
 ## LTMLE - Two variable for treatment, A and B. The comparison is for the target parameter "Always treat with A and never B versus Always treat with B and never with A".
 
 ```{r echo=TRUE}
-
-x <- rtmle_init(intervals=4,name_id='ID',name_time='period',name_outcome='outcome',
-                name_competing='compete',name_censoring='censor',
-                censored_levels=c('1','0'),censored_label="1")
-x$data <- list(baseline_data = baseline_data[,.(ID,age)],
-               outcome_data = outcome_dt,
-               timevar_data=treatment_dt
-               )
-prepare_data(x) <- list()
-
-protocol(x) <- list(name = "Always_A_never_B",
+x <- protocol(x,name = "Always_A_never_B",
                     intervention = data.frame("A" = factor("1",levels = c("0","1")),
                                               "B" = factor("0",levels = c("0","1"))))
-protocol(x) <- list(name = "Always_B_never_A",
+x <- protocol(x,name = "Always_B_never_A",
                     intervention = data.frame("A" = factor("0",levels = c("0","1")),
                                               "B" = factor("1",levels = c("0","1"))))
-x$protocols
-target(x) <- list(name = "Risk",strategy = "additive",estimator = "tmle",protocols = c("Always_A_never_B","Always_B_never_A"))
-x <- run_rtmle(x,time_horizon = 2)
-summary(x)
-
-```
-## LTMLE - Two variable for treatment, A and B. The comparison is for the target parameter "Always treat with A and never B versus Always treat with B and never with A".
-
-BUT, this time the treatment is only compared for period one with a requirement of no
-treatment in period 2
-
-```{r echo=TRUE}
-
-x <- rtmle_init(intervals=4,name_id='ID',name_time='period',name_outcome='outcome',
-                name_competing='compete',name_censoring='censor',
-                censored_levels=c('1','0'),censored_label="1")
-x$data <- list(baseline_data = baseline_data[,.(ID,age)],
-               outcome_data = outcome_dt,
-               timevar_data=treatment_dt
-               )
-prepare_data(x) <- list()
-
-protocol(x) <- list(name = "Always_A_never_B",
-                    intervention = data.frame("A" = factor(c("1","0"),levels = c("0","1")),
-                                              "B" = factor(c("0","0"),levels = c("0","1"))))
-protocol(x) <- list(name = "Always_B_never_A",
-                    intervention = data.frame("A" = factor(c("0","0"),levels = c("0","1")),
-                                              "B" = factor(c("1","0"),levels = c("0","1"))))
-x$protocols
-target(x) <- list(name = "Risk",strategy = "additive",estimator = "tmle",protocols = c("Always_A_never_B","Always_B_never_A"))
-x <- run_rtmle(x,time_horizon = 2)
+x <- target(x,name = "Active comparitor",strategy = "additive",estimator = "tmle",protocols = c("Always_A_never_B","Always_B_never_A"))
+x <- model_formula(x)
+x <- run_rtmle(x,targets="Active comparitor",time_horizon = 2)
 summary(x)
 
 ```
