@@ -141,6 +141,13 @@ The outcomes (event, censoring, competing risk) should be the maximal
 outcome for each period since an outcome event is coded "1" as opposed
 to "0" when not occurring.
 
+***Important note on censoring**. During the last period of observation those
+individuals that are censored **during** the period should be classified as
+censored, but those individuals that are administratively censored at the end
+of the period should be classified as uncensored.  If this is not adhered to the
+calculations will appear to provide 100% of individuals to either have outcome
+or competing risk.
+
 For other variables the chosen summary should reflect relevant biology. It could be
 the value at exit, at entry, rely on percentage of exposure during the period etc.
 For the current simplistic example we will use any exposure during a period as a predictor
