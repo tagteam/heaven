@@ -264,6 +264,17 @@ The next step is **model_formula**. This creates the formulas used in regression
 x <- model_formula(x)
 
 ```
+
+The actual models derived can be visualised by printing the formulas with **x$formulas**.
+Access to the formulas also allow for modifications. By routine the formulas are purely additive.
+If outcome during period 2 is "Y_2" then this formula can be modified to include interactions with:
+
+```ruby
+
+x$models$Y_2$formula = gsub("\\+","*",x$models$Y_2$formula)
+
+```
+
 The calculations are inititated with **run_rtmle**. A very simplistic version is here. Note that time_horizon can be a number defining a specific time interval, or it can be a vector where estimates are made for every member of the vector.
 ```ruby
 
