@@ -11,11 +11,11 @@ Learning and understanding basics of LTMLE analyses is best obtained from "Targe
 
 The following is a simplistic presentation of LTMLE/RTMLE for non statistician users that intend to emulate a trial.
 
-A longitudinal study is considered where participants at time zero receive one of two treatments. Subject selection may rely on starting a treatment of interest versus a selected control treatment or it may rely on comparing subjects starting a selected treatment with controls selected by a variety of mechanisms which could be matching.  Note that if matching users to non-users what is calculated is average treatment effect of the treated rather than average treatment effect.
+A longitudinal study is considered where participants at time zero receive one of two treatments (A=0/1). Subject selection may rely on starting a treatment of interest versus a selected control treatment or it may rely on comparing subjects starting a selected treatment with controls selected by a variety of mechanisms which could be matching.  Note that if matching users to non-users what is calculated is average treatment effect of the treated rather than average treatment effect.
 
 The follow-up time of interest is divided in a series of time slices of equal length. The length of these time slices need to be short enough to ensure biological meaning and long enough to ensure that all combinations of variables in each time slice can be found with a probability above zero and below one (positivity assumption). If the exposure of interest relies on prescribed drugs, then the time slices should reflect meaningful periods seen in clinical practice such as a single month up to a year or more. 
 
-During each time slice a subject may be censored (observation time ends, subject disappears), have an outcome of interest or be subject to a competing risk (typically death unrelated to outcome).
+During each time slice a subject may be censored (outcome=Censor) (observation time ends, subject disappears), have an outcome of interest (Y=1) or be subject to a competing risk (outcome=Compete, typically death unrelated to outcome).
 
 For each time slice all variables of interest needs to be summarized to a category or value. Intermittent treatment during these time slices needs to be summarized to a yes/no category or numerical value as relevant for the study
 
@@ -40,38 +40,33 @@ only one method possible. The method relies on keeping data in a long format as 
 
 ## Step 1 - Get exercise data
 
-## Baseline data and outcomes
-
-The example has a single baseline variable (Age), Outcome_time, Trial_Start and
-Event_Type (0=censor, 1=event, 2=competing risk).
-
 ```{r, echo=FALSE}
 library(data.table)
 library(rtmle)
 library(heaven)
 # set working directory 
-data(baseline_data)
-data(treatment_data)
-data(outcome_data) 
-head(baseline_data)
+sim <- trialSimulation(n = 1000, seed = 123)
+baseline <- sim$baseline
+outcome <- sim$outcome
+dep_var <- sim$dep_var
+head(baseline)
 ```
 
-The next dataset has treatment periods where patients are allocated to be treated with 
-"A" or "B" - some consistently, others discontinue
+The next dataset dep_var has all time dependent variables. In the current case it the treatment periods for treatments A/B and for the example also another time dependent variable T
 
 ```{r, echo=FALSE}
-head(treatment_data)
+head(dep_var)
 ```
 The final dataset are the outcome data. Note that variables for event of interest,
 censoring and competing risk are coded with separate variables. For each outcome these three variables are mutually exclusive.  If there are multiple outcomes it can be recommended to handle 
 them in a single dataset for data management.
 ```{r, echo=FALSE}
-head(outcome_data)
+head(outcome)
 ```
 
 
 # Prepare for LTMLE
-LTMLE eventually requires that information is provided in a wide format with one record per individual and variables for each covariate.  The following procedure allows most of the management to be conducted in a long formate which eases checking of programming.
+L(R)TMLE eventually requires that information is provided in a wide format with one record per individual and variables for each covariate/time period.  The following procedure allows most of the management to be conducted in a long formate which eases checking of programming.
 
 The basis is the number of time slices and in this example there are four, of which two are used in calculations.
 
@@ -81,8 +76,9 @@ are defined and used in further data management.
 
 We start with "base" which holdes the ID, the start and the end. Because of the splitting we copy Start/End to inn/out for splitting purposes.  Note that all participants are required to have information for all periods even when they stop early in the study - information after stopping will not be used in calculations.
 ```{r, echo=TRUE}
-base <- baseline_data[,.(ID,Trial_Start)]
-base[,':='(inn=Trial_Start,out=Trial_Start+4*365)] # Four periods of 365 days
+base <- baseline_data[,.(ID)]
+base[,inn:=0] # start time zero for all
+base[,out:=0+5*365] # five year study
 ```
 ## Splitting
 The following steps have the purpose of defining levels of variables in each of 
@@ -99,22 +95,21 @@ Note: If there are multiple outcomes for study these can be be handled simultane
 ```{r echo=TRUE}
 
 longSplit <- splitTwo(indat=base,
-                      splitdat=outcome_data,
+                      splitdat=outcome,
                       invars=c('ID','inn','out'),
-                      splitvars = c('ID','censor','outcome','compete'))
+                      splitvars = c('ID','Censor','Y','Compete'))
 ```
 
 Next the data is split by the time dependent variables with potentially multiple
 changes during the study. We use the function heaven::splitFromTo. A single call to the function can split on all time dependent variables representing intervals. Apart from variables indicating start and end of periods, two more variables are needed. One variable indicates a name for the condition (here "treatment") and the other a "value" for that treatment period. The function does not allow overlap whithin person/condition. This needs to be arranged prior to use of the function.
 
 ```{r echo=TRUE}
-splitguideTime <- copy(treatment_data)
-splitguideTime[,value:=1]
+dep_var[,value:=1] # In the example value is yes/no represented with 1/0
 longSplit <- splitFromTo(indat=longSplit,
-                         splitdat=splitguideTime,
+                         splitdat=dep_var,
                          invars=c('ID','inn','out'),
                          splitvars =
-                           c('ID','Treatment_Start','Treatment_End','value','treatment'))
+                           c('ID','start','end','value','variable'))
 
 ```
 
@@ -125,7 +120,7 @@ heaven::splitSeq.
 ```{r echo=TRUE}
 longSplit <- splitSeq(indat=longSplit,
                       invars=c('ID','inn','out'),
-                      varname = 'Trial_Start', # intervals since inclusion in study
+                      varname = NULL, # Of a varoanæe holds individual start time, that should be used here
                       splitvector= seq(-1,5*365-1,365), # five periods for the example
                       format = "vector",
                       value="period")
@@ -156,15 +151,17 @@ for the next period.
 ```{r echo=TRUE}
 setkeyv(longSplit,c("ID","period","inn"))
 # Max value of outcomes and value of time dependent variables at period entry
-longSplit <-longSplit[,':='(outcome=max(outcome),censor=max(censor),compete=max(compete),
+# This particular choice is just one of many possible
+longSplit <-longSplit[,':='(outcome=max(Y),censor=max(Censor),compete=max(Compete),
                 A=A[1],B=B[1]),
           by=c("ID","period")] 
 setkeyv(longSplit,c("ID","inn"))
-# Choose first record for each ID/period
+# Choose first record for each ID/period - which is then the summary for that period
 aggrSplit <- longSplit[,.SD[1],by=c("ID","period")]
 aggrSplit[,':='(A=as.numeric(A),B=as.numeric(B))]
 
-# Exposure needs to come before outcome, so the exposure is moved on period back. 
+# Exposure needs to come before outcome, so the exposure is moved on period back in this particular
+# case where it is exposure at start of the interval that is used. 
 # This results in the exposure during the first time period to become baseline exposure
 # which may be correct in one situation and wrong in others. The example is chosen to make
 # this correct.
@@ -207,8 +204,9 @@ The basis of the RTMLE package is an RTMLE object, a list of relevant parameters
 **rtmle_init** - This function initializes the rtmle object, in this case "x". Thes function needes as shown to be provided with number of intervals, the individual identification varaible and names of variables for outcome, censoring and competing risk. Finally the censoring labels needs to be provided as well as the variable defining censoring.
 ```ruby
 
-    x <- rtmle_init(intervals=3,name_id='ID',name_time='period',name_outcome='outcome',
-                    name_competing='compete',name_censoring='censor',
+    
+    x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='Y',
+                    name_competing='Compete',name_censoring='Censor',
                     censored_levels=c('1','0'),censored_label='1')
 
 ```
@@ -216,7 +214,7 @@ Next, the **add_wide_data** function is used to provide the baseline data, outco
 ```ruby
 
     x <- add_wide_data(x,
-                   baseline_data = baseline_data[,.(ID,age)],
+                   baseline_data = baseline[,.(ID,age,sex)],
                    outcome_data = outcome_dt,
                    timevar_data=treatment_dt
     )
@@ -295,7 +293,7 @@ learner = list("learn_ranger_50" =
 
 ```{r echo=TRUE}
 
-x <- rtmle_init(intervals=4,name_id='ID',name_time='period',name_outcome='outcome',
+x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='outcome',
                 name_competing='compete',name_censoring='censor',
                 censored_levels=c('1','0'),censored_label="1")
 x<- add_wide_data(x,baseline_data = baseline_data[,.(ID,age)],
@@ -308,15 +306,15 @@ x <- protocol(x,name = "not A",treatment_variables = "A",intervention = 0)
 x <- target(x,name = "Risk",strategy = "additive",estimator = "tmle",
             protocols = c("A","not A"))
 x <- model_formula(x)
-x <- run_rtmle(x,time_horizon = 2)
+x <- run_rtmle(x,time_horizon = 5)
 summary(x)
 
 ```
 ## LTMLE - Same analysis, but this time a complex superlearner with glmnet and to versions of random forest.
-Only necessary new objects are included. Note that all targets are recalculated when the learners
+Only necessary new objects are included. Note that all targets are recalculated when the learners change
 ```{r echo=TRUE}
 x <- run_rtmle(x,
-  time_horizon = 2,
+  time_horizon = 5,
   refit = TRUE,
   learner = list("learn_ranger_20" = list(num.trees = 20,learner_fun = "learn_ranger"),
                               "learn_glm"),folds = 10)
