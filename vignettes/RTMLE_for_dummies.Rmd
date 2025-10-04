@@ -11,7 +11,7 @@ Learning and understanding basics of LTMLE analyses is best obtained from "Targe
 
 The following is a simplistic presentation of LTMLE/RTMLE for non statistician users that intend to emulate a trial.
 
-A longitudinal study is considered where participants at time zero receive one of two treatments (A=0/1). Subject selection may rely on starting a treatment of interest versus a selected control treatment or it may rely on comparing subjects starting a selected treatment with controls selected by a variety of mechanisms which could be matching.  Note that if matching users to non-users what is calculated is average treatment effect of the treated rather than average treatment effect.
+A longitudinal study is considered where participants at time zero receive one of two treatments (A=0/1 and B). Subject selection may rely on starting a treatment of interest versus a selected control treatment or it may rely on comparing subjects starting a selected treatment with controls selected by a variety of mechanisms which could be matching.  Note that if matching users to non-users what is calculated is average treatment effect of the treated rather than average treatment effect.
 
 The follow-up time of interest is divided in a series of time slices of equal length. The length of these time slices need to be short enough to ensure biological meaning and long enough to ensure that all combinations of variables in each time slice can be found with a probability above zero and below one (positivity assumption). If the exposure of interest relies on prescribed drugs, then the time slices should reflect meaningful periods seen in clinical practice such as a single month up to a year or more. 
 
@@ -23,13 +23,13 @@ In addition to specifying variables during periods the user needs to specify whi
 
 The package does regression which takes into account both the exposure/covariate relation and the exposure outcome relation, an ability named "double robust". Thus, for each time slice the probability of exposure during the next time slice is calculated and outcome during the next period can be determined from exposure variables from all preceding periods. In reality the regression starts from the last periods and moves backward using a regression technique developed by Robins (ref).
 
-A strength of the method is that the regressions to obtain propensity of treatment as well as outcome can be very flexible and include a library of regression methods.  For each project a "superlearner" can be specified to include parametric as well as non-parametric methods.  Choice of regression methods can be complex, but it is wise to include penalized regression parametric methods in order to downplay non-essential variables and also wise to include a tree based methods such as random forest in order to capture critical interactions with treatments.  The final comparison is from G-estimation simulating a situation where all individuals first gets the first treatment choice and thereafter the other treatment. In this process all other variables than treatment are inherited and therefore interaction with treatment cannot be realized with specifying interaction variables in models.
+A strength of the method is that the regressions to obtain propensity of treatment as well as outcome can be very flexible and include a library of regression methods.  For each project a "superlearner" can be specified to include parametric as well as non-parametric methods.  Choice of regression methods can be complex, but it is wise to include penalized regression parametric methods in order to downplay non-essential variables and also wise to include a tree based methods such as random forest in order to capture critical interactions with treatments.  The final comparison is from G-estimation, simulating a situation where all individuals first gets the first treatment choice and thereafter the other treatment. In this process all other variables than treatment are inherited and therefore interaction with treatment cannot be realized with specifying interaction variables in models.
 
 What the method provides eventually is a hypothetical randomized study where the whole population (both treatment groups) first go through follow-up on one intervention and afterwards start over with the alternative.  This is termed G-estimation.
 
 LTMLE is a method in the domain of "causal inference" and needs to rely on the basic assumptions of such methods: Exchangeability, consistency and positivity.  The exchangeability assumption specifies that switching treatment should provide a mirror result and is also phrased as an assumption of having all relevant confounders properly specified. The consistency assumption specifies that the effect of intervention is independent on how is was provided. This may be obvious for a medical therapy with tablets but can be complex in other situations. The final assumption is positivity which has already been mentioned and which specifies that all variable combinations in each time slice should have probabilities greater than zero and less than one.  
 
-If there are many variables and many time slices it is easy to end with a situation where positivity violation results in extreme confidence limits or crashing models.  Two remedies needs consideration.  First, variable selection should be careful.  If a condition is associated with for example multiple varying treatments specifed as independent variables, then it is almost inevitable that positivity violations will occur during some time slices.  The second option and the one recommended by those developing LTMLE is simulations.  A range of simulation studies not using the actual outcome are conducted and only when models run smoothly with simulated outcomes is the final model examined.
+If there are many variables and many time slices it is easy to end with a situation where positivity violation results in extreme confidence limits or crashing models.  Two remedies needs consideration.  First, variable selection should be careful.  If a condition is associated with for example multiple varying treatments specified as independent variables, then it is almost inevitable that positivity violations will occur during some time slices.  The second option and the one recommended by those developing LTMLE is simulations.  A range of simulation studies not using the actual outcome are conducted and only when models run smoothly with simulated outcomes is the final model examined.
 
 If the variables considerations are not followed it is easy to end in an unacceptable situation where variables are added and removed until a sensible model is found.  Such an approach is highly biased and should be avoided.  The proper approach is to specify the path in an analysis plan and then also specify eventually those steps where the analysis plan needed to be modified during calculations.
 
@@ -45,10 +45,13 @@ library(data.table)
 library(rtmle)
 library(heaven)
 # set working directory 
-sim <- trialSimulation(n = 1000, seed = 123)
-baseline <- sim$baseline
-outcome <- sim$outcome
-dep_var <- sim$dep_var
+sim <- simulate_trial(n = 1000, seed = 123)
+baseline <- setDT(sim$baseline)
+outcome <- setDT(sim$outcome)
+# Change time to days - note that the example expects time to behave as integers
+outcome[,':='(Y=floor(Y*365),Censor=floor(Censor*365),Compete=floor(Compete*365))]
+dep_var <- setDT(sim$timedep)
+dep_var[,':='(start=floor(start*365),end=floor(end*365))] # days
 head(baseline)
 ```
 
@@ -76,7 +79,7 @@ are defined and used in further data management.
 
 We start with "base" which holdes the ID, the start and the end. Because of the splitting we copy Start/End to inn/out for splitting purposes.  Note that all participants are required to have information for all periods even when they stop early in the study - information after stopping will not be used in calculations.
 ```{r, echo=TRUE}
-base <- baseline_data[,.(ID)]
+base <- baseline[,.(ID)]
 base[,inn:=0] # start time zero for all
 base[,out:=0+5*365] # five year study
 ```
@@ -153,7 +156,7 @@ setkeyv(longSplit,c("ID","period","inn"))
 # Max value of outcomes and value of time dependent variables at period entry
 # This particular choice is just one of many possible
 longSplit <-longSplit[,':='(outcome=max(Y),censor=max(Censor),compete=max(Compete),
-                A=A[1],B=B[1]),
+                A=A[1],B=B[1],T=T[1]),
           by=c("ID","period")] 
 setkeyv(longSplit,c("ID","inn"))
 # Choose first record for each ID/period - which is then the summary for that period
@@ -279,7 +282,7 @@ The calculations are inititated with **run_rtmle**. A very simplistic version is
 x <- run_rtmle(x,learner = "learn_glm",time_horizon = 1:3)
 
 ```
-There are a number of further possible paramters. it may be relevant only to examine selected **targets** define above. It may also be relevant to define a more complex superlearner such as the following which combines penalized regression with a random forest:
+There are a number of further possible paramters. it may be relevant only to examine selected **targets** defined above. It may also be relevant to define a more complex superlearner such as the following which combines penalized regression with a random forest:
 ```ruby
 
 learner = list("learn_ranger_50" = 
@@ -296,7 +299,8 @@ learner = list("learn_ranger_50" =
 x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='outcome',
                 name_competing='compete',name_censoring='censor',
                 censored_levels=c('1','0'),censored_label="1")
-x<- add_wide_data(x,baseline_data = baseline_data[,.(ID,age)],
+x <- add_baseline_data(x,data= baseline[,.(ID,age,sex)])
+x<- add_wide_data(x,
                outcome_data = outcome_dt,
                timevar_data=treatment_dt
                )
@@ -314,9 +318,9 @@ summary(x)
 Only necessary new objects are included. Note that all targets are recalculated when the learners change
 ```{r echo=TRUE}
 x <- run_rtmle(x,
-  time_horizon = 5,
+  time_horizon = 4, # somehow 5 periods were too much for this example
   refit = TRUE,
-  learner = list("learn_ranger_20" = list(num.trees = 20,learner_fun = "learn_ranger"),
+  learner = list("learn_ranger_1000" = list(num.trees = 1000,learner_fun = "learn_ranger"),
                               "learn_glm"),folds = 10)
 summary(x)
 ```
