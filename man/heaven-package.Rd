@@ -4,8 +4,8 @@
 \name{heaven-package}
 \alias{heaven}
 \alias{heaven-package}
-\title{heaven: Tools for Statitics Denmark}
+\title{heaven}
 \description{
-Fast and furious implementations of often used data preparation steps. These functions are adapted to Danish registry data. Designed to be used with Statistics Denmark
+Package-level documentation for the **heaven** package.
 }
 \keyword{internal}
