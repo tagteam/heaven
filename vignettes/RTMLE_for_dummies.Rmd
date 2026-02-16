@@ -44,24 +44,29 @@ only one method possible. The method relies on keeping data in a long format as 
 library(data.table)
 library(rtmle)
 library(heaven)
+n <- 1000
 # set working directory 
-sim <- simulate_trial(n = 1000, seed = 123)
+sim <- simulate_trial(n, seed = 123)
 baseline <- setDT(sim$baseline)
 outcome <- setDT(sim$outcome)
 # Change time to days - note that the example expects time to behave as integers
 outcome[,':='(Y=floor(Y*365),Censor=floor(Censor*365),Compete=floor(Compete*365))]
-dep_var <- setDT(sim$timedep)
-dep_var[,':='(start=floor(start*365),end=floor(end*365))] # days
+outcome[,comorbidity:=sample(c(0,1),n,replace=TRUE,prob=0.5)]
+time_dependent <- setDT(sim$timedep)
+time_dependent[,':='(start=floor(start*365),end=floor(end*365))] # days
 head(baseline)
 ```
+The baseline dataset includes an ID variable, two variables to example age/sex and then the treatment at baseline. How to use these data are shown later.
 
-The next dataset dep_var has all time dependent variables. In the current case it the treatment periods for treatments A/B and for the example also another time dependent variable T
+
+The next dataset "time_dependent" has all time dependent variables. In the current case it the treatment periods for treatments A/B and for the example also another time dependent variable T.  The dataset includes both treatment and the variable "T" to make it clear that this dataset is for ALL time dependent variables.  Note that any time dependent variable must have start/end/value and for the current analyses the value is "1" when present and zero otherzise.  It is quite OK to have time dependent variables separated in a number of independent datasets which then needs to be handled one at a time.
 
 ```{r, echo=FALSE}
-head(dep_var)
+head(time_dependent)
 ```
-The final dataset are the outcome data. Note that variables for event of interest,
-censoring and competing risk are coded with separate variables. For each outcome these three variables are mutually exclusive.  If there are multiple outcomes it can be recommended to handle 
+The final dataset are the outcome data.  This dataset can include any variables that changes a single time during follow up.  Thus comorbidities which in general are zero prior to comorbidity and "1" after start of comorbidity can also be inluded in this outcome dataset.
+
+Note that variables for event of interest, censoring and competing risk are coded with separate variables. For each outcome these three variables are mutually exclusive.  If there are multiple outcomes it can be recommended to handle 
 them in a single dataset for data management.
 ```{r, echo=FALSE}
 head(outcome)

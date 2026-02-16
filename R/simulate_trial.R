@@ -65,7 +65,6 @@ simulate_trial <- function(n,
   if (!is.null(seed)) set.seed(seed)
   stopifnot(abs(prop_Y + prop_censor + prop_compete - 1) < 1e-8)
   stopifnot(n >= 1)
-  
   # ---- Baseline ----
   baseline <- data.table(
     ID = 1:n,
@@ -113,7 +112,6 @@ simulate_trial <- function(n,
       }
     }
   }
-  
   treat_intervals <- rbindlist(treat_intervals)
   setorder(treat_intervals, ID, start)
   

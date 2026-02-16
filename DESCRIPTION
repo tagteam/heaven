@@ -74,7 +74,6 @@ Collate:
     'patientProfiles.R'
     'poissonRisk.R'
     'poissonregression.R'
-    'print.riskSetMatch.R'
     'sasWhereConstructors.R'
     'scanRawdata.R'
     'simAdmissionData.R'
