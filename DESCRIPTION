@@ -75,7 +75,6 @@ Collate:
     'poissonRisk.R'
     'poissonregression.R'
     'print.riskSetMatch.R'
-    'print.whattodo.R'
     'sasWhereConstructors.R'
     'scanRawdata.R'
     'simAdmissionData.R'
@@ -90,5 +89,4 @@ Collate:
     'standardize.proportion.R'
     'standardize.rate.R'
     'use_drake_project.R'
-    'whatToDo.R'
     'xrecepter.R'
