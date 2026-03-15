@@ -51,7 +51,7 @@ baseline <- setDT(sim$baseline)
 outcome <- setDT(sim$outcome)
 # Change time to days - note that the example expects time to behave as integers
 outcome[,':='(Y=floor(Y*365),Censor=floor(Censor*365),Compete=floor(Compete*365))]
-outcome[,comorbidity:=sample(c(0,1),n,replace=TRUE,prob=0.5)]
+outcome[,comorbidity:=sample(c(0,1),n,replace=TRUE,prob=c(0.5,0.5))]
 time_dependent <- setDT(sim$timedep)
 time_dependent[,':='(start=floor(start*365),end=floor(end*365))] # days
 head(baseline)
@@ -66,8 +66,7 @@ head(time_dependent)
 ```
 The final dataset are the outcome data.  This dataset can include any variables that changes a single time during follow up.  Thus comorbidities which in general are zero prior to comorbidity and "1" after start of comorbidity can also be inluded in this outcome dataset.
 
-Note that variables for event of interest, censoring and competing risk are coded with separate variables. For each outcome these three variables are mutually exclusive.  If there are multiple outcomes it can be recommended to handle 
-them in a single dataset for data management.
+Note that variables for event of interest, censoring and competing risk are coded with separate variables. For each outcome these three variables are mutually exclusive.  If there are multiple outcomes it can be recommended to handle them in a single dataset for data management.  In the example an additional "comorbidity" variable has been added.
 ```{r, echo=FALSE}
 head(outcome)
 ```
@@ -82,11 +81,11 @@ During the data preparation below, records are split into multiple records and
 to avoid confusion with the original entry into analysis, a new variables (inn/out)
 are defined and used in further data management.
 
-We start with "base" which holdes the ID, the start and the end. Because of the splitting we copy Start/End to inn/out for splitting purposes.  Note that all participants are required to have information for all periods even when they stop early in the study - information after stopping will not be used in calculations.
+We start with "ini_data" which holdes the ID, the start and the end. Because of the splitting we copy Start/End to inn/out for splitting purposes.  Note that all participants are required to have information for all periods even when they stop early in the study - information after stopping will not be used in calculations.
 ```{r, echo=TRUE}
-base <- baseline[,.(ID)]
-base[,inn:=0] # start time zero for all
-base[,out:=0+5*365] # five year study
+ini_data <- baseline[,.(ID)]
+ini_data[,inn:=0] # start time zero for all
+ini_data[,out:=0+5*365] # five year study
 ```
 ## Splitting
 The following steps have the purpose of defining levels of variables in each of 
@@ -102,7 +101,7 @@ Note: If there are multiple outcomes for study these can be be handled simultane
 
 ```{r echo=TRUE}
 
-longSplit <- splitTwo(indat=base,
+longSplit <- splitTwo(indat=ini_data,
                       splitdat=outcome,
                       invars=c('ID','inn','out'),
                       splitvars = c('ID','Censor','Y','Compete'))
@@ -112,9 +111,9 @@ Next the data is split by the time dependent variables with potentially multiple
 changes during the study. We use the function heaven::splitFromTo. A single call to the function can split on all time dependent variables representing intervals. Apart from variables indicating start and end of periods, two more variables are needed. One variable indicates a name for the condition (here "treatment") and the other a "value" for that treatment period. The function does not allow overlap whithin person/condition. This needs to be arranged prior to use of the function.
 
 ```{r echo=TRUE}
-dep_var[,value:=1] # In the example value is yes/no represented with 1/0
+# In the example value is yes/no represented with 1/0
 longSplit <- splitFromTo(indat=longSplit,
-                         splitdat=dep_var,
+                         splitdat=time_dependent,
                          invars=c('ID','inn','out'),
                          splitvars =
                            c('ID','start','end','value','variable'))
@@ -303,7 +302,7 @@ learner = list("learn_ranger_50" =
 
 x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='outcome',
                 name_competing='compete',name_censoring='censor',
-                censored_levels=c('1','0'),censored_label="1")
+                censored_levels=c('0','1'),censored_label="1")
 x <- add_baseline_data(x,data= baseline[,.(ID,age,sex)])
 x<- add_wide_data(x,
                outcome_data = outcome_dt,
