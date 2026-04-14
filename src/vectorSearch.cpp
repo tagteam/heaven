@@ -56,7 +56,7 @@ List vectorSearch(std::vector<int> pnrnum,             // Vector of row numbers 
           if (searchCols[i].size()==conditions[innum].size() && searchCols[i].find(conditions[innum])==0 && searchCols[i].size()==conditions[innum].size()) include=1;
           break;
         case (2):
-          if (searchCols[i].size()>=conditions[innum].size() && searchCols[i].rfind(conditions[innum])==conditions[i].size()-searchCols[i].size()) include=1;
+          if (searchCols[i].size()>=conditions[innum].size() && searchCols[i].rfind(conditions[innum])==conditions[innum].size()-searchCols[i].size()) include=1;
           break;
         case (3):
           if (searchCols[i].size()>=conditions[innum].size() && searchCols[i].rfind(conditions[innum])<=searchCols[i].size()) include=1;
@@ -84,7 +84,7 @@ List vectorSearch(std::vector<int> pnrnum,             // Vector of row numbers 
                 if (searchCols[i].size()==exclusions[exnum].size() && searchCols[i].find(exclusions[exnum])==0 && searchCols[i].size()==exclusions[exnum].size()) exclude=1;
                 break;
               case(2):  
-                if (searchCols[i].size()>=exclusions[exnum].size() && searchCols[i].rfind(exclusions[exnum])==exclusions[i].size()-searchCols[i].size()) exclude=1;
+                if (searchCols[i].size()>=exclusions[exnum].size() && searchCols[i].rfind(exclusions[exnum])==exclusions[exnum].size()-searchCols[i].size()) exclude=1;
                 break;
               case(3):  
                 if (searchCols[i].size()>=exclusions[exnum].size() && searchCols[i].rfind(exclusions[exnum])<=searchCols[i].size())exclude=1; 
