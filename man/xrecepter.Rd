@@ -70,8 +70,8 @@ Can also be numeric values: number of days since 1960-01-01.}
 
 \item{sas.program}{path to sas program}
 
-\item{sas.switches}{On linux this defaults to {""} on any other
-system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
+\item{sas.switches}{On Linux this defaults to \code{""}; on other
+systems to \code{"-batch -nosplash -noenhancededitor -sysin"}.}
 
 \item{sas.runner}{How sas is invoked. On linux this defaults to
 \code{"system"} on any other system to \code{"shell"}.}

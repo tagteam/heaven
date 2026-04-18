@@ -4,24 +4,25 @@
 \alias{kommuneRegion}
 \title{kommuneRegion - Converts kommune number to Region}
 \usage{
-kommuneRegion(x)
+kommuneRegion(kommune)
 }
 \arguments{
-\item{x}{3-digit kommune number}
+\item{kommune}{3-digit kommune number.}
 }
 \description{
-Converts 3-digit kommune number to text representing one of the five 
+Converts a 3-digit kommune number to text representing one of the five
 administrative regions.
 }
 \details{
-This function converts the 3-digit kommune number to a text corresponding to
-which of the five regions in Denmark a kommune belongs to. The function is
-adapted from a DST SAS-format and the conversions are valid from 2007. There 
-is no very easy way to convert older kommune-numbers to the current regions
-since some kommune were split in the processof developing the five regions
+This function converts a 3-digit kommune number to text corresponding to
+one of the five regions in Denmark. The conversion is adapted from a DST
+SAS format and is valid from 2007. There is no easy way to convert older
+kommune numbers to the current regions, since some municipalities were split
+in the process of creating the five regions.
 }
 \examples{
 kommuneRegion(410) # Sydjylland
+
 }
 \author{
 Christian Torp-Pedersen

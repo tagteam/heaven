@@ -114,9 +114,9 @@ splitSeq <- function(indat,
 {
   vent = out = inn = .SD = pnrnum = .N = isdate= NULL
   if (datacheck){
-    if (class(invars) != "character") 
+    if (!is.character(invars) ) 
       stop("Varnames in c(..) not character")
-    if (class(varname) != "character" & !is.null(varname)) 
+    if (!is.character(varname) & !is.null(varname)) 
       stop("varname not character or NULL")
   }
   datt <- data.table::copy(indat)
@@ -140,8 +140,11 @@ splitSeq <- function(indat,
   if (datacheck) {
     temp <- splitdat[,list(num=sum(out<inn))]
     if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
-    if (!class(splitdat[,inn]) %in% c("numeric","integer","Date") | !class(splitdat[,out]) %in% c("numeric","integer","Date")) 
-      stop("input date not Date or integer or numeric")
+    
+    if (!(is.numeric(splitdat[, inn]) || inherits(splitdat[, inn], "Date")) ||
+           !(is.numeric(splitdat[, out]) || inherits(splitdat[, out], "Date"))) {
+      stop("input date not Date or numeric/integer")
+    }
     setkeyv(splitdat,"inn")
     temp <- splitdat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnrnum"]
     temp <- temp[,list(num=sum(num))]

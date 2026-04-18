@@ -86,7 +86,7 @@ simpoisson <- function(N,            # sample size
             lava::distribution(m,~V) <- list(startdata$V)
         lava::distribution(m,"eventtime") <- lava::coxExponential.lvm(scale=baseline[t])
         ## cut time at interval border
-        lava::distribution(m,"censtime") <- lava::sequence.lvm(width[t],width[t])
+        lava::distribution(m,"censtime") <- lava:::sequence.lvm(width[t],width[t])
         lava::regression(m,eventtime~X) <- beta[t]
         lava::regression(m,eventtime~Z) <- gamma[t]
         if (!is.null(pv))

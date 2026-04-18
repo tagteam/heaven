@@ -106,9 +106,8 @@ lexisSeq <- function(indat,
 {
   vent = out = inn = .SD = pnrnum = .N = isdate= NULL
   if (datacheck){
-    if (class(invars) != "character") 
-      stop("Varnames in c(..) not character")
-    if (class(varname) != "character" & !is.null(varname)) 
+    if (!is.character(invars))
+    if (!is.character(varname) & !is.null(varname)) 
       stop("varname not character or NULL")
   }
   datt <- data.table::copy(indat)
@@ -132,9 +131,11 @@ lexisSeq <- function(indat,
   if (datacheck) {
     temp <- splitdat[,list(num=sum(out<inn))]
     if (temp[,num]>0) stop("Error - end of intervald cannot come before start of intervals")
-    if (!class(splitdat[,inn]) %in% c("numeric","integer","Date") | !class(splitdat[,out]) %in% c("numeric","integer","Date")) 
-      stop("input date not Date or integer or numeric")
-    if(class(!splitdat[,event]) %in% c("integer","numeric")) stop('Event must be integer - zero or one')
+    if (!(is.numeric(splitdat[, inn]) || inherits(splitdat[, inn], "Date")) ||
+        !(is.numeric(splitdat[, out]) || inherits(splitdat[, out], "Date"))) {
+      stop("input date not Date or numeric/integer")
+    }
+    if(!is.numeric(splitdat[,event]) ) stop('Event must be integer - zero or one')
     setkeyv(splitdat,"inn")
     temp <- splitdat[,list(num=sum(inn<shift(out,fill=inn[1]))),by="pnrnum"]
     temp <- temp[,list(num=sum(num))]
@@ -157,7 +158,7 @@ lexisSeq <- function(indat,
       splitguide <- splitvector     
     }
   }
-  out <- splitdat[, heaven::splitDate(inn, out, event, pnrnum, splitguide, varname)]  
+  out <- splitdat[, splitDate(inn, out, event, pnrnum, splitguide, varname)]  
   setDT(out)
   setkeyv(out, c("pnrnum", "inn"))
   if(isdate){

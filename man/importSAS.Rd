@@ -11,7 +11,7 @@ importSAS(filename,wd=NULL,keep=NULL,drop = NULL,
                  set.hook=NULL,step.hook=NULL,pre.hook=NULL,
                  post.hook=NULL,savefile = NULL,overwrite = TRUE,
                  show.sas.code=FALSE,save.tmp = FALSE,content=FALSE,
-                 na.strings="dot",date.vars=NULL,datetime.vars=NULL,
+                 na.strings=c("dot"),date.vars=NULL,datetime.vars=NULL,
                  character.vars="pnr", numeric.vars = NULL,sas.program,
                  sas.switches, sas.runner, use.colClasses=TRUE,
                  skip.date.conversion=FALSE, force.numeric=TRUE,
@@ -86,7 +86,7 @@ Conversions in both SAS and R programs can be skipped with argument \code{skip.d
 
 \item{sas.program}{sas program. On linux where \code{.Platform$OS.type=="unix"} this defaults to \code{"sas"} on any other system to "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe"}
 
-\item{sas.switches}{On linux this defaults to {""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
+\item{sas.switches}{On linux this defaults to \code{""} on any other system to \code{"-batch -nosplash -noenhancededitor -sysin"}}
 
 \item{sas.runner}{How sas is invoked. On linux this defaults to \code{"system"} on any other system to \code{"shell"}.}
 

@@ -1,6 +1,10 @@
 ---
 title: "R on DST"
 subtitle: Tips for efficient use of R on Statistics Denmark
+vignette: >
+  %\VignetteIndexEntry{R on DST}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 author:
 - Christian Torp-Pedersen
 - Kathrine Kold Sørensen

@@ -12,9 +12,6 @@ longToWideList(data,ID,variables)
 \item{ID}{is the variable defining the individual}
 
 \item{variables}{is a vector of variable names to be managed}
-
-\item{invars}{vector of column names for id/entry/exit - in that 
-order, example: c("id","start","end")}
 }
 \value{
 The function returns a named list of data.tables.  Each element corresponds

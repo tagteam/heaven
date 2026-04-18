@@ -1,9 +1,35 @@
 ---
 title: "RTMLE for dummies"
 author: "Christian Torp-Pedersen"
-date: "`r Sys.Date()`"
-output: pdf_document
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{RTMLE for dummies}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+---
+title: "RTMLE for dummies"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{RTMLE for dummies}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+has_rtmle <- requireNamespace("rtmle", quietly = TRUE)
+
+if (has_rtmle) {
+  library(rtmle)
+} else {
+  message("Package 'rtmle' not installed; RTMLE code will not be evaluated.")
+}
+```
 
 RTMLE is a package for conducting LTMLE analyses with a range of modifications targeted for register based data. Many features of the package are developed for ease of use in comparison with the LTMLE package and no claim of superiority is made. The scope is to enable trial emulations based on observational data. Target trial emulations with observational data are complicated by the fact that interventions in clincial practice differ from randomised trials. Often adherence to an intervention can vary substantially and therefore relying on "starting treatment" as a proxy for "intention to treat" can result in misleading results, in particular when adherence is very low.  
 
@@ -42,8 +68,9 @@ only one method possible. The method relies on keeping data in a long format as 
 
 ```{r, echo=FALSE}
 library(data.table)
-library(rtmle)
 library(heaven)
+if (has_rtmle) library(rtmle)
+# If the `rtmle` package is not installed, the code in this vignette is shown but not evaluated.
 n <- 1000
 # set working directory 
 sim <- simulate_trial(n, seed = 123)
@@ -298,7 +325,7 @@ learner = list("learn_ranger_50" =
 
 #Example - one variable for treatment, here "A". The comparison is for the target parameter "Always treat with A versus never treat with A".
 
-```{r echo=TRUE}
+```{r echo=TRUE, eval=FALSE}
 
 x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='outcome',
                 name_competing='compete',name_censoring='censor',
@@ -320,7 +347,7 @@ summary(x)
 ```
 ## LTMLE - Same analysis, but this time a complex superlearner with glmnet and to versions of random forest.
 Only necessary new objects are included. Note that all targets are recalculated when the learners change
-```{r echo=TRUE}
+```{r echo=TRUE, eval=FALSE}
 x <- run_rtmle(x,
   time_horizon = 4, # somehow 5 periods were too much for this example
   refit = TRUE,
@@ -332,7 +359,7 @@ summary(x)
 
 ## LTMLE - Two variable for treatment, A and B. The comparison is for the target parameter "Always treat with A and never B versus Always treat with B and never with A".
 
-```{r echo=TRUE}
+```{r echo=TRUE, eval=FALSE}
 x <- protocol(x,name = "Always_A_never_B",
                     intervention = data.frame("A" = factor("1",levels = c("0","1")),
                                               "B" = factor("0",levels = c("0","1"))))

@@ -24,11 +24,11 @@ The default version is shown in details.}
 }
 \value{
 A data.table with the following variables
-\itemize{
+\describe{
 \item{ptid: }{The variable from input defining the individual}
 \item{hypertension: }{if an index variable is presen then it is a 0/1 variable
 as to wheter hypertension is present. If there is no index.date it is the
-date of hypertension.}
+date of hypertension}
 \item{numDrugs: }{Number of drugs at time of hypertension or index.date}
 }
 }
@@ -48,7 +48,7 @@ presence of hypertension is evaluated for each date.
 \details{
 This function uses a list of named character vectors to define classes of 
 antihypertensive medication.  The default versionis
-\itemize{
+\describe{
 \item{AntiAdrenerg:  }{'C02A','C02B','C02C'}
 \item{Diuretic:  }{'C02DA','C03A','C03B','C03D','C03E','C03X','C02DA','C07B','C07C','C07D','C08G','C09BA','C09DA','C09XA52','C02L'}
 \item{Vasodilator:  }{'C02DB','C02DD','C02DG'}

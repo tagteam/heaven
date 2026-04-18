@@ -44,7 +44,7 @@ no event at the end of followup.}
 
 \item{end.followup}{Name of the variable which defines the date (as date or time)
 from which a control can no longer be selected as a control due in general to.
-\itemize{
+\describe{
 \item{death: }{Nothing happens thereafter}
 \item{exposure of interest: }{a control can be selected among those that later develop condition of interest, but not after the date of exposure}
 \item{other competing risks: }{Event after which we are not interested in the subject anymore. E.g., the date of an outcome event.}
@@ -66,7 +66,7 @@ similarly that the date has been reached when the case does have that co-morbidi
 
 \item{duration.terms}{A list where each element defines a time duration
 term with two elements:
-\itemize{
+\describe{
 \item{start}{Name of a variable which defines a date or time which 
 defines the duration as the difference between this variable and the \code{case.index}.
 }
@@ -104,7 +104,7 @@ measured at the index date of the case.
 
 
 Matching may be useful in non-randomized studies when the aim is to estimate a 
-\itemize{
+\describe{
 \item{causal parameter: }{The average effect of treatment in a hypothetical study which
 randomizes treatment allocation. E.g., the difference or ratio of the absolute risk of
 developing an outcome within the first 6 months after the index date.}

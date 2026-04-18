@@ -1,22 +1,22 @@
-##' Simulate admission data
-##' 
-##' Simulate admission data alike the Danish medical registry
-##' @title Admission data simulation function
-##' @param n Number of patients
-##' @param m Maximal number of admission dates per patient
-##' @param diagnoses List of diagnoses. Defaults to all possible ICD10 codes: http://www.icd10data.com/ICD10CM/Codes
-##' @param startDate starting date
-##' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas Alexander Gerds \email{tag@@biostat.ku.dk}
-##' 
-##' @examples
-##' ## a single subject
-##' set.seed(1)
-##' simAdmissionData(1)
-##' ## 7 subjects
-##' set.seed(28)
-##' simAdmissionData(7)
-##' 
-##' @export
+#' Simulate admission data
+#' 
+#' Simulate admission data alike the Danish medical registry
+#' @title Admission data simulation function
+#' @param n Number of patients
+#' @param m Maximal number of admission dates per patient
+#' @param diagnoses List of diagnoses. Defaults to all possible ICD10 codes: http://www.icd10data.com/ICD10CM/Codes
+#' @param startDate starting date
+#' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas Alexander Gerds \email{tag@@biostat.ku.dk}
+#' 
+#' @examples
+#' ## a single subject
+#' set.seed(1)
+#' simAdmissionData(1)
+#' ## 7 subjects
+#' set.seed(28)
+#' simAdmissionData(7)
+#' 
+#' @export
 simAdmissionData <- function(n,
                              m = 5,
                              diagnoses,

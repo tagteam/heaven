@@ -1,16 +1,16 @@
-## Part of the \code{medicinMacro}
-##
-## @title Calculates whether patients are exposed or not at a given time
-## @param drugs 
-## @param drugdb 
-## @param admdb 
-## @param time.points 
-## @param window 
-## @param method 
-## @param stash 
-## @param cap.values 
-## @return 
-## @author Anders Munch
+#' Part of the \code{medicinMacro}
+#'
+#' @title Calculates whether patients are exposed or not at a given time
+#' @param drugs 
+#' @param drugdb 
+#' @param admdb 
+#' @param time.points 
+#' @param window 
+#' @param method 
+#' @param stash 
+#' @param cap.values 
+#' @return Exposed or not at a given time
+#' @author Anders Munch
 mm1 <- function(drugs,
                 drugdb,
                 admdb,
@@ -25,8 +25,8 @@ mm1 <- function(drugs,
     ind.periods[,":="(start=time-window, end=time)][,time:=NULL]
     exp.calc <- mm2(drugdb=drugdb,drugs=drugs,periods=ind.periods,admdb=admdb,method=method,stash=stash,cap.values=TRUE,pre.window=0,verbose=verbose)
     if(method=="number.of.days" & stash > 0)
-        return(exp.calc) ## Should be NULL, warning given from mm2
-    ## NB: _potential_ purchases, becuase a ptt's might not purchase anything in the time frame -- this gives a total.drug and drug.supply.days of 0
+        return(exp.calc) #' Should be NULL, warning given from mm2
+    #' NB: _potential_ purchases, becuase a ptt's might not purchase anything in the time frame -- this gives a total.drug and drug.supply.days of 0
     last.dates <- exp.calc[,last.potential.purch:=max(eksd),by=pnr][last.potential.purch==eksd]
     cols.to.keep <- c("pnr","end","last.potential.purch",
                       "total.drug","average.drug","drug.strength.estimate",

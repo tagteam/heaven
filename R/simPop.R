@@ -1,21 +1,21 @@
-##' Simulate population with birthdate and gender
-##'
-##' Sample data for illustration, i.e., vignettes and example sections of the package.
-##' @title Population simulation
-##' @param n Number of subjects
-##' @param min.age minimal age 
-##' @param max.age maximal age
-##' @param sex gender distribution: value between 0 and 1
-##' @param mortality risk of death: value between 0 and 1 
-##' @return data.table with columns: pnr, sex, birthdate, status, doddate
-##' where doddate is the date of death for subjects with status = 1 and
-##' the current date for subjects with status = 0.
-##' @seealso simPrescriptionData, simAdmissionData
-##' @examples
-##' set.seed(7)
-##' simPop(7)
-##' @export 
-##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
+#' Simulate population with birthdate and gender
+#'
+#' Sample data for illustration, i.e., vignettes and example sections of the package.
+#' @title Population simulation
+#' @param n Number of subjects
+#' @param min.age minimal age 
+#' @param max.age maximal age
+#' @param sex gender distribution: value between 0 and 1
+#' @param mortality risk of death: value between 0 and 1 
+#' @return data.table with columns: pnr, sex, birthdate, status, doddate
+#' where doddate is the date of death for subjects with status = 1 and
+#' the current date for subjects with status = 0.
+#' @seealso simPrescriptionData, simAdmissionData
+#' @examples
+#' set.seed(7)
+#' simPop(7)
+#' @export 
+#' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 simPop <- function(n,min.age=20,max.age=90,sex=.5,mortality=.05){
     doddate=status=birthdate=NULL
     pop <- data.table::data.table(pnr=1:n,

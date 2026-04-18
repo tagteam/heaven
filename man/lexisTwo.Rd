@@ -9,7 +9,7 @@ lexisTwo(indat,splitdat,invars,splitvars,format="wide",datacheck=TRUE)
 \arguments{
 \item{indat}{A data.table or data.frame whose first 4 columns are in that 
 order:
-\itemize{
+\describe{
 \item{id}{ Person identification variable such as PNR. The data may contain 
 multiple lines per subject.}
 \item{start}{ Start of time interval. Either a date or an integer/numeric.}
@@ -22,21 +22,21 @@ interval}
 \item{splitdat}{The splitting guide. A data.table which contains person 
 specific information about the onset dates of comorbidities and other events.
 Wide format:
-\itemize{
+\describe{
 \item{id}{ Person identification variable such as PNR. The data may contain 
 multiple lines per subject.}
 \item{Date 1}{ Either a date or an integer/numeric. Format must match that of 
 the start and stop of arguments 
-\code{indat} The onset date of comorbidity 1 or other event. If 
+\code{indat}. The onset date of comorbidity 1 or other event. If 
 integer/numeric it can be time since a baseline date on project specific 
 scale (e.g., days or months).}
 \item{Date 2}{ Either a date or an integer/numeric. The onset date of 
 comorbidity 2 or other event. If integer/numeric it can be time since a 
 baseline date on project specific scale (e.g., days or months).}
-\item{Dat3 ....}
+\item{Dat3 ...}{Additional date variables to split on.}
 }
 Long format:
-#' \itemize{
+\describe{
 \item{id}{ Person identification variable such as PNR. The data may contain 
 multiple lines per subject.}
 \item{Condition name}{Character providing the variable name of condition} 

@@ -38,7 +38,7 @@
 #' no event at the end of followup.
 #' @param end.followup Name of the variable which defines the date (as date or time)
 #' from which a control can no longer be selected due to
-#'\itemize{
+#'\describe{
 #' \item{death: }{Nothing happens thereafter}
 #' \item{other competing risks: }{Event after which we are not interested in the subject anymore. E.g., the date of an outcome event.}
 #' \item{censoring: }{Event after which we do not observe anymore. E.g., emmigration, end of study period, end of registry, drop-out}
@@ -49,7 +49,7 @@
 #' for \code{exposureMatch}.
 #' @param duration.terms A list where each element defines a time duration
 #' term with two elements:
-#' \itemize{
+#' \describe{
 #' \item{start}{Name of a variable which defines a date or time which 
 #' defines the duration as the difference between this variable and the \code{case.index}.
 #' }

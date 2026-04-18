@@ -43,8 +43,8 @@ averageIncome <- function(data,income,datvars,incomevars,numyears=5){
   num = .N = variable = NULL
   if(!"data.frame" %in% class(data)) stop("First variable must be a data.frame or data.table")
   if(!"data.frame" %in% class(income)) stop("First variable must be a data.frame or data.table")
-  if(!class(datvars)=="character" | !length(datvars)==2) stop("datvars must be a character vector of two")
-  if(!class(incomevars)=="character" | !length(incomevars)==3) stop("incomevars must be a character vector of three")
+  if(!is.character(datvars) | !length(datvars)==2) stop("datvars must be a character vector of two")
+  if(!is.character(incomevars) | !length(incomevars)==3) stop("incomevars must be a character vector of three")
   year=yearinc=.SD= .=NULL 
   dat <- copy(data)[,.SD,.SDcols=datvars]
   data.table::setDT(dat)

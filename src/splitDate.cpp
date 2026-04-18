@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 using namespace Rcpp;
-//' @export
 // [[Rcpp::export]]
 List splitDate(NumericVector inn, // Starttimes - base data
                NumericVector out, // Endtimes - base data

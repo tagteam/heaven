@@ -1,69 +1,69 @@
-##' Standardize proportions and absolute risks to a given age distribution
-##'
-##' Standardize proportions and absolute risks to a given age
-##' distribution
-##' @title Standardize proportions and absolute risks to a given age
-##'     distribution
-##' @param x List of names of variable names used to calculate the rates.
-##'          Each element of the list contains the names of two variables in the
-##'          dataset: the first variable contains the number of events and the second
-##'          variable contains the number of subjects or person years.
-##' @param age Name of categorical age variable.
-##' @param exposure Name of the exposure variable for rate ratios.
-##' @param by Vector of names of further categorical strata variables
-##' @param standardize.to what population to use for standardization.
-##' @param data Data set which contains all the variables
-##' @param method Character. The method for calculating confidence intervals.
-##'        If "gamma" use gamma distribution (see Fay et al.). If "wald" or "wald-log" use
-##'        normal or log-normal approximation.
-##' @param level Confidence level
-##' @param crude Logical. If \code{TRUE} calculate crude rates too.
-##' @param ... Not (yet) used
-##' @references
-##' Michael P Fay. Approximate confidence intervals for rate ratios from
-##' directly standardized rates with sparse data. Communications in Statistics-
-##' Theory and Methods, 28(9):2141--2160, 1999.
-##'
-##' Niels Keiding, David Clayton, et al. Standardization and control for
-##' confounding in observational studies: a historical perspective. Statistical
-##' Science, 29(4):529--558, 2014.
-##' @return Data table with standardized rates (and crude rates if asked for)
-##' @seealso standardize.prodlim standardize.proportion epitools::ageadjust.direct
-##' @examples
-##' library(riskRegression)
-##' library(data.table)
-##' set.seed(84)
-##' n=160
-##' d <- data.table(e1=rpois(n,lambda=9),
-##'                 rt1=rpois(n,lambda=1880),
-##'                 e2=rpois(n,lambda=123),
-##'                 rt2=rpois(n,lambda=80000))
-##' d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
-##' d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
-##' d[,year:=rep(2001:2010,n/10)]
-##' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
-##' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
-##' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
-##' standardize.rate(x=list(c("e1","rt1")),
-##'                  age="agegroups",exposure="sex",data=D,standardize.to="f")
-##' standardize.rate(x=list(c("e1","rt1")),
-##'                  age="agegroups",exposure="sex",data=D,standardize.to="m")
-##' standardize.rate(x=list(c("e1","rt1")),
-##'                  age="agegroups",exposure="sex",data=D,standardize.to="mean")
-##' standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
-##'                  age="agegroups",exposure="sex",data=d,by="year")
-##'
-##' # more than 2 exposures does not yet work!! workaround is to subset ...
-##' \dontrun{
-##' d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
-##' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
-##' D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
-##' D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
-##' standardize.rate(x=list(c("e1","rt1")),
-##'                  age="agegroups",exposure="groups",data=D,standardize.to="mean")
-##' }
-##' @export
-##' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
+#' Standardize proportions and absolute risks to a given age distribution
+#'
+#' Standardize proportions and absolute risks to a given age
+#' distribution
+#' @title Standardize proportions and absolute risks to a given age
+#'     distribution
+#' @param x List of names of variable names used to calculate the rates.
+#'          Each element of the list contains the names of two variables in the
+#'          dataset: the first variable contains the number of events and the second
+#'          variable contains the number of subjects or person years.
+#' @param age Name of categorical age variable.
+#' @param exposure Name of the exposure variable for rate ratios.
+#' @param by Vector of names of further categorical strata variables
+#' @param standardize.to what population to use for standardization.
+#' @param data Data set which contains all the variables
+#' @param method Character. The method for calculating confidence intervals.
+#'        If "gamma" use gamma distribution (see Fay et al.). If "wald" or "wald-log" use
+#'        normal or log-normal approximation.
+#' @param level Confidence level
+#' @param crude Logical. If \code{TRUE} calculate crude rates too.
+#' @param ... Not (yet) used
+#' @references
+#' Michael P Fay. Approximate confidence intervals for rate ratios from
+#' directly standardized rates with sparse data. Communications in Statistics-
+#' Theory and Methods, 28(9):2141--2160, 1999.
+#'
+#' Niels Keiding, David Clayton, et al. Standardization and control for
+#' confounding in observational studies: a historical perspective. Statistical
+#' Science, 29(4):529--558, 2014.
+#' @return Data table with standardized rates (and crude rates if asked for)
+#' @seealso standardize.prodlim standardize.proportion epitools::ageadjust.direct
+#' @examples
+#' library(riskRegression)
+#' library(data.table)
+#' set.seed(84)
+#' n=160
+#' d <- data.table(e1=rpois(n,lambda=9),
+#'                 rt1=rpois(n,lambda=1880),
+#'                 e2=rpois(n,lambda=123),
+#'                 rt2=rpois(n,lambda=80000))
+#' d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
+#' d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
+#' d[,year:=rep(2001:2010,n/10)]
+#' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
+#' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
+#' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
+#' standardize.rate(x=list(c("e1","rt1")),
+#'                  age="agegroups",exposure="sex",data=D,standardize.to="f")
+#' standardize.rate(x=list(c("e1","rt1")),
+#'                  age="agegroups",exposure="sex",data=D,standardize.to="m")
+#' standardize.rate(x=list(c("e1","rt1")),
+#'                  age="agegroups",exposure="sex",data=D,standardize.to="mean")
+#' standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
+#'                  age="agegroups",exposure="sex",data=d,by="year")
+#'
+#' # more than 2 exposures does not yet work!! workaround is to subset ...
+#' \dontrun{
+#' d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
+#' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
+#' D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
+#' D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
+#' standardize.rate(x=list(c("e1","rt1")),
+#'                  age="agegroups",exposure="groups",data=D,standardize.to="mean")
+#' }
+#' @export
+#' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
 standardize.rate <- function(x,
                              age="agegroups",
                              exposure,
@@ -135,69 +135,69 @@ standardize.rate <- function(x,
     out[]
 }
 
-##' Function to Compute confidence interval for directly standardized rates and rate ratios
-##'
-##' Function to Compute confidence interval for directly standardized rates
-##' and rate ratios for sparse data. Method implemented include gamma confidence
-##' intervals (for DSR), exact confidence intervals (for crude rates),
-##' the inverse of the F distribution (for DSR ratio)
-##' and some Wald confidence interval (also on log-scale) for comparison purpose.
-##' @title Confidence intervals for age standardized rates and rate ratios
-##' @param count1 counts for group 1 (e.g. exposed)
-##' @param pop1 number of subjects of person-years in group 1
-##' @param count0 counts for group 1 (e.g. exposed)
-##' @param pop0 number of subjects of person-years in group 0
-##' @param stdpop number of subjects of person-years in stdpop population
-##' @param conf.level confidence level of confidence intervals
-##' @param method method for calculating confidence intervals
-##' @param crude logical. if \code{TRUE} also calculate crude rates
-##' @references
-##' Fay, Michael P., and Eric J. Feuer. "Confidence intervals for directly
-##' standardized rates: a method based on the gamma distribution." Statistics
-##' in Medicine 16.7 (1997): 791-801.
-##'
-##' Fay, Michael P. "Approximate confidence intervals for rate ratios from
-##' directly standardized rates with sparse data." Communications in
-##' Statistics-Theory and Methods 28.9 (1999): 2141-2160.
-##'
-##' Fay, Michael P., et al. "Estimating average annual percent change
-##' for disease rates without assuming constant change." Biometrics
-##' 62.3 (2006): 847-854.
-##'
-##' Fay, Michael P., Michael A. Proschan, and Erica Brittain. Combining
-##' one-sample confidence procedures for inference in the two-sample case.
-##' Biometrics 71.1 (2015): 146-156.
-##'
-##' Interesting other approaches that avaoid inconsistency between
-##' exact CI and p-values are implemented in exactci and exact2x2, see
-##'
-##' Fay, Michael P. "Two-sided exact tests and matching confidence intervals
-##' for discrete data." R journal 2.1 (2010): 53-58.
-##'
-##' @return
-##' List with crude and standardized rates and rate ratios.
-##'
-##' @seealso epitools::ageadjust.direct
-##' @examples
-##' library(riskRegression)
-##' library(data.table)
-##' set.seed(84)
-##'  n=160
-##' d <- data.table(e1=rpois(n,lambda=9),
-##'                 rt1=rpois(n,lambda=1880),
-##'                 e2=rpois(n,lambda=123),
-##'                 rt2=rpois(n,lambda=80000))
-##' d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
-##' d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
-##' d[,year:=rep(2001:2010,n/10)]
-##' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
-##' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
-##' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
-##' dsr(count1=D[sex=="m",e1], pop1=D[sex=="m",rt1],
-##' count0=D[sex=="f",e1], pop0=D[sex=="f",rt1],
-##' stdpop=D[sex=="f",rt1])
-##' @export
-##' @author Paul F Blanche  <pabl@@sund.ku.dk> and Thomas A. Gerds <tag@@biostat.ku.dk>
+#' Function to Compute confidence interval for directly standardized rates and rate ratios
+#'
+#' Function to Compute confidence interval for directly standardized rates
+#' and rate ratios for sparse data. Method implemented include gamma confidence
+#' intervals (for DSR), exact confidence intervals (for crude rates),
+#' the inverse of the F distribution (for DSR ratio)
+#' and some Wald confidence interval (also on log-scale) for comparison purpose.
+#' @title Confidence intervals for age standardized rates and rate ratios
+#' @param count1 counts for group 1 (e.g. exposed)
+#' @param pop1 number of subjects of person-years in group 1
+#' @param count0 counts for group 1 (e.g. exposed)
+#' @param pop0 number of subjects of person-years in group 0
+#' @param stdpop number of subjects of person-years in stdpop population
+#' @param conf.level confidence level of confidence intervals
+#' @param method method for calculating confidence intervals
+#' @param crude logical. if \code{TRUE} also calculate crude rates
+#' @references
+#' Fay, Michael P., and Eric J. Feuer. "Confidence intervals for directly
+#' standardized rates: a method based on the gamma distribution." Statistics
+#' in Medicine 16.7 (1997): 791-801.
+#'
+#' Fay, Michael P. "Approximate confidence intervals for rate ratios from
+#' directly standardized rates with sparse data." Communications in
+#' Statistics-Theory and Methods 28.9 (1999): 2141-2160.
+#'
+#' Fay, Michael P., et al. "Estimating average annual percent change
+#' for disease rates without assuming constant change." Biometrics
+#' 62.3 (2006): 847-854.
+#'
+#' Fay, Michael P., Michael A. Proschan, and Erica Brittain. Combining
+#' one-sample confidence procedures for inference in the two-sample case.
+#' Biometrics 71.1 (2015): 146-156.
+#'
+#' Interesting other approaches that avaoid inconsistency between
+#' exact CI and p-values are implemented in exactci and exact2x2, see
+#'
+#' Fay, Michael P. "Two-sided exact tests and matching confidence intervals
+#' for discrete data." R journal 2.1 (2010): 53-58.
+#'
+#' @return
+#' List with crude and standardized rates and rate ratios.
+#'
+#' @seealso epitools::ageadjust.direct
+#' @examples
+#' library(riskRegression)
+#' library(data.table)
+#' set.seed(84)
+#'  n=160
+#' d <- data.table(e1=rpois(n,lambda=9),
+#'                 rt1=rpois(n,lambda=1880),
+#'                 e2=rpois(n,lambda=123),
+#'                 rt2=rpois(n,lambda=80000))
+#' d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
+#' d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
+#' d[,year:=rep(2001:2010,n/10)]
+#' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
+#' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
+#' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
+#' dsr(count1=D[sex=="m",e1], pop1=D[sex=="m",rt1],
+#' count0=D[sex=="f",e1], pop0=D[sex=="f",rt1],
+#' stdpop=D[sex=="f",rt1])
+#' @export
+#' @author Paul F Blanche  <pabl@@sund.ku.dk> and Thomas A. Gerds <tag@@biostat.ku.dk>
 ### Code:
 dsr <- function(count1,
                 pop1,

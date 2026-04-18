@@ -2,19 +2,15 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 Matcher <- function(Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin) {
-    .Call('_heaven_Matcher', PACKAGE = 'heaven', Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin)
+    .Call(`_heaven_Matcher`, Ncontrols, Tcontrols, Ncases, endFollowUp, caseIndex, controls, cases, Ndateterms, datescases, datescontrols, Ndurationterms, durationcases, durationcontrols, durationMin)
 }
 
 countDrugs <- function(mix, db) {
-    .Call('_heaven_countDrugs', PACKAGE = 'heaven', mix, db)
+    .Call(`_heaven_countDrugs`, mix, db)
 }
 
 daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
-    .Call('_heaven_daysnonhosp', PACKAGE = 'heaven', id, pdate, iddates, inddto, uddto)
-}
-
-identifyOverlapping <- function(data) {
-    .Call('_heaven_identifyOverlapping', PACKAGE = 'heaven', data)
+    .Call(`_heaven_daysnonhosp`, id, pdate, iddates, inddto, uddto)
 }
 
 #' @description Inner process of medicin macro
@@ -30,27 +26,26 @@ identifyOverlapping <- function(data) {
 #' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 #' @export
 innerMedicinMacro <- function(dat, admdat, doses, idunique, index, prescriptionwindow, maxdepot, verbose) {
-    .Call('_heaven_innerMedicinMacro', PACKAGE = 'heaven', dat, admdat, doses, idunique, index, prescriptionwindow, maxdepot, verbose)
+    .Call(`_heaven_innerMedicinMacro`, dat, admdat, doses, idunique, index, prescriptionwindow, maxdepot, verbose)
 }
 
 na_locf <- function(x) {
-    .Call('_heaven_na_locf', PACKAGE = 'heaven', x)
+    .Call(`_heaven_na_locf`, x)
 }
 
 split2 <- function(pnrnum, inn, out, event, mergevar, split, numcov) {
-    .Call('_heaven_split2', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, split, numcov)
+    .Call(`_heaven_split2`, pnrnum, inn, out, event, mergevar, split, numcov)
 }
 
-#' @export
 splitDate <- function(inn, out, event, mergevar, seq, varname) {
-    .Call('_heaven_splitDate', PACKAGE = 'heaven', inn, out, event, mergevar, seq, varname)
+    .Call(`_heaven_splitDate`, inn, out, event, mergevar, seq, varname)
 }
 
 splitFT <- function(pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov, default_) {
-    .Call('_heaven_splitFT', PACKAGE = 'heaven', pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov, default_)
+    .Call(`_heaven_splitFT`, pnrnum, inn, out, event, mergevar, Spnrnum, val, start, end, num, numcov, default_)
 }
 
 vectorSearch <- function(pnrnum, searchCols, conditions, exclusions, condnames, exclnames, ni, ilength, ne, elength, datarows, match) {
-    .Call('_heaven_vectorSearch', PACKAGE = 'heaven', pnrnum, searchCols, conditions, exclusions, condnames, exclnames, ni, ilength, ne, elength, datarows, match)
+    .Call(`_heaven_vectorSearch`, pnrnum, searchCols, conditions, exclusions, condnames, exclnames, ni, ilength, ne, elength, datarows, match)
 }
 

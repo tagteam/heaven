@@ -70,13 +70,13 @@ getAdmLimits <- function(dt,
     orig.names <- copy(names(wdt))
     ## Check variable types
     datecheckerInd=FALSE
-    if (class(wdt[[inddto]])=="Date"){
+    if (inherits(wdt[[inddto]], "Date")){
         datecheckerInd=TRUE
     } else if (!is.numeric(wdt[[inddto]])){
         stop("Error: inddto must be numeric or Date")
     }  
     datecheckerUd=FALSE
-    if (class(wdt[[uddto]])=="Date"){
+    if (inherits(wdt[[uddto]], "Date")){
         datecheckerUd=TRUE
     } else if (!is.numeric(wdt[[uddto]])){
         stop("Error: uddto must be numeric or Date")

@@ -1,48 +1,48 @@
-##' Simulate prescription data
-##' 
-##' Simulate prescription data alike the Danish medical registry
-##' @title Prescription data simulation function
-##' @param n Number of patients
-##' @param max.prescriptions Maximal number of prescription dates per patient
-##' @param packages Named list of association lists. The names of the
-##'     list are ATC codes, the value associates strengths of one unit and package sizes.
-##' @param max.packages Integer. Upper bound for number of packages purchased on a single date
-##' @param startDate start date
-##' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas
-##'     Alexander Gerds \email{tag@@biostat.ku.dk}
-##' @details
-##'
-##' http://medinfo.dk/sks/brows.php
-##' http://www.medicinpriser.dk/
-##' http://pro.medicin.dk/
-##' https://www.whocc.no/atc_ddd_index/
-##'
-##' A07: strength 200, number of pills 30
-##'      strength 400, number of pills 100
-##'      etc
-##'
-##' A12: strength 750, number of pills 100
-##'      strength 750, number of pills 250
-##'      etc
-##' 
-##' # The association list which is used as the default value
-##' # for the \code{package} argument:
-##'
-##' \code{list("A07"=list(c(200,30),c(400,100),c(400,300),c(500,60)),
-##'       "A12B"=list(c(750,100),c(750,250),c(75,500)))}
-##' 
-##' @examples
-##' ## see https://www.dst.dk/da/TilSalg/Forskningsservice/Data/Andre_Styrelser
-##' ## for details of the contents of lmdb
-##' 
-##' ## a single subject
-##' set.seed(1)
-##' simPrescriptionData(1)
-##' ## 7 subjects
-##' set.seed(29)
-##' simPrescriptionData(7)
-##' 
-##' @export
+#' Simulate prescription data
+#' 
+#' Simulate prescription data alike the Danish medical registry
+#' @title Prescription data simulation function
+#' @param n Number of patients
+#' @param max.prescriptions Maximal number of prescription dates per patient
+#' @param packages Named list of association lists. The names of the
+#'     list are ATC codes, the value associates strengths of one unit and package sizes.
+#' @param max.packages Integer. Upper bound for number of packages purchased on a single date
+#' @param startDate start date
+#' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas
+#'     Alexander Gerds \email{tag@@biostat.ku.dk}
+#' @details
+#'
+#' http://medinfo.dk/sks/brows.php
+#' http://www.medicinpriser.dk/
+#' http://pro.medicin.dk/
+#' https://www.whocc.no/atc_ddd_index/
+#'
+#' A07: strength 200, number of pills 30
+#'      strength 400, number of pills 100
+#'      etc
+#'
+#' A12: strength 750, number of pills 100
+#'      strength 750, number of pills 250
+#'      etc
+#' 
+#' # The association list which is used as the default value
+#' # for the \code{package} argument:
+#'
+#' \code{list("A07"=list(c(200,30),c(400,100),c(400,300),c(500,60)),
+#'       "A12B"=list(c(750,100),c(750,250),c(75,500)))}
+#' 
+#' @examples
+#' ## see https://www.dst.dk/da/TilSalg/Forskningsservice/Data/Andre_Styrelser
+#' ## for details of the contents of lmdb
+#' 
+#' ## a single subject
+#' set.seed(1)
+#' simPrescriptionData(1)
+#' ## 7 subjects
+#' set.seed(29)
+#' simPrescriptionData(7)
+#' 
+#' @export
 simPrescriptionData <- function(n,
                                 max.prescriptions=37,
                                 packages=list(list(c(200,30),c(400,100),c(400,300),c(500,60)),

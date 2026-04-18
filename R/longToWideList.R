@@ -10,7 +10,7 @@
 #' @author Christian Torp-Pedersen
 #' @param data is a dataframe or data.table with the input
 #' @param ID is the variable defining the individual
-#' @param invars vector of column names for id/entry/exit - in that 
+#' @param variables vector of column names for id/entry/exit - in that 
 #' order, example: c("id","start","end")
 #' @param variables is a vector of variable names to be managed
 #' @return
