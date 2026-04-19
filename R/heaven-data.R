@@ -85,5 +85,4 @@
 #' @docType data
 #' @keywords datasets
 #' @name kommune_codes
-
-"kommune_codes"
+NULL

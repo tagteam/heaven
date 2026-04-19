@@ -7,9 +7,6 @@
 \format{
 A data.table
 }
-\usage{
-kommune_codes
-}
 \description{
 data.table with the names and codes of every kommune, and the region they belong to
 }
