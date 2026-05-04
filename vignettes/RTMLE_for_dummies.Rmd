@@ -24,40 +24,138 @@ knitr::opts_chunk$set(
 
 has_rtmle <- requireNamespace("rtmle", quietly = TRUE)
 
-if (has_rtmle) {
-  library(rtmle)
-} else {
-  message("Package 'rtmle' not installed; RTMLE code will not be evaluated.")
-}
+if (has_rtmle) { library(rtmle) } else { message("Package 'rtmle' not
+  installed; RTMLE code will not be evaluated.")  }
 ```
 
-RTMLE is a package for conducting LTMLE analyses with a range of modifications targeted for register based data. Many features of the package are developed for ease of use in comparison with the LTMLE package and no claim of superiority is made. The scope is to enable trial emulations based on observational data. Target trial emulations with observational data are complicated by the fact that interventions in clincial practice differ from randomised trials. Often adherence to an intervention can vary substantially and therefore relying on "starting treatment" as a proxy for "intention to treat" can result in misleading results, in particular when adherence is very low.  
+The R-package 'rtmle' is designed for conducting longitudinal targeted
+minimum loss based (LTMLE) analyses of emulated target trials in
+register data. Many features of the package are developed for ease of
+use in comparison with the R-package 'ltmle' which is not actively
+developed only maintained. The scope of 'rtmle' is to enable target
+trial emulations based on observational data. Target trial emulations
+are complicated by the fact that interventions in clincial practice,
+i.e., what we see in the register data, differ from those of
+randomised trials. Adherence to an intervention can vary substantially
+over time and it is important to highlight that when a person is
+observed to initiate a treatment information about how for how long
+the treatment should be taken it is typically not directly
+observed. Hence, an analysis of "treatment start" in register data is
+not necessarily a proxy for "intention to treat" in a randomized
+trial. 
 
-Learning and understanding basics of LTMLE analyses is best obtained from "Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies", Springer Series in Statistics), van der Laan & Rose, 1st ed. 2018 Edition.  There are numerous papers discussing selected strategies related to the technique.
+Learning and understanding basics of LTMLE analyses is best obtained
+from "Targeted Learning in Data Science: Causal Inference for Complex
+Longitudinal Studies", Springer Series in Statistics), van der Laan &
+Rose, 1st ed. 2018 Edition.  There are numerous papers discussing
+selected strategies related to the technique.
 
-The following is a simplistic presentation of LTMLE/RTMLE for non statistician users that intend to emulate a trial.
+The following is a simplistic presentation of rtmle for non
+statistician users that intend to emulate a target trial.
 
-A longitudinal study is considered where participants at time zero receive one of two treatments (A=0/1 and B). Subject selection may rely on starting a treatment of interest versus a selected control treatment or it may rely on comparing subjects starting a selected treatment with controls selected by a variety of mechanisms which could be matching.  Note that if matching users to non-users what is calculated is average treatment effect of the treated rather than average treatment effect.
+A longitudinal study is considered where participants at time zero
+receive one of two treatments (A=0/1 and B). Subject selection may
+rely on starting a treatment of interest versus a selected control
+treatment or it may rely on comparing subjects starting a selected
+treatment with controls selected by a variety of mechanisms which
+could be matching.  Note that if matching users to non-users what is
+calculated is average treatment effect of the treated rather than
+average treatment effect.
 
-The follow-up time of interest is divided in a series of time slices of equal length. The length of these time slices need to be short enough to ensure biological meaning and long enough to ensure that all combinations of variables in each time slice can be found with a probability above zero and below one (positivity assumption). If the exposure of interest relies on prescribed drugs, then the time slices should reflect meaningful periods seen in clinical practice such as a single month up to a year or more. 
+The follow-up time of interest is divided in a series of time slices
+of equal length. The length of these time slices need to be short
+enough to ensure biological meaning and long enough to ensure that all
+combinations of variables in each time slice can be found with a
+probability above zero and below one (positivity assumption). If the
+exposure of interest relies on prescribed drugs, then the time slices
+should reflect meaningful periods seen in clinical practice such as a
+single month up to a year or more.
 
-During each time slice a subject may be censored (outcome=Censor) (observation time ends, subject disappears), have an outcome of interest (Y=1) or be subject to a competing risk (outcome=Compete, typically death unrelated to outcome).
+During each time slice a subject may be censored (outcome=Censor)
+(observation time ends, subject disappears), have an outcome of
+interest (Y=1) or be subject to a competing risk (outcome=Compete,
+typically death unrelated to outcome).
 
-For each time slice all variables of interest needs to be summarized to a category or value. Intermittent treatment during these time slices needs to be summarized to a yes/no category or numerical value as relevant for the study
+For each time slice all variables of interest needs to be summarized
+to a category or value. Intermittent treatment during these time
+slices needs to be summarized to a yes/no category or numerical value
+as relevant for the study
 
-In addition to specifying variables during periods the user needs to specify which estimand to calculate.  With a single treatment of interest a typical estimand could be "Always treat with A" versus "never treat with A". If there is a control treatment the estimand can be more complex such as: "Always treat with A and never with B" versus "Always treat with B and never with A".  During follow-up it may be of interest to specify only treatment during the first few periods or treatment consistently during follow-up.  Such possibilities have been implemented.  This can be important if outcomes later than the treatment period are of interest.  The LTMLE method also allows continued treatment to rely on probabilities which could be used to approximate real user discontinuation, but such features have not yet been practically implemented.
+In addition to specifying variables during periods the user needs to
+specify which estimand to calculate.  With a single treatment of
+interest a typical estimand could be "Always treat with A" versus
+"never treat with A". If there is a control treatment the estimand can
+be more complex such as: "Always treat with A and never with B" versus
+"Always treat with B and never with A".  During follow-up it may be of
+interest to specify only treatment during the first few periods or
+treatment consistently during follow-up.  Such possibilities have been
+implemented.  This can be important if outcomes later than the
+treatment period are of interest.  The LTMLE method also allows
+continued treatment to rely on probabilities which could be used to
+approximate real user discontinuation, but such features have not yet
+been practically implemented.
 
-The package does regression which takes into account both the exposure/covariate relation and the exposure outcome relation, an ability named "double robust". Thus, for each time slice the probability of exposure during the next time slice is calculated and outcome during the next period can be determined from exposure variables from all preceding periods. In reality the regression starts from the last periods and moves backward using a regression technique developed by Robins (ref).
+The package does regression which takes into account both the
+exposure/covariate relation and the exposure outcome relation, an
+ability named "double robust". Thus, for each time slice the
+probability of exposure during the next time slice is calculated and
+outcome during the next period can be determined from exposure
+variables from all preceding periods. In reality the regression starts
+from the last periods and moves backward using a regression technique
+developed by Robins (ref).
 
-A strength of the method is that the regressions to obtain propensity of treatment as well as outcome can be very flexible and include a library of regression methods.  For each project a "superlearner" can be specified to include parametric as well as non-parametric methods.  Choice of regression methods can be complex, but it is wise to include penalized regression parametric methods in order to downplay non-essential variables and also wise to include a tree based methods such as random forest in order to capture critical interactions with treatments.  The final comparison is from G-estimation, simulating a situation where all individuals first gets the first treatment choice and thereafter the other treatment. In this process all other variables than treatment are inherited and therefore interaction with treatment cannot be realized with specifying interaction variables in models.
+A strength of the method is that the regressions to obtain propensity
+of treatment as well as outcome can be very flexible and include a
+library of regression methods.  For each project a "superlearner" can
+be specified to include parametric as well as non-parametric methods.
+Choice of regression methods can be complex, but it is wise to include
+penalized regression parametric methods in order to downplay
+non-essential variables and also wise to include a tree based methods
+such as random forest in order to capture critical interactions with
+treatments.  The final comparison is from G-estimation, simulating a
+situation where all individuals first gets the first treatment choice
+and thereafter the other treatment. In this process all other
+variables than treatment are inherited and therefore interaction with
+treatment cannot be realized with specifying interaction variables in
+models.
 
-What the method provides eventually is a hypothetical randomized study where the whole population (both treatment groups) first go through follow-up on one intervention and afterwards start over with the alternative.  This is termed G-estimation.
+What the method provides eventually is a hypothetical randomized study
+where the whole population (both treatment groups) first go through
+follow-up on one intervention and afterwards start over with the
+alternative. This falls under the term G-estimation (generalized
+estimation Robins, 1986).
 
-LTMLE is a method in the domain of "causal inference" and needs to rely on the basic assumptions of such methods: Exchangeability, consistency and positivity.  The exchangeability assumption specifies that switching treatment should provide a mirror result and is also phrased as an assumption of having all relevant confounders properly specified. The consistency assumption specifies that the effect of intervention is independent on how is was provided. This may be obvious for a medical therapy with tablets but can be complex in other situations. The final assumption is positivity which has already been mentioned and which specifies that all variable combinations in each time slice should have probabilities greater than zero and less than one.  
+LTMLE is a method in the domain of "causal inference" and needs to
+rely on the basic assumptions of such methods: Exchangeability,
+consistency and positivity. The exchangeability assumption specifies
+that switching, stopping and initiating a treatment regimen should be
+available to all subjects during the study period and can also be
+formulated as an assumption ofhaving all relevant confounders properly
+specified. The consistency assumption specifies that the effect of
+intervention is independent on how is was provided. This may be
+obvious for a medical therapy with tablets but can be complex in other
+situations. The final assumption is positivity which has already been
+mentioned and which specifies that all variable combinations at each
+time should have probabilities greater than zero and less than one.
 
-If there are many variables and many time slices it is easy to end with a situation where positivity violation results in extreme confidence limits or crashing models.  Two remedies needs consideration.  First, variable selection should be careful.  If a condition is associated with for example multiple varying treatments specified as independent variables, then it is almost inevitable that positivity violations will occur during some time slices.  The second option and the one recommended by those developing LTMLE is simulations.  A range of simulation studies not using the actual outcome are conducted and only when models run smoothly with simulated outcomes is the final model examined.
+If there are many variables and many time slices it is easy to end
+with a situation where positivity violation results in extreme
+confidence limits or crashing models.  Two remedies needs
+consideration.  First, variable selection should be careful.  If a
+condition is associated with for example multiple varying treatments
+specified as independent variables, then it is almost inevitable that
+positivity violations will occur during some time slices.  The second
+option and the one recommended by those developing LTMLE is
+simulations.  A range of simulation studies not using the actual
+outcome are conducted and only when models run smoothly with simulated
+outcomes is the final model examined.
 
-If the variables considerations are not followed it is easy to end in an unacceptable situation where variables are added and removed until a sensible model is found.  Such an approach is highly biased and should be avoided.  The proper approach is to specify the path in an analysis plan and then also specify eventually those steps where the analysis plan needed to be modified during calculations.
+If the variables considerations are not followed it is easy to end in
+an unacceptable situation where variables are added and removed until
+a sensible model is found.  Such an approach is highly biased and
+should be avoided.  The proper approach is to specify the path in an
+analysis plan and then also specify eventually those steps where the
+analysis plan needed to be modified during calculations.
 
 # Data preparation
 The final input to the rtmle function is quite complex and provides time varying data
@@ -217,52 +315,41 @@ By use of the suggested functions above or by any other data management, the fin
 * Outcome data, a dataset with an ID variable and the variables for outcome, censoring and competing risk for each time interval of the study. An example is: ID compete_1 compete_2 ... censor_1 censor_2 .... outcome_1 outcome_2 ...
 * Treatment data, a list with one member for each time varying variable. Each member of the list have variables for each time period. An str() for the current example is: 
 
-```ruby
-
- $ A:Classes ‘data.table’ and 'data.frame':	1000 obs. of  6 variables:
-  ..$ ID : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...
-  ..$ A_0: num [1:1000] 1 1 1 1 1 1 1 1 1 1 ...
-  ..$ A_1: num [1:1000] 0 0 0 0 0 0 1 1 1 0 ...
-  ....
- $ B:Classes ‘data.table’ and 'data.frame':	1000 obs. of  6 variables:
-  ..$ ID : int [1:1000] 1 2 3 4 5 6 7 8 9 10 ...
-  ..$ B_0: num [1:1000] 0 0 0 0 0 0 0 0 0 0 ...
-  ..$ B_1: num [1:1000] 0 0 0 0 0 0 0 0 0 0 ...
- ....
-
+```{r}
+str(treatment_dt)
 ```
 
 # LTMLE with RTMLE
 The basis of the RTMLE package is an RTMLE object, a list of relevant parameters. This list is built with a sequence of steps:
 
 **rtmle_init** - This function initializes the rtmle object, in this case "x". Thes function needes as shown to be provided with number of intervals, the individual identification varaible and names of variables for outcome, censoring and competing risk. Finally the censoring labels needs to be provided as well as the variable defining censoring.
-```ruby
+```{r}
 
     
-    x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='Y',
-                    name_competing='Compete',name_censoring='Censor',
-                    censored_levels=c('1','0'),censored_label='1')
+    x <- rtmle_init(time_grid=0:5,name_id='ID',name_time='period',name_outcome='outcome',
+                    name_competing='compete',name_censoring='censor',
+                    censored_levels=c('0','1'),censored_label='1')
 
 ```
 Next, the **add_wide_data** function is used to provide the baseline data, outcome and time varying data. The rtmle object can also receive data in long form via the **add_long_data**, which is not further explained in this guide.
-```ruby
+```{r}
 
     x <- add_wide_data(x,
-                   baseline_data = baseline[,.(ID,age,sex)],
+                   baseline_data = baseline[,.(ID,age,sex = factor(sex))],
                    outcome_data = outcome_dt,
                    timevar_data=treatment_dt
     )
 
 ```
-The following step with **prepare_data** prepares the data for analysis. This will introduce NA variables and removed som values from the final time period.
-```ruby
+The following step with **prepare_rtmle_data** prepares the data for analysis. This will introduce NA variables and removed som values from the final time period.
+```{r}
 
-    x <- prepare_data(x)
+    x <- prepare_rtmle_data(x)
    
 ```
 The actual analysis are comparisons of two protocols using **protocol** and **target**. The first example is
 a very simple comparison of continuous treatment with "A" versus never treating with "A":
-```ruby
+```{r}
 
     x <- protocol(x,name = "A",treatment_variables = "A",intervention = 1)
     x <- protocol(x,name = "not A",treatment_variables = "A",intervention = 0)
@@ -271,27 +358,28 @@ a very simple comparison of continuous treatment with "A" versus never treating 
 
 ```
 Once a target is defined it can be used repeatedly to define new comparions. The following example compares treatment A with no treatment as above, but this time the intervention with A is only defined for two time periods. The comparitor is still "not A" and is therefore unchanged.    
-```ruby
+```{r}
 
     x <- protocol(x,name="A1",intervention = 
-         data.frame("A" = factor(c("1","1","0","0"),levels = c("0","1"))))
+         data.frame(time=0:3,"A" = factor(c("1","1","0","0"),levels = c("0","1"))))
     x <- target(x,name="A1", strategy="additive",estimator="tmle",
          protocols = c("A1","not A"))
 
 ```
 The protocols can be complex and involve several time dependent treatment variables.  The following example defined protocols for a typical emulated trial with an active comparitor, where you either want to emulate continuous A and never B or amulate continuous B and never A.
-```ruby
+```{r}
 
-   protocol(x) <- list(name = "Always_A_never_B",
-      intervention = data.frame("A" = factor(c("1","0"),levels = c("0","1")),
-                                "B" = factor(c("0","0"),levels = c("0","1"))))
-   protocol(x) <- list(name = "Always_B_never_A",
-          intervention = data.frame("A" = factor(c("0","0"),levels = c("0","1")),
-                                    "B" = factor(c("1","0"),levels = c("0","1"))))
+x <- protocol(x,name = "Always_A_never_B",
+              intervention = data.frame(time = x$intervention_nodes,"A" = factor(1,levels = c("0","1")),
+                                        "B" = factor(0,levels = c("0","1"))))
+x <- protocol(x,name = "Always_B_never_A",
+              intervention = data.frame(time = x$intervention_nodes,
+                                        "A" = factor(0,levels = c("0","1")),
+                                        "B" = factor(1,levels = c("0","1"))))
 
 ```
 The next step is **model_formula**. This creates the formulas used in regression. The command needs to be rerun each time new protocols are defined. 
-```ruby
+```{r}
 
 x <- model_formula(x)
 
@@ -301,24 +389,27 @@ The actual models derived can be visualised by printing the formulas with **x$fo
 Access to the formulas also allow for modifications. By routine the formulas are purely additive.
 If outcome during period 2 is "Y_2" then this formula can be modified to include interactions with:
 
-```ruby
+```{r}
 
 x$models$Y_2$formula = gsub("\\+","*",x$models$Y_2$formula)
 
 ```
 
 The calculations are inititated with **run_rtmle**. A very simplistic version is here. Note that time_horizon can be a number defining a specific time interval, or it can be a vector where estimates are made for every member of the vector.
-```ruby
+```{r}
 
 x <- run_rtmle(x,learner = "learn_glm",time_horizon = 1:3)
 
 ```
-There are a number of further possible paramters. it may be relevant only to examine selected **targets** defined above. It may also be relevant to define a more complex superlearner such as the following which combines penalized regression with a random forest:
-```ruby
 
-learner = list("learn_ranger_50" = 
-   list(num.trees = 20,learner_fun = "learn_ranger"),  
-                                     "learn_glmnet"),folds = 10)
+There are a number of further parameters. it may be relevant only
+to examine selected **targets** defined above. It may also be relevant
+to define a more complex superlearner such as the following which
+combines penalized regression with a random forest: 
+
+```{r}
+learner = list(fun = "superlearn",learners = list("learn_ranger_50" = list(num.trees = 20,fun = "learn_ranger"),  
+               "learn_glmnet"),folds = 10)
 
 ```
 
@@ -327,15 +418,15 @@ learner = list("learn_ranger_50" =
 
 ```{r echo=TRUE, eval=FALSE}
 
-x <- rtmle_init(intervals=5,name_id='ID',name_time='period',name_outcome='outcome',
+x <- rtmle_init(time_grid=0:5,name_id='ID',name_time='period',name_outcome='outcome',
                 name_competing='compete',name_censoring='censor',
                 censored_levels=c('0','1'),censored_label="1")
-x <- add_baseline_data(x,data= baseline[,.(ID,age,sex)])
+x <- add_baseline_data(x,data= baseline[,.(ID,age,sex = factor(sex))])
 x<- add_wide_data(x,
                outcome_data = outcome_dt,
                timevar_data=treatment_dt
                )
-x <- prepare_data(x)
+x <- prepare_rtmle_data(x)
 x <- protocol(x,name = "A",treatment_variables = "A",intervention = 1)
 x <- protocol(x,name = "not A",treatment_variables = "A",intervention = 0)
 x <- target(x,name = "Risk",strategy = "additive",estimator = "tmle",
@@ -351,8 +442,9 @@ Only necessary new objects are included. Note that all targets are recalculated 
 x <- run_rtmle(x,
   time_horizon = 4, # somehow 5 periods were too much for this example
   refit = TRUE,
-  learner = list("learn_ranger_1000" = list(num.trees = 1000,learner_fun = "learn_ranger"),
-                              "learn_glm"),folds = 10)
+  learner = list(fun = "superlearn",learners = list(
+                                         "learn_ranger_1000" = list(num.trees = 1000,fun = "learn_ranger"),
+                              "learn_glm"),folds = 10))
 summary(x)
 ```
 
@@ -361,11 +453,12 @@ summary(x)
 
 ```{r echo=TRUE, eval=FALSE}
 x <- protocol(x,name = "Always_A_never_B",
-                    intervention = data.frame("A" = factor("1",levels = c("0","1")),
-                                              "B" = factor("0",levels = c("0","1"))))
+              intervention = data.frame(time = x$intervention_nodes,"A" = factor(1,levels = c("0","1")),
+                                        "B" = factor(0,levels = c("0","1"))))
 x <- protocol(x,name = "Always_B_never_A",
-                    intervention = data.frame("A" = factor("0",levels = c("0","1")),
-                                              "B" = factor("1",levels = c("0","1"))))
+              intervention = data.frame(time = x$intervention_nodes,
+                                        "A" = factor(0,levels = c("0","1")),
+                                        "B" = factor(1,levels = c("0","1"))))
 x <- target(x,name = "Active comparitor",strategy = "additive",estimator = "tmle",
             protocols = c("Always_A_never_B","Always_B_never_A"))
 x <- model_formula(x)
