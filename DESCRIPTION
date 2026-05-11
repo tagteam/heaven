@@ -48,6 +48,7 @@ Collate:
     'riskSetMatch.R'
     'exposureMatch.R'
     'findConditions.R'
+    'fix_small_numbers.R'
     'getAdmLimits.R'
     'globals.R'
     'groupAges.R'
