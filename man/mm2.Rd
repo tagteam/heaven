@@ -18,23 +18,23 @@ mm2(
 )
 }
 \arguments{
-\item{drugs}{}
+\item{drugs}{Relevant drugs}
 
-\item{drugdb}{}
+\item{drugdb}{Drug dataset}
 
-\item{admdb}{}
+\item{admdb}{Admission dataset}
 
-\item{periods}{}
+\item{periods}{Time periods}
 
-\item{method}{}
+\item{method}{Default dose if no other selected}
 
-\item{stash}{}
+\item{stash}{Depot}
 
-\item{cap.values}{}
+\item{cap.values}{Overwrite last period with previous}
 
-\item{pre.window}{}
+\item{pre.window}{Time window for prescriptions}
 
-\item{print.time}{}
+\item{print.time}{Provide time printing}
 }
 \value{
 Exposure period in a given time span

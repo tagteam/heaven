@@ -36,7 +36,6 @@ Suggests:
     R.rsp,
     rtmle
 License: GPL (>= 3)
-RoxygenNote: 7.3.3
 VignetteBuilder: knitr,R.rsp
 LazyData: true
 Collate: 
@@ -87,3 +86,4 @@ Collate:
     'standardize.rate.R'
     'xrecepter.R'
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

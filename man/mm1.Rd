@@ -17,21 +17,21 @@ mm1(
 )
 }
 \arguments{
-\item{drugs}{}
+\item{drugs}{Relevant drugs}
 
-\item{drugdb}{}
+\item{drugdb}{Drug database}
 
-\item{admdb}{}
+\item{admdb}{Admission database}
 
-\item{time.points}{}
+\item{time.points}{Time points}
 
-\item{window}{}
+\item{window}{Time window}
 
-\item{method}{}
+\item{method}{Default doses by default}
 
-\item{stash}{}
+\item{stash}{Stash}
 
-\item{cap.values}{}
+\item{cap.values}{Overwrite a last period with previous}
 }
 \value{
 Exposed or not at a given time

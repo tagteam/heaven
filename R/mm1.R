@@ -1,14 +1,32 @@
 #' Part of the \code{medicinMacro}
 #'
 #' @title Calculates whether patients are exposed or not at a given time
-#' @param drugs 
-#' @param drugdb 
-#' @param admdb 
-#' @param time.points 
-#' @param window 
-#' @param method 
-#' @param stash 
-#' @param cap.values 
+#' @param drugs A named list of drugs. Each element of this list should be a list
+#' with the following elements:
+#' \describe{
+#'   \item{atc}{A vector of ATC codes which should match the components of the drug exactly.}
+#'   \item{maxdepot}{The maximum total dose that a single patient can possibly stack.}
+#'   \item{period}{A vector of dates to limit the period in which to estimate the daily dose.}
+#'   \item{prescriptionwindow}{Default is 2 prescriptions.}
+#'   \item{doses}{A named list with the elements \code{value}, \code{min}, \code{max} and \code{def}.
+#'   Here \code{value} is a vector of strengths of one unit (e.g. pill) of the drug.
+#'   The vector should have one such strength for each of the different packages that occur in the data.
+#'   \code{min} is a vector of the same length as \code{value} where each element is the assumed minimum total dose that a patient can consume on one day.
+#'   \code{max} is a vector of the same length as \code{value} where each element is the assumed maximum total dose that a patient can consume on one day.
+#'   \code{def} is a vector of the same length as \code{value} where each element is the assumed default dose that an average patient would consume on one day.
+#'   See examples.}
+#' }
+#' @param drugdb data.table with (subset of) medical drugs registry
+#' @param admdb data.table with (subset of) hospital admission registry. The data.table should be
+#' prepared such that it contains only overnight hospital stay (i.e., pattype=2) and non-overlapping
+#' hospital stay periods, i.e., as obtained with \code{getAdmLimits} (SAS-AKA: code-from-hell).
+#' @param time.points Time points
+#' @param window
+#' Only used when the \code{type} = \code{"cross-sectional"}.
+#' Specify how many days back from the given time point we should go to find purchases to estimate the daily dose.
+#' @param method Default doses by default
+#' @param stash Depot from prior prescriptions
+#' @param cap.values Overwrite a last period with previous
 #' @return Exposed or not at a given time
 #' @author Anders Munch
 mm1 <- function(drugs,

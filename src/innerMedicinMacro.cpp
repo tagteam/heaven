@@ -4,6 +4,27 @@
 using namespace Rcpp;
 using namespace arma;
 
+static double hospitalDaysBetween(const arma::vec& admin, const arma::vec& admax, double start, double end) {
+    double h = 0.0;
+    for (uword q = 0; q < admin.size(); ++q) {
+      h += std::max(0.0, std::min(admax(q), end) - std::max(admin(q), start));
+    }
+    return h;
+  }
+  
+  static double exposureEndWithHospitalSaving(const arma::vec& admin, const arma::vec& admax,
+                                            double start, double supply_days) {
+              double end = start + std::floor(supply_days);
+              for (int iter = 0; iter < 1000; ++iter) {
+                  double new_end = start + std::floor(supply_days) + hospitalDaysBetween(admin, admax, start, end);
+                  if (std::abs(new_end - end) < 1e-9) return new_end;
+                  if (new_end < end) return end;
+                  end = new_end;
+              }
+    return end;
+ }
+                                               
+
 //' @description Inner process of medicin macro
 //' @title The heart of the medicin macro
 //' @param dat data set
@@ -167,14 +188,12 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       }
       
       // Compute number of days non-hospitalized in the period from Tk to Tk+1
-      if (k < K-1) {
-	for (uword q = 0; q < admin.size(); ++q) {
-	  dayshospital(k) += std::max(0.0, ((std::min(admax(q), T(k+1))) - std::max(admin(q), T(k))));  
-	}
-	daysperiod(k) = std::max(1.0, T(k+1) - T(k) - dayshospital(k));
-      } else {
-	daysperiod(k) = -9;  // AM: Why this???
-      }
+  if (k < K-1) {
+    dayshospital(k) += hospitalDaysBetween(admin, admax, T(k), T(k+1));
+	  daysperiod(k) = std::max(1.0, T(k+1) - T(k) - dayshospital(k));
+    } else {
+	  daysperiod(k) = -9;  // AM: Why this???
+    }
       // maximal number of days of drug supply 
       if (verbose>0){
 	Rcout << "Hospital: " << dayshospital(k) << std::endl;
@@ -254,7 +273,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
       // compute the end dates of exposure
       // ----------------------------------------------------------------------------------------------
       // EndExposure(k) = (T(k) - 1.0 + floor((currentpurchase(k) + stash(k)) / (double) X(k))); // AM: Why -1 here?
-      EndExposure(k) = (T(k) + floor((currentpurchase(k) + stash(k)) / (double) X(k))); 
+      EndExposure(k) = exposureEndWithHospitalSaving(admin, admax, T(k), (currentpurchase(k) + stash(k)) / (double) X(k)); 
       // set all id values
       idout(k) = id(0);
       if (verbose){
@@ -279,7 +298,7 @@ Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat,
 	  // Rcout << "(EndExposure(k) - T(k+1) + 1 - dayshospital(k)):=" << (EndExposure(k) - T(k+1) + 1 - dayshospital(k)) << std::endl;	  
           // stash(k+1)=(currentpurchase(k) + stash(k) - X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k)));
           // stash(k+1)= X(k)*(EndExposure(k) - T(k+1) + 1 - dayshospital(k));
-	  stash(k+1)= X(k)*(EndExposure(k) - T(k+1) - dayshospital(k)); // Corresponding to change in line 236
+    stash(k+1)= X(k)*(EndExposure(k) - T(k+1)); // hospital days are already included in EndExposure
 	  // Rcout << "stash(k+1)=" << stash(k+1) << std::endl;
 	  if (stash(k+1) > maxdepot) stash(k+1) = maxdepot;
 	  // EndExposure(k)=  T(k+1)-1;
