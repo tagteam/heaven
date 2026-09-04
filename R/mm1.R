@@ -1,5 +1,5 @@
 #' Part of the \code{medicinMacro}
-#'
+#
 #' @title Calculates whether patients are exposed or not at a given time
 #' @param drugs A named list of drugs. Each element of this list should be a list
 #' with the following elements:
@@ -27,6 +27,7 @@
 #' @param method Default doses by default
 #' @param stash Depot from prior prescriptions
 #' @param cap.values Overwrite a last period with previous
+#' @param verbose Logical; if TRUE, print progress information.
 #' @return Exposed or not at a given time
 #' @author Anders Munch
 mm1 <- function(drugs,
@@ -44,7 +45,7 @@ mm1 <- function(drugs,
     exp.calc <- mm2(drugdb=drugdb,drugs=drugs,periods=ind.periods,admdb=admdb,method=method,stash=stash,cap.values=TRUE,pre.window=0,verbose=verbose)
     if(method=="number.of.days" & stash > 0)
         return(exp.calc) #' Should be NULL, warning given from mm2
-    #' NB: _potential_ purchases, becuase a ptt's might not purchase anything in the time frame -- this gives a total.drug and drug.supply.days of 0
+    # NB: _potential_ purchases, becuase a ptt's might not purchase anything in the time frame -- this gives a total.drug and drug.supply.days of 0
     last.dates <- exp.calc[,last.potential.purch:=max(eksd),by=pnr][last.potential.purch==eksd]
     cols.to.keep <- c("pnr","end","last.potential.purch",
                       "total.drug","average.drug","drug.strength.estimate",

@@ -1,46 +1,54 @@
-To install the package using the devtools package use the following commands 
-(remember to have the package folder as working directory):
+# heaven
 
-OPTIONAL Rcpp::compileAttributes()
-OPTIONAL pkgbuild::compile_dll()
-devtools::document()
-build()
-install()
+`heaven` provides fast, memory-conscious tools for preparing large Danish
+administrative and health registry datasets. It was developed for analysis in
+the secure research environment at Statistics Denmark and uses `data.table`
+throughout its core workflows.
 
+The package includes tools for:
 
-To build/include the vignettes we need a workaround because of our
-non-standard orgmode vignettes:
+- importing selected variables and records from SAS datasets;
+- splitting follow-up time into analysis intervals;
+- identifying conditions from ICD, ATC, and other code lists;
+- deriving prescription exposure periods;
+- incidence-density and exposure-density matching;
+- direct standardisation and common registry-data summaries; and
+- inspecting Parquet datasets without collecting them in full.
 
-tools::buildVignettes()
-pkgbuild::build()
+## Installation
 
-Now it should be possible to see the vignettes, e.g. by using
-browseVignettes('heaven') or vignette('user-heaven').
+Until the package is released on CRAN, install the development version from
+GitHub:
 
+```r
+# install.packages("remotes")
+remotes::install_github("tagteam/heaven")
+```
 
-Standard mail and set of commands for Statistics Denmark to provide a new version of heaven:
+## Example
 
-Kære Henrik og Carsten
-
-Vi har en ny version af heaven (vedhæftet). I må meget gerne
-
-1. slette den nuværende mappe:
-"v:/data/alle/heaven"
-
-og erstatte den med den vedhæftete fil - som skal udpakkes
-
-2. for at installere den nye version skal følgende kommandoer køres
-
-library(devtools)
-setwd("v:/data/alle/heaven")
-Rcpp::compileAttributes()
-pkgbuild::compile_dll()
-devtools::document()
-tools::buildVignettes(dir=rprojroot::find_root("DESCRIPTION", "."))
-newpkg =pkgbuild::build(needs_compilation=TRUE)
-devtools::install(build_vignettes=TRUE,force=TRUE)
+```r
 library(heaven)
+library(data.table)
 
-på forhånd mange tak for hjælpen !
+set.seed(7)
+population <- simPop(1000)
+population[]
+```
 
-Christian & Thomas
+Most functions accept or return `data.table` objects. Because `data.table` can
+modify objects by reference, use `data.table::copy()` before a call when the
+original object must remain unchanged.
+
+The SAS import helpers require access to a local or remote SAS installation.
+The Parquet viewer uses the optional `arrow` and `dplyr` packages.
+
+## Documentation and support
+
+See `vignette("R_on_DST", package = "heaven")` for an introduction to working
+with large datasets at Statistics Denmark. Report bugs or request features at
+<https://github.com/tagteam/heaven/issues>.
+
+## License
+
+GPL (>= 3)

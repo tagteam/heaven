@@ -27,14 +27,18 @@
 #' view_parquet(r"(Z:\path\to\directory)", action = "head")
 #' }
 #'
-#' @importFrom arrow open_dataset
-#' @importFrom dplyr collect glimpse
-#' @importFrom utils head
 #' @export
 view_parquet <- function(path,
                          action = c("head", "str"),
                          num_rows = 5,
                          quiet = FALSE) {
+  required <- c("arrow", "dplyr")
+  missing <- required[!vapply(required, requireNamespace, logical(1), quietly = TRUE)]
+  if (length(missing)) {
+    stop("Install the following package(s) to use view_parquet(): ",
+         paste(missing, collapse = ", "), call. = FALSE)
+  }
+
   action <- match.arg(action)
 
   # Normalise Windows backslashes to forward slashes
@@ -53,14 +57,14 @@ view_parquet <- function(path,
   ds <- arrow::open_dataset(normalized_path, format = "parquet")
 
   if (action == "head") {
-    df <- dplyr::collect(head(ds, num_rows))
+    df <- dplyr::collect(utils::head(ds, num_rows))
     # width = Inf forces all columns to print instead of being truncated to
     # the console width (the cause of only seeing one "line").
     print(df, width = Inf, n = num_rows)
   } else { # "str"
     # Grab a small sample so glimpse has data types/example values without
     # scanning the whole dataset.
-    df <- dplyr::collect(head(ds, num_rows))
+    df <- dplyr::collect(utils::head(ds, num_rows))
     dplyr::glimpse(df)
   }
 

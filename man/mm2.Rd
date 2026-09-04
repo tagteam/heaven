@@ -18,11 +18,27 @@ mm2(
 )
 }
 \arguments{
-\item{drugs}{Relevant drugs}
+\item{drugs}{A named list of drugs. Each element of this list should be a list
+with the following elements:
+\describe{
+  \item{atc}{A vector of ATC codes which should match the components of the drug exactly.}
+  \item{maxdepot}{The maximum total dose that a single patient can possibly stack.}
+  \item{period}{A vector of dates to limit the period in which to estimate the daily dose.}
+  \item{prescriptionwindow}{Default is 2 prescriptions.}
+  \item{doses}{A named list with the elements \code{value}, \code{min}, \code{max} and \code{def}.
+  Here \code{value} is a vector of strengths of one unit (e.g. pill) of the drug.
+  The vector should have one such strength for each of the different packages that occur in the data.
+  \code{min} is a vector of the same length as \code{value} where each element is the assumed minimum total dose that a patient can consume on one day.
+  \code{max} is a vector of the same length as \code{value} where each element is the assumed maximum total dose that a patient can consume on one day.
+  \code{def} is a vector of the same length as \code{value} where each element is the assumed default dose that an average patient would consume on one day.
+  See examples.}
+}}
 
-\item{drugdb}{Drug dataset}
+\item{drugdb}{data.table with (subset of) medical drugs registry}
 
-\item{admdb}{Admission dataset}
+\item{admdb}{data.table with (subset of) hospital admission registry. The data.table should be
+prepared such that it contains only overnight hospital stay (i.e., pattype=2) and non-overlapping
+hospital stay periods, i.e., as obtained with \code{getAdmLimits} (SAS-AKA: code-from-hell).}
 
 \item{periods}{Time periods}
 
@@ -35,6 +51,8 @@ mm2(
 \item{pre.window}{Time window for prescriptions}
 
 \item{print.time}{Provide time printing}
+
+\item{verbose}{Logical; if TRUE, print progress information.}
 }
 \value{
 Exposure period in a given time span
@@ -44,32 +62,4 @@ Part of the \code{medicinMacro}
 }
 \author{
 Anders Munch
-Helper functions
-restricts x to lie within min and max
-Find smallest value in the grid, that is larger than x
-#' 1: Take out the relevant period and calculate non-hopsitalized days
-Probably should be a better way than this?:
-Restrict the data
-Make periods unique
-Only keep latest purchase before start
-Add end of each period (= beginning of the next so far)
-Add ptt.'s with no purhcases (which might still be hospitalized in the period!):
-Also use this place to add 0-exposure periods to patient with a gap from start to first purchase
-The following is for handling edge case with hospitalization after start date within first purchase period.
-If supplied, calculate non-hospitalized days and add the info
-TODO: maybe remove the hospitalization dates outside the periods before forming the cartesian product
-Add on the drug info
-Overwrite/special case for no purchasers:
-#' 2: Calculate end points and daily dose in different cases
-NB: non-purchases or total.drug==0 is might be given default doses here, but this is restored below.
-The last period should be based on the previous estimate, as we don't know, when the period ends (so can't give a proper daily dose estimate in this case)
-So overwrite previous estimate from last period.
-Handle case with only one period (set the estimate to the default dosis)
-NB: non-purchases or total.drug==0 might be given default doses here, but this is restored below.
-Clean up for the edge case of the pre.period: Re-estimate the total drug at start point by substracting the estimated amount of drug spend before start date.
-Then overwrite and drop .after.start info for the pre.periods. 
-Also overwrite drug info for the cases with no drug left at the start date to not cause confusion. 
-From this we calculate other summary measures:
-Set n.purchases==0 to estimated dose and days.supply  = 0 (as they are capped or set to default above above):
-Also leave out period with 0 days (appears because of the ending dates):
 }

@@ -1,10 +1,23 @@
 Package: heaven
 Type: Package
-Title: Data Preparation Routines for Medical Registry Data
-Version: 2026.04.16
-Author: Helene Charlotte Rytgaard, Anders Munch, Christian Torp-Pedersen, Jannik Pallisgaard, Regitze Kuhr Skals, Peter Enemark Lund, Thomas Alexander Gerds
-Maintainer: Thomas A. Gerds <tag@biostat.ku.dk>
-Description: Provides fast implementations of common data preparation steps. These functions are adapted to Danish registry data and designed to be used with Statistics Denmark.
+Title: Fast Data Preparation for Danish Registry Data
+Version: 2026.9.4
+Authors@R: c(
+    person(given = c("Helene", "Charlotte"), family = "Rytgaard", role = "aut"),
+    person(given = "Anders", family = "Munch", role = "aut"),
+    person(given = "Christian", family = "Torp-Pedersen",
+           email = "ctp@heart.dk", role = c("aut", "cre")),
+    person(given = "Jannik", family = "Pallisgaard", role = "aut"),
+    person(given = c("Regitze", "Kuhr"), family = "Skals", role = "aut"),
+    person(given = c("Peter", "Enemark"), family = "Lund", role = "aut"),
+    person(given = c("Thomas", "Alexander"), family = "Gerds", role = "aut")
+    )
+Description: Fast tools for preparing and analysing large Danish administrative and
+    health registry datasets. Provides memory-efficient routines for cohort construction,
+    time splitting, code-based condition identification, prescription exposure periods,
+    risk-set matching, and direct standardisation. The package is designed for secure
+    research environments such as Statistics Denmark and builds on the data structures
+    provided by the 'data.table' package.
 Depends:
     R (>= 3.5.0)
 Encoding: UTF-8
@@ -20,6 +33,8 @@ Imports:
     tools
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
+    arrow,
+    dplyr,
     ggplot2,
     scales,
     zoo,
@@ -31,12 +46,11 @@ Suggests:
     prodlim,
     riskRegression,
     knitr,
-    survminer,
-    rmarkdown,
-    R.rsp,
-    rtmle
+    rmarkdown
 License: GPL (>= 3)
-VignetteBuilder: knitr,R.rsp
+URL: https://github.com/tagteam/heaven
+BugReports: https://github.com/tagteam/heaven/issues
+VignetteBuilder: knitr
 LazyData: true
 Collate: 
     'RcppExports.R'
@@ -68,7 +82,6 @@ Collate:
     'medicinMacro.R'
     'mm1.R'
     'mm2.R'
-    'onLoad.R'
     'patientProfiles.R'
     'poissonRisk.R'
     'poissonregression.R'
@@ -84,6 +97,8 @@ Collate:
     'standardize.prodlim.R'
     'standardize.proportion.R'
     'standardize.rate.R'
+    'view_parquet.R'
     'xrecepter.R'
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 7.3.3
+RoxygenNote: 7.3.3

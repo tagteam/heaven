@@ -8,4 +8,26 @@
 \description{
 Package-level documentation for the **heaven** package.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/tagteam/heaven}
+  \item Report bugs at \url{https://github.com/tagteam/heaven/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Christian Torp-Pedersen \email{ctp@heart.dk}
+
+Authors:
+\itemize{
+  \item Helene Charlotte Rytgaard
+  \item Anders Munch
+  \item Jannik Pallisgaard
+  \item Regitze Kuhr Skals
+  \item Peter Enemark Lund
+  \item Thomas Alexander Gerds
+}
+
+}
 \keyword{internal}

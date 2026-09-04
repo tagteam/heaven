@@ -22,11 +22,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Preamble
 
-This document is made with the purpose of aiding use of R on servers in Statistics Denmark. We will not exclude that it can be helpful elsewhere. The particular characteristic of this environment is the very large size of datasets. For this reason data management is in general suggested to use functions from the package "data.table" which is specifically designed to handle very large datasets. Most introductions to R refer to "data.frame" and "data.table" is a data.frame with some add-ons. There are plenty of pdf and introductions to data.table on the web. This document does not replace such reading. One good place to get an overview of R is [http://r.sund.ku.dk/], which is focused on data.frame for management. Another resource is RStudios's cheatsheets [https://www.rstudio.com/resources/cheatsheets/], which covers the majority of the widely used packages. We especially recommend the sheets for data.table, ggplot2 (for visualization) and lubridate (for handling dates). 
+This document is made with the purpose of aiding use of R on servers in Statistics Denmark. We will not exclude that it can be helpful elsewhere. The particular characteristic of this environment is the very large size of datasets. For this reason data management is in general suggested to use functions from the package "data.table" which is specifically designed to handle very large datasets. Most introductions to R refer to "data.frame" and "data.table" is a data.frame with some add-ons. There are plenty of pdf and introductions to data.table on the web. This document does not replace such reading. One good place to get an overview of R is the official R manuals. Another resource is Posit's cheatsheets [https://opensource.posit.co/resources/cheatsheets/], which covers the majority of the widely used packages. We especially recommend the sheets for data.table, ggplot2 (for visualization) and lubridate (for handling dates).
 
 The structure of this document attempts to follow the typical path of a project: Include data, manage data and finally perform calculations and produce graphics.
 
-Selected chores make use of functions in the package "heaven" which is made specifically for use in Statistics Denmark. This package is available on github and can be installed with 
+Selected chores make use of functions in the package "heaven" which is made specifically for use in Statistics Denmark. This package is available on github and can be installed with
 ```{r eval=FALSE}
 devtools::install_github("tagteam/heaven")
 ```
@@ -45,7 +45,7 @@ It is important to structure the data of a project in such a way that a logic is
 For a beginner it is tempting to produce multiple programs as a project is developed mixing data management with analysis which can easily result in a situation where the project contains a large block of a mixture of outdated and current programs - where the content of each program needs to be rerun in a specific order to obtain the results of the project. Therefore, users are strongly encouraged to follow certain rules.
 
 * Create a directory for each logical part of a project - in general a directory for each paper. A directory is essentially the folder you are working in and will be the folder you are saving figures, datasets, table etc. in. We recommend that this directory is created using **heaven::createProject("path to project")**
-* Separate data management from analysis. Often it is useful to have two files for a project, one for data management and the other containing the analyses and statements that produce the tables and graphics for a paper.  
+* Separate data management from analysis. Often it is useful to have two files for a project, one for data management and the other containing the analyses and statements that produce the tables and graphics for a paper.
 * Keep the number of programs very low and format them to follow the same logic as the paper you are writing. This should not prevent you from having multiple versions that are numbered such that the final version is easily identified.  An alternative is to use git within Statistics Denmark to keep track of versions.
 * Comment VERY generously. You will be surprised how short memory is regarding variable names etc.
 * During development of a program many little tests are performed.  Remove these statements when testing has been done. If you want to keep testing versions of a program use a separate directory such as the "sandbox".
@@ -83,10 +83,10 @@ To include data from SAS with limited time and resources we have developed the *
 * obs=n - Read only the first n records. This is very useful during start to ensure that reading is correct while not waiting for the entire dataset to be read.
 * keep=c("var1","var2",...) - limits the variables that are read
 * date.vars=c("var1","var2",...) - converts SAS date vars to proper R dates. Note that in principle a SAS date is an integer representing the number of days since 01-JAN-1960 and in R it is the number of days since 01-JAN-1970.
-* character.vars=c(....) - forces variables to be character 
+* character.vars=c(....) - forces variables to be character
 * where="SAS logical statement" - Reads only the records corresponding to the logic. Note that the statement needs to be correct SAS.
 * filter=object - if the object is a data.table with a single column containing person identifier, then only records from those people are kept. This is useful if you at the start of a project can define the population and then ensure that you only read records for those persons from other datasets.
-*set.hook="SAS statements" - this allows inclusion of such SAS statements that can appear in parenthesis after names of datasets in a SAS data statement. Keep statements should not be included here as they result in errors because the function attempts to define formats for all data except those in the dedicated keep statement.  
+*set.hook="SAS statements" - this allows inclusion of such SAS statements that can appear in parenthesis after names of datasets in a SAS data statement. Keep statements should not be included here as they result in errors because the function attempts to define formats for all data except those in the dedicated keep statement.
 
 Since the time to read large SAS datasets very often requires patience, it is usually wise to limit the number of times a SAS dataset is read. Often it is wiser to grab all the data you need in one pass and afterwards use R to select further data for various purposes. Typically you may need medications and diagnoses to define very separate structures in the project - but try to collect all in one pass anyhow.
 
@@ -96,7 +96,7 @@ For most of the programming suggested here data need to be **data.table** rather
 
 If an object has been saved as ".rdata" the way to read it is **load("path to data")**. The name of the object is also read and will appear in the environment.
 
-Many datasets are saved as "rds" files, single R objects. They are read and added to the environment with **MyData <- readRDS("path to file")**. 
+Many datasets are saved as "rds" files, single R objects. They are read and added to the environment with **MyData <- readRDS("path to file")**.
 
 # Save data
 
@@ -144,12 +144,12 @@ When You create variables You need to make decisions regarding the variable type
 ## Numeric to factor
 In the example above with sex the numeric variable already represented levels. When the variable is a continuous numeric, the convinient way of creating a factor is the **cut()** function. A very simplistic example is **DT[,newvar:=cut(oldvar,3)]**. This creates three levels with equal range. A more useful example is creating of a variable which represents quartiles of the old variable: **DT[,quart:=cut(oldvar,breaks=c(quantile(oldvar,probs=seq(0,1,by = 0.25))),labels=c("Q1","Q2","Q3","Q4"))]**
 
-* Importantly, converting a numeric variable containing only 0 and 1 to a factor will result in a factor with levels 1 and 2, where 0 was converted to 1 and 1 converted to 2. 
+* Importantly, converting a numeric variable containing only 0 and 1 to a factor will result in a factor with levels 1 and 2, where 0 was converted to 1 and 1 converted to 2.
 
 ## Naming variables
 the function **setNames(DT,..)** can be used to name all variables by providing for ".." a character vector with the new names: c("new1","new2"...) - or you can change selected variables by providing two character vectors.
 
-Many imported datasets have a confusing attitude to "case" with mixtures of upper case and lower case names. Changing all variables to lower case can be achieved with **names(DT) <- tolower(names(DT))** 
+Many imported datasets have a confusing attitude to "case" with mixtures of upper case and lower case names. Changing all variables to lower case can be achieved with **names(DT) <- tolower(names(DT))**
 
 ## Selecting a subset of variables
 The most efficient way to select a subset of variables is **DT2 <- DT[,.(var1,var5,var8)]**. In some circumstances, such as within a function, another version is: **DT2 <- DT[,.SD,.SDcols=c(var1,var5,var8)]**.  The variable **.SD** is "subset of data.table" and refers to a group of columns in the dataset.
@@ -160,7 +160,7 @@ If a dataset has been sorted by an individual identifier and another variable su
 If You want to select a subset based on a logical statement, and efficient way is **DT2 <- DT[age<100]**.
 
 In case you want to search for all records that start with a selected string you can use:
-**DT2 <- DT[grepl("^A10",var)]** that finds all records where "var" starts with "A10". This is a very simple example of a "regular expression" which is an extremely versatile tool to search for complicated relation. An overview of regular expressions can be found at [https://stringr.tidyverse.org/articles/regular-expressions.html].  
+**DT2 <- DT[grepl("^A10",var)]** that finds all records where "var" starts with "A10". This is a very simple example of a "regular expression" which is an extremely versatile tool to search for complicated relation. An overview of regular expressions can be found at [https://stringr.tidyverse.org/articles/regular-expressions.html].
 
 It is common to require a number of conditions to be defined each by a range of variable content. An example is to search for multiple comorbidites which each are defined by a range of diagnosis codes. A special function **heaven::findCondition** have been developed for this purpose:
 
@@ -229,7 +229,7 @@ disease<-data.table(disease.date=sample(seq(as.Date('2015/01/01'), as.Date('2020
 hospital.adm<-data.table(admission.date=sample(seq(as.Date('2015/01/01'), as.Date('2021/01/01'), by="day"), 30),
                          pnr=sample(c(1:6),30, replace=TRUE))
 
-#rolling join: 
+#rolling join:
 #prepare roll
 disease[, rolldate := disease.date]
 hospital.adm[, rolldate := admission.date]
@@ -246,7 +246,7 @@ hospital.adm[disease,roll=-364.25]
 
 
 ## Summary statistics
-It is common that You need to create datasets that are summary statistics of other datasets. Data.table has a strong interface for this: **DT2 <- DT[,.(mean=mean(var1),number=length(var1), max=max(var1)), by="grouping_variable"]**. This statement will calculate the mean and the max for each level of the grouping variable. In this statement the "." just before the parenthesis is short for "list".  
+It is common that You need to create datasets that are summary statistics of other datasets. Data.table has a strong interface for this: **DT2 <- DT[,.(mean=mean(var1),number=length(var1), max=max(var1)), by="grouping_variable"]**. This statement will calculate the mean and the max for each level of the grouping variable. In this statement the "." just before the parenthesis is short for "list".
 
 ## Numbering
 
@@ -277,7 +277,7 @@ Risk-set matching comes in two flavors: incidense density matching and exposure 
 The function **heaven::averageIncome** is helpful for defining average income over a range of years prior to a selected date.
 
 ## Education
-Education codes on Statistics Denmark are 4-digit numbers. To convert these into accepted international classes you can merge with the data.table **heaven::edu_code** which has several groupings including ISCED codes. 
+Education codes on Statistics Denmark are 4-digit numbers. To convert these into accepted international classes you can merge with the data.table **heaven::edu_code** which has several groupings including ISCED codes.
 
 ## Splitting - Time dependent analysis
 In analyses of time dependent phenomena variables need to be updated to new values as time passes. This is practically handled by splitting. This implies that the record of an individual ends when a condition changes and then a new record starts at the time of the new condition. Since many conditions can change, and both age and calender time with certainty changes, the splitting of an individual can result in truly many records for each individual. Three functions have been developed to carry out this task:
@@ -373,10 +373,10 @@ ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
   labs(title="Title",
         x="CTY",
         y="HWY")+ #adding plot titles
-  geom_point(mapping=aes(color=fl)) #adding grouping 
+  geom_point(mapping=aes(color=fl)) #adding grouping
   #(could also be included in the previous geom_point call)
 ```
-The possibles are endless and we can suggest using the help page, 
-[https://www.r-graph-gallery.com/index.html], as inspiration or our very own
-demonstration at 
+The possibles are endless and we can suggest using the help page,
+[https://r-graph-gallery.com/index.html], as inspiration or our very own
+demonstration at
 [https://heart.dk/wp-content/uploads/2020/04/introduction_to_ggplot.html].

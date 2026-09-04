@@ -9,3 +9,6 @@ heaven.Rproj
 #inst/doc
 /doc/
 /Meta/
+
+*.Rcheck/
+*.tar.gz
