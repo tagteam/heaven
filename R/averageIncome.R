@@ -67,7 +67,7 @@ averageIncome <- function(data,income,datvars,incomevars,numyears=5){
   out <- out[,.SD[1],by=c("ID","yearinc","year")] # Max one record per year to compensate for quartiles
   out[,income:=as.numeric(income)]
   setkeyv(out,c("ID","year"))
-  out <- out[,.(income=mean(income,na.rm=TRUE)),by=c("ID","year")]
+  out <- out[,list(income=mean(income,na.rm=TRUE)),by=c("ID","year")]
   setnames(out,"ID",datvars[1])
   out
 }

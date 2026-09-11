@@ -41,7 +41,7 @@
 #' d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
 #' d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
 #' d[,year:=rep(2001:2010,n/10)]
-#' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
+#' D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 #' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 #' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 #' standardize.rate(x=list(c("e1","rt1")),
@@ -56,7 +56,7 @@
 #' # more than 2 exposures does not yet work!! workaround is to subset ...
 #' \dontrun{
 #' d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
-#' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
+#' D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
 #' D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 #' D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 #' standardize.rate(x=list(c("e1","rt1")),
@@ -144,10 +144,10 @@ standardize.rate <- function(x,
 #' and some Wald confidence interval (also on log-scale) for comparison purpose.
 #' @title Confidence intervals for age standardized rates and rate ratios
 #' @param count1 counts for group 1 (e.g. exposed)
-#' @param pop1 number of subjects of person-years in group 1
+#' @param pop1 number of person-years in group 1
 #' @param count0 counts for group 1 (e.g. exposed)
-#' @param pop0 number of subjects of person-years in group 0
-#' @param stdpop number of subjects of person-years in stdpop population
+#' @param pop0 number of person-years in group 0
+#' @param stdpop number of person-years in stdpop population
 #' @param conf.level confidence level of confidence intervals
 #' @param method method for calculating confidence intervals
 #' @param crude logical. if \code{TRUE} also calculate crude rates
@@ -190,7 +190,7 @@ standardize.rate <- function(x,
 #' d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
 #' d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
 #' d[,year:=rep(2001:2010,n/10)]
-#' D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
+#' D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 #' D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 #' D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 #' dsr(count1=D[sex=="m",e1], pop1=D[sex=="m",rt1],

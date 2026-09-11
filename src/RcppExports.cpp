@@ -62,6 +62,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// identifyOverlapping
+arma::mat identifyOverlapping(arma::mat data);
+RcppExport SEXP _heaven_identifyOverlapping(SEXP dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type data(dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(identifyOverlapping(data));
+    return rcpp_result_gen;
+END_RCPP
+}
 // innerMedicinMacro
 Rcpp::List innerMedicinMacro(Rcpp::DataFrame dat, Rcpp::DataFrame admdat, Rcpp::List doses, NumericVector idunique, Rcpp::DataFrame index, double prescriptionwindow, double maxdepot, double verbose);
 RcppExport SEXP _heaven_innerMedicinMacro(SEXP datSEXP, SEXP admdatSEXP, SEXP dosesSEXP, SEXP iduniqueSEXP, SEXP indexSEXP, SEXP prescriptionwindowSEXP, SEXP maxdepotSEXP, SEXP verboseSEXP) {
@@ -173,6 +184,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_heaven_Matcher", (DL_FUNC) &_heaven_Matcher, 14},
     {"_heaven_countDrugs", (DL_FUNC) &_heaven_countDrugs, 2},
     {"_heaven_daysnonhosp", (DL_FUNC) &_heaven_daysnonhosp, 5},
+    {"_heaven_identifyOverlapping", (DL_FUNC) &_heaven_identifyOverlapping, 1},
     {"_heaven_innerMedicinMacro", (DL_FUNC) &_heaven_innerMedicinMacro, 8},
     {"_heaven_na_locf", (DL_FUNC) &_heaven_na_locf, 1},
     {"_heaven_split2", (DL_FUNC) &_heaven_split2, 7},

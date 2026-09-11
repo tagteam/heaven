@@ -12,7 +12,6 @@
 ^sandbox$
 ^examples$
 ^auto$
-^emacs-genome$
 ^src/.*\.(o|so|dll|a)$
 ^vignettes/.*\.(html|pdf|asis)$
 ^MODERNIZATION_NOTES\.md$

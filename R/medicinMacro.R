@@ -349,11 +349,11 @@ medicinMacro <- function(drugs,
                            ## Setup index data first
                            setorder(drugdb.work, "pnr")
                            drugdb.work[,index:=1:.N]
-                           index.drug <- drugdb.work[, .(id.start=index[1], id.end=index[.N]), by=pnr]
+                           index.drug <- drugdb.work[, list(id.start=index[1], id.end=index[.N]), by=pnr]
                            admdb.work.j <- admdb.work.j[pnr %in% idunique] ## NB: Check how long this takes...!
                            setorder(admdb.work.j, "pnr")
                            admdb.work.j[,index:=1:.N]
-                           index.adm <- admdb.work.j[, .(id.start.adm=index[1], id.end.adm=index[.N]), by=pnr]
+                           index.adm <- admdb.work.j[, list(id.start.adm=index[1], id.end.adm=index[.N]), by=pnr]
                            index <- merge(index.drug, index.adm, by="pnr", all.x=1)
                            index[is.na(id.start.adm), ":="(id.start.adm=0, id.end.adm=-1)] ## Hack to make cpp generate empty vector instead of 0 scalar
                            for (j in c("id.start", "id.end", "id.start.adm", "id.end.adm")) set(index, j=j, value=index[[j]] -1) ## Convert to C++ indexing

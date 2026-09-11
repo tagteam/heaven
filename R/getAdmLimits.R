@@ -3,9 +3,9 @@
 ## author: Thomas Alexander Gerds
 ## created: Aug  4 2016 (19:43)
 ## Version:
-## last-updated: Jan 17 2020 (07:37) 
+## last-updated: sep 11 2026 (06:48) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 83
+##     Update #: 84
 #----------------------------------------------------------------------
 ##
 ### Commentary:
@@ -60,7 +60,6 @@ getAdmLimits <- function(dt,
                          keep=NULL,
                          collapse=FALSE,
                          error="warn"){
-    .SD=.I=NULL
     first.indate <- .N <- last.outdate <- NULL
     ## select relevant variables
     wdt=dt[,c(pnr,inddto,uddto,keep),with=FALSE]

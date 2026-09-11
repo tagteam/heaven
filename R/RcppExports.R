@@ -13,6 +13,10 @@ daysnonhosp <- function(id, pdate, iddates, inddto, uddto) {
     .Call(`_heaven_daysnonhosp`, id, pdate, iddates, inddto, uddto)
 }
 
+identifyOverlapping <- function(data) {
+    .Call(`_heaven_identifyOverlapping`, data)
+}
+
 #' @description Inner process of medicin macro
 #' @title The heart of the medicin macro
 #' @param dat data set

@@ -5,6 +5,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats as.formula end predict qnorm rbeta rbinom runif start
 #' @importFrom utils setTxtProgressBar tail txtProgressBar
+#' @importFrom data.table ".N" ".SD" ".I" ".GRP" ":="
 #' @keywords internal
 "_PACKAGE"
  

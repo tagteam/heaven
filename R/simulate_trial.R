@@ -35,16 +35,17 @@ simulate_trial <- function(n,
                            prop_switch_if_discontinue = 0.50,
                            prop_T = 0.50,
                            seed = 1234) {
-  if (!is.null(seed)) set.seed(seed)
-  stopifnot(abs(prop_Y + prop_censor + prop_compete - 1) < 1e-8)
-  stopifnot(n >= 1)
-  # ---- Baseline ----
-  baseline <- data.table(
-    ID = 1:n,
-    sex = sample(c("F","M"), n, replace = TRUE),   # roughly equal
-    age = runif(n, min = 50, max = 80)
-  )
-  baseline[, baseline_treatment := sample(c("A","B"), .N, replace = TRUE)]
+    Censor <- Compete <- Y <- baseline_treatment <- assigned_event <- sex <- ID <- Y_time <- NULL
+    if (!is.null(seed)) set.seed(seed)
+    stopifnot(abs(prop_Y + prop_censor + prop_compete - 1) < 1e-8)
+    stopifnot(n >= 1)
+    # ---- Baseline ----
+    baseline <- data.table(
+        ID = 1:n,
+        sex = sample(c("F","M"), n, replace = TRUE),   # roughly equal
+        age = runif(n, min = 50, max = 80)
+    )
+    baseline[, baseline_treatment := sample(c("A","B"), .N, replace = TRUE)]
   
   # ---- Discontinuation / switching ----
   disc <- data.table(ID = 1:n)
@@ -96,15 +97,15 @@ simulate_trial <- function(n,
     T_intervals[, len := runif(.N, 0.8, 1.2)]
     T_intervals[, start := runif(.N, 0, followup - len)]
     T_intervals[, end := start + len]
-    T_intervals <- T_intervals[end > start + 1e-8, .(ID, start, end)]
+    T_intervals <- T_intervals[end > start + 1e-8, list(ID, start, end)]
     T_intervals[, variable := "T"]
     T_intervals[, value := 1L]
   }
   
   # ---- Combined time-dependent dataset ----
   timedep <- rbindlist(list(
-    treat_intervals[, .(ID, start, end, value, variable)],
-    if (nrow(T_intervals) > 0) T_intervals[, .(ID, start, end, value, variable)] else NULL
+    treat_intervals[, list(ID, start, end, value, variable)],
+    if (nrow(T_intervals) > 0) T_intervals[, list(ID, start, end, value, variable)] else NULL
   ), use.names = TRUE, fill = TRUE)
   setorder(timedep, ID, start)
   
@@ -127,10 +128,10 @@ simulate_trial <- function(n,
   outcome_dt[, Compete := ifelse(assigned_event == "Compete", time_Compete, NA_real_)]
   
   # ---- Apply treatment effect (A halves Y risk) ----
-  Y_events <- outcome_dt[assigned_event == "Y", .(ID, Y_time = time_Y)]
+  Y_events <- outcome_dt[assigned_event == "Y", list(ID, Y_time = time_Y)]
   if (nrow(Y_events) > 0) {
-    matched <- treat_intervals[Y_events, on = .(ID, start <= Y_time, end > Y_time), nomatch = 0L,
-                               .(ID, trt_at_time = variable, Y_time)]
+    matched <- treat_intervals[Y_events, on = list(ID, start <= Y_time, end > Y_time), nomatch = 0L,
+                               list(ID, trt_at_time = variable, Y_time)]
     onA <- matched[trt_at_time == "A"]
     if (nrow(onA) > 0) {
       prevent_flags <- runif(nrow(onA)) < 0.5
@@ -147,8 +148,8 @@ simulate_trial <- function(n,
     }
   }
   
-  outcome_final <- outcome_dt[, .(ID, Y, Censor, Compete)]
-  baseline_final <- baseline[, .(ID, sex, age, baseline_treatment)]
+  outcome_final <- outcome_dt[, list(ID, Y, Censor, Compete)]
+  baseline_final <- baseline[, list(ID, sex, age, baseline_treatment)]
   
   return(list(
     baseline = baseline_final,
