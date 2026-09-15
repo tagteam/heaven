@@ -5,7 +5,7 @@
 \title{charlsonindex - define charlson index at a selected time}
 \usage{
 charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
-,ccodes=charlson.codes)
+,icd.codes)
 }
 \arguments{
 \item{data}{- A dataframe/table with disease codes and dates}

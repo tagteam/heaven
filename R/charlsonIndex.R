@@ -19,7 +19,7 @@
 #' given values with this function.  The remaining should manually be provided
 #' zeroes.
 #' @usage charlsonIndex(data,ptid='pnr',vars,data.date,charlson.date,look.back=5
-#' ,ccodes=charlson.codes)
+#' ,icd.codes)
 #' @author Christian Torp-Pedersen 
 #' @param data - A dataframe/table with disease codes and dates
 #' @param ptid - Variable defining individual
