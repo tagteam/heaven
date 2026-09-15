@@ -152,7 +152,7 @@ lexisTwo <- function(indat, # inddato with id/in/out/event - and possibly other 
                     format="wide", # Wide or long format of splitting guide
                     datacheck=TRUE #Check consistensy of data
 ){
-  .N=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=numcov=name=isdate=NULL
+  .N = numvars=inn=out=dead=.SD=dato=pnrnum=mergevar=.GRP=pnr=number_=value_=value=num=numcov=name=isdate=NULL
   datt <- copy(indat)
   splitdatt <- copy(splitdat)
   #Tests of data

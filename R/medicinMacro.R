@@ -158,7 +158,7 @@ medicinMacro <- function(drugs,
                          atc.var="atc",
                          apk.var="apk",
                          splitting = FALSE,verbose=FALSE){
-    atc=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
+    atc = id.start.adm=eksd=inddto=uddto=tmp.index=.N=pnr=B=E=exposure.days=lastday=firstday=pnr.db=NULL
     ## Check id variables
     id.character.drug <- typeof(drugdb[[id]])=="character"
     if (NROW(admdb)>0){

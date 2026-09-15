@@ -81,7 +81,7 @@ splitFromTo <- function(indat # inddato with id/in/out/event - and possibly othe
                        ,datacheck=TRUE
                         ){
 
-  .N=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=out=num=isdate=NULL
+  .N = event=pnr=pnrnum=.GRP=mergevar2=start=slut=.SD=dif1=prior_slut=mergevar=inn=name=val=out=num=isdate=NULL
   indat <- setDT(copy(indat))
   splitdat <- setDT(copy(splitdat))
   #Tests of data

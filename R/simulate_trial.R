@@ -35,7 +35,7 @@ simulate_trial <- function(n,
                            prop_switch_if_discontinue = 0.50,
                            prop_T = 0.50,
                            seed = 1234) {
-    Censor <- Compete <- Y <- baseline_treatment <- assigned_event <- sex <- ID <- Y_time <- NULL
+    time_Censor <- time_compete <- trt_at_time <- Censor <- Compete <- Y <- baseline_treatment <- assigned_event <- sex <- ID <- Y_time <- NULL
     if (!is.null(seed)) set.seed(seed)
     stopifnot(abs(prop_Y + prop_censor + prop_compete - 1) < 1e-8)
     stopifnot(n >= 1)

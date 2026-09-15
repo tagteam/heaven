@@ -112,7 +112,7 @@ splitSeq <- function(indat,
                      value = "value",
                      datacheck=TRUE) 
 {
-  vent = out = inn = .SD = pnrnum = .N = isdate= NULL
+  vent = num = event = out = inn = .SD = pnrnum = .N = isdate= NULL
   if (datacheck){
     if (!is.character(invars) ) 
       stop("Varnames in c(..) not character")

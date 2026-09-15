@@ -210,7 +210,7 @@ importSAS <- function(filename, wd = NULL, keep = NULL, drop = NULL, where = NUL
     ## DD <- dirname(filename)
     ## FF <- basename(filename)
     ## fullname <- list.files(path=DD,pattern=paste0("^",filename,"$"),full.names=TRUE)
-    .SD = NULL
+    .SD <- Informat <- Format <- Type <- target.type <- Variable <- NULL
     keep <- tolower(keep)
     drop <- tolower(drop)
     date.vars <- tolower(date.vars)

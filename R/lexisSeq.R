@@ -104,7 +104,7 @@ lexisSeq <- function(indat,
                      value = "value",
                      datacheck=TRUE) 
 {
-  vent = out = inn = .SD = pnrnum = .N = isdate= NULL
+  num = event = vent = out = inn = .SD = pnrnum = .N = isdate= NULL
   if (datacheck){
     if (!is.character(invars))
     if (!is.character(varname) & !is.null(varname)) 

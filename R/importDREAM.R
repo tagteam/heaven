@@ -65,7 +65,7 @@
 #' @export
 importDREAM <- function (dreamData, type = "support", pnr = "pnr",explData = NULL) 
 {
-  .SD <- melt <- patterns <- start <- num_b <- branche <- lastdate <- .N <- end <- char_week <- week <- year <- support <- na.omit <- NULL
+  .SD <- endyear <- startyear endweek <- char_week_start <- char_week_end <- startweek <- rl <- melt <- patterns <- start <- num_b <- branche <- lastdate <- .N <- end <- char_week <- week <- year <- support <- na.omit <- NULL
   setDT(dreamData)
   if (!is.null(explData)) {
     setDT(explData)

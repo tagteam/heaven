@@ -12,7 +12,7 @@
 #' @source http://medinfo.dk/sks/
 #' @docType data
 #' @keywords datasets
-#' @name d_codes
+#' @name sks_codes
 
 "sks_codes"
 

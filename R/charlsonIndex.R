@@ -51,7 +51,7 @@
 #'   charlson.date="charlson.date")
 #' @export
 charlsonIndex <- function(data,ptid='pnr',vars,data.date,charlson.date,look.back=5,ccodes=charlson.codes){
-  weight=component=dcast=X=severe.liver.disease=mild.liver.disease=diabetes.with.complications=diabetes.without.complications=
+  charlson.codes = weight=component=dcast=X=severe.liver.disease=mild.liver.disease=diabetes.with.complications=diabetes.without.complications=
     metastatic.solid.tumor=any.malignancy=melt=value=NULL
   if(!"data.frame" %in% class(data)) stop('data not dat.fram or data.table')
   if(!is.character(vars)) stop ('search variables not character')
