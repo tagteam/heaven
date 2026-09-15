@@ -63,5 +63,5 @@ groupAges(
 )
 }
 \author{
-Matthew Phelps <mphelps@hjerteforeningen.dk>
+Matthew Phelps
 }

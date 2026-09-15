@@ -17,15 +17,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Christian Torp-Pedersen \email{ctp@heart.dk}
+\strong{Maintainer}: Christian Tobias Torp-Pedersen \email{ctp@heart.dk}
 
 Authors:
 \itemize{
   \item Helene Charlotte Rytgaard
   \item Anders Munch
-  \item Jannik Pallisgaard
-  \item Regitze Kuhr Skals
-  \item Peter Enemark Lund
+  \item Matthew David Phelps
   \item Thomas Alexander Gerds
 }
 

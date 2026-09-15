@@ -18,13 +18,13 @@ dsr(
 \arguments{
 \item{count1}{counts for group 1 (e.g. exposed)}
 
-\item{pop1}{number of subjects of person-years in group 1}
+\item{pop1}{number of person-years in group 1}
 
 \item{count0}{counts for group 1 (e.g. exposed)}
 
-\item{pop0}{number of subjects of person-years in group 0}
+\item{pop0}{number of person-years in group 0}
 
-\item{stdpop}{number of subjects of person-years in stdpop population}
+\item{stdpop}{number of person-years in stdpop population}
 
 \item{conf.level}{confidence level of confidence intervals}
 
@@ -57,7 +57,7 @@ d <- data.table(e1=rpois(n,lambda=9),
 d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
 d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
 d[,year:=rep(2001:2010,n/10)]
-D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
+D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 dsr(count1=D[sex=="m",e1], pop1=D[sex=="m",rt1],

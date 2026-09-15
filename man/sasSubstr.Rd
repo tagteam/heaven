@@ -36,5 +36,5 @@ sasSubstr(x, target.var="A")
 importSAS
 }
 \author{
-Matthew Phelps <mphelps@hjerteforeningen.dk>
+Matthew Phelps
 }

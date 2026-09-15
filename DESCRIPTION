@@ -1,15 +1,13 @@
 Package: heaven
 Type: Package
 Title: Fast Data Preparation for Danish Registry Data
-Version: 2026.9.4
+Version: 2026.09.11
 Authors@R: c(
+    person(given = c("Christian","Tobias"), family = "Torp-Pedersen",
+           email = "ctp@heart.dk", role = c("aut", "cre")),
     person(given = c("Helene", "Charlotte"), family = "Rytgaard", role = "aut"),
     person(given = "Anders", family = "Munch", role = "aut"),
-    person(given = "Christian", family = "Torp-Pedersen",
-           email = "ctp@heart.dk", role = c("aut", "cre")),
-    person(given = "Jannik", family = "Pallisgaard", role = "aut"),
-    person(given = c("Regitze", "Kuhr"), family = "Skals", role = "aut"),
-    person(given = c("Peter", "Enemark"), family = "Lund", role = "aut"),
+    person(given = c("Matthew", "David"), family = "Phelps", role = "aut"),
     person(given = c("Thomas", "Alexander"), family = "Gerds", role = "aut")
     )
 Description: Fast tools for preparing and analysing large Danish administrative and
@@ -56,14 +54,11 @@ Collate:
     'RcppExports.R'
     'averageIncome.R'
     'charlsonIndex.R'
-    'checkMicroData.R'
     'createProject.R'
     'riskSetMatch.R'
     'exposureMatch.R'
     'findConditions.R'
-    'fix_small_numbers.R'
     'getAdmLimits.R'
-    'globals.R'
     'groupAges.R'
     'guessRawdataDirectory.R'
     'heaven-data.R'
@@ -90,6 +85,7 @@ Collate:
     'simAdmissionData.R'
     'simPop.R'
     'simPrescriptionData.R'
+    'simpoisson.R'
     'simulate_trial.R'
     'splitFromTo.R'
     'splitSeq.R'

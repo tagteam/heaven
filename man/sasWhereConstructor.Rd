@@ -18,5 +18,5 @@ Returns a string that can be passed to the "where" argument of importSAS
 Simple helper function that combines multiple SAS where statements with "AND"
 }
 \author{
-Matthew Phelps <mphelps@hjerteforeningen.dk>
+Matthew Phelps
 }

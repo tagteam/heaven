@@ -27,5 +27,5 @@ Helper function for making sas "Where" statements for use in importSAS(). Create
 sasDateRange("inddto", as.Date("2015-01-01"), as.Date("2016-01-01"))
 }
 \author{
-Matthew Phelps <mphelps@hjerteforeningen.dk>
+Matthew Phelps
 }

@@ -40,7 +40,7 @@
 #'   )
 #'   out <- patientProfile(dt = x, primary.cov = "age", "v2", "v3")
 #'
-#' @author Matthew Phelps \email{mphelps@@hjerteforeningen.dk}
+#' @author Matthew Phelps
 #' @export
 #' 
 patientProfile <- function(dt, primary.cov, ...) {

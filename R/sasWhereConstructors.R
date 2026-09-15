@@ -8,7 +8,7 @@
 #' @return Function returns a string that can be passed to the "where" statement
 #'   of importSAS. Alternatinvely it can be passed to makeSasWhereStatment
 #'   function to be combined with further SAS where statements
-#' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
+#' @author Matthew Phelps
 #' @examples
 #' sasDateRange("inddto", as.Date("2015-01-01"), as.Date("2016-01-01"))
 #' @export
@@ -55,7 +55,7 @@ rDateToSas <- function(rdate) {
 #'
 #' @return Returns a string that can be passed to the "where" arguments
 #'   of importSAS, or combined with other conditions in sasWhereConstructor
-#' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
+#' @author Matthew Phelps
 #' @export
 #' @seealso importSAS
 #' @examples
@@ -87,7 +87,7 @@ sasSubstr <- function(str.vec, target.var) {
 #' @param ... A vector of valid SAS where statements.
 #' @param collapse Argment passed to paste0. default is \code{" AND "}.
 #' @return Returns a string that can be passed to the "where" argument of importSAS
-#' @author Matthew Phelps <mphelps@hjerteforeningen.dk>
+#' @author Matthew Phelps
 #' 
 #' @export
 sasWhereConstructor <- function(..., collapse = " AND ") {

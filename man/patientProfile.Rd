@@ -54,5 +54,5 @@ The function is designed to show how many patients exists in the
 
 }
 \author{
-Matthew Phelps \email{mphelps@hjerteforeningen.dk}
+Matthew Phelps
 }

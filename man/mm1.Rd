@@ -50,7 +50,7 @@ Specify how many days back from the given time point we should go to find purcha
 
 \item{cap.values}{Overwrite a last period with previous}
 
-\item{verbose}{Logical; if TRUE, print progress information.}
+\item{verbose}{Logical. Set to \code{TRUE} to see messages about the progress.}
 }
 \value{
 Exposed or not at a given time
@@ -60,4 +60,5 @@ Part of the \code{medicinMacro}
 }
 \author{
 Anders Munch
+NB: _potential_ purchases, becuase a ptt's might not purchase anything in the time frame -- this gives a total.drug and drug.supply.days of 0
 }

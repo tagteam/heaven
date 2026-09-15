@@ -66,7 +66,7 @@ d <- data.table(e1=rpois(n,lambda=9),
 d[,agegroups:=factor(rep(c("40-50","45-50","50-55","55-60","60-65","65-70","70-75","75-80"),n/8))]
 d[,sex:=factor(rep(c("f","m"),c(n/2,n/2)))]
 d[,year:=rep(2001:2010,n/10)]
-D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
+D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("sex","agegroups")]
 D[sex=="m",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 D[sex=="m",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 standardize.rate(x=list(c("e1","rt1")),
@@ -81,7 +81,7 @@ standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
 # more than 2 exposures does not yet work!! workaround is to subset ...
 \dontrun{
 d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
-D=d[,.(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
+D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
 D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
 standardize.rate(x=list(c("e1","rt1")),

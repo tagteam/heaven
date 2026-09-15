@@ -19,7 +19,7 @@
 #'@param above.char The character to use for labeling the group of value above
 #'  the lower bound
 #'@return Returns a factor vector of the same length as x.
-#'@author Matthew Phelps <mphelps@hjerteforeningen.dk>
+#'@author Matthew Phelps
 #' @examples
 #' library(heaven)
 #' set.seed(1)
