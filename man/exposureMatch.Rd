@@ -17,7 +17,8 @@ exposureMatch(
   output.count.controls = TRUE,
   cores = 1,
   seed = 0,
-  progressbar = TRUE
+  progressbar = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -84,6 +85,8 @@ Useful to prepare to summarize the history of exposure for cases and controls in
 \item{seed}{Random seed to make results reproducible}
 
 \item{progressbar}{set to \code{FALSE} to avoid progressbar}
+
+\item{verbose}{Logical. Set to \code{TRUE} to see messages about the progress.}
 }
 \value{
 data.table with cases and controls. After matching, a the variable

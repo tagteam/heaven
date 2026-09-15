@@ -17,7 +17,8 @@ incidenceMatch(
   output.count.controls = TRUE,
   cores = 1,
   seed = 0,
-  progressbar = TRUE
+  progressbar = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -76,6 +77,8 @@ looking back in time from the \code{case.index}.}
 \item{seed}{Random seed to make results reproducible}
 
 \item{progressbar}{set to \code{FALSE} to avoid progressbar}
+
+\item{verbose}{Logical. Set to \code{TRUE} to see messages about the progress.}
 }
 \value{
 data.table with cases and controls. After matching, a the variable

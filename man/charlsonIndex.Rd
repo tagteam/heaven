@@ -22,8 +22,8 @@ charlson index}
 \item{look.back}{- numnber of years to look back from charlson.date for 
 diseases}
 
-\item{ccodes}{- named list of charlson codes. Default uses list 
-supplied by heaven}
+\item{icd.codes}{- named list of charlson codes. If not specified the package internal
+object \code{charlson.codes} is used.}
 }
 \value{
 A list with 2 data.tables - index holding charlson index and elements 
@@ -64,7 +64,7 @@ adm[,charlson.date:=as.Date("2017-01-01")]
 adm2 <- adm[1:5]
 adm2[,charlson.date:=as.Date("2015-01-01")]
 adm <- rbind(adm,adm2)
-ci <- charlsonIndex(adm,ptid='pnr',vars='diag',data.date='inddto',
+ci <- charlsonIndex(data=adm,ptid='pnr',vars='diag',data.date='inddto',
   charlson.date="charlson.date")
 }
 \author{
