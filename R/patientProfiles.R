@@ -38,7 +38,7 @@
 #'     v2 = sample(c("yes", "no"), n, replace = TRUE),
 #'     v3 = sample(c("yes", "no"), n, replace = TRUE, prob = c(0.2, 0.8))
 #'   )
-#'   out <- patientProfile(dt = x, primary.cov = "age", "v2", "v3")
+#'   patientProfile(dt = x, primary.cov = "age", "v2", "v3")
 #'
 #' @author Matthew Phelps
 #' @export

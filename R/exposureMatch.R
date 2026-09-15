@@ -3,9 +3,9 @@
 ## Author: Thomas Alexander Gerds
 ## Created: Jun 26 2019 (08:57) 
 ## Version: 
-## Last-Updated: Mar 12 2020 (10:39) 
+## Last-Updated: sep 15 2026 (09:46) 
 ##           By: Thomas Alexander Gerds
-##     Update #: 46
+##     Update #: 47
 #----------------------------------------------------------------------
 ## 
 ### Commentary: 
@@ -91,6 +91,7 @@
 #' @param cores number of cores to use in the calculation.
 #' @param seed Random seed to make results reproducible
 #' @param progressbar set to \code{FALSE} to avoid progressbar
+#' @param verbose Logical. Set to \code{TRUE} to see messages about the progress.  
 #' @details
 #'
 #' The function performs exact matching and hence 

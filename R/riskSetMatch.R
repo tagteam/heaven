@@ -11,7 +11,8 @@ riskSetMatch <- function(ptid,
                          output.count.controls=TRUE,
                          cores=1,
                          seed=0,
-                         progressbar=TRUE){
+                         progressbar=TRUE,
+                         verbose = TRUE){
     .SD=cterms=tEmP.iD=.N=miscol=case.id=NULL
     #check
     vnames <- colnames(data)
@@ -86,14 +87,14 @@ riskSetMatch <- function(ptid,
     ## FIXME could define event as a non missing caseindex
     ## work.data <- work.data[work.data[[event]]==0 | !is.na(work.data[[case.index]])]
     split.work.data <- split(work.data,by="cterms") # Now a list aplit by cterms
-    message("\nMatching terms define ",length(split.work.data)," subsets")
+    if (verbose) message("\nMatching terms define ",length(split.work.data)," subsets")
     Nsub <- sapply(split.work.data,NROW)
     progressValues <- cumsum(Nsub)
-    if ((Nsmallgroups <- sum(Nsub<n.controls))>0)
+    if (verbose && (Nsmallgroups <- sum(Nsub<n.controls))>0)
         message("Matching terms split the data into ",length(split.work.data)," subsets",
                 "\nThere are ",Nsmallgroups," subsets which contain less subjects (case-control-mix)\n",
                 "than the number of requested controls for one case.\n")
-    if ((Ntinygroups <- sum(Nsub<2))>0){
+    if (verbose && (Ntinygroups <- sum(Nsub<2))>0){
         message("There are ",Ntinygroups," subsets that have less than two subjects\nIMPORTANT: These are ignored with side effect.\n")
         message("You should reduce",
                 "\n  - the number matching variables\n  - the number of values of the matching variables\n  - or both.\n")

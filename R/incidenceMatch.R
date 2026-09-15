@@ -64,6 +64,7 @@
 #' @param cores number of cores to use in the calculation.
 #' @param seed Random seed to make results reproducible
 #' @param progressbar set to \code{FALSE} to avoid progressbar
+#' @param verbose Logical. Set to \code{TRUE} to see messages about the progress.  
 #' @details
 #' 
 #' The function performs exact matching and hence 
