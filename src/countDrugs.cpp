@@ -14,7 +14,7 @@ Rcpp::NumericVector countDrugs(Rcpp::DataFrame mix,
   arma::vec purchases(NOBS,fill::zeros);
   for (uword i = 0; i< NOBS; i++){
     for (uword j = 0; j<NP;j++){
-      if((dbid(j)==id(i)) & (eksd(j)<casedate(i)) & (eksd(j)>(casedate(i)-10*365.25)))
+      if((dbid(j)==id(i)) && (eksd(j)<casedate(i)) & (eksd(j)>(casedate(i)-10*365.25)))
 	purchases(i)++;
     }
     // purchases(i)=arma::sum(dbid==id(i) & eksd<casedate(i) & eksd>(casedate(i)-10*365.25));
