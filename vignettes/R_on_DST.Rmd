@@ -342,39 +342,47 @@ A ggplot consists of different layers that can be combined to a graph. The diffe
 * **Theme**: Themes can be used to modify anything that is unrelated to your data including labels, fonts, text size, background colors etc.
 
 ## Example
-```{r eval=T}
-library(data.table)
-library(ggplot2)
-setDT(dt <- mpg) #toy dataset described at
-#[https://ggplot2.tidyverse.org/reference/mpg.html]
-ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
-    geom_point() #most simple scatterplot
+```{r eval=TRUE}
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  library(data.table)
+  library(ggplot2)
+  setDT(dt <- mpg) #toy dataset described at
+  #[https://ggplot2.tidyverse.org/reference/mpg.html]
+  ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
+      geom_point() #most simple scatterplot
+}
 ```
 
-```{r eval=T,out.width = "50%"}
-ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
-  geom_point()+ #most simple scatterplot
-  theme_classic() #adding theme
+```{r eval=TRUE,out.width = "50%"}
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
+    geom_point()+ #most simple scatterplot
+    theme_classic() #adding theme
+}
 ```
 
-```{r eval=T,out.width = "50%"}
-ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
-  geom_point()+ #most simple scatterplot
-  theme_classic()+ #adding theme
-  labs(title="Title",
-        x="CTY",
-        y="HWY") #adding plot titles
+```{r eval=TRUE,out.width = "50%"}
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
+    geom_point()+ #most simple scatterplot
+    theme_classic()+ #adding theme
+    labs(title="Title",
+          x="CTY",
+          y="HWY") #adding plot titles
+}
 ```
 
-```{r eval=T,out.width = "50%"}
-ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
-  geom_point()+ #most simple scatterplot
-  theme_classic()+ #adding theme
-  labs(title="Title",
-        x="CTY",
-        y="HWY")+ #adding plot titles
-  geom_point(mapping=aes(color=fl)) #adding grouping
-  #(could also be included in the previous geom_point call)
+```{r eval=TRUE,out.width = "50%"}
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  ggplot(data=dt,mapping=aes(x=cty,y=hwy))+
+    geom_point()+ #most simple scatterplot
+    theme_classic()+ #adding theme
+    labs(title="Title",
+          x="CTY",
+          y="HWY")+ #adding plot titles
+    geom_point(mapping=aes(color=fl)) #adding grouping
+    #(could also be included in the previous geom_point call)
+}
 ```
 The possibles are endless and we can suggest using the help page,
 [https://r-graph-gallery.com/index.html], as inspiration or our very own

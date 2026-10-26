@@ -20,7 +20,8 @@ This resubmission addresses the six requests in Leonore Hochhauser's review.
    Rcpp and roxygen generation was run twice and verified to be reproducible.
 3. Short executable examples are unwrapped. Examples using suggested
    packages are guarded by requireNamespace(); unnecessary optional imports
-   were removed. Local-path examples for createProject, listRawdata, and
+   were removed. The vignette's ggplot2 examples are also guarded.
+   Local-path examples for createProject, listRawdata, and
    view_parquet now use temporary fixtures. The previously disabled
    standardize.rate example now compares two groups and drops unused levels.
    Only importSAS, scanRawdata, and xrecepter retain dontrun blocks: they
@@ -60,16 +61,20 @@ Result: 0 errors, 0 warnings, 3 notes.
 
 - Examples, all four test scripts, vignette creation and rebuilding, and the
   PDF manual passed. Every runnable help-topic example took less than five
-  seconds; the slowest was medicinMacro at 0.863 seconds elapsed.
+  seconds; the slowest was medicinMacro at 1.096 seconds elapsed.
 - The new compliance tests cover explicit project destinations, returned
   matching tables, quiet diagnostics, SAS scans, temporary storage,
   directory restoration and cleanup, and quiet Parquet inspection. SAS
   execution is simulated through the existing sas.runner argument, so these
   tests do not require a SAS installation. Actual SAS execution and remote
   server operation were not tested.
-- An archive comparison confirmed that all 105 R, C++, help, and test files
-  match the final working files. The archive contains no object files or
-  shared libraries. The source archive is approximately 1.05 MiB.
+   Additional tests check return documentation for every exported function
+   and verify C++ output structure, dose intervals, hospital extensions, and
+   identical returned values with and without diagnostic printing.
+- An archive comparison confirmed that all 105 R, C++, help, and test files,
+  plus NAMESPACE and the vignette source, match the final working files.
+  The archive contains no object files or shared libraries. The source
+  archive is approximately 1.06 MiB.
 - git diff --check passed.
 
 The remaining notes are:
