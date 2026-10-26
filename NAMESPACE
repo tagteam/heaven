@@ -42,20 +42,26 @@ export(view_parquet)
 export(xrecepter)
 import(data.table)
 importFrom(Rcpp,evalCpp)
-importFrom(data.table,".GRP")
-importFrom(data.table,".I")
-importFrom(data.table,".N")
-importFrom(data.table,".SD")
-importFrom(data.table,":=")
-importFrom(stats,as.formula)
-importFrom(stats,end)
-importFrom(stats,predict)
-importFrom(stats,qnorm)
-importFrom(stats,rbeta)
-importFrom(stats,rbinom)
-importFrom(stats,runif)
-importFrom(stats,start)
-importFrom(utils,setTxtProgressBar)
-importFrom(utils,tail)
-importFrom(utils,txtProgressBar)
+importFrom(data.table,
+  ":=",
+  .GRP,
+  .I,
+  .N,
+  .SD
+)
+importFrom(stats,
+  as.formula,
+  end,
+  predict,
+  qnorm,
+  rbeta,
+  rbinom,
+  runif,
+  start
+)
+importFrom(utils,
+  setTxtProgressBar,
+  tail,
+  txtProgressBar
+)
 useDynLib(heaven, .registration=TRUE)

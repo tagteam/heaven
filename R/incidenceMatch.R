@@ -129,7 +129,7 @@
 #' # Same with 2 cores
 #' library(parallel)
 #' library(foreach)
-#' \dontrun{
+#' if (requireNamespace("doParallel", quietly = TRUE)) {
 #' matchdat2 <- incidenceMatch("ptid","case",c("byear","sex"),data=dat,
 #'    n.controls=2,case.index="case.Index",end.followup="control.Index"
 #'   ,cores=2,seed=8)

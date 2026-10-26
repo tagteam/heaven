@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Christian Tobias Torp-Pedersen \email{ctp@heart.dk}
   \item Helene Charlotte Rytgaard
   \item Anders Munch
   \item Matthew David Phelps

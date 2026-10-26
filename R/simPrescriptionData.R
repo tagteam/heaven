@@ -8,6 +8,11 @@
 #'     list are ATC codes, the value associates strengths of one unit and package sizes.
 #' @param max.packages Integer. Upper bound for number of packages purchased on a single date
 #' @param startDate start date
+#' @return A data.table with one row per simulated prescription, sorted by
+#' patient, ATC code and purchase date. Columns are patient identifier
+#' \code{pnr}, drug code \code{atc}, purchase date \code{eksd} (class
+#' \code{Date}), unit strength \code{strnum}, package size \code{packsize}
+#' and number of packages purchased \code{apk}.
 #' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas
 #'     Alexander Gerds \email{tag@@biostat.ku.dk}
 #' @details

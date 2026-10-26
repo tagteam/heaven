@@ -32,7 +32,13 @@ getAdmLimits(
 either inddto or uddto or when inddto>uddto.}
 }
 \value{
-data.table with two new variables first.indate and last.outdate.
+A data.table with additional class \code{admlimits}, sorted by
+subject and admission date. The \code{Date} columns \code{first.indate}
+and \code{last.outdate} give the start and end of each group of overlapping
+admissions. With \code{collapse = TRUE}, one row per group is returned
+and the original admission and discharge columns are removed. A logical
+\code{error} column identifies invalid input rows when \code{error = "flag"},
+or when \code{error = "warn"} finds invalid rows.
 }
 \description{
 Adds first admission date and last discharge date to a sequence of admissions. The default input data.table is the current standard

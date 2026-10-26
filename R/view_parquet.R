@@ -14,17 +14,21 @@
 #' @param action Either `"head"` to show the first few rows, or `"str"` for a
 #'   structure summary. Defaults to `"head"`.
 #' @param num_rows Number of rows to display when `action = "head"`. Default 5.
-#' @param quiet Logical; if `FALSE` (default) the resolved path is printed.
+#' @param quiet Logical; if `TRUE`, suppress both the path message and the
+#'   data display. The collected data are still returned invisibly.
 #'
 #' @return Invisibly returns the collected `tibble` (the head, or the sample
 #'   used for the structure summary), so it can be captured if needed. Output is
-#'   printed as a side effect.
+#'   printed as a side effect unless `quiet = TRUE`.
 #'
 #' @examples
-#' \dontrun{
-#' view_parquet("path/to/file.parquet", action = "str")
-#' # Windows raw-string path:
-#' view_parquet(r"(Z:\path\to\directory)", action = "head")
+#' if (requireNamespace("arrow", quietly = TRUE) &&
+#'     requireNamespace("dplyr", quietly = TRUE)) {
+#'   path <- tempfile(fileext = ".parquet")
+#'   arrow::write_parquet(data.frame(id = 1:3, value = c(4, 5, 6)), path)
+#'   view_parquet(path, action = "head")
+#'   view_parquet(path, action = "str")
+#'   unlink(path)
 #' }
 #'
 #' @export
@@ -60,12 +64,12 @@ view_parquet <- function(path,
     df <- dplyr::collect(utils::head(ds, num_rows))
     # width = Inf forces all columns to print instead of being truncated to
     # the console width (the cause of only seeing one "line").
-    print(df, width = Inf, n = num_rows)
+    if (!quiet) print(df, width = Inf, n = num_rows)
   } else { # "str"
     # Grab a small sample so glimpse has data types/example values without
     # scanning the whole dataset.
     df <- dplyr::collect(utils::head(ds, num_rows))
-    dplyr::glimpse(df)
+    if (!quiet) dplyr::glimpse(df)
   }
 
   invisible(df)

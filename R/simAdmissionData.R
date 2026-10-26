@@ -6,6 +6,12 @@
 #' @param m Maximal number of admission dates per patient
 #' @param diagnoses List of diagnoses. Defaults to all possible ICD10 codes: http://www.icd10data.com/ICD10CM/Codes
 #' @param startDate starting date
+#' @return A data.table with one row per simulated admission, sorted by
+#' \code{pnr} and \code{inddto}. Columns are patient identifier \code{pnr},
+#' record identifier \code{recnum}, admission and discharge dates
+#' \code{inddto} and \code{uddto} (class \code{Date}), a simulated
+#' \code{indexdate} (class \code{Date}), diagnosis code \code{diag} and
+#' patient type \code{pattype}.
 #' @author Helene Charlotte Rytgaard \email{hely@@sund.ku.dk}, Thomas Alexander Gerds \email{tag@@biostat.ku.dk}
 #' 
 #' @examples

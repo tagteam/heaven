@@ -27,14 +27,40 @@ static double hospitalDaysBetween(const arma::vec& admin, const arma::vec& admax
 
 //' @description Inner process of medicin macro
 //' @title The heart of the medicin macro
-//' @param dat data set
-//' @param admdat admission data
-//' @param doses doses
-//' @param idunique unique subject ids
-//' @param index start and end index of subjects in dat and admdat
+//' @param dat Prescription data.frame with numeric columns \code{pnr},
+//' \code{eksd}, \code{strnum}, \code{packsize} and \code{apk}.
+//' @param admdat Admission data.frame with numeric columns \code{pnr},
+//' \code{inddto} and \code{uddto}. All dates must use the same scale as
+//' \code{dat$eksd}.
+//' @param doses List of numeric vectors \code{value}, \code{min},
+//' \code{max} and \code{def}; see \code{medicinMacro}.
+//' @param idunique Unique subject identifiers, one per row of \code{index}.
+//' @param index Data.frame with zero-based start and end row indices:
+//' \code{id.start}, \code{id.end} for prescriptions and
+//' \code{id.start.adm}, \code{id.end.adm} for admissions.
 //' @param prescriptionwindow prescription window
 //' @param maxdepot see medicine macro
-//' @param verbose feed back for debugging
+//' @param verbose Set to \code{FALSE} or \code{0} to suppress diagnostic
+//' output, or \code{TRUE} or \code{1} to print debugging information.
+//' @return An unnamed list with one data.frame per subject, in the order
+//' of the rows of \code{index}, with length \code{length(idunique)}.
+//' Each data.frame contains numeric columns \code{pnr} (subject identifier),
+//' \code{X} (estimated daily dose; zero denotes no exposure), \code{B}
+//' (start of the exposure interval) and \code{E} (end of the interval).
+//' The interval boundaries use the same numeric date scale as the input.
+//' When called by \code{medicinMacro}, this is days since 1995-01-01;
+//' that wrapper converts the boundaries to class \code{Date}.
+//' Intervals are interpreted as \code{[B, E)} by \code{medicinMacro}.
+//' @examples
+//' prescriptions <- data.frame(pnr = 1, eksd = 0, strnum = 1,
+//'                             packsize = 5, apk = 1)
+//' admissions <- data.frame(pnr = 1, inddto = 2, uddto = 4)
+//' doses <- list(value = 1, min = 1, max = 1, def = 1)
+//' index <- data.frame(id.start = 0, id.end = 0,
+//'                     id.start.adm = 0, id.end.adm = 0)
+//' innerMedicinMacro(prescriptions, admissions, doses, idunique = 1,
+//'                   index = index, prescriptionwindow = 2,
+//'                   maxdepot = 0, verbose = FALSE)
 //' @author Helene Charlotte Rytgaard and Thomas Alexander Gerds
 //' @export
 // [[Rcpp::export]]

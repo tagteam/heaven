@@ -1,7 +1,6 @@
 library(data.table)
 library(testthat)
 library(heaven)
-context("patient profiles")
 
 test_that("output is data.table", {
   n <- 1e1
@@ -13,6 +12,6 @@ test_that("output is data.table", {
   )
   setDT(x)
   out <- patientProfile(dt = x, primary.cov = "age", "v2", "v3")
-  expect_that(out, is_a("data.table"))
+  expect_s3_class(out, "data.table")
 })
 

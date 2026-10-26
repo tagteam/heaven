@@ -15,6 +15,14 @@ simAdmissionData(n, m = 5, diagnoses, startDate = "1995-01-01")
 
 \item{startDate}{starting date}
 }
+\value{
+A data.table with one row per simulated admission, sorted by
+\code{pnr} and \code{inddto}. Columns are patient identifier \code{pnr},
+record identifier \code{recnum}, admission and discharge dates
+\code{inddto} and \code{uddto} (class \code{Date}), a simulated
+\code{indexdate} (class \code{Date}), diagnosis code \code{diag} and
+patient type \code{pattype}.
+}
 \description{
 Simulate admission data
 }

@@ -22,10 +22,15 @@
 ##' @param pattern passed to \code{list.files}
 ##' @param full.names passed to \code{list.files}
 ##' @param ... passed to list.files
-##' @return list with file names
+##' @return A character vector of matching SAS file names, including their
+##' paths when \code{full.names = TRUE}.
 ##' @seealso \code{scanRawdata}, \code{addUsualRegisters} 
 ##' @examples
-##' \dontrun{listRawdata("x:/Data/Rawdata_Hurtig/706818/")}
+##' rawdir <- tempfile("heaven-rawdata-")
+##' dir.create(rawdir)
+##' file.create(file.path(rawdir, "pop.sas7bdat"))
+##' listRawdata(rawdir)
+##' unlink(rawdir, recursive = TRUE)
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 listRawdata <- function(dir,

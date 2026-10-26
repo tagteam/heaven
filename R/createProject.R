@@ -18,13 +18,18 @@
 ##'
 ##' ordnung muss sein
 ##' @title ordnung muss sein
-##' @param directory Full path of the new project. E.g., "v:/data/workdata/706818/BlaBlaBla/study"
+##' @param directory Full path of the new project. Must be supplied explicitly.
+##' @return No return value (invisible \code{NULL}). Called for the side effect
+##' of creating the project directory, subdirectories, README and script templates.
 ##' @examples
-##' \dontrun{createProject("v:/data/workdata/706818/BlaBlaBla/study")}
+##' project <- tempfile("heaven-project-")
+##' createProject(project)
+##' list.files(project)
+##' unlink(project, recursive = TRUE)
 ##' @export 
 ##' @author Thomas A. Gerds <tag@@biostat.ku.dk>
 createProject <- function(directory){
-    if (missing(directory)) directory <- file.choose(new=TRUE)
+    if (missing(directory)) stop("Please supply a project directory explicitly.")
     if (dir.exists(directory)) stop("Directory ",directory," exists already.\nYou may want to choose another name and afterwards merge with the old project!?")
     else {
         dd <- try(xx <- dir.create(directory))

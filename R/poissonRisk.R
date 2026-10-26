@@ -4,6 +4,11 @@
 #' @param model glm object of fitted poisson model
 #' @param interval risk interval within time scale of the poisson model 
 #' @param newdata values of the covariates in the poisson model for which the absolute risks are calculated.
+#' @return A data frame (or data.table when \code{newdata} is a data.table)
+#' with one row per row of \code{newdata}. The input covariates are followed
+#' by the coefficient summary from \code{lava::estimate}, containing the
+#' estimated absolute risk over \code{interval}, its standard error,
+#' confidence limits and test statistics.
 #' @export
 #' @author Thomas A. Gerds <tag@biostat.ku.dk>, Regitze Kuhr Skals <r.skals@rn.dk>
 poissonRisk <- function(model,interval,newdata){

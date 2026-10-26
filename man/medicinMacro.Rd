@@ -100,7 +100,22 @@ packages. Default is \code{"apk"}.}
 \item{splitting}{Split the data into 10 chunks to estimate
 remaining time (and possibly speed up computation).}
 
-\item{verbose}{bla bla?}
+\item{verbose}{Logical. Set to \code{TRUE} to print diagnostic information;
+the default \code{FALSE} suppresses this output.}
+}
+\value{
+A named list of class \code{medicinmacro}, containing a data.table
+for each drug with exposure estimates.
+For \code{type = "dynamic"}, each table contains the subject identifier,
+estimated daily \code{dose}, exposure interval dates \code{firstday} and
+\code{lastday}, and interval length \code{exposure.days}. Intervals run
+from \code{firstday} (inclusive) to \code{lastday} (exclusive).
+For \code{type = "period"}, tables contain prescription intervals and
+estimated dose, drug supply, leftover drug and proportions of time covered.
+For \code{type = "cross-sectional"}, tables contain the assessment
+\code{time}, dose and supply estimates, and the logical exposure indicator
+\code{exposed.at.time}. Drugs with no matching prescriptions in dynamic
+mode, or with unsupported stockpiling settings in the other modes, are omitted.
 }
 \description{
 Processing function, to perform calculations according to the data and variables specified in preprocessing object.

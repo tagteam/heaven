@@ -21,7 +21,7 @@ xrecepter(
   sas.program = "/usr/local/bin/sas ",
   sas.switches,
   sas.runner,
-  macro = "~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
+  macro,
   save.tmp = FALSE,
   verbose = TRUE,
   server = "doob",
@@ -66,7 +66,8 @@ Can also be numeric values: number of days since 1960-01-01.}
 
 \item{user}{user name on remote (unix like) machine}
 
-\item{wd}{working directory}
+\item{wd}{Writable parent directory for SAS scratch files. When omitted,
+\code{tempdir()} is used. A unique subdirectory is created for each call.}
 
 \item{sas.program}{path to sas program}
 
@@ -76,7 +77,7 @@ systems to \code{"-batch -nosplash -noenhancededitor -sysin"}.}
 \item{sas.runner}{How sas is invoked. On linux this defaults to
 \code{"system"} on any other system to \code{"shell"}.}
 
-\item{macro}{path to sas macro}
+\item{macro}{Path to the SAS macro. Must be supplied explicitly.}
 
 \item{save.tmp}{if TRUE do not delete the temporary SAS files}
 
@@ -91,6 +92,12 @@ systems to \code{"-batch -nosplash -noenhancededitor -sysin"}.}
 \item{left_only}{- when 1 only use prior prescription, when 0 use prior and
 future prescriptions.}
 }
+\value{
+A data.table with one row per estimated exposure interval,
+including patient identifier \code{pnr}, dates \code{firstday} and
+\code{lastday}, daily \code{dose} and interval length \code{exposure.days}.
+Returns invisible \code{NULL} if SAS does not produce an output file.
+}
 \description{
 wrapper for medicin macro
 }
@@ -100,6 +107,7 @@ wrapper for medicin macro
 \examples{
 library(heaven)
 \dontrun{
+# Requires SAS and a local copy of the external SAS medication macro.
  library(heaven)
 library(data.table)
 set.seed(05021992)
@@ -117,10 +125,11 @@ R03 = list(atc=c("R03AK11"),
                      min = c(.5,.5),
                      max = c(2,2),
                      def = c(1,1)))
-xrecepter(drugdb=lmdb,adm=lpr,window=5,remote=FALSE,wd="~/tmp",save.tmp=0L,
+xrecepter(drugdb=lmdb,adm=lpr,window=5,remote=FALSE,wd=tempdir(),save.tmp=FALSE,
           value=rep(R03$doses$value,2),min=rep(R03$doses$min,2),max=rep(R03$doses$max,2),
           def=rep(R03$doses$def,2),maxdepot=100,period=c(12784,20089),atc="R03AK11",
           name="blaupill",sas.program="/usr/local/bin/sas",
+          macro="/path/to/medicin_macro_version_31.sas",
           verbose=FALSE)
 } 
 

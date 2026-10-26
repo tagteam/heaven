@@ -5,6 +5,9 @@
 #' administrative regions.
 #'
 #' @param kommune 3-digit kommune number.
+#' @return A character vector of the same length as \code{kommune}, giving
+#' the Danish region for each municipality. Unrecognised or missing codes
+#' are represented by an empty string.
 #'
 #' @details
 #' This function converts a 3-digit kommune number to text corresponding to

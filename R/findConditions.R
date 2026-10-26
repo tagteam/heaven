@@ -48,8 +48,10 @@
 #' @param condition.name Name of variable(s) where values define conditions. 
 #' The values of this variable are the names from parameter "conditions".
 #' @return
-#' A data table that includes the "keep-variables" and a variable named 
-#' \code{condition.name} which #' identifies the condition searched for
+#' A data.table containing the columns selected by \code{keep} and a
+#' column named by \code{condition.name}, whose values identify the matching
+#' elements of \code{conditions}. Each row represents a matched condition
+#' in an input record.
 #' @examples
 #' library(heaven)
 #' library(data.table)

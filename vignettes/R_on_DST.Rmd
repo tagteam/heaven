@@ -71,7 +71,7 @@ Hard drive memory should also be used sparingly, although less so than RAM. What
 # Starting a project
 If you have used the **create_project()** function to define the project there are suggestions for R scripts that encourage a starting comment defining the author and the purpose of the program.
 
-In the beginning of your program, you should use the function **setwd("path to data")** to the directory for your data - or to the directory for your project.  This makes reference to datasets in your project easier.  If you choose the directory of the project you can use relative paths to read and write in subfolders of your project such as **writeRDS(R-object-name,file="/data/filename.rds")** to write in the "data" subfolder.
+Use explicit paths to refer to datasets in your project, for example **file.path(project_directory, "data", "filename.rds")**. This avoids changing the working directory. For practice and examples, write output to temporary files such as **tempfile(fileext = ".rds")**.
 
 # Read data
 Data in Statistics Denmark is generally provided as SAS datasets - and a few data are provided in ASCII format which includes the very useful "csv" format.
@@ -100,9 +100,9 @@ Many datasets are saved as "rds" files, single R objects. They are read and adde
 
 # Save data
 
-The most efficient way to store datasets is as single object using **saveRDS(name_of_object,file="PathToFile.rds")**. If your working directory is the project directory and you want the object saved in the subdirectory "data" then use **saveRDS(name_of_object,file="/data/PathToFile.rds")**.
+An efficient way to store a dataset as a single object is **saveRDS(name_of_object, file = tempfile(fileext = ".rds"))**. For a permanent result, explicitly supply the desired output path instead of the temporary file name.
 
-If you need to output text files (ASCII) then use **data.table::fwrite(name_of_object,file="pathToFile.csv")**. This is useful if you want to use Excel and similar to produce tables. Most table are generated in programs as data.frame or data.table and after converting to a csv-object they can be read with Excel.  Note that the **fwrite** function senses the details of output format from the file name you provide.
+To write a text file, use **data.table::fwrite(name_of_object, file = tempfile(fileext = ".csv"))**. To retain the file, explicitly supply a permanent output path. Tables stored as data.frame or data.table objects can be exported as CSV files for use in Excel and similar programs.
 
 # View your data
 As data is imported to the project it is necessary to check that what you have desired has actually been accomplished. You can click on object in the environment pane to show the datasets as a spread sheat. This is discouraged since large datasets take a long time to load. Very useful functions are:

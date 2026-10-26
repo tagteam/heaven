@@ -15,10 +15,12 @@ scanRawdata(
 
 \item{which}{vector of expressions to match the file names}
 
-\item{verbose}{passed to importSAS}
+\item{verbose}{Logical. Print file contents and pass verbosity to importSAS.}
 }
 \value{
-list of file contents
+A named list of data.tables describing the variables in each
+matching SAS file. Each table is returned by \code{importSAS(content = TRUE)};
+list names are the SAS file names. An empty list is returned if no files match.
 }
 \description{
 Scan the contents of a directory which contains sas data files
@@ -28,6 +30,7 @@ Scan the contents of a directory which contains sas data files
 }
 \examples{
 \dontrun{
+# Requires SAS and access to the registry files at the supplied path.
 scanRawdata("x:/Data/Rawdata_Hurtig/706818/",which=c("pop","lmdb"))
 }
 }

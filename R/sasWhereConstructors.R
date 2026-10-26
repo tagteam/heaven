@@ -30,6 +30,9 @@ sasDateRange <-
 #' rDateToSas
 #'
 #' @param rdate Date object to be converted into a format SAS can read
+#' @return A character vector of the same length as \code{rdate}, with dates
+#' formatted as day, abbreviated month and year (for example,
+#' \code{"01Jan2015"} in an English locale), suitable for SAS date literals.
 #' @export
 rDateToSas <- function(rdate) {
   format(rdate, '%d%b%Y')

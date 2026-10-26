@@ -20,11 +20,14 @@
 #' @title Scan sas data files
 #' @param dir directory which contains the sas files 
 #' @param which vector of expressions to match the file names
-#' @param verbose passed to importSAS
-#' @return list of file contents
+#' @param verbose Logical. Print file contents and pass verbosity to importSAS.
+#' @return A named list of data.tables describing the variables in each
+#' matching SAS file. Each table is returned by \code{importSAS(content = TRUE)};
+#' list names are the SAS file names. An empty list is returned if no files match.
 #' @seealso \code{listRawdata}
 #' @examples
 #' \dontrun{
+#' # Requires SAS and access to the registry files at the supplied path.
 #' scanRawdata("x:/Data/Rawdata_Hurtig/706818/",which=c("pop","lmdb"))
 #' }
 #' @export 
@@ -36,12 +39,12 @@ scanRawdata <- function(dir,which=c("pop","doede","diag","lmdb","opr"),verbose=F
         tmp <- strsplit(ff,"/")[[1]]
         tmp[[length(tmp)]]
     })
-    for (i in 1:length(sasfiles)){
+    for (i in seq_along(sasfiles)){
         sf <- sasfiles[[i]]
         name.sf <- names(out)[[i]]
         if (length(which)==0 || any(unlist(sapply(which,grep,name.sf)))){
             csf <- importSAS(sf,content=TRUE,verbose=verbose)
-            print(csf)
+            if (verbose) print(csf)
             out[[i]] <- csf
         }
     }

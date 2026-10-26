@@ -15,12 +15,13 @@ structure summary. Defaults to `"head"`.}
 
 \item{num_rows}{Number of rows to display when `action = "head"`. Default 5.}
 
-\item{quiet}{Logical; if `FALSE` (default) the resolved path is printed.}
+\item{quiet}{Logical; if `TRUE`, suppress both the path message and the
+data display. The collected data are still returned invisibly.}
 }
 \value{
 Invisibly returns the collected `tibble` (the head, or the sample
   used for the structure summary), so it can be captured if needed. Output is
-  printed as a side effect.
+  printed as a side effect unless `quiet = TRUE`.
 }
 \description{
 Quickly inspect the contents of a Parquet file or a directory of Parquet
@@ -34,10 +35,13 @@ needed to satisfy the request are read from disk. This makes it fast even on
 very large files or multi-file directories.
 }
 \examples{
-\dontrun{
-view_parquet("path/to/file.parquet", action = "str")
-# Windows raw-string path:
-view_parquet(r"(Z:\path\to\directory)", action = "head")
+if (requireNamespace("arrow", quietly = TRUE) &&
+    requireNamespace("dplyr", quietly = TRUE)) {
+  path <- tempfile(fileext = ".parquet")
+  arrow::write_parquet(data.frame(id = 1:3, value = c(4, 5, 6)), path)
+  view_parquet(path, action = "head")
+  view_parquet(path, action = "str")
+  unlink(path)
 }
 
 }

@@ -29,8 +29,10 @@ string}
 The values of this variable are the names from parameter "conditions".}
 }
 \value{
-A data table that includes the "keep-variables" and a variable named 
-\code{condition.name} which #' identifies the condition searched for
+A data.table containing the columns selected by \code{keep} and a
+column named by \code{condition.name}, whose values identify the matching
+elements of \code{conditions}. Each row represents a matched condition
+in an input record.
 }
 \description{
 This functions is useful for the very common task of selecting cases based 

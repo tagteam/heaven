@@ -102,7 +102,7 @@ riskSetMatch <- function(ptid,
     if (cores>1){
         CLUST <- parallel::makeCluster(min(parallel::detectCores(),cores))
     }else{
-        foreach::registerDoSEQ
+        foreach::registerDoSEQ()
     }
     ## Prepare progress bar
     if (progressbar){

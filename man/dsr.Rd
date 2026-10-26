@@ -33,7 +33,12 @@ dsr(
 \item{crude}{logical. if \code{TRUE} also calculate crude rates}
 }
 \value{
-List with crude and standardized rates and rate ratios.
+A data.table with one row per \code{group} (0 or 1), containing the
+standardized \code{rate}, its \code{rate.lower} and \code{rate.upper}
+confidence limits, and the rate \code{ratio} relative to group 0 with
+\code{ratio.lower} and \code{ratio.upper} confidence limits. When
+\code{crude = TRUE}, there are two rows per group and a \code{type} column
+distinguishes \code{"crude"} and \code{"standardized"} estimates.
 }
 \description{
 Function to Compute confidence interval for directly standardized rates and rate ratios
@@ -46,7 +51,6 @@ the inverse of the F distribution (for DSR ratio)
 and some Wald confidence interval (also on log-scale) for comparison purpose.
 }
 \examples{
-library(riskRegression)
 library(data.table)
 set.seed(84)
  n=160

@@ -157,7 +157,7 @@
 #'             case.index="case.Index",end.followup="control.Index")
 #' matchdat
 #' # Same with 2 cores
-#' \dontrun{
+#' if (requireNamespace("doParallel", quietly = TRUE)) {
 #' library(parallel)
 #' library(foreach)
 #' matchdat2 <- exposureMatch("ptid","case",c("byear","sex"),data=dat,2,case.index=

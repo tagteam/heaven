@@ -23,13 +23,14 @@
 #' @param maxdepot Maximum number of units that a patient can stash
 #' @param period Vector of two dates that SAS can eat: c("'01jan1995'd","'31dec2015'd").
 #' Can also be numeric values: number of days since 1960-01-01.
-#' @param wd working directory
+#' @param wd Writable parent directory for SAS scratch files. When omitted,
+#' \code{tempdir()} is used. A unique subdirectory is created for each call.
 #' @param sas.program path to sas program
 #' @param sas.switches On Linux this defaults to \code{""}; on other
 #' systems to \code{"-batch -nosplash -noenhancededitor -sysin"}.
 #' @param sas.runner How sas is invoked. On linux this defaults to
 #'     \code{"system"} on any other system to \code{"shell"}.
-#' @param macro path to sas macro
+#' @param macro Path to the SAS macro. Must be supplied explicitly.
 #' @param save.tmp if TRUE do not delete the temporary SAS files 
 #' @param name working name of output file (only relevant when save.tmp is set) 
 #' @param verbose like bla bla?
@@ -39,9 +40,14 @@
 #' @param remote.home home folder on remote (unix like) machine
 #' @param left_only - when 1 only use prior prescription, when 0 use prior and
 #' future prescriptions.
+#' @return A data.table with one row per estimated exposure interval,
+#' including patient identifier \code{pnr}, dates \code{firstday} and
+#' \code{lastday}, daily \code{dose} and interval length \code{exposure.days}.
+#' Returns invisible \code{NULL} if SAS does not produce an output file.
 #' @examples
 #' library(heaven)
 #' \dontrun{
+#' # Requires SAS and a local copy of the external SAS medication macro.
 #'  library(heaven)
 #' library(data.table)
 #' set.seed(05021992)
@@ -59,10 +65,11 @@
 #'                      min = c(.5,.5),
 #'                      max = c(2,2),
 #'                      def = c(1,1)))
-#' xrecepter(drugdb=lmdb,adm=lpr,window=5,remote=FALSE,wd="~/tmp",save.tmp=0L,
+#' xrecepter(drugdb=lmdb,adm=lpr,window=5,remote=FALSE,wd=tempdir(),save.tmp=FALSE,
 #'           value=rep(R03$doses$value,2),min=rep(R03$doses$min,2),max=rep(R03$doses$max,2),
 #'           def=rep(R03$doses$def,2),maxdepot=100,period=c(12784,20089),atc="R03AK11",
 #'           name="blaupill",sas.program="/usr/local/bin/sas",
+#'           macro="/path/to/medicin_macro_version_31.sas",
 #'           verbose=FALSE)
 #' } 
 #' 
@@ -84,7 +91,7 @@ xrecepter <- function(drugdb,
                       sas.program="/usr/local/bin/sas ",
                       sas.switches,
                       sas.runner,
-                      macro="~/research/SoftWare/heaven/sas/medicin_macro_version_31.sas",
+                      macro,
                       save.tmp=FALSE,
                       verbose=TRUE,
                       server="doob",
@@ -97,32 +104,24 @@ xrecepter <- function(drugdb,
     if (missing(max) || length(max)!=4) stop("argument max should be a vector of length 4 (maximal dosages)")
     if (missing(def) || length(def)!=4) stop("argument def should be a vector of length 4 (default dosages)")
     .SD=startdag=slutdag=exposure.days=lastday=firstday=pnr = NULL
+    if (missing(macro)) stop("Please supply the path to the SAS macro explicitly.")
+    macro <- normalizePath(macro, winslash = "/", mustWork = TRUE)
     olddir <- getwd()
+    on.exit(setwd(olddir), add = TRUE)
     if (missing(wd) || length(wd) == 0){
-        wd <- getwd()
-    }else{
-        setwd(wd)
+        wd <- tempdir()
     }
-    tmpname <- basename(tempfile(pattern="heaven_tempSASfiles"))
-    tmpdir = paste0(wd,"/",tmpname)
-    # cleaning up old temporary directories
-    olddirectories <- list.files(wd,pattern="heaven_tempSASfiles[a-z0-9]+")
-    for (old in olddirectories){
-        if (verbose)
-            message("Cleaning up temporary directories from previous calls.")
-        unlink(old,recursive=TRUE,force=TRUE)
-    }
+    wd <- normalizePath(wd, winslash = "/", mustWork = TRUE)
+    tmpdir <- tempfile(pattern = "heaven_tempSASfiles", tmpdir = wd)
     if (verbose) message("Writing temporary SAS files (log, lst, input data, output data) to directory\n",tmpdir)
     if (file.exists(tmpdir)) {
         stop(paste("file.exists:",tmpdir))
     }else{
-        try.val <- try(dir.create(tmpdir))
-        if (class(try.val)[[1]]=="try-error")
+        if (!dir.create(tmpdir))
             stop("Cannot create temporary directory.\nYou probably do not have permission to write to the directory: \n ",
                  tmpdir, "\nTry to specify another directory with the argument \"wd\" or change the working directory.",
                  sep = "")
     }
-    setwd(tmpdir)
     on.exit({
         setwd(olddir)
         if (!save.tmp) {
@@ -136,9 +135,11 @@ xrecepter <- function(drugdb,
                            " 'rm -rf ",sub("~",remote.home,tmpdir),"'")))
             }
         }else{
-            cat("\nTemporary directory:\n ",tmpdir,"\ncan now be inspected -- and should be removed manually afterwards!\n")
+            message("Temporary directory: ", tmpdir,
+                    "\ncan now be inspected and should be removed manually afterwards.")
         }
-    })
+    }, add = TRUE)
+    setwd(tmpdir)
     if (.Platform$OS.type == "unix") {
         if (missing(sas.program)) {
             sas.program <- "sas"
@@ -251,7 +252,7 @@ xrecepter <- function(drugdb,
                              sub("~",remote.home,lstfile),
                              " ",
                              sub("~",remote.home,Prog))
-        print(progstring)
+        if (verbose) message(progstring)
         status <- system(progstring)
         ## secure copy from server
         system(paste0("scp -r ",user,"@",server,":",tmpdir," ", wd))

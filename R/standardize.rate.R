@@ -27,10 +27,15 @@
 #' Niels Keiding, David Clayton, et al. Standardization and control for
 #' confounding in observational studies: a historical perspective. Statistical
 #' Science, 29(4):529--558, 2014.
-#' @return Data table with standardized rates (and crude rates if asked for)
+#' @return A data.table with exposure \code{group}, estimated \code{rate},
+#' \code{rate.lower} and \code{rate.upper} confidence limits, and \code{ratio}
+#' relative to the first exposure group, with \code{ratio.lower} and
+#' \code{ratio.upper} confidence limits. The \code{x} column identifies the
+#' event and denominator pair. Columns selected by \code{by} identify strata.
+#' When \code{crude = TRUE}, \code{type} distinguishes crude and standardized
+#' estimates; otherwise only standardized estimates are returned.
 #' @seealso standardize.prodlim standardize.proportion epitools::ageadjust.direct
 #' @examples
-#' library(riskRegression)
 #' library(data.table)
 #' set.seed(84)
 #' n=160
@@ -53,15 +58,16 @@
 #' standardize.rate(x=list("rate1"=c("e1","rt1"),"rate2"=c("e2","rt2")),
 #'                  age="agegroups",exposure="sex",data=d,by="year")
 #'
-#' # more than 2 exposures does not yet work!! workaround is to subset ...
-#' \dontrun{
+#' # For more than two exposure groups, select the pair to compare.
 #' d[,groups:=factor(rep(paste0("G",1:4),rep(n/4,4)))]
 #' D=d[,list(e1=sum(e1),rt1=sum(rt1),e2=sum(e2),rt2=sum(rt2)),by=c("groups","agegroups")]
 #' D[groups=="G3",e1:=e1+rpois(.N,lambda=as.numeric(agegroups)*17)]
 #' D[groups=="G3",rt1:=rt1-rpois(.N,lambda=as.numeric(agegroups)*1600)]
+#' pair <- D[groups %in% c("G3", "G4")]
+#' pair[,groups:=droplevels(groups)]
 #' standardize.rate(x=list(c("e1","rt1")),
-#'                  age="agegroups",exposure="groups",data=D,standardize.to="mean")
-#' }
+#'                  age="agegroups",exposure="groups",
+#'                  data=pair,standardize.to="mean")
 #' @export
 #' @author Thomas A. Gerds <tag@@biostat.ku.dk>, Jeppe E. H. Madsen <jehm@sund.ku.dk>
 standardize.rate <- function(x,
@@ -175,11 +181,15 @@ standardize.rate <- function(x,
 #' for discrete data." R journal 2.1 (2010): 53-58.
 #'
 #' @return
-#' List with crude and standardized rates and rate ratios.
+#' A data.table with one row per \code{group} (0 or 1), containing the
+#' standardized \code{rate}, its \code{rate.lower} and \code{rate.upper}
+#' confidence limits, and the rate \code{ratio} relative to group 0 with
+#' \code{ratio.lower} and \code{ratio.upper} confidence limits. When
+#' \code{crude = TRUE}, there are two rows per group and a \code{type} column
+#' distinguishes \code{"crude"} and \code{"standardized"} estimates.
 #'
 #' @seealso epitools::ageadjust.direct
 #' @examples
-#' library(riskRegression)
 #' library(data.table)
 #' set.seed(84)
 #'  n=160

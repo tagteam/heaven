@@ -25,6 +25,13 @@ list are ATC codes, the value associates strengths of one unit and package sizes
 
 \item{startDate}{start date}
 }
+\value{
+A data.table with one row per simulated prescription, sorted by
+patient, ATC code and purchase date. Columns are patient identifier
+\code{pnr}, drug code \code{atc}, purchase date \code{eksd} (class
+\code{Date}), unit strength \code{strnum}, package size \code{packsize}
+and number of packages purchased \code{apk}.
+}
 \description{
 Simulate prescription data
 }

@@ -29,8 +29,10 @@
 #' record by quarter. The function will assume that repeated incomes for a year
 #' should be removed leaving a single income per year. The actual income 
 #' selected for averaging is chosen by the user when selecting variables.
-#' @return a data.table with 2 records, the identification variable and the 
-#' averaged income.
+#' @return A data.table with one row per person and index year for which
+#' income is available in the preceding \code{numyears} years. Its three
+#' columns are the identifier named by \code{datvars[1]}, \code{year}
+#' (the index year) and \code{income} (the mean of the available yearly incomes).
 #' @examples
 #' require(data.table)
 #' dat <- data.table(pnr=c(1,2,3,3), dato=as.Date(paste0(2018:2021,"-11-11")))

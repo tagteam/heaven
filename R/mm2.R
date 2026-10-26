@@ -63,7 +63,7 @@ mm2 <- function(drugs,
             else
                 out <- grid[1]
         }else{
-            print("not implemented")
+            stop("Upper-grid discretization is not implemented.")
         }
         return(out)
     }  

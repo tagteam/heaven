@@ -4,6 +4,10 @@
 #' @param data dataset.
 #' @param aggvars vector of variables in data to be aggregated (summarized).
 #' @param byvars vector of variables in data to aggregate by.
+#' @return An object of class \code{c("glm", "lm")}: the fitted Poisson
+#' regression model after summing \code{aggvars} within groups defined by
+#' \code{byvars}. It contains coefficients, fitted values and model diagnostics
+#' and can be used with \code{summary} and \code{predict}.
 #' @export
 poissonregression <- function(formula,data,aggvars,byvars){
     .SD=NULL

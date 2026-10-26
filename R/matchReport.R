@@ -4,8 +4,14 @@
 #' The function provides very simple tables of the success of finding controls and
 #' the reuse of cases and controls. Designed to deal with the results of function
 #' riskSetMatch
-#' @usage matchReport(x)
+#' @usage matchReport(x, verbose = TRUE)
 #' @param x result of exposureMatch or incidenceMatch
+#' @param verbose Logical. Print the report when \code{TRUE}; set to
+#' \code{FALSE} to retrieve the tables without console output.
+#' @return Invisibly returns a named list of two objects of class \code{table}.
+#' \code{matching.success} counts cases by the number of matched controls;
+#' \code{control.reuse} counts control subjects by the number of times each
+#' was selected. The report is also printed when \code{verbose = TRUE}.
 #' @author Christian Torp-Pedersen & Thomas Alexander Gerds
 #' @details 
 #' This function can be helpful to reevaluate matching options after exact matching.
@@ -30,25 +36,21 @@
 #' data=dat,n.controls=2,
 #' case.index="caseIndex",end.followup="controlIndex")
 #' matchReport(matched.data)
-matchReport <- function(x){
-  .SD=.N=N=caseid=NULL
-  id=attr(x,"id")
-  event=attr(x,"event")
-  cat("\n","------------------------------------------------------------------","\n","Matching success")
-  ## Matching success:
-  
-  if (!("n.controls" %in% names(x)))
-    n.controls <- as.vector(x[,(.N-1),by="case.id"])
-  else
-    n.controls <- x[["n.controls"]]
-  cat("\n", "Line 1, number of controls found - Line 2, number of occurrences:\n")
-  print(table(n.controls))
-  cat("\n","------------------------------------------------------------------")
-  ##Reuse of controls - Following changed slightly by CTP to avoid errors 4.8.2022
-  n.reuse<-as.vector(x[event==0,.N,by=id])[["N"]]
-  cat("\n","Reuse/use of controls","\n","Line 1, number of times - Line 2, number of occurrences","\n")
-  print(table(n.reuse))
-  cat("\n","------------------------------------------------------------------\n")
+matchReport <- function(x, verbose = TRUE){
+  .N <- NULL
+  id <- attr(x, "id")
+  event <- attr(x, "event")
+  n.controls <- x[, .N - 1L, by = "case.id"][["V1"]]
+  n.reuse <- x[x[[event]] == 0, .N, by = id][["N"]]
+  report <- list(matching.success = table(n.controls),
+                 control.reuse = table(n.reuse))
+  if (verbose) {
+    cat("\nMatching success\nNumber of controls found / number of cases:\n")
+    print(report$matching.success)
+    cat("\nReuse/use of controls\nNumber of times selected / number of subjects:\n")
+    print(report$control.reuse)
+  }
+  invisible(report)
 }
 
 

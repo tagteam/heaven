@@ -1,7 +1,6 @@
 library(testthat)
 library(heaven)
 library(data.table)
-context("Matching")
 
 test_that("Risk set matching smoke test", {
     set.seed(1)
@@ -16,14 +15,16 @@ test_that("Risk set matching smoke test", {
     )
     dat[, follow.up.date := pmin(follow.up.date, case.date)]
     dat[case == 0, case.date := NA_real_]
-    out <- incidenceMatch(
+    expect_warning(out <- incidenceMatch(
         ptid = "pnr",
         event = "case",
         terms = c("birthyear", "sex"),
         case.index = "case.date",
         end.followup = "follow.up.date",
         data = dat,
-        n.controls = 1
-    )
+        n.controls = 1,
+        progressbar = FALSE,
+        verbose = FALSE
+    ), NA)
     expect_true(is.data.frame(out) || is.data.table(out))
 })

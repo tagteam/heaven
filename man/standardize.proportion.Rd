@@ -39,7 +39,11 @@ standardize.proportion(
 \item{...}{Not (yet) used}
 }
 \value{
-Data table with standardized proportions and standardized absolute risks
+A data.table with one row per \code{byvar} stratum. Columns
+\code{prop.<variable>} contain age-standardized proportions as percentages.
+When \code{formula} is supplied, \code{risk.<time>} columns contain
+standardized absolute risks as percentages. Corresponding \code{lower.}
+and \code{upper.} columns contain confidence limits at the requested level.
 }
 \description{
 Standardize proportions and absolute risks to a given age distribution
@@ -48,12 +52,12 @@ Standardize proportions and absolute risks to a given age distribution
 Standardize proportions and absolute risks to a given age distribution
 }
 \examples{
-library(riskRegression)
 set.seed(84)
-d <- riskRegression::sampleData(83)
-d[,X1:=factor(X1,levels=c("0","1"),labels=c("0","1"))]
-d[,X2:=factor(X2,levels=c("0","1"),labels=c("0","1"))]
-d[,agegroups:=cut(X6,c(-Inf,40,60,Inf))]
+d <- data.table::data.table(
+  X1 = factor(sample(0:1, 120, replace = TRUE)),
+  X2 = factor(sample(0:1, 120, replace = TRUE)),
+  X4 = rep(c("a", "b"), each = 60),
+  agegroups = factor(rep(c("young", "middle", "old"), 40)))
 standardize.proportion(vars=c("X1","X2"),agevar="agegroups",byvar="X4",data=d)
 
 }

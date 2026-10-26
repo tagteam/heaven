@@ -24,8 +24,10 @@ year and income - in that order}
 default is 5.}
 }
 \value{
-a data.table with 2 records, the identification variable and the 
-averaged income.
+A data.table with one row per person and index year for which
+income is available in the preceding \code{numyears} years. Its three
+columns are the identifier named by \code{datvars[1]}, \code{year}
+(the index year) and \code{income} (the mean of the available yearly incomes).
 }
 \description{
 This function calculates average income for a range of years prior to a date.

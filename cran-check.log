@@ -1,0 +1,94 @@
+* using log directory ‘/tmp/heaven-cran-check/final/heaven.Rcheck’
+* using R version 4.6.1 (2026-06-24)
+* using platform: x86_64-pc-linux-gnu
+* R was compiled by
+    x86_64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+    GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+* running under: Ubuntu 24.04.5 LTS
+* using session charset: UTF-8
+* current time: 2026-10-26 11:30:05 UTC
+* using options ‘--run-donttest --as-cran’
+* checking for file ‘heaven/DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘heaven’ version ‘2026.09.17’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [5s/121s] NOTE
+Maintainer: ‘Christian Tobias Torp-Pedersen <ctp@heart.dk>’
+
+New submission
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘heaven’ can be installed ... [29s/29s] OK
+* used C++ compiler: ‘x86_64-linux-gnu-g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0’
+* checking installed package size ... INFO
+  installed size is  8.6Mb
+  sub-directories of 1Mb or more:
+    libs   6.7Mb
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking ‘build’ directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking LazyData ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking line endings in C/C++/Fortran sources/headers ... OK
+* checking pragmas in C/C++ headers and code ... OK
+* checking compilation flags used ... NOTE
+Compilation used the following non-portable flag(s):
+  ‘-mno-omit-leaf-frame-pointer’
+* checking compiled code ... OK
+* checking installed files from ‘inst/doc’ ... OK
+* checking files in ‘vignettes’ ... OK
+* checking examples ... OK
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... OK
+  Running ‘test_patientProfiles.R’
+  Running ‘test-cran-compliance.R’
+  Running ‘test-Matcher.R’
+  Running ‘test-medicin-macro.R’
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... OK
+* checking re-building of vignette outputs ... OK
+* checking PDF version of manual ... OK
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found.
+Please obtain a recent version of HTML Tidy by downloading a binary
+release or compiling the source code from <https://www.html-tidy.org/>.
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 3 NOTEs

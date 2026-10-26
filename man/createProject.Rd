@@ -7,7 +7,11 @@
 createProject(directory)
 }
 \arguments{
-\item{directory}{Full path of the new project. E.g., "v:/data/workdata/706818/BlaBlaBla/study"}
+\item{directory}{Full path of the new project. Must be supplied explicitly.}
+}
+\value{
+No return value (invisible \code{NULL}). Called for the side effect
+of creating the project directory, subdirectories, README and script templates.
 }
 \description{
 create new empty folder for project organisation
@@ -16,7 +20,10 @@ create new empty folder for project organisation
 ordnung muss sein
 }
 \examples{
-\dontrun{createProject("v:/data/workdata/706818/BlaBlaBla/study")}
+project <- tempfile("heaven-project-")
+createProject(project)
+list.files(project)
+unlink(project, recursive = TRUE)
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

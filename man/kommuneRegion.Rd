@@ -9,6 +9,11 @@ kommuneRegion(kommune)
 \arguments{
 \item{kommune}{3-digit kommune number.}
 }
+\value{
+A character vector of the same length as \code{kommune}, giving
+the Danish region for each municipality. Unrecognised or missing codes
+are represented by an empty string.
+}
 \description{
 Converts a 3-digit kommune number to text representing one of the five
 administrative regions.

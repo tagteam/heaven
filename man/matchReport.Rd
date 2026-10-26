@@ -4,10 +4,19 @@
 \alias{matchReport}
 \title{matchReport - report of matching from incidenceMatch and exposureMatch}
 \usage{
-matchReport(x)
+matchReport(x, verbose = TRUE)
 }
 \arguments{
 \item{x}{result of exposureMatch or incidenceMatch}
+
+\item{verbose}{Logical. Print the report when \code{TRUE}; set to
+\code{FALSE} to retrieve the tables without console output.}
+}
+\value{
+Invisibly returns a named list of two objects of class \code{table}.
+\code{matching.success} counts cases by the number of matched controls;
+\code{control.reuse} counts control subjects by the number of times each
+was selected. The report is also printed when \code{verbose = TRUE}.
 }
 \description{
 The function provides very simple tables of the success of finding controls and

@@ -45,6 +45,7 @@
 #' }
 #' @seealso findCondition
 #' @examples
+#' if (requireNamespace("zoo", quietly = TRUE)) {
 #' require(data.table)
 #' dat <-data.table(
 #'  ATC=sample(c('C02A','C03A','C02DD','C07A','C07F','C09AA','C09BA'),100,
@@ -59,6 +60,7 @@
 #' index
 #' noindex <-  hypertensionMedication(dat,vars=c("ptid","ATC","EKSD"))
 #' noindex
+#' }
 #' @export
 hypertensionMedication <- function(data, vars=c("ptid","ATCcode",
       "prescription.date"), index.date=NULL,medication.definition=hypertensionATC)

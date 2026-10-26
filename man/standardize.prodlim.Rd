@@ -28,6 +28,13 @@ to the number of strata defined by \code{var2}. If omitted, weights are calculat
 
 \item{...}{not used}
 }
+\value{
+A data.table with the grouping column named by \code{var1} and
+numeric columns named \code{risk<time>} for the requested time points.
+Each row is a cumulative-incidence estimate for a \code{var2} stratum
+multiplied by its standardization weight. Sum these contributions within
+each \code{var1} group to obtain the standardized absolute risks.
+}
 \description{
 Compute standardized absolute risks based on a stratified Kaplan-Meier or Aalen-Johansen estimate
 }
@@ -37,6 +44,8 @@ standardize the absolute risk within each of the two gender to the
 age distribution in whole data set.
 }
 \examples{
+if (requireNamespace("survival", quietly = TRUE) &&
+    requireNamespace("prodlim", quietly = TRUE)) {
 library(survival)
 library(prodlim)
 library(data.table)
@@ -46,6 +55,7 @@ d$agegroup <- cut(d$age,breaks=c(0,40,50,60,100))
 fit <- prodlim(Hist(time,status==1)~trt+agegroup,data=d)
 standardize.prodlim(fit,var1="trt",var2="agegroup",data=d,times=1000)
 standardize.prodlim(fit,var1="trt",var2="agegroup",data=d,times=c(1000,1500))
+}
 }
 \author{
 Thomas A. Gerds <tag@biostat.ku.dk>

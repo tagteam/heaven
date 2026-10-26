@@ -1,7 +1,7 @@
 Package: heaven
 Type: Package
 Title: Fast Data Preparation for Danish Registry Data
-Version: 2026.09.17
+Version: 2026.10.26
 Authors@R: c(
     person(given = c("Christian","Tobias"), family = "Torp-Pedersen",
            email = "ctp@heart.dk", role = c("aut", "cre")),
@@ -10,8 +10,8 @@ Authors@R: c(
     person(given = c("Matthew", "David"), family = "Phelps", role = "aut"),
     person(given = c("Thomas", "Alexander"), family = "Gerds", role = "aut")
     )
-Description: Fast tools for preparing and analysing large Danish administrative and
-    health registry datasets. Provides memory-efficient routines for cohort construction,
+Description: Prepares and analyses large Danish administrative and health registry
+    datasets. Provides memory-efficient routines for cohort construction,
     time splitting, code-based condition identification, prescription exposure periods,
     risk-set matching, and direct standardisation. The package is designed for secure
     research environments such as Statistics Denmark and builds on the data structures
@@ -93,5 +93,4 @@ Collate:
     'view_parquet.R'
     'xrecepter.R'
 Config/testthat/edition: 3
-Config/roxygen2/version: 7.3.3
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.1.1

@@ -16,7 +16,8 @@ listRawdata(dir, pattern = "\\\\.sas7bdat$", full.names = FALSE, ...)
 \item{...}{passed to list.files}
 }
 \value{
-list with file names
+A character vector of matching SAS file names, including their
+paths when \code{full.names = TRUE}.
 }
 \description{
 List the contents of a directory which contains sas data files
@@ -25,7 +26,11 @@ List the contents of a directory which contains sas data files
 List the contents of a directory which contains sas data files
 }
 \examples{
-\dontrun{listRawdata("x:/Data/Rawdata_Hurtig/706818/")}
+rawdir <- tempfile("heaven-rawdata-")
+dir.create(rawdir)
+file.create(file.path(rawdir, "pop.sas7bdat"))
+listRawdata(rawdir)
+unlink(rawdir, recursive = TRUE)
 }
 \seealso{
 \code{scanRawdata}, \code{addUsualRegisters}

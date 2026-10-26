@@ -15,6 +15,12 @@ poissonregression(formula, data, aggvars, byvars)
 
 \item{byvars}{vector of variables in data to aggregate by.}
 }
+\value{
+An object of class \code{c("glm", "lm")}: the fitted Poisson
+regression model after summing \code{aggvars} within groups defined by
+\code{byvars}. It contains coefficients, fitted values and model diagnostics
+and can be used with \code{summary} and \code{predict}.
+}
 \description{
 Aggregates data and performs poisson regression using GLM.
 }
