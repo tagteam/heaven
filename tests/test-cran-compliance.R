@@ -101,7 +101,9 @@ test_that("SAS import failures restore the directory and remove scratch files", 
     oldwd <- getwd()
     before <- list.files(tempdir(), pattern = "^heaven_tempSASfiles", full.names = TRUE)
     runner <- function(command) {
-        expect_identical(dirname(getwd()), normalizePath(tempdir()))
+        # Windows paths can name the same directory with different separators.
+        expect_identical(normalizePath(dirname(getwd()), winslash = "/", mustWork = TRUE),
+                         normalizePath(tempdir(), winslash = "/", mustWork = TRUE))
         0L
     }
     expect_error(importSAS(input, sas.program = "unused", sas.runner = runner),
@@ -127,7 +129,8 @@ test_that("SAS macro calls use temporary storage and restore it after errors", {
     oldwd <- getwd()
     before <- list.files(tempdir(), pattern = "^heaven_tempSASfiles", full.names = TRUE)
     runner <- function(command) {
-        expect_identical(dirname(getwd()), normalizePath(tempdir()))
+        expect_identical(normalizePath(dirname(getwd()), winslash = "/", mustWork = TRUE),
+                         normalizePath(tempdir(), winslash = "/", mustWork = TRUE))
         0L
     }
     drugdb <- data.table(pnr = 1, eksd = as.Date("2000-01-01"))
@@ -156,7 +159,8 @@ test_that("successful SAS imports preserve session state and clean scratch files
     oldopts <- options()
     before <- list.files(tempdir(), pattern = "^heaven_tempSASfiles", full.names = TRUE)
     runner <- function(command) {
-        expect_identical(dirname(getwd()), normalizePath(tempdir()))
+        expect_identical(normalizePath(dirname(getwd()), winslash = "/", mustWork = TRUE),
+                         normalizePath(tempdir(), winslash = "/", mustWork = TRUE))
         if (grepl("tmpproccont.sas", command, fixed = TRUE)) {
             fwrite(data.table(Variable = "pnr", Type = "Char", Format = "", Informat = ""),
                    "sasimport_internal_tmpproccontout.csv")

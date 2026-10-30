@@ -19,3 +19,4 @@
 ^vignettes/RTMLE_for_dummies[.]Rmd$
 ^cran-comments[.]md$
 ^cran-check[.]log$
+^error$

@@ -1,7 +1,7 @@
 Package: heaven
 Type: Package
 Title: Fast Data Preparation for Danish Registry Data
-Version: 2026.10.26
+Version: 2026.10.30
 Authors@R: c(
     person(given = c("Christian","Tobias"), family = "Torp-Pedersen",
            email = "ctp@heart.dk", role = c("aut", "cre")),

@@ -1,6 +1,22 @@
 # Resubmission
 
-This resubmission addresses the six requests in Leonore Hochhauser's review.
+This resubmission fixes the Windows-only test failure reported by the incoming
+pretests for version 2026.10.26. Three simulated SAS runners compared
+dirname(getwd()), which uses forward slashes, with normalizePath(tempdir()),
+which defaults to backslashes on Windows. Both paths named the same directory,
+but expect_identical() rejected the different strings. In the successful-import
+test, this also prevented the runner from writing its simulated output file,
+causing the subsequent "did not produce the expected output file" error.
+
+All three assertions now normalize both paths with winslash = "/" and
+mustWork = TRUE before comparing them. The tests still check that SAS scratch
+directories are children of tempdir(); no platform is skipped. There are no
+changes to package functions in this resubmission. Version is now 2026.10.30,
+and the local error/ correspondence directory is excluded from the source
+archive through .Rbuildignore.
+
+This resubmission also retains the changes addressing the six requests in
+Leonore Hochhauser's earlier review:
 
 1. DESCRIPTION now starts "Prepares and analyses large Danish administrative
    and health registry datasets." The phrase "tools for" has been removed.
@@ -49,19 +65,19 @@ This resubmission addresses the six requests in Leonore Hochhauser's review.
 
 # Validation
 
-Tested on Ubuntu 24.04.5 LTS, x86_64, with R 4.6.1 on 2026-10-26.
+Tested on Ubuntu 24.04.5 LTS, x86_64, with R 4.6.1 on 2026-10-30.
 All declared Imports, Suggests, and LinkingTo packages were available.
 
 ```
 R CMD build /home/ctp/github/heaven
-R CMD check --as-cran --run-donttest --timings heaven_2026.10.26.tar.gz
+R CMD check --as-cran --run-donttest --timings heaven_2026.10.30.tar.gz
 ```
 
 Result: 0 errors, 0 warnings, 3 notes.
 
 - Examples, all four test scripts, vignette creation and rebuilding, and the
   PDF manual passed. Every runnable help-topic example took less than five
-  seconds; the slowest was medicinMacro at 1.096 seconds elapsed.
+  seconds; the slowest was medicinMacro at 0.852 seconds elapsed.
 - The new compliance tests cover explicit project destinations, returned
   matching tables, quiet diagnostics, SAS scans, temporary storage,
   directory restoration and cleanup, and quiet Parquet inspection. SAS
@@ -97,4 +113,14 @@ from the source package along with this file.
 - matchReport() returns tables and counts matching success once per case.
 - view_parquet(..., quiet = TRUE) also suppresses the data display.
 
-The checked archive is ready for resubmission; it has not been uploaded.
+The checked archive is heaven_2026.10.30.tar.gz, saved in the repository root.
+Its SHA-256 is:
+
+```
+9f005f6acde2589afb5766ba0c905d839c72f3073078ee1d4718511621d920bd
+```
+
+Windows R-devel and R-release checks have not yet been run on this corrected
+archive. They should be completed before CRAN resubmission. The previous local
+validation covered Linux only, which did not expose Windows path separators.
+The package has not been uploaded to Win-builder or CRAN.

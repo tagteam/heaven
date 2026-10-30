@@ -1,4 +1,4 @@
-* using log directory ‘/tmp/heaven-cran-reaudit-final/heaven.Rcheck’
+* using log directory ‘/tmp/heaven-windows-fix/heaven.Rcheck’
 * using R version 4.6.1 (2026-06-24)
 * using platform: x86_64-pc-linux-gnu
 * R was compiled by
@@ -6,13 +6,13 @@
     GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 * running under: Ubuntu 24.04.5 LTS
 * using session charset: UTF-8
-* current time: 2026-10-26 14:51:16 UTC
+* current time: 2026-10-30 14:47:46 UTC
 * using options ‘--run-donttest --as-cran’
 * checking for file ‘heaven/DESCRIPTION’ ... OK
 * checking extension type ... Package
-* this is package ‘heaven’ version ‘2026.10.26’
+* this is package ‘heaven’ version ‘2026.10.30’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [3s/44s] NOTE
+* checking CRAN incoming feasibility ... [3s/28s] NOTE
 Maintainer: ‘Christian Tobias Torp-Pedersen <ctp@heart.dk>’
 
 New submission
@@ -24,7 +24,7 @@ New submission
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
-* checking whether package ‘heaven’ can be installed ... [39s/39s] OK
+* checking whether package ‘heaven’ can be installed ... [29s/30s] OK
 * used C++ compiler: ‘x86_64-linux-gnu-g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0’
 * checking installed package size ... INFO
   installed size is  8.6Mb
